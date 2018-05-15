@@ -1,0 +1,8 @@
+*.o
+libairimp.so
+read_airimp
+read_airimp.output
+read_airimp.tab.c
+read_airimp.tab.h
+read_airimp_lex.c
+

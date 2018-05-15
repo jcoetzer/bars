@@ -44,6 +44,7 @@ from ReadFlightPeriods import ReadFlightPeriodsGui, ReadFlightPeriods, \
                               ReadTestInventrySegm, ReadTestPerdSegm, \
                               ReadTestPerdCls, ReadTestPerdPrnt
 from FlightData import FlightData
+#
 #from GetSeatMap import GetSeatMap, GetFlightDetail, GetFlightDetails
 #from GetSeatData import GetFlightDateClassSeatMaps
 #from ReadSeatMap import ReadFlightSeatMap, \
@@ -62,7 +63,7 @@ from ReadFlightLegs import ReadFlightSharedLeg, ReadFlightDateLegs, \
                            ReadtestPeriodLegs, ReadAsrReconcileHistory
 from ReadAircraftConfig import ReadAircraftConfig
 #from CheckAvailability import CheckAvailability
-from ReadFlightSegments import ReadSegmentStatus
+from ReadFlightSegments import ReadSegmentStatus, ReadFlightPax
 from ReadFlightTimes import ReadFlightTimes, ReadFlightPerdLegsTimes, \
                             ReadFlightSegmDateTimes, ReadFlightSegmDates, \
                             ReadFlightDateLegTimes, ReadFlightSharedLegTimes
@@ -243,6 +244,8 @@ def usage(pname='FlightInfo.py'):
     print "\t %s --cfg -A <AIRCRAFT>" % pname
     print "Check flight times"
     print "\t %s --time -F <FLIGHT> -D <DATE>" % pname
+    print "Check flight bookings"
+    print "\t %s --time -x -F <FLIGHT> -D <DATE>" % pname
     print "\nParameters:"
     print "\t -A <AIRCRAFT>\t aircraft code"
     print "\t -B <BOOKNO>\t booking number"
@@ -307,6 +310,7 @@ def main(argv):
     chk_ftimes = False
     chk_perd = False
     list_csv = False
+    list_pax = False
 
     seat_numbers = []
     selling_cls = None
@@ -329,7 +333,7 @@ def main(argv):
 
     try:
         opts, args = getopt.getopt(argv,
-                                   "cfhivyVA:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
+                                   "cfhivxyVA:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
                                    ["help","date=","edate=","flight=",
                                     "period=","seats=","days=","class=",
                                     "locator=","bookno=","depart=","arrive=",
@@ -407,9 +411,11 @@ def main(argv):
             chk_ftimes = True
         elif opt == '--ssmbook':
             ssm_book = True
+        elif opt == '-x':
+            list_pax = True
         elif opt == '-y':
             list_flights = True
-        elif opt=="-A" or opt=="--aircraft":
+        elif opt == "-A" or opt == "--aircraft":
             aircraft_code = str(arg).upper()
             printlog(1, "\t aircraft code %s" % aircraft_code)
         elif opt in ("-B", "--bookno"):
@@ -440,7 +446,7 @@ def main(argv):
             printlog(2, "\t seat_map_id %d" % seat_map_id)
         elif opt in ("-N", "--days"):
             recCount = int(arg)
-            #printlog(1, "\t count %d" % recCount)
+            # printlog(1, "\t count %d" % recCount)
         elif opt in ("-P", "--depart"):
             depr_airport = str(arg).upper()
             printlog(1, "\t depart %s" % depr_airport)
@@ -584,7 +590,7 @@ def main(argv):
             book_no = ReadLocator(conn, locator)
             for seat_number in seat_numbers:
                 print "________________________"
-                read_flight_bookings(conn, book_no, seat_number)
+                read_flight_bookings(conn, book_no, seaReadFlightPaxReadFlightPaxt_number)
         elif dt1 is not None and recCount != 0:
             ReadFlightSegmDates(conn, dt1, recCount, reconcile_window)
         elif dt1 is not None and dt2 is not None:
@@ -610,7 +616,10 @@ def main(argv):
     # Flight number specified
     else:
         city_pair = 0
-        if not fare_route and dt1 is not None and dt2 is not None:
+        if list_pax and dt1 is not None:
+            ReadFlightPax(conn, flight_number, dt1)
+            return 0
+        elif not fare_route and dt1 is not None and dt2 is not None:
             printlog(2, "Read flight %s from %s to %s" % (flight_number, dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d")))
             n = 0
             for single_date in daterange(dt1, dt2):
@@ -720,6 +729,8 @@ def main(argv):
                                 depr_airport, arrv_airport,
                                 0, 'JE', aircraft_code)
             ReadSsmBookData(conn, flight, schd_perd_no)
+        elif contact_pax and dt1 is not None:
+            flight = ReadFlightPax(conn, flight_number, dt1)
         elif list_flights:
             flights = ReadFlights(conn, flight_number, dt1, dt2, None, None, code_share=csflag)
             #flights = ReadFlight(conn, flight_number, dt1)
@@ -929,6 +940,3 @@ if __name__ == "__main__":
     except:
         pass
     sys.exit(rv)
-
-
-
