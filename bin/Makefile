@@ -1,4 +1,3 @@
 all:
-	cp *.py /opt/bars/bin/
-	cp ../lib/*.py /opt/bars/lib/
-
+	find . -name "*.py" -print -exec cp {} /opt/bars/bin/ \;
+	find ../lib/ -name "*.py" -print -exec cp {} /opt/bars/lib/ \;

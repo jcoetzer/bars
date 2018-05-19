@@ -35,6 +35,25 @@ def usage(pn):
     sys.exit(1)
 
 
+def doPay(conn, aCurrency, aPayAmount, aBookNo, aPaxName, aPaxCode,
+          aOriginBranchCode,
+          aUser, aGroup):
+    """Process payment."""
+    if aBookNo is None:
+        print "Book number not specified"
+        return 1
+    vPaymentForm = 'VI'
+    vPaymentType = 'CC'
+    vDocNum = '4242424242424242'
+    vPaymentMode = ' '
+    vRemark = ' '
+    AddPayment(conn, vPaymentForm, vPaymentType, aCurrency, aPayAmount,
+               vDocNum, vPaymentMode,
+               aBookNo, aPaxName, aPaxCode,
+               aOriginBranchCode, vRemark,
+               aUser, aGroup)
+    return 0
+
 # TODO Cyclomatic complexity too high
 def main(argv):
     """Pythonic entry point."""
@@ -46,21 +65,30 @@ def main(argv):
     fare_category = 'JEOW'
     vCompany = 'JE'
     selling_cls_code = 'Y'
+    bookno = 0
 
     vSeatQuantity = 1
+    vOriginAddress = 'HDQOTJE'
     vOriginBranchCode = 'SNAFU'
     vAgencvCode = 'TARFU'
     vUser = 'JOHN'
     vGroup = 'BANANA'
+    sellClass = 'Y'
+    vFareNo = 1
+    vPaxCode = 'ADULT'
+    vCurrency = 'ZAR'
+    vFareCode = 'XJEOW'
+    vSource = 0
 
     if len(argv) < 1:
-        usage()
+        usage(os.path.basename(sys.argv[0]))
 
     opts, args = getopt.getopt(argv,
                                "cfhivyVA:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
                                ["help",
-                                "avail", "book", "detail", "price",
+                                "avail", "book", "detail", "price", "pay"
                                 "bn=",
+                                "dob="
                                 "date=", "edate=", "flight="])
 
     dt1 = None
@@ -71,13 +99,15 @@ def main(argv):
     dodetail = False
     doprice = False
     dobook = False
+    dopay = False
     departTerm = 'A'
     arriveTerm = 'B'
     bn = None
     departTime = None
     arriveTime = None
-    paxName = None
+    paxNames = None
     paxDob = None
+    payAmount = None
 
     for opt, arg in opts:
         if opt == '-h' or opt == '--help':
@@ -94,10 +124,14 @@ def main(argv):
             dodetail = True
         elif opt == '--price':
             doprice = True
+        elif opt == '--pay':
+            dopay = True
         elif opt == '--bn':
             bn = int(arg)
         elif opt in ("-A", "--amount"):
             payAmount = float(arg)
+        elif opt == "--dob":
+            bookno = int(arg)
         elif opt in ("-C", "--class"):
             selling_cls_code = str(arg).upper()
         elif opt in ("-D", "--date"):
@@ -113,10 +147,12 @@ def main(argv):
             else:
                 flightNumber = arg
             printlog(2, "Flight number set to %s" % flightNumber)
+        elif opt == "--dob":
+            paxDob = str(arg).upper().split(',')
         elif opt in ("-N", "--name"):
-            paxName = str(arg).upper()
+            paxNames = str(arg).upper().split(',')
         elif opt in ("-M", "--dob"):
-            paxDob = str(arg).upper()
+            paxDobs = str(arg).upper().split(',')
         elif opt in ("-P", "--depart"):
             departAirport = str(arg).upper()
             printlog(1, "\t depart %s" % departAirport)
@@ -161,8 +197,7 @@ def main(argv):
                                         selling_cls_code[0], vCompany)
             for flight in flights:
                 flight.display()
-
-    if dodetail:
+    elif dodetail:
         GetFlightDetails(conn, flightNumber, dt1,
                          departAirport, arriveAirport)
     elif doprice:
@@ -179,21 +214,19 @@ def main(argv):
         for fare in fares:
             fare.display()
     elif dobook:
-        sellClass = 'Y'
-        vFareNo = 1
-        vPaxCode = 'ADULT'
-        vCurrency = 'ZAR'
-        vFareCode = 'XJEOW'
-        vSource = 0
-        bn = AddBook(conn, vSeatQuantity, vOriginBranchCode, vAgencvCode,
+        if payAmount is None:
+            payAmount = 0.0
+        vSeatQuantity = len(paxNames)
+        bn = AddBook(conn, vSeatQuantity, vOriginAddress, vOriginBranchCode, vAgencvCode,
                      dt1.strftime('%Y-%m-%d'), vUser, vGroup)
         AddItenary(conn, bn, flightNumber, dt1,
                    departAirport, arriveAirport,
                    departTime, arriveTime,
                    departTerm, arriveTerm,
-                   cityPairNo, sellClass, vUser, vGroup)
+                   cityPairNo, sellClass,
+                   vUser, vGroup)
         AddPassenger(conn, bn, 1,
-                     paxName,
+                     paxNames,
                      'ADULT', 'A',
                      vUser, vGroup)
         AddBookFares(conn, bn, vFareNo, vPaxCode, departAirport, arriveAirport,
@@ -207,8 +240,11 @@ def main(argv):
                               vUser, vGroup)
         AddBookFaresPayments(conn, bn, vFareNo, vPaxCode, vFareCode,
                              vCurrency, payAmount, vUser, vGroup, vSource)
-        vRequest = paxDob
-        AddBookRequest(conn, bn, vCompany, 'CKIN', vRequest, vUser, vGroup)
+        AddBookRequest(conn, bn, vCompany, 'CKIN', paxDobs, vUser, vGroup)
+    elif dopay:
+        if bookno is None:
+            print "Book number not specified"
+            return 1
         vPaymentForm = 'VI'
         vPaymentType = 'CC'
         vDocNum = '4242424242424242'
@@ -216,7 +252,7 @@ def main(argv):
         vRemark = ' '
         AddPayment(conn, vPaymentForm, vPaymentType, vCurrency, payAmount,
                    vDocNum, vPaymentMode,
-                   bn, paxName, vPaxCode,
+                   bookno, paxNames[0], vPaxCode,
                    vOriginBranchCode, vRemark,
                    vUser, vGroup)
 

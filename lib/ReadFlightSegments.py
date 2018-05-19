@@ -37,7 +37,7 @@ def ReadFlightPax(conn, aFlightNumber, aFlightDate):
         FROM  flight_segm_date as fsd
         inner join itenary as it on it.flight_number = fsd.flight_number AND it.flight_date = fsd.board_date AND it.depr_airport = fsd.depr_airport AND it.arrv_airport = fsd.arrv_airport
         inner join book as bo on bo.book_no = it.book_no inner join passenger as pa on pa.book_no = it.book_no
-        inner join action_codes as ac on it.reserve_status = ac.action_code AND ac.pnl_adl_flag = 'Y'
+        inner join action_codes as ac on substr(it.reserve_status,1,2) = ac.action_code AND ac.pnl_adl_flag = 'Y'
         where fsd.flight_number= '%s' AND fsd.board_date = '%s'
         and it.itenary_type <> 'I' AND pa.passenger_no > 0 AND pa.pass_code <> 'INF' AND it.itenary_stat_flag <> 'X' AND
         bo.booking_status <> 'X' ORDER BY it.book_no, pa.passenger_name""" \
