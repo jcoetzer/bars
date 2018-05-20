@@ -7,6 +7,7 @@ from BarsLog import set_verbose, get_verbose, printlog
 from ReadDateTime import ReadDate
 from FlightData import FlightData
 
+
 def GetFlightDataSsm(conn, flight_number, fd1, fd2, freq=None):
 
     if freq is None:
@@ -17,9 +18,10 @@ def GetFlightDataSsm(conn, flight_number, fd1, fd2, freq=None):
         freq = "%%%d%%" % board_weekday
     else:
         freq = freq.replace("-", "_")
-    print "SSM data for flight %s board %s to %s frequency '%s'" \
-        % (flight_number, fd1.strftime("%Y-%m-%d"), fd2.strftime("%Y-%m-%d"),
-           freq)
+    print("SSM data for flight %s board %s to %s frequency '%s'"
+          % (flight_number,
+             fd1.strftime("%Y-%m-%d"), fd2.strftime("%Y-%m-%d"),
+             freq))
     RcSql = \
         "SELECT fpl.schd_perd_no spn,fpl.depr_airport depr, fpl.arrv_airport arrv," \
         "fp.start_date sd,fp.end_date ed,fpl.leg_number ln,fp.via_cities vc," \
@@ -45,14 +47,15 @@ def GetFlightDataSsm(conn, flight_number, fd1, fd2, freq=None):
         " AND fsd.segment_number=fps.segment_number" \
         " AND fp.frequency_code LIKE '%s'" \
         " ORDER BY fp.start_date, fpl.schd_perd_no, fpl.leg_number" \
-            % (flight_number, fd1.strftime("%m/%d/%Y"), fd2.strftime("%m/%d/%Y"), freq)
+        % (flight_number, fd1.strftime("%m/%d/%Y"), fd2.strftime("%m/%d/%Y"), freq)
     printlog(2, RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
     for row in cur:
-        print "\t sched perd %s depart %s arrive %s from %s to %s via %s" \
-            % (row['spn'], row['depr'], row['arrv'], row['sd'], row['ed'], row['vc'])
+        print("\t sched perd %s depart %s arrive %s from %s to %s via %s"
+              % (row['spn'], row['depr'], row['arrv'], row['sd'],
+                 row['ed'], row['vc']))
         n += 1
 
     if n == 0:
@@ -532,7 +535,7 @@ def ReadFlight(conn, flight_number, dts, class_code='Y'):
         departure_date = row['flight_date']
         departure_time = row['departure_time']
         arrival_time = row['arrival_time']
-        
+
         printlog(1, "Flight %-6s date %s depart %s arrive %s city pair %3d" \
             % (flight_number, row['flight_date'], row['depr_airport'], row['arrv_airport'], int(row['city_pair_no'])))
         flights.append(FlightData(class_code, flight_number, departure_date,
@@ -732,8 +735,3 @@ def ReadFLightSeatMap(conn, flight):
         print "\tnot found"
 
     return n, aircraft_desc
-
-
-
-
-

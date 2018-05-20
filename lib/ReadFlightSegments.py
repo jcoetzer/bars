@@ -15,11 +15,11 @@ def ReadSegmentStatus(conn, flight_number, flight_date):
     print "Segment status for flight %s board date %s [segment_status]" \
         % (flight_number, flight_date.strftime("%Y-%m-%d"))
     RcSql = \
-        "select city_pair_no,selling_cls_code,status_type,segm_status_code,leg_status_code,processing_flg" \
-        " from segment_status" \
+        "SELECT city_pair_no,selling_cls_code,status_type,segm_status_code,leg_status_code,processing_flg" \
+        " FROM segment_status" \
         " WHERE flight_number='%s'" \
         " AND flight_date='%s'" \
-            % (flight_number, flight_date.strftime("%m/%d/%Y"))
+        % (flight_number, flight_date.strftime("%m/%d/%Y"))
     printlog(RcSql, 2)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
