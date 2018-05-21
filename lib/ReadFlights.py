@@ -9,7 +9,7 @@ from FlightData import FlightData
 
 
 def GetFlightDataSsm(conn, flight_number, fd1, fd2, freq=None):
-
+    """Read flight data as used for SSM processing."""
     if freq is None:
         board_weekday = int(fd1.board_dts.strftime("%w"))
         # Convert to 1(Monday) to 7(Sunday)
@@ -251,10 +251,11 @@ def CheckFlightDateClassSeatMaps(conn, flight):
 
 
 def ReadDeparture(conn, flight_number, flight_date, delim=' '):
-
+    """Read departure and arrival city codes."""
     RcSql = \
-            "select depr_airport,arrv_airport, city_pair_no from flight_segm_date" \
-            " where flight_number='%s' and flight_date='%s'" % (flight_number, flight_date.strftime("%m/%d/%Y"))
+        "select depr_airport,arrv_airport, city_pair_no from flight_segm_date" \
+        " where flight_number='%s' and flight_date='%s'" \
+        % (flight_number, flight_date.strftime("%m/%d/%Y"))
     printlog(2, RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
@@ -266,7 +267,7 @@ def ReadDeparture(conn, flight_number, flight_date, delim=' '):
         if n:
             rval += delim
             rval2 += delim
-            #rval3 += delim
+            # rval3 += delim
         rval += str(row['depr_airport'] or '')
         rval2 += str(row['arrv_airport'] or '')
         rval3 += int(row['city_pair_no'] or 0)
@@ -277,29 +278,39 @@ def ReadDeparture(conn, flight_number, flight_date, delim=' '):
 
 
 def ReadFlightDeparture(conn, class_code, flight_number, flight_date):
-
+    """Read data for flight."""
     printlog(1, "Read data for flight %s date %s [flight_segm_date]" % (flight_number, flight_date.strftime("%Y-%m-%d")))
     RcSql = \
-            "SELECT depr_airport,arrv_airport, city_pair_no,departure_time,arrival_time,flgt_sched_status,schd_perd_no" \
-            " FROM flight_segm_date" \
-            " WHERE flight_number='%s' AND flight_date='%s'" \
-                % (flight_number, flight_date.strftime("%m/%d/%Y"))
-    printlog(RcSql)
+        """SELECT depr_airport,arrv_airport, city_pair_no,
+            departure_time,arrival_time,
+            depr_terminal_no, arrv_terminal_no,
+            flgt_sched_status,schd_perd_no
+        FROM flight_segm_date
+        WHERE flight_number='%s' AND flight_date='%s'""" \
+        % (flight_number, flight_date.strftime("%m/%d/%Y"))
+    printlog(2, RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
     flight = None
     for row in cur:
         departure_airport = str(row['depr_airport'] or '')
-        arrival_airport   = str(row['arrv_airport'] or '')
+        arrival_airport = str(row['arrv_airport'] or '')
+        depr_terminal_no = str(row['depr_terminal_no'] or '')
+        arrv_terminal_no = str(row['arrv_terminal_no'] or '')
         city_pair_no = int(row['city_pair_no'] or 0)
-        departure_time = int(row['departure_time'] or 0)
-        arrival_time = int(row['arrival_time'] or 0)
+        departure_time = row['departure_time']
+        arrival_time = row['arrival_time']
         n += 1
-        printlog(1, "Flight %s date %s depart %s %d arrive %s %d status %s" % (flight_number, flight_date.strftime("%Y-%m-%d"), \
-                 departure_airport, departure_time, arrival_airport, arrival_time, str(row['flgt_sched_status'] or '?')))
-        flight = FlightData(class_code, flight_number, flight_date, departure_time, arrival_time, \
-                            departure_airport, arrival_airport, city_pair_no,
+        printlog(1, "Flight %s date %s depart %s %s arrive %s %s status %s" \
+                 % (flight_number, flight_date.strftime("%Y-%m-%d"), \
+                    departure_airport, departure_time, arrival_airport, arrival_time,
+                    str(row['flgt_sched_status'] or '?')))
+        flight = FlightData(class_code, flight_number, flight_date,
+                            departure_time, arrival_time,
+                            departure_airport, arrival_airport,
+                            depr_terminal_no, arrv_terminal_no,
+                            city_pair_no,
                             schd_perd_no=int(row['schd_perd_no'] or 0))
 
     return n, flight
@@ -308,10 +319,10 @@ def ReadFlightDeparture(conn, class_code, flight_number, flight_date):
 def ReadDepartArrive(conn, flight_number, flight_date, delim=' '):
 
     RcSql = \
-            "SELECT depr_airport,arrv_airport" \
-            " FROM flight_segm_date" \
-            " WHERE flight_number='%s' AND flight_date='%s'" \
-                % (flight_number, flight_date.strftime("%m/%d/%Y"))
+        "SELECT depr_airport,arrv_airport" \
+        " FROM flight_segm_date" \
+        " WHERE flight_number='%s' AND flight_date='%s'" \
+        % (flight_number, flight_date.strftime("%m/%d/%Y"))
     printlog(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)

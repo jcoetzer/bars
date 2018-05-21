@@ -26,6 +26,8 @@ from BookingInfo import AddBookCrossIndex, AddBook, int2base20, AddItenary, AddP
      AddBookFaresPayments, AddBookRequest, AddPayment, \
      GetPreBookingInfo, AddBookTimeLimit
 
+from ReadFlights import ReadFlightDeparture
+
 
 def usage(pn):
     """Help message."""
@@ -110,13 +112,30 @@ def GetBook(conn, vCompany, vBookCategory, vOriginAddress,
             aTimeLimit,
             vUser, vGroup):
     """Make a booking."""
+    vSeatQuantity = len(paxNames)
+    if vSeatQuantity == 0:
+        print "No passenger names"
+        return
+    if len(paxDobs) == 0:
+        print "No passenger birth dates"
+        return
     if payAmount is None:
         payAmount = 0.0
-    vSeatQuantity = len(paxNames)
+    if sellClass is None:
+        sellClass = 'Y'
+    if departAirport is None or arriveAirport is None:
+        n, fd = ReadFlightDeparture(conn, sellClass, flightNumber, dt1)
+        departAirport = fd.departure_airport
+        arriveAirport = fd.arrival_airport
+        cityPairNo = fd.city_pair_no
+        departTerm = fd.departure_terminal
+        arriveTerm = fd.arrival_terminal
+        departTime = fd.departure_time
+        arriveTime = fd.arrival_time
     bn, pnr = AddBookCrossIndex(conn, vBookCategory, vOriginAddress,
                                 vUser, vGroup)
-    AddBook(conn, bn, pnr, vSeatQuantity, vBookCategory,
-            vOriginAddress, vOriginBranchCode, vAgencyCode,
+    AddBook(conn, bn, pnr, vSeatQuantity, vOriginAddress, vBookCategory,
+            vOriginBranchCode, vAgencyCode,
             dt1.strftime('%Y-%m-%d'), vUser, vGroup)
     AddItenary(conn, bn, flightNumber, dt1,
                departAirport, arriveAirport,
