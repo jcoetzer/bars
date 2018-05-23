@@ -51,8 +51,9 @@ class FlightData(object):
         """New flight."""
         printlog(2, "New flight %s board %s class %s depart %s arrive %s"
                  " from %s to %s (pair %s) aircraft %s" \
-                 % (flight_number, departure_date.strftime("%Y-%m-%d"), class_code,
-                    departure_time, arrival_time, \
+                 % (flight_number, departure_date.strftime("%Y-%m-%d"),
+                    class_code,
+                    departure_time, arrival_time,
                     departure_airport, arrival_airport, city_pair_no,
                     aircraft_code))
         self.class_code = class_code

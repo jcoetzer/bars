@@ -25,6 +25,7 @@ from ReadDateTime import ReadDate
                             #ReadBookSeatReservations, CheckReserveSeats, \
                             #ReadFlightDateLegId, ReadFlightDateAllSeats, \
                             #ReadFlightDateLeg
+# from ReadFlightDateLegs import ReadFlightDateLegId
 from ReadFlights import ReadFlightSegmDates, ReadFlightSegmDate, ReadDeparture, \
                         ReadFlights, ReadFlightsDate, \
                         ReadFlightDateClassSeatMaps, ReadCodeShare, \
@@ -47,9 +48,9 @@ from FlightData import FlightData
 #
 #from GetSeatMap import GetSeatMap, GetFlightDetail, GetFlightDetails
 #from GetSeatData import GetFlightDateClassSeatMaps
-#from ReadSeatMap import ReadFlightSeatMap, \
-                        #GetConfigTableNo, ReadSeatMapConfiguration, \
-                        #ReadFLightSeatMapId, ReadSeatMapId
+from ReadSeatMap import ReadFlightSeatMap, \
+                        GetConfigTableNo, ReadSeatMapConfiguration, \
+                        ReadFLightSeatMapId, ReadSeatMapId
 #from ReadFareRoute import ReadFareRouteIds, ReadFareRoutes, \
                           #ReadFareRoutesDate, ReadFareRouteBranches, \
                           #ReadFareRouteCompanies, ReadFareRouteDesignators, \

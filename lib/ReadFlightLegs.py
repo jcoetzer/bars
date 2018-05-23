@@ -8,7 +8,6 @@ from ReadDateTime import ReadDate
 from FlightData import FlightData
 
 
-
 # Check flight date leg
 def ReadFlightDateLegs(conn, flight_number, flight_date):
 
@@ -16,12 +15,11 @@ def ReadFlightDateLegs(conn, flight_number, flight_date):
     print "Flight date legs for flight %s board %s [flight_date_leg]" % (flight_number, flight_date)
     RcSql = \
         "SELECT flight_date_leg_id,trim(flight_number) fn,board_date,departure_time," \
-        " origin_airport_code,destination_airport_code,leg_number,user_name,update_time" \
+        " origin_airport_code,destination_airport_code,leg_number,update_user,update_time" \
         " FROM flight_date_leg WHERE flight_number = '%s' AND board_date = '%s'"  \
         % (flight_number, flight_date.strftime("%m/%d/%Y"))
     printlog(RcSql, 2)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    #cur.execute("set isolation dirty read")
     cur.execute(RcSql)
     n = 0
     for row in cur:
@@ -29,47 +27,15 @@ def ReadFlightDateLegs(conn, flight_number, flight_date):
         flight_date_leg_ids.append(fli)
         print "\tleg id %d flight %s date %s depart %s time %s arrive %s leg %d user %s update %s" \
             % (fli, str(row['fn'] or ''), row['board_date'], row['origin_airport_code'], \
-               row['departure_time'].isoformat().split("T")[1][0:5],
+               row['departure_time'],  # .isoformat().split("T")[1][0:5],
                row['destination_airport_code'], row['leg_number'], \
-               row['user_name'], row['update_time'])
+               row['update_user'], row['update_time'])
         n += 1
 
     if n == 0:
         print "\t not found"
 
     return flight_date_leg_ids
-
-
-# Check flight date leg
-def ReadFlightDateLegId(conn, fli):
-
-    flight_numbers = []
-    flight_dates = []
-    print "Flight date legs for flight leg ID %d [flight_date_leg]" % (fli)
-    RcSql = \
-        "SELECT flight_date_leg_id,trim(flight_number) fn,board_date,departure_time," \
-        " origin_airport_code,destination_airport_code,leg_number,user_name,update_time" \
-        " FROM flight_date_leg WHERE flight_date_leg_id=%d"  \
-        % (fli)
-    printlog(RcSql, 2)
-    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    #cur.execute("set isolation dirty read")
-    cur.execute(RcSql)
-    n = 0
-    for row in cur:
-        fli = int(row['flight_date_leg_id'] or 0)
-        flight_numbers.append(row['fn'])
-        flight_dates.append(row['board_date'])
-        print "\tleg id %d flight %s date %s depart %s time %s arrive %s leg %d user %s update %s" \
-            % (fli, str(row['fn'] or ''), row['board_date'], row['origin_airport_code'], \
-               row['departure_time'].isoformat().split("T")[1][0:5], row['destination_airport_code'], row['leg_number'], \
-               row['user_name'], row['update_time'])
-        n += 1
-
-    if n == 0:
-        print "\t not found"
-
-    return flight_numbers, flight_dates
 
 
 def ReadFlightSharedLeg(conn, flight_number, dts):
@@ -79,7 +45,7 @@ def ReadFlightSharedLeg(conn, flight_number, dts):
     FslSql = \
         "select dup_flight_number,dup_board_date,dup_depr_airport,dup_arrv_airport,dup_flight_date," \
         "date_change_ind,flight_path_code,depr_terminal_no,arrv_terminal_no,config_table_no,aircraft_code,leg_number," \
-        "user_name,update_time" \
+        "update_user,update_time" \
         " FROM flight_shared_leg" \
         " WHERE flight_number='%s' AND board_date='%s'" \
             % (flight_number, dts.strftime("%m/%d/%Y"))
@@ -105,7 +71,7 @@ def ReadFlightSharedLeg(conn, flight_number, dts):
         print "aircraft %s" % aircraft_code,
         aircraft_codes.append(aircraft_code)
         print "leg %s" % row['leg_number'],
-        print "user %s update %s" % (row['user_name'], row['update_time']),
+        print "user %s update %s" % (row['update_user'], row['update_time']),
         print
         n += 1
 
@@ -151,7 +117,7 @@ def ReadAsrReconcileHistory(conn, flight_date_leg_id):
         % flight_date_leg_id
 
     RcSql = \
-        "SELECT action_id,action_detail,user_name,update_time" \
+        "SELECT action_id,action_detail,update_user,update_time" \
         " FROM asr_reconcile_history" \
         " WHERE flight_date_leg_id=%d" % flight_date_leg_id
     printlog(RcSql, 2)
@@ -162,7 +128,7 @@ def ReadAsrReconcileHistory(conn, flight_date_leg_id):
     for row in cur:
         print "\tID %8d : %s user %s update %s" \
             % (row['action_id'],
-               row['action_detail'], row['user_name'], row['update_time'])
+               row['action_detail'], row['update_user'], row['update_time'])
         n += 1
 
     if n == 0:
