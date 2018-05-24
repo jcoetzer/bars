@@ -49,8 +49,8 @@ class FlightData(object):
                  schd_perd_no=0,
                  codeshare=None):
         """New flight."""
-        printlog(2, "New flight %s board %s class %s depart %s arrive %s"
-                 " from %s to %s (pair %s) aircraft %s" \
+        printlog(2, "New flight %s date %s class %s depart %s arrive %s"
+                 " from %s to %s (pair %d) aircraft %s" \
                  % (flight_number, departure_date.strftime("%Y-%m-%d"),
                     class_code,
                     departure_time, arrival_time,
@@ -80,14 +80,14 @@ class FlightData(object):
             self.departure_time = departure_time
             # self.departure_time = ReadTime(departure_time)
             # self.departure_ts = str("%02d:%02d"
-            #                        % (self.departure_time.tm_hour,
-            #                           self.departure_time.tm_min))
+            #                        % (self.departure_time.hour,
+            #                           self.departure_time.minute))
         if arrival_time is not None:
             self.arrival_time = arrival_time
             # self.arrival_time = ReadTime(arrival_time)
             # self.arrival_ts = str("%02s:%02d"
-            #                       % (self.arrival_time.tm_hour,
-            #                          self.arrival_time.tm_min))
+            #                       % (self.arrival_time.hour,
+            #                          self.arrival_time.minute))
         self.departure_airport = str(departure_airport or '').strip()
         self.arrival_airport = str(arrival_airport or '').strip()
         self.departure_terminal = str(departure_terminal or '').strip()
@@ -104,12 +104,12 @@ class FlightData(object):
                  % (departure_time, arrival_time))
         self.departure_time = ReadTime(departure_time, self.board_date_iso)
         self.departure_ts = str("%02d:%02d"
-                                % (self.departure_time.tm_hour,
-                                   self.departure_time.tm_min))
+                                % (self.departure_time.thour,
+                                   self.departure_time.minute))
         self.arrival_time = ReadTime(arrival_time, self.board_date_iso)
         self.arrival_ts = str("%02s:%02d"
-                              % (self.arrival_time.tm_hour,
-                                 self.arrival_time.tm_min))
+                              % (self.arrival_time.hour,
+                                 self.arrival_time.minute))
         self.journey_time = journey_time
 
     def update_aircraft(self, aircraft_code, seat_capacity):
@@ -136,11 +136,11 @@ class FlightData(object):
             print " (city pair %4d)" % self.city_pair_no,
         if self.departure_time is not None and self.arrival_time is not None:
             print "departs %02d:%02d arrives %02d:%02d" \
-                % (self.departure_time.tm_hour, self.departure_time.tm_min,
-                   self.arrival_time.tm_hour, self.arrival_time.tm_min),
+                % (self.departure_time.hour, self.departure_time.minute,
+                   self.arrival_time.hour, self.arrival_time.minute),
         elif self.departure_time is not None:
             print "departs %02d:%02d" \
-                % (self.departure_time.tm_hour, self.departure_time.tm_min),
+                % (self.departure_time.hour, self.departure_time.minute),
         if self.journey_time is not None and self.journey_time > 0:
             print "(%-3d minutes)" % self.journey_time,
         if len(self.aircraft_code) > 0:

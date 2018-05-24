@@ -256,6 +256,7 @@ def main(argv):
             dt1 = ReadDate(arg)
             printlog(1, "\t flight date %s" % dt1.strftime("%Y-%m-%d"))
         elif opt in ("-E", "--edate"):
+            printlog(1, "\t end date %s" % dt1.strftime("%Y-%m-%d"))
             dt2 = ReadDate(arg)
         elif opt in ("-F", "--flight"):
             if ',' in arg:

@@ -350,6 +350,28 @@ def AddFlightPeriod(conn,
     cur.close()
 
 
+def AddFlightSharedLeg(conn, flight_number, flight_date, spn,
+                       departure_city, arrival_city,
+                       departure_time, arrival_time):
+    """Add codeshare data."""
+    fslSql = """
+    INSERT INTO flight_shared_leg(
+        dup_flight_number, dup_board_date, dup_depr_airport, dup_arrv_airport,
+        dup_flight_date, flight_number, schd_perd_no, board_date, flight_date,
+        depr_airport, arrv_airport, departure_time, arrival_time,
+        date_change_ind, flight_path_code, depr_terminal_no, arrv_terminal_no,
+        config_table_no, aircraft_code, leg_number, update_user, update_time )
+     VALUES (
+        '%s', '%s', '%s', '%s',
+        '%s', '%s', %d, '%s', '%s', '%s',
+        'N', ' ', '-', '-',
+        '%s', '%s', 1, '%s', CURRENT_TIMESTAMP )""" \
+    % (flight_number, flight_date, departure_city, arrival_city,
+       flight_date, flight_number, spn,  flight_date, flight_date,
+       departure_city, arrival_city, departure_time, arrival_time,
+       airport_code, airport_code, user_name)
+
+
 def AddInventorySegment(conn, pflight_number, vflight_date,
                         tcity_pair_no, vselling_cls_code,
                         vdeparture_city, varrival_city,
