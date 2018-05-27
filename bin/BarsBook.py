@@ -11,22 +11,23 @@ from datetime import date
 from datetime import time
 from datetime import datetime
 from datetime import timedelta
-
-import psycopg2
+import ConfigParser
 
 from BarsLog import printlog, set_verbose
 from ReadDateTime import ReadDate
 
-from SsmDb import GetCityPair
-from AvailDb import get_selling_conf, get_avail_flights
-from FlightDetails import GetFlightDetails
-from FareCalcDisplay import FareCalcDisplay
-from BookingInfo import AddBookCrossIndex, AddBook, int2base20, AddItenary, AddPassenger, \
+from Ssm.SsmDb import GetCityPair
+from Flight.AvailDb import get_selling_conf, get_avail_flights
+from Flight.FlightDetails import GetFlightDetails
+from Booking.FareCalcDisplay import FareCalcDisplay
+from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, AddItenary, AddPassenger, \
      AddBookFares, AddBookFareSegments, AddBookFarePassengers, \
      AddBookFaresPayments, AddBookRequest, AddPayment, \
      GetPreBookingInfo, AddBookTimeLimit
 
-from ReadFlights import ReadFlightDeparture
+from Flight.ReadFlights import ReadFlightDeparture
+from DbConnect import OpenDb, CloseDb
+from BarsConfig import BarsConfig
 
 
 def usage(pn):
@@ -42,36 +43,23 @@ def usage(pn):
     print("Check:")
     print("\t%s --chk -B <BOOK>" % pn)
     sys.exit(1)
-
-
-def OpenDb(dbname):
-    """Open connection to database."""
-    try:
-        connstr = "dbname='%s' user='%s' host='%s'" \
-            % (dbname, 'postgres', 'localhost')
-        conn = psycopg2.connect(connstr)
-    except:
-        print("Could not connect to database %s" % (dbname))
-        return 1
-    printlog(1, "Connected to database %s" % dbname)
-    return conn
-
-
-def CloseDb(conn):
-    """Close connection to database."""
-    conn.commit()
-    conn.close()
-    printlog(1, "Disconnected")
+    
+    
+def ReadConfig(cfgfile):
+    """Read configuration file."""
+    
+    config = ConfigParser.ConfigParser()
+    config.readfp(open(cfgfile))
 
 
 def GetAvail(conn, dt1, dt2, cityPairNo,
              departAirport, arriveAirport,
-             selling_cls_codes, vCompany):
+             selling_classs, vCompany):
     """Get availability information."""
-    for selling_cls_code in selling_cls_codes:
+    for selling_class in selling_classs:
         flights = get_avail_flights(conn, dt1, dt2, cityPairNo,
                                     departAirport, arriveAirport,
-                                    selling_cls_code[0], vCompany)
+                                    selling_class[0], vCompany)
         for flight in flights:
             flight.display()
 
@@ -81,7 +69,7 @@ def GetPrice(conn,
              cityPairNo,
              dt1,
              dt2,
-             selling_cls_code,
+             selling_class,
              onw_return_ind,
              fare_category,
              authority_level):
@@ -91,7 +79,7 @@ def GetPrice(conn,
                             cityPairNo,
                             dt1.strftime('%Y-%m-%d'),
                             dt2.strftime('%Y-%m-%d'),
-                            selling_cls_code,
+                            selling_class,
                             onw_return_ind,
                             fare_category,
                             authority_level,
@@ -127,7 +115,7 @@ def GetBook(conn, vCompany, vBookCategory, vOriginAddress,
         n, fd = ReadFlightDeparture(conn, sellClass, flightNumber, dt1)
         departAirport = fd.departure_airport
         arriveAirport = fd.arrival_airport
-        cityPairNo = fd.city_pair_no
+        cityPairNo = fd.city_pair
         departTerm = fd.departure_terminal
         arriveTerm = fd.arrival_terminal
         departTime = fd.departure_time
@@ -174,47 +162,16 @@ def GetPay(conn, aCurrency, aPayAmount, aBookNo, aPaxName, aPaxCode,
 # TODO Cyclomatic complexity too high
 def main(argv):
     """Pythonic entry point."""
-    global verbose
+    
+    barsdir = os.environ['BARSDIR']
+    etcdir = "%s/etc" % barsdir
 
-    dbname = 'barsdb'
-    onw_return_ind = 'R'
-    authority_level = 100
-    fare_category = 'JEOW'
-    vCompany = 'JE'
-    selling_cls_code = 'Y'
-
-    vOriginAddress = 'HDQOTJE'
-    vOriginBranchCode = 'SNAFU'
-    vAgencyCode = 'TARFU'
-    vUser = 'JOHN'
-    vGroup = 'BANANA'
-    sellClass = 'Y'
-    vPaxCode = 'ADULT'
-    vCurrency = 'ZAR'
-    vFareCode = 'XJEOW'
-    vBookCategory = 'S'     # or G for groups
-
-    if len(argv) < 1:
-        usage(os.path.basename(sys.argv[0]))
-
-    opts, args = getopt.getopt(argv,
-                               "cfhivyVA:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
-                               ["help",
-                                "avail", "book", "detail", "price", "pay", "chk",
-                                "bn=",
-                                "dob="
-                                "date=", "edate=", "flight="])
-
+    # Option values
     dt1 = None
     dt2 = None
     arriveAirport = None
     departAirport = None
-    doavail = False
-    dochk = False
-    dodetail = False
-    doprice = False
-    dobook = False
-    dopay = False
+    flightNumber = None
     departTerm = 'A'
     arriveTerm = 'B'
     bn = None
@@ -224,6 +181,25 @@ def main(argv):
     paxDobs = None
     payAmount = None
     vTimeLimit = datetime.now() + timedelta(days=2)
+
+    # Option flags
+    doavail = False
+    dochk = False
+    dodetail = False
+    doprice = False
+    dobook = False
+    dopay = False
+
+    if len(argv) < 1:
+        usage(os.path.basename(sys.argv[0]))
+
+    opts, args = getopt.getopt(argv,
+                               "cfhivyVA:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
+                               ["help",
+                                "avail", "book", "detail", "price", "pay",
+                                "chk",
+                                "bn=", "dob="
+                                "date=", "edate=", "flight="])
 
     for opt, arg in opts:
         if opt == '-h' or opt == '--help':
@@ -251,7 +227,7 @@ def main(argv):
             bn = int(arg)
             printlog(2, "Booking number %d" % bn)
         elif opt in ("-C", "--class"):
-            selling_cls_code = str(arg).upper()
+            selling_class = str(arg).upper()
         elif opt in ("-D", "--date"):
             dt1 = ReadDate(arg)
             printlog(1, "\t flight date %s" % dt1.strftime("%Y-%m-%d"))
@@ -286,9 +262,11 @@ def main(argv):
     if bn is not None:
         pnr = int2base20(bn)
         print("Booking %d PNR %s" % (bn, pnr))
+    
+    cfg = BarsConfig('%s/bars.cfg' % etcdir)
 
     # Open connection to database
-    conn = OpenDb(dbname)
+    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)    
 
     if dochk:
         print("Check booking %d" % bn)
@@ -302,28 +280,28 @@ def main(argv):
     if dt2 is None:
         dt2 = dt1
 
-    selling_cls_codes = get_selling_conf(conn, vCompany)
+    selling_classs = get_selling_conf(conn, cfg.CompanyCode)
     cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
     if doavail:
         GetAvail(conn, dt1, dt2, cityPairNo,
                  departAirport, arriveAirport,
-                 selling_cls_codes, vCompany)
+                 selling_classs, cfg.CompanyCode)
     elif dodetail:
         GetFlightDetails(conn, flightNumber, dt1,
                          departAirport, arriveAirport)
     elif doprice:
         GetPrice(conn,
-                 vCompany,
+                 cfg.CompanyCode,
                  cityPairNo,
                  dt1,
                  dt2,
-                 selling_cls_code,
-                 onw_return_ind,
-                 fare_category,
-                 authority_level)
+                 cfg.SellingClass,
+                 cfg.OnwReturnIndicator,
+                 cfg.FareCategory,
+                 cfg.AuthorityLevel)
     elif dobook:
-        GetBook(conn, vCompany, vBookCategory, vOriginAddress,
-                vOriginBranchCode, vAgencyCode,
+        GetBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
+                cfg.OriginBranchCode, cfg.AgencyCode,
                 paxNames, paxDobs,
                 payAmount,
                 flightNumber, dt1,
@@ -331,12 +309,12 @@ def main(argv):
                 departTime, arriveTime,
                 departTerm, arriveTerm,
                 cityPairNo, sellClass,
-                vTimeLimit,
-                vUser, vGroup)
+                cfg.TimeLimit,
+                cfg.User, cfg.Group)
     elif dopay:
-        GetPay(conn, vCurrency, payAmount, bn, paxNames, vPaxCode,
-               vOriginBranchCode,
-               vUser, vGroup)
+        GetPay(conn, cfg.Currency, payAmount, bn, paxNames, cfg.PaxCode,
+               cfg.OriginBranchCode,
+               cfg.User, cfg.Group)
     else:
         print("Nothing to do")
 

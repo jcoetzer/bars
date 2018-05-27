@@ -15,7 +15,7 @@ def ReadSegmentStatus(conn, flight_number, flight_date):
     print "Segment status for flight %s board date %s [segment_status]" \
         % (flight_number, flight_date.strftime("%Y-%m-%d"))
     RcSql = \
-        "SELECT city_pair_no,selling_cls_code,status_type,segm_status_code,leg_status_code,processing_flg" \
+        "SELECT city_pair,selling_class,status_type,segm_status_code,leg_status_code,processing_flag" \
         " FROM segment_status" \
         " WHERE flight_number='%s'" \
         " AND flight_date='%s'" \
@@ -25,17 +25,17 @@ def ReadSegmentStatus(conn, flight_number, flight_date):
     cur.execute(RcSql)
     for row in cur:
         print "\tcity pair %3d class %s status type %s status code %s processed %s" \
-            % (row['city_pair_no'], row['selling_cls_code'], row['status_type'], row['segm_status_code'], row['processing_flg'])
+            % (row['city_pair'], row['selling_class'], row['status_type'], row['segm_status_code'], row['processing_flag'])
 
 
 def ReadFlightPax(conn, aFlightNumber, aFlightDate):
     """Read bookings and passengers for flight."""
     print("Passengers for flight %s date %s" % (aFlightNumber, aFlightDate))
     fpSql = """
-        SELECT it.book_no, bo.origin_address, it.depr_airport, it.arrv_airport, it.departure_time, it.arrival_time, pa.passenger_name,
-        it.selling_cls_code, it.request_nos, pa.request_nos, pa.passenger_no, pa.pass_code, pa.passenger_no, bo.no_of_seats, group_name
+        SELECT it.book_no, bo.origin_address, it.departure_airport, it.arrival_airport, it.departure_time, it.arrival_time, pa.passenger_name,
+        it.selling_class, it.request_nos, pa.request_nos, pa.passenger_no, pa.pass_code, pa.passenger_no, bo.no_of_seats, group_name
         FROM  flight_segm_date as fsd
-        inner join itenary as it on it.flight_number = fsd.flight_number AND it.flight_date = fsd.board_date AND it.depr_airport = fsd.depr_airport AND it.arrv_airport = fsd.arrv_airport
+        inner join itenary as it on it.flight_number = fsd.flight_number AND it.flight_date = fsd.board_date AND it.departure_airport = fsd.departure_airport AND it.arrival_airport = fsd.arrival_airport
         inner join book as bo on bo.book_no = it.book_no inner join passenger as pa on pa.book_no = it.book_no
         inner join action_codes as ac on substr(it.reserve_status,1,2) = ac.action_code AND ac.pnl_adl_flag = 'Y'
         where fsd.flight_number= '%s' AND fsd.board_date = '%s'

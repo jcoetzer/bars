@@ -10,7 +10,7 @@ def GetConfigTableNo(conn, aAircraftCode):
 
     cur = conn.cursor()
     ssmSql = \
-        "SELECT config_table_no,selling_cls_code,seat_capacity " \
+        "SELECT config_table_no,selling_class,seat_capacity " \
         "FROM aircraft_config " \
         "WHERE aircraft_code = '%s' ORDER BY seat_capacity DESC" % aAircraftCode
     printlog(2, "%s" % ssmSql)
@@ -30,7 +30,7 @@ def GetCityPair(conn, depart_airport, arrive_airport):
     """Read city pair number."""
     cur = conn.cursor()
     ssmSql = \
-        "SELECT city_pair_no FROM city_pair" \
+        "SELECT city_pair FROM city_pair" \
         " WHERE start_city='%s' AND end_city='%s'" \
         % (depart_airport, arrive_airport)
     printlog(2, "%s" % ssmSql)
@@ -49,7 +49,7 @@ def CheckCityPair(conn, depart_airport, arrive_airport, pair_rule_no, userName, 
     """Read city pair number."""
     cur = conn.cursor()
     ssmSql = \
-        "SELECT city_pair_no FROM city_pair" \
+        "SELECT city_pair FROM city_pair" \
         " WHERE start_city='%s' AND end_city='%s'" \
         % (depart_airport, arrive_airport)
     printlog(2, "%s" % ssmSql)
@@ -63,7 +63,7 @@ def CheckCityPair(conn, depart_airport, arrive_airport, pair_rule_no, userName, 
     if city_pair_id == 0:
         ssmSql = \
             "INSERT INTO city_pair(start_city, end_city, pair_indicator, pair_rule_no, user_name, user_group)" \
-            " VALUES ('%s', '%s', 'A', %d, '%s', '%s') RETURNING city_pair_no" \
+            " VALUES ('%s', '%s', 'A', %d, '%s', '%s') RETURNING city_pair" \
             % (depart_airport, arrive_airport, pair_rule_no, userName, groupName)
         printlog(2, "%s" % ssmSql)
         cur.execute(ssmSql)
@@ -77,7 +77,7 @@ def CheckCityPair(conn, depart_airport, arrive_airport, pair_rule_no, userName, 
 
 def CheckFlightPeriod(conn, ssm):
     """Check flight period."""
-    ssmSql = "SELECT start_date, end_date, schd_perd_no" \
+    ssmSql = "SELECT start_date, end_date, schedule_period_no" \
              " FROM flight_periods" \
              " WHERE flight_number='%s'" \
              " AND (start_date>='%s' OR end_date<='%s')" \

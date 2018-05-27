@@ -18,8 +18,8 @@ from ReadDateTime import ReadDate
 from FlightData import FlightData
 from ReadSchedPeriod import ReadSchedPeriod, ReadConfigNumberOfSeats
 from ReadSsmData import ReadSsmFlightData, ReadSsmBookData, ReadSsmTim
-
-dbname = "barsdb"
+from BarsConfig import BarsConfig
+from DbConnect import OpenDb, CloseDb
 
 def check_ssm_file(procssm, fname):
     dtm = os.path.getmtime(fname)
@@ -63,6 +63,7 @@ def check_ssm_file(procssm, fname):
         print "[ OK ] %s %s" % (fname, dts)
     print
     return 0
+
 
 def check_ssm_files(ssmdir, procssm):
 
@@ -193,10 +194,10 @@ def usage(pname='FlightInfo.py'):
     print "\t -Q <CITY>\t arrival airport"
 
 
-# Pythonic entry point
 def main(argv):
-    global dbname
-
+    """Pythonic entry point."""
+    barsdir = os.environ['BARSDIR']
+    etcdir = "%s/etc" % barsdir
     flight_number = None
     dt1 = None
     dt2 = None
@@ -204,16 +205,13 @@ def main(argv):
     ssm_data = False
     ssm_book = False
     ssm_tim = False
-    ssm_err = False
-    ssm_suc = False
-    ssm_msg = False
     #pdb.set_trace()
     ssmdir = None
     ssmfile = None
     departure_time = "11:00"
     arrival_time = "13:00"
-    depr_airport = None
-    arrv_airport = None
+    departure_airport = None
+    arrival_airport = None
     aircraft_code = None
 
     if len(argv) < 1:
@@ -238,15 +236,6 @@ def main(argv):
             usage()
         elif opt == '--ssm':
             asm_ssm = True
-        elif opt == '--msg':
-            ssm_msg = True
-            ssm_err = True
-        elif opt == '--error':
-            ssm_err = True
-            ssm_msg = True
-        elif opt == '--success':
-            ssm_suc = True
-            ssm_msg = True
         elif opt == '--ssmdata':
             ssm_data = True
         elif opt == '--tim':
@@ -269,11 +258,11 @@ def main(argv):
                 flight_number = arg
             ssm_data = True
         elif opt in ("-P", "--depart"):
-            depr_airport = str(arg).upper()
-            printlog(1, "\t depart %s" % depr_airport)
+            departure_airport = str(arg).upper()
+            printlog(1, "\t depart %s" % departure_airport)
         elif opt in ("-Q", "--arrive"):
-            arrv_airport = str(arg).upper()
-            printlog(1, "\t arrive %s" % arrv_airport)
+            arrival_airport = str(arg).upper()
+            printlog(1, "\t arrive %s" % arrival_airport)
         elif opt == '-S':
             ssmfile = arg
         elif opt == '-T':
@@ -293,50 +282,37 @@ def main(argv):
             return 1
 
     procssm = "%s/support/bin/procssm" % os.environ['BARSDIR']
+      
+    cfg = BarsConfig('%s/bars.cfg' % etcdir)
 
     # Open connection to database
-    conn = psycopg2.connect("dbname='%s' user='postgres' host='localhost'" % dbname)
-    if not conn:
-        print "Could not connect to database %s" % dbname
-        return 1
-    printlog(1, "Connected to database %s" % dbname)
+    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)  
 
     if ssmfile is not None:
         check_ssm_file(procssm, ssmfile)
-    elif ssm_msg:
-        if ssm_err:
-            if ssmdir is None:
-                ssmdir = "%s/Oasis/error" % os.environ['RESULTS']
-            check_ssm_files(ssmdir, procssm)
-        elif ssm_suc:
-            if ssmdir is None:
-                ssmdir = "%s/Oasis/success" % os.environ['RESULTS']
-            check_ssm_files(ssmdir, procssm)
-        else:
-            print "Nothing to do"
     elif flight_number is None:
         pass
     else:
         if ssm_tim and dt1 is not None and dt2 is not None:
-            flight = FlightData('Y', flight_number, dt1,
+            flight = FlightData(cfg.SellingClass, flight_number, dt1,
                                 departure_time, arrival_time,
-                                depr_airport, arrv_airport,
-                                0, 'JE', aircraft_code)
+                                departure_airport, arrival_airport,
+                                0, company_code, aircraft_code)
             n = ReadSsmTim(conn, flight, dt1, dt2, frequency_code)
             if n == 0:
                 CheckSsmTim(conn, flight, sdate, edate, frequency_code, aircraft_code)
         elif ssm_data and dt1 is not None:
-            flight = FlightData('Y', flight_number, dt1,
+            flight = FlightData(cfg.SellingClass, flight_number, dt1,
                                 departure_time, arrival_time,
-                                depr_airport, arrv_airport,
-                                0, 'JE', aircraft_code)
+                                departure_airport, arrival_airport,
+                                0, company_code, aircraft_code)
             ReadSsmFlightData(conn, flight, dt2)
-        elif ssm_book and schd_perd_no is not None and dt1 is not None:
-            flight = FlightData('Y', flight_number, dt1,
+        elif ssm_book and schedule_period_no is not None and dt1 is not None:
+            flight = FlightData(cfg.SellingClass, flight_number, dt1,
                                 departure_time, arrival_time,
-                                depr_airport, arrv_airport,
-                                0, 'JE', aircraft_code)
-            ReadSsmBookData(conn, flight, schd_perd_no)
+                                departure_airport, arrival_airport,
+                                0, company_code, aircraft_code)
+            ReadSsmBookData(conn, flight, schedule_period_no)
         elif asm_ssm:
             if aircraft_code is None:
                 print "No value for aircraft code"
@@ -352,7 +328,7 @@ def main(argv):
                 return 1
             ConfigTableNo, NoOfSeats = ReadConfigNumberOfSeats(conn,
                                                                aircraft_code)
-            viaCities = "%3s#%3s" % (depr_airport, arrv_airport)
+            viaCities = "%3s#%3s" % (departure_airport, arrival_airport)
             ReadSchedPeriod(conn, dt1, dt2, frequency_code,
                             flight_number, frequency_code, viaCities, ConfigTableNo)
             n = GetFlightDataSsm(conn, flight_number, dt1, dt2, frequency_code)

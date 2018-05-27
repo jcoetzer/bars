@@ -8,12 +8,12 @@ from ReadDateTime import ReadDate
 
 # Read table aircraft_config
 def ReadAircraftConfig(conn, aircraft_code, config_table_no,
-                       selling_cls_code, seat_capacity=0):
+                       selling_class, seat_capacity=0):
 
     print "Aircraft configuration for",
     AcSql = \
-        "SELECT gen_flag_invt,aircraft_code,limit_sale_lvl,scrutiny_flg," \
-        "update_time,config_table_no,company_code,selling_cls_code," \
+        "SELECT gen_flag_invt,aircraft_code,limit_sale_lvl,scrutiny_flag," \
+        "update_time,config_table_no,company_code,selling_class," \
         "seat_capacity,user_name" \
         " FROM aircraft_config"
     if aircraft_code is not None and config_table_no is not None:
@@ -30,10 +30,10 @@ def ReadAircraftConfig(conn, aircraft_code, config_table_no,
         print "config table %s" % config_table_no,
         AcSql += \
             " WHERE config_table_no='%s'" % config_table_no
-    if selling_cls_code is not None:
-        print "class %s" % selling_cls_code,
+    if selling_class is not None:
+        print "class %s" % selling_class,
         AcSql += \
-            " AND selling_cls_code='%s'" % selling_cls_code
+            " AND selling_class='%s'" % selling_class
     if seat_capacity > 0:
         print "seat capacity %d" % seat_capacity,
         AcSql += \
@@ -47,7 +47,7 @@ def ReadAircraftConfig(conn, aircraft_code, config_table_no,
     for row in cur:
         n += 1
         print "\tconfig table %5s aircraft code %4s capacity %3d class %s company %s inventory %s user %s update %s" \
-            % (row['config_table_no'], row['aircraft_code'], row['seat_capacity'], row['selling_cls_code'],
+            % (row['config_table_no'], row['aircraft_code'], row['seat_capacity'], row['selling_class'],
                row['company_code'], row['gen_flag_invt'], row['user_name'], row['update_time'])
 
     if n == 0:

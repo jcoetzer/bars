@@ -17,7 +17,7 @@ def ReadFlightPeriods(conn, flightNumber, dt1, dt2):
     startDate = dt1.strftime("%m/%d/%Y")
     endDate = dt2.strftime("%m/%d/%Y")
     SpSql = \
-        "SELECT flight_number,start_date,end_date,frequency_code,schd_perd_no" \
+        "SELECT flight_number,start_date,end_date,frequency_code,schedule_period_no" \
         " FROM flight_periods" \
         " WHERE start_date<='%s'" \
         " AND end_date>='%s'" \
@@ -33,20 +33,20 @@ def ReadFlightPeriods(conn, flightNumber, dt1, dt2):
     cur.execute(SpSql)
     for row in cur:
         fn = row['flight_number']
-        spn = int(row['schd_perd_no'])
+        spn = int(row['schedule_period_no'])
         SpSql2 = \
-            "SELECT DISTINCT fps.aircraft_code aircraft, fsd.depr_airport start_city, fsd.arrv_airport end_city," \
+            "SELECT DISTINCT fps.aircraft_code aircraft, fsd.departure_airport start_city, fsd.arrival_airport end_city," \
             " departure_time, arrival_time" \
             " FROM flight_perd_segm fps, flight_segm_date fsd" \
-            " WHERE fps.flight_number = '%s' AND fps.schd_perd_no = %d" \
+            " WHERE fps.flight_number = '%s' AND fps.schedule_period_no = %d" \
             " AND fps.flight_number = fsd.flight_number" \
-            " AND fps.schd_perd_no = fsd.schd_perd_no" \
+            " AND fps.schedule_period_no = fsd.schedule_period_no" \
                 % ( fn, spn )
         printlog(2, SpSql2)
         cur2.execute(SpSql2)
         for row2 in cur2:
             SpSql3 = \
-                "SELECT DISTINCT dup_flight_number FROM flight_shared_leg WHERE flight_number = '%s' AND schd_perd_no = %d" \
+                "SELECT DISTINCT dup_flight_number FROM flight_shared_leg WHERE flight_number = '%s' AND schedule_period_no = %d" \
                     % ( fn, spn )
             printlog(2, SpSql3)
             cur3.execute(SpSql3)
@@ -96,7 +96,7 @@ def ReadFlightPeriodsLatest(conn, flightNumber, dt1, dt2):
         fn = row['flight_number']
         end_date = row['med']
         SpSql1 = \
-            "SELECT start_date,end_date,frequency_code,schd_perd_no" \
+            "SELECT start_date,end_date,frequency_code,schedule_period_no" \
             " FROM flight_periods" \
             " WHERE flight_number='%s'" \
             " AND flgt_sched_status='A'" \
@@ -105,21 +105,21 @@ def ReadFlightPeriodsLatest(conn, flightNumber, dt1, dt2):
         printlog(2, SpSql1)
         cur1.execute(SpSql1)
         for row1 in cur1:
-            spn = int(row1['schd_perd_no'])
+            spn = int(row1['schedule_period_no'])
             printlog(1, "Flight %s start %s end %s frequency %s (schedule period %d)" % ( fn, row1['start_date'], end_date, row1['frequency_code'], spn), 1)
             SpSql2 = \
-                "SELECT DISTINCT fps.aircraft_code aircraft, fsd.depr_airport start_city, fsd.arrv_airport end_city," \
+                "SELECT DISTINCT fps.aircraft_code aircraft, fsd.departure_airport start_city, fsd.arrival_airport end_city," \
                 " departure_time, arrival_time" \
                 " FROM flight_perd_segm fps, flight_segm_date fsd" \
-                " WHERE fps.flight_number = '%s' AND fps.schd_perd_no = %d" \
+                " WHERE fps.flight_number = '%s' AND fps.schedule_period_no = %d" \
                 " AND fps.flight_number = fsd.flight_number" \
-                " AND fps.schd_perd_no = fsd.schd_perd_no" \
+                " AND fps.schedule_period_no = fsd.schedule_period_no" \
                     % ( fn, spn )
             printlog(2, SpSql2)
             cur2.execute(SpSql2)
             for row2 in cur2:
                 SpSql3 = \
-                    "SELECT DISTINCT dup_flight_number FROM flight_shared_leg WHERE flight_number = '%s' AND schd_perd_no = %d" \
+                    "SELECT DISTINCT dup_flight_number FROM flight_shared_leg WHERE flight_number = '%s' AND schedule_period_no = %d" \
                         % ( fn, spn )
                 printlog(2, SpSql3)
                 cur3.execute(SpSql3)
@@ -145,10 +145,10 @@ def isMarketingOrOperational(conn, flightNumber, dt1, dt2, frequency=None):
         " FROM flight_shared_leg fsl, city_pair cp, flight_segm_date fsd" \
         " WHERE fsl.dup_flight_number = '%s'" \
         "  AND fsl.flight_date BETWEEN '%s' AND '%s'" \
-        "  AND fsl.depr_airport = cp.start_city" \
-        "  AND fsl.arrv_airport = cp.end_city" \
+        "  AND fsl.departure_airport = cp.start_city" \
+        "  AND fsl.arrival_airport = cp.end_city" \
         "  AND fsd.flight_number = fsl.dup_flight_number" \
-        "  AND fsd.city_pair_no = cp.city_pair_no" \
+        "  AND fsd.city_pair = cp.city_pair" \
         "  AND fsl.flight_date = fsd.flight_date" \
             % ( flightNumber, startDate, endDate)
     if frequency is not None:
@@ -179,7 +179,7 @@ def ReadConfigNumberOfSeats(conn, AircraftCode, haveClassCode=1, yClassCode='C',
         #"   ( SELECT MAX ( seat_capacity )"
         #"            FROM aircraft_config"
         #"           WHERE aircraft_code = '%s'"
-        #"             AND selling_cls_code = DECODE ( '%s', 0, '%s', '%s' ))"
+        #"             AND selling_class = DECODE ( '%s', 0, '%s', '%s' ))"
     SpSql = \
         "SELECT config_table_no, seat_capacity" \
         "  FROM aircraft_config" \
@@ -218,7 +218,7 @@ def CheckSchedPeriod(conn, dt1, dt2, alteredFrequency,
            newViacities, aircraftConfig)
 
     SpSql = \
-        "SELECT fp.frequency_code fc, fp.schd_perd_no spn," \
+        "SELECT fp.frequency_code fc, fp.schedule_period_no spn," \
          "   fp.flgt_sched_status fss, fp.start_date fps,fp.end_date fpe" \
          " FROM flight_periods fp" \
          " WHERE " \
@@ -244,14 +244,14 @@ def ReadSchedPeriod(conn, dt1, dt2, alteredFrequency,
         % (startDate, endDate, freqCode, alteredFrequency, flightNumber, \
            newViacities, aircraftConfig)
     SpSql = \
-         "SELECT FIRST 1 fsd.schd_perd_no spn" \
+         "SELECT FIRST 1 fsd.schedule_period_no spn" \
          " FROM flight_periods fp, flight_segm_date fsd, flight_perd_legs fpl" \
          "  GROUP BY fp.flight_number, fp.start_date,fp.end_date," \
-         "   fp.frequency_code, fp.schd_perd_no," \
+         "   fp.frequency_code, fp.schedule_period_no," \
          "   fp.flgt_sched_status, fsd.flight_number," \
          "   fsd.flight_date, fsd.flgt_sched_status," \
-         "   fsd.schd_perd_no, fp.via_cities," \
-         "   fpl.flight_number , fpl.schd_perd_no," \
+         "   fsd.schedule_period_no, fp.via_cities," \
+         "   fpl.flight_number , fpl.schedule_period_no," \
          "   fpl.config_table_no" \
          "  HAVING fp.end_date=MAX(fp.end_date)" \
          "   AND end_date<=('%s')::DATE-1 UNITS DAY" \
@@ -259,8 +259,8 @@ def ReadSchedPeriod(conn, dt1, dt2, alteredFrequency,
          "   AND '%s' NOT BETWEEN fp.start_date AND fp.end_date" \
          "   AND fp.flight_number=fsd.flight_number" \
          "   AND fpl.flight_number=fsd.flight_number" \
-         "   AND fp.schd_perd_no=fsd.schd_perd_no" \
-         "   AND fpl.schd_perd_no=fsd.schd_perd_no" \
+         "   AND fp.schedule_period_no=fsd.schedule_period_no" \
+         "   AND fpl.schedule_period_no=fsd.schedule_period_no" \
          "   AND fp.flgt_sched_status=fsd.flgt_sched_status" \
          "   AND fsd.flight_date NOT BETWEEN '%s' AND '%s'" \
          "   AND (SELECT COUNT(flight_date) FROM flight_segm_date WHERE flight_date BETWEEN '%s' AND '%s' AND flight_number = fp.flight_number ) = 0" \
@@ -297,18 +297,18 @@ def ReadSchedPeriod(conn, dt1, dt2, alteredFrequency,
     return n
 
 
-def DatesConsecutiveByFrequency(conn, flight_number, dt1, schd_perd_no):
+def DatesConsecutiveByFrequency(conn, flight_number, dt1, schedule_period_no):
 
     print "Dates for flight %s date %s period %s [flight_periods]" \
-        % (flight_number, dt1, str(schd_perd_no))
+        % (flight_number, dt1, str(schedule_period_no))
     startDate = dt1.strftime("%m/%d/%Y")
     SpSql = \
         "SELECT WEEKDAY(end_date) ed, WEEKDAY('%s') sd" \
          " FROM flight_periods" \
          " WHERE flight_number='%s'" \
-         " AND schd_perd_no=%d" \
+         " AND schedule_period_no=%d" \
          " AND flgt_sched_status IN ( 'A', 'S' )" \
-             % (startDate, flight_number, schd_perd_no)
+             % (startDate, flight_number, schedule_period_no)
     printlog(2, SpSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(SpSql)

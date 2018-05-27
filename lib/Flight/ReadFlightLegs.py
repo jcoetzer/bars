@@ -15,7 +15,7 @@ def ReadFlightDateLegs(conn, flight_number, flight_date):
     print "Flight date legs for flight %s board %s [flight_date_leg]" % (flight_number, flight_date)
     RcSql = \
         "SELECT flight_date_leg_id,trim(flight_number) fn,board_date,departure_time," \
-        " origin_airport_code,destination_airport_code,leg_number,update_user,update_time" \
+        " departure_airport,arrival_airport,leg_number,update_user,update_time" \
         " FROM flight_date_leg WHERE flight_number = '%s' AND board_date = '%s'"  \
         % (flight_number, flight_date.strftime("%m/%d/%Y"))
     printlog(RcSql, 2)
@@ -26,9 +26,9 @@ def ReadFlightDateLegs(conn, flight_number, flight_date):
         fli = int(row['flight_date_leg_id'] or 0)
         flight_date_leg_ids.append(fli)
         print "\tleg id %d flight %s date %s depart %s time %s arrive %s leg %d user %s update %s" \
-            % (fli, str(row['fn'] or ''), row['board_date'], row['origin_airport_code'], \
+            % (fli, str(row['fn'] or ''), row['board_date'], row['departure_airport'], \
                row['departure_time'],  # .isoformat().split("T")[1][0:5],
-               row['destination_airport_code'], row['leg_number'], \
+               row['arrival_airport'], row['leg_number'], \
                row['update_user'], row['update_time'])
         n += 1
 
@@ -43,8 +43,8 @@ def ReadFlightSharedLeg(conn, flight_number, dts):
     print "Flight shared legs for flight %s board %s [flight_shared_leg]" \
         % (flight_number, dts.strftime("%Y-%m-%d"))
     FslSql = \
-        "select dup_flight_number,dup_board_date,dup_depr_airport,dup_arrv_airport,dup_flight_date," \
-        "date_change_ind,flight_path_code,depr_terminal_no,arrv_terminal_no,config_table_no,aircraft_code,leg_number," \
+        "select dup_flight_number,dup_board_date,dup_departure_airport,dup_arrival_airport,dup_flight_date," \
+        "date_change_ind,flight_path_code,departure_terminal,arrival_terminal,config_table_no,aircraft_code,leg_number," \
         "update_user,update_time" \
         " FROM flight_shared_leg" \
         " WHERE flight_number='%s' AND board_date='%s'" \
@@ -62,8 +62,8 @@ def ReadFlightSharedLeg(conn, flight_number, dts):
         print "board %s" % row['dup_board_date'],
         print "change %s" % row['date_change_ind'],
         print "path code %s" % row['flight_path_code'],
-        #print "term %s" % row['depr_terminal_no'],
-        #print "term %s" % row['arrv_terminal_no'],
+        #print "term %s" % row['departure_terminal'],
+        #print "term %s" % row['arrival_terminal'],
         config_table_no = row['config_table_no']
         config_table_nos.append(config_table_no)
         print "config %s" % config_table_no,
@@ -81,16 +81,16 @@ def ReadFlightSharedLeg(conn, flight_number, dts):
 
 
 # Check test period leg
-def ReadtestPeriodLegs(conn, flight_number, schd_perd_no):
+def ReadtestPeriodLegs(conn, flight_number, schedule_period_no):
 
     print "<TEST> Period legs for flight %s, schedule period %d [test_perd_legs]" \
-        % (flight_number, schd_perd_no)
+        % (flight_number, schedule_period_no)
     RcSql = \
-        "SELECT departure_time,arrival_time,depr_airport,arrv_airport," \
+        "SELECT departure_time,arrival_time,departure_airport,arrival_airport," \
         "date_change_ind,config_table_no,flight_path_code,leg_number,update_time" \
         " FROM test_perd_legs" \
-        " WHERE flight_number='%s' AND schd_perd_no=%d" \
-        % (flight_number, schd_perd_no)
+        " WHERE flight_number='%s' AND schedule_period_no=%d" \
+        % (flight_number, schedule_period_no)
     printlog(RcSql, 2)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
@@ -98,8 +98,8 @@ def ReadtestPeriodLegs(conn, flight_number, schd_perd_no):
     n = 0
     for row in cur:
         print "\tdepart %s time %s arrive %s time %s change %d config %s path %s leg %d update %s" \
-            % (row['depr_airport'], row['departure_time'],
-               row['arrv_airport'], row['arrival_time'],
+            % (row['departure_airport'], row['departure_time'],
+               row['arrival_airport'], row['arrival_time'],
                row['date_change_ind'], row['config_table_no'],
                row['flight_path_code'], row['leg_number'], row['update_time'])
         n += 1

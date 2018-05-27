@@ -3,23 +3,26 @@
 # @file ProcSsmYacc.py
 #
 
+import os
 import sys
 import ply.lex as lex
 import ply.yacc as yacc
 
-from SsmLex import tokens
-from SsmYacc import tokens
-from SsmData import SsmData, read_ssm_data
-from SsmYacc import YaccFile
+from Ssm.SsmLex import tokens
+from Ssm.SsmYacc import tokens
+from Ssm.SsmData import SsmData, read_ssm_data
+from Ssm.SsmYacc import YaccFile
 
 import psycopg2
 from BarsLog import printlog, set_verbose
 from ReadDateTime import ReadDate, DateRange
-from ProcNew import ProcNew
-from ProcCnl import ProcCnl
-from SsmDb import CheckCityPair, CheckFlightPeriod
+from Ssm.ProcNew import ProcNew
+from Ssm.ProcCnl import ProcCnl
+from Ssm.SsmDb import CheckCityPair, CheckFlightPeriod
 
 import psycopg2
+from BarsConfig import BarsConfig
+from DbConnect import OpenDb, CloseDb
 
 
 def ProcData(conn, ssm, userName, groupName):
@@ -41,14 +44,13 @@ def usage():
     sys.exit(1)
 
 
-# Pythonic entry point
-def main(argv):
 
-    global verbose
+def main(argv):
+    """Pythonic entry point."""
+    barsdir = os.environ['BARSDIR']
+    etcdir = "%s/etc" % barsdir
     fname = None
     rv = 0
-
-    dbname = 'barsdb'
 
     if len(argv) < 1:
         usage()
@@ -66,14 +68,11 @@ def main(argv):
     if fname is None or len(fname)==0:
         print "No input file specified"
         return 1
+      
+    cfg = BarsConfig('%s/bars.cfg' % etcdir)
 
     # Open connection to database
-    try:
-        conn = psycopg2.connect("dbname='%s' user='postgres' host='localhost'" % dbname)
-    except:
-        print "Could not connect to database %s" % dbname
-        return 1
-    printlog(1, "Connected to database %s" % dbname)
+    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)  
 
     YaccFile(fname)
 

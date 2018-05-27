@@ -422,7 +422,7 @@ def ReadAircraftConfig(conn, config_table_no):
 
     print "Configuration table for config table '%s' [aircraft_config] :" % config_table_no
     SmcSql = \
-        "SELECT config_table_no,aircraft_code,seat_capacity,selling_cls_code,updt_date_time,updt_user_code" \
+        "SELECT config_table_no,aircraft_code,seat_capacity,selling_class,updt_date_time,updt_user_code" \
         " FROM aircraft_config " \
         " WHERE config_table_no = '%s'" \
             % config_table_no
@@ -436,7 +436,7 @@ def ReadAircraftConfig(conn, config_table_no):
         n += 1
         print "\tconfig %4s aircraft %4s seats %3s class %s user %s update %s" \
             % (row['config_table_no'], row['aircraft_code'],
-               row['seat_capacity'], row['selling_cls_code'],
+               row['seat_capacity'], row['selling_class'],
                row['updt_user_code'], row['updt_date_time'])
     if n == 0:
         print "\tnot found"
@@ -446,7 +446,7 @@ def GetConfigTableNo(conn, aircraft_code):
 
     print "Configuration table for aircraft code '%s' [aircraft_config] :" % aircraft_code
     SmcSql = \
-        "SELECT config_table_no,aircraft_code,seat_capacity,selling_cls_code,updt_date_time,updt_user_code" \
+        "SELECT config_table_no,aircraft_code,seat_capacity,selling_class,updt_date_time,updt_user_code" \
         " FROM aircraft_config " \
         " WHERE aircraft_code = '%s'" \
             % aircraft_code
@@ -460,7 +460,7 @@ def GetConfigTableNo(conn, aircraft_code):
         n += 1
         print "\tConfig %4s aircraft %4s seats %3s class %1s user %-5s update %s" \
             % (row['config_table_no'], row['aircraft_code'],
-               row['seat_capacity'], row['selling_cls_code'],
+               row['seat_capacity'], row['selling_class'],
                row['updt_user_code'], row['updt_date_time'])
     if n == 0:
         print "\tnot found"
@@ -491,23 +491,23 @@ def ReadFLightSeatMapId(conn, seat_map_id):
 def ReadSeatMapClass(conn, seat_map_id):
 
     print "Seat map class for seat map ID %d [seat_map_class]" % seat_map_id
-    FdSql = "select selling_cls_code,updt_date_time,updt_user_code from seat_map_class where seat_map_id='%d'" \
+    FdSql = "select selling_class,updt_date_time,updt_user_code from seat_map_class where seat_map_id='%d'" \
         % (seat_map_id)
     printlog(FdSql,2)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     cur.execute(FdSql)
     n = 0
-    selling_cls_code = ''
+    selling_class = ''
     for row in cur:
         n += 1
-        selling_cls_code = row['selling_cls_code']
+        selling_class = row['selling_class']
         print "\tselling class '%s' user %s update %s" \
-            % (selling_cls_code, row['updt_user_code'], row['updt_date_time'])
+            % (selling_class, row['updt_user_code'], row['updt_date_time'])
     if n == 0:
         print "\tnot found"
 
-    return n, selling_cls_code
+    return n, selling_class
 
 
 def ReadSeatDefinition(conn, seat_map_id):
@@ -523,7 +523,7 @@ def ReadSeatDefinition(conn, seat_map_id):
 
     cur.execute(FdSql)
     n = 0
-    selling_cls_code = ''
+    selling_class = ''
     for row in cur:
         n += 1
         print "\tdefinition %d code %s user %s date %s" \

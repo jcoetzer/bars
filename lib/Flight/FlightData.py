@@ -31,7 +31,7 @@ class FlightData(object):
     departure_ts = ''
     arrival_ts = ''
     codeshare = None
-    schd_perd_no = 0
+    schedule_period_no = 0
 
     def __init__(self,
                  class_code,
@@ -43,10 +43,10 @@ class FlightData(object):
                  arrival_airport,
                  departure_terminal,
                  arrival_terminal,
-                 city_pair_no,
-                 company_code='JE',
+                 city_pair,
+                 company_code='ZZ',
                  aircraft_code='',
-                 schd_perd_no=0,
+                 schedule_period_no=0,
                  codeshare=None):
         """New flight."""
         printlog(2, "New flight %s date %s class %s depart %s arrive %s"
@@ -54,7 +54,7 @@ class FlightData(object):
                  % (flight_number, departure_date.strftime("%Y-%m-%d"),
                     class_code,
                     departure_time, arrival_time,
-                    departure_airport, arrival_airport, city_pair_no,
+                    departure_airport, arrival_airport, city_pair,
                     aircraft_code))
         self.class_code = class_code
         # self.company_code = company_code
@@ -92,11 +92,11 @@ class FlightData(object):
         self.arrival_airport = str(arrival_airport or '').strip()
         self.departure_terminal = str(departure_terminal or '').strip()
         self.arrival_terminal = str(arrival_terminal or '').strip()
-        self.city_pair_no = city_pair_no
+        self.city_pair = city_pair
         if aircraft_code is not None:
             self.aircraft_code = str(aircraft_code)
-        if schd_perd_no is not None:
-            self.schd_perd_no = int(schd_perd_no)
+        if schedule_period_no is not None:
+            self.schedule_period_no = int(schedule_period_no)
 
     def update_times(self, departure_time, arrival_time, journey_time=0):
         """Update departure and arrival times."""
@@ -132,8 +132,8 @@ class FlightData(object):
               % (prefix, self.flight_number, self.board_dow,
                  self.board_date_iso,
                  self.departure_airport, self.arrival_airport),
-        if self.city_pair_no != 0:
-            print " (city pair %4d)" % self.city_pair_no,
+        if self.city_pair != 0:
+            print " (city pair %4d)" % self.city_pair,
         if self.departure_time is not None and self.arrival_time is not None:
             print "departs %02d:%02d arrives %02d:%02d" \
                 % (self.departure_time.hour, self.departure_time.minute,
@@ -153,8 +153,8 @@ class FlightData(object):
                 print "(inactive)",
         if self.codeshare is not None:
             print "codeshare %6s" % self.codeshare,
-        if self.schd_perd_no != 0:
-            print "schedule period %6d" % self.schd_perd_no,
+        if self.schedule_period_no != 0:
+            print "schedule period %6d" % self.schedule_period_no,
         if eol:
             print
 
@@ -175,13 +175,13 @@ class FlightPeriod(object):
     start_date = None
     end_date = None
     frequency_code = None
-    schd_perd_no = 0
+    schedule_period_no = 0
     aircraft_code = None
     departure_time = None
     arrival_time = None
     codeshares = []
 
-    def __init__(self, flight_number, start_date, end_date, frequency_code, schd_perd_no,
+    def __init__(self, flight_number, start_date, end_date, frequency_code, schedule_period_no,
                  departure_airport, departure_time, arrival_airport, arrival_time,
                  aircraft_code, codeshares):
         """New flight period."""
@@ -189,7 +189,7 @@ class FlightPeriod(object):
         self.start_date = start_date
         self.end_date = end_date
         self.frequency_code = frequency_code
-        self.schd_perd_no = int(schd_perd_no)
+        self.schedule_period_no = int(schedule_period_no)
         self.departure_airport = departure_airport
         self.departure_time = int(departure_time)
         self.arrival_airport = arrival_airport
@@ -205,7 +205,7 @@ class FlightPeriod(object):
                self.departure_airport, self.departure_time/60, self.departure_time%60,
                self.arrival_airport, self.arrival_time/60, self.arrival_time%60,
                self.aircraft_code,
-               self.schd_perd_no ),
+               self.schedule_period_no ),
         for codeshare in self.codeshares:
             print "%s" % codeshare,
         print
@@ -219,7 +219,7 @@ class FlightPeriod(object):
                             self.departure_airport, self.departure_time/60, self.departure_time%60,
                             self.arrival_airport, self.arrival_time/60, self.arrival_time%60,
                             self.aircraft_code,
-                            self.schd_perd_no))
+                            self.schedule_period_no))
         for codeshare in self.codeshares:
             sys.stdout.write(",%s" % codeshare)
         sys.stdout.write("\n")

@@ -11,7 +11,7 @@ def ReadFlightTimes(conn, flight):
     print "Flight periods for flight %s date %s" %  \
         ( flight.flight_number, flight.board_date_iso )
     FtSql = \
-        "SELECT schd_perd_no, start_date, end_date" \
+        "SELECT schedule_period_no, start_date, end_date" \
         " FROM flight_periods" \
         " WHERE flight_number = '%s'" \
             % ( flight.flight_number )
@@ -21,20 +21,20 @@ def ReadFlightTimes(conn, flight):
     printlog(FtSql, 2)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FtSql)
-    schd_perd_no = 0
+    schedule_period_no = 0
     start_date = None
     end_date = None
     for row in cur:
         start_date = row['start_date']
         end_date = row['end_date']
         printlog("Start %s end %s schedule period %d" \
-            % ( start_date, end_date, row['schd_perd_no'] ), 2)
+            % ( start_date, end_date, row['schedule_period_no'] ), 2)
         if flight.board_dts.date() >= start_date and flight.board_dts.date() <= end_date:
-            schd_perd_no = row['schd_perd_no']
+            schedule_period_no = row['schedule_period_no']
             print "Schedule period %d start %s end %s" \
-                % ( schd_perd_no, start_date, end_date )
+                % ( schedule_period_no, start_date, end_date )
 
-    return schd_perd_no, start_date, end_date
+    return schedule_period_no, start_date, end_date
 
 
 def ReadFlightPerdLegsTimes(conn, flight, SchdPerdNo):
@@ -45,7 +45,7 @@ def ReadFlightPerdLegsTimes(conn, flight, SchdPerdNo):
         "SELECT departure_time, arrival_time" \
         " FROM flight_perd_legs" \
         " WHERE flight_number = '%s'" \
-        " AND schd_perd_no = %d" \
+        " AND schedule_period_no = %d" \
             % ( flight.flight_number, SchdPerdNo )
     printlog(FtSql, 2)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -66,7 +66,7 @@ def ReadFlightSegmDateTimes(conn, flight, SchdPerdNo):
         "SELECT DISTINCT departure_time, arrival_time" \
         " FROM flight_segm_date" \
         " WHERE flight_number = '%s'" \
-        " AND schd_perd_no = %d" \
+        " AND schedule_period_no = %d" \
             % ( flight.flight_number, SchdPerdNo )
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FtSql)
@@ -87,7 +87,7 @@ def ReadFlightSegmDates(conn, flight, SchdPerdNo):
         "SELECT DISTINCT flight_date" \
         " FROM flight_segm_date" \
         " WHERE flight_number = '%s'" \
-        " AND schd_perd_no = %d" \
+        " AND schedule_period_no = %d" \
             % ( flight.flight_number, SchdPerdNo )
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FtSql)
@@ -105,7 +105,7 @@ def ReadFlightDateLegTimes(conn, flight, flight_dates):
         print "Flight date legs for flight %s date %s" \
             % ( flight.flight_number, flight_date.strftime("%Y-%m-%d") )
         FtSql = \
-            "SELECT DISTINCT departure_time, origin_airport_code, destination_airport_code" \
+            "SELECT DISTINCT departure_time, departure_airport, arrival_airport" \
             " FROM flight_date_leg" \
             " WHERE flight_number = '%s'" \
             " AND flight_date = '%s'" \
@@ -124,7 +124,7 @@ def ReadFlightSharedLegTimes(conn, flight, flight_dates):
         print "Flight shared legs for flight %s date %s" \
             % ( flight.flight_number, flight_date.strftime("%Y-%m-%d") )
         FtSql = \
-            "SELECT departure_time, arrival_time, schd_perd_no" \
+            "SELECT departure_time, arrival_time, schedule_period_no" \
             " FROM flight_shared_leg" \
             " WHERE ( flight_number = '%s' OR dup_flight_number = '%s' )" \
             " AND flight_date = '%s'" \
@@ -137,7 +137,7 @@ def ReadFlightSharedLegTimes(conn, flight, flight_dates):
             arrival_time = "%02d:%02d" \
                 % ( int(row['arrival_time']/60), int(row['arrival_time']%60) )
             print "\tDepart %s arrive %s  (schedule period %d)" \
-                % ( departure_time, arrival_time, row['schd_perd_no'] )
+                % ( departure_time, arrival_time, row['schedule_period_no'] )
 
 
 

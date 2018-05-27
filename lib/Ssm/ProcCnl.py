@@ -62,46 +62,46 @@ def DeleteInventrySegment(conn,
     
 def DeleteFlightPeriod(conn, 
                        pflight_number,
-                       pschd_perd_no):
+                       pschedule_period_no):
     cur = conn.cursor()
     
     dfpSql = "DELETE FROM flt_perd_seg_cls " \
-             "WHERE flight_number = '%s' AND schd_perd_no = %d" % (pflight_number, pschd_perd_no)
+             "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
     printlog(2, "%s" % dfpSql)
     cur.execute(dfpSql)
     rowcount = cur.rowcount
     printlog(2, "Deleted %d row(s)" % rowcount)
 
     dfpSql = "DELETE FROM flight_perd_cls " \
-             "WHERE flight_number = '%s' AND schd_perd_no = %d" % (pflight_number, pschd_perd_no)
+             "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
     printlog(2, "%s" % dfpSql)
     cur.execute(dfpSql)
     rowcount = cur.rowcount
     printlog(2, "Deleted %d row(s)" % rowcount)
 
     dfpSql = "DELETE FROM flight_perd_prnt " \
-             "WHERE flight_number = '%s' AND schd_perd_no = %d" % (pflight_number, pschd_perd_no)
+             "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
     printlog(2, "%s" % dfpSql)
     cur.execute(dfpSql)
     rowcount = cur.rowcount
     printlog(2, "Deleted %d row(s)" % rowcount)
 
     dfpSql = "DELETE FROM flight_perd_segm " \
-             "WHERE flight_number = '%s' AND schd_perd_no = %d" % (pflight_number, pschd_perd_no)
+             "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
     printlog(2, "%s" % dfpSql)
     cur.execute(dfpSql)
     rowcount = cur.rowcount
     printlog(2, "Deleted %d row(s)" % rowcount)
 
     dfpSql = "DELETE FROM flight_perd_legs " \
-             "WHERE flight_number = '%s' AND schd_perd_no = %d" % (pflight_number, pschd_perd_no)
+             "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
     printlog(2, "%s" % dfpSql)
     cur.execute(dfpSql)
     rowcount = cur.rowcount
     printlog(2, "Deleted %d row(s)" % rowcount)
 
     dfpSql = "DELETE FROM flight_periods " \
-             "WHERE flight_number = '%s' AND schd_perd_no = %d" % (pflight_number, pschd_perd_no)
+             "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
     printlog(2, "%s" % dfpSql)
     cur.execute(dfpSql)    
     rowcount = cur.rowcount
@@ -128,16 +128,16 @@ def DeleteFlightInfo(conn,
     
 def DeleteFlightSegmDate(conn,
                          aflight_number,
-                         acity_pair_no, 
+                         acity_pair, 
                          aflight_date):
 
     cur = conn.cursor()
     FsdSql = \
         "DELETE FROM flight_segm_date WHERE flight_number = '%s' AND flight_date = '%s'" \
             % (aflight_number, aflight_date)
-    if acity_pair_no != 0:
+    if acity_pair != 0:
         FsdSql += \
-            " AND city_pair_no = %d" % acity_pair_no
+            " AND city_pair = %d" % acity_pair
     printlog(2,FsdSql)
     cur.execute(FsdSql)    
     rowcount = cur.rowcount
