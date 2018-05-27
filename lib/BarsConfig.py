@@ -8,7 +8,7 @@ class BarsConfig(object):
     OnwReturnIndicator = 'R'
     AuthorityLevel = 100
     FareCategory = 'ZZOW'
-    vCompany = 'ZZ'
+    CompanyCode = 'ZZ'
     SellingClass = 'Y'
     OriginAddress = 'HDQOTZZ'
     OriginBranchCode = 'SNAFU'
@@ -30,7 +30,7 @@ class BarsConfig(object):
         self.dbuser = config.get('Database', 'dbuser')
         self.dbhost = config.get('Database', 'dbhost')
         self.OnwReturnIndicator = config.get('Airline', 'OnwReturnIndicator')
-        self.AuthorityLevel = config.get('Airline', 'AuthorityLevel')
+        self.AuthorityLevel = int(config.get('Airline', 'AuthorityLevel'))
         self.FareCategory = config.get('Airline', 'FareCategory')
         self.CompanyCode = config.get('Airline', 'CompanyCode')
         self.OriginAddress = config.get('Airline', 'OriginAddress')

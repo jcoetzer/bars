@@ -52,7 +52,7 @@ tax_code,nation_code,refundable_flag,net_fare_flag,private_fare_flag,source_ref_
 ,round( (select max(nuc_rate) from currency_codes cc where cc.currency_code = '%s') /
         nvl( (select max(nuc_rate) from hist_currency_codes hcc
               where hcc.currency_code = bfp.paid_curr_code
-              and conv_inddatelong(bfp.updt_date_time) between
+              and conv_inddatelong(bfp.update_time) between
               hcc.valid_from_date_time and hcc.valid_to_date_time),
              (select max(nuc_rate) from currency_codes cc
                 where cc.currency_code = bfp.paid_curr_code) ), 5 ) common_currency_factor,
@@ -101,7 +101,7 @@ def ReadBsPassengerFares(conn, book_no, currency_code):
                                         (
                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                 where hcc.currency_code = bfp.total_amount_curr
-                                                and conv_inddatelong(bfp.updt_date_time) between
+                                                and conv_inddatelong(bfp.update_time) between
                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                         ,
                                                 (select max(nuc_rate) from currency_codes as cc
@@ -149,7 +149,7 @@ def ReadBsOldFares(conn, book_no, currency_code):
     OldFaresSql = """
     select
             bf.et_serial_no                                         as serial_no
-            ,conv_inddatelong(bf.updt_date_time)    as updated_date_time
+            ,conv_inddatelong(bf.update_time)    as updated_date_time
             ,bf.fare_no
             ,bf.pass_code                                           as passenger_description_code
             ,bf.start_city                                          as departure_city
@@ -183,7 +183,7 @@ def ReadBsOldFares(conn, book_no, currency_code):
                     (
                             (select max(nuc_rate) from hist_currency_codes as hcc
                             where hcc.currency_code = bf.total_amount_curr
-                            and conv_inddatelong(bf.updt_date_time) between
+                            and conv_inddatelong(bf.update_time) between
                             hcc.valid_from_date_time and hcc.valid_to_date_time)
                     ,
                             (select max(nuc_rate) from currency_codes as cc
@@ -203,7 +203,7 @@ def ReadBsOldFares(conn, book_no, currency_code):
     left join city                          as dcy on dcy.city_code = bf.start_city
     left join city                          as acy on acy.city_code = bf.end_city
     group by bf.et_serial_no
-                    ,bf.updt_date_time
+                    ,bf.update_time
                     ,bf.fare_no
                     ,bf.pass_code
                     ,bf.start_city
@@ -251,7 +251,7 @@ def ReadBsOldPassengerFares(conn, book_no, currency_code):
                                 ,bfp.endrsmnt_rstrctns                          as endorsement_restriction
                                 ,round(sum(bfpm.fare_paymt_amt), 2)     as fare_amount
                                 ,round(sum(bfpm.fare_paymt_amt), 5)     as unrounded_fare_amount
-                                ,conv_inddatelong(bfp.updt_date_time) as updated_date_time
+                                ,conv_inddatelong(bfp.update_time) as updated_date_time
                                 ,bfp.et_serial_no                                        as serial_no
 
                                 ,round
@@ -263,7 +263,7 @@ def ReadBsOldPassengerFares(conn, book_no, currency_code):
                                         (
                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                 where hcc.currency_code = bfp.total_amount_curr
-                                                and conv_inddatelong(bfp.updt_date_time) between
+                                                and conv_inddatelong(bfp.update_time) between
                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                         ,
                                                 (select max(nuc_rate) from currency_codes as cc
@@ -282,7 +282,7 @@ def ReadBsOldPassengerFares(conn, book_no, currency_code):
 
                         group by
                                  bfp.et_serial_no
-                                ,bfp.updt_date_time
+                                ,bfp.update_time
                                 ,bfp.pass_code
                                 ,bfp.total_amount_curr
                                 ,bfp.total_amount
@@ -328,7 +328,7 @@ def ReadBsOldFaresPayment(conn, book_no, currency_code):
                                 ,net_fare_flag
                                 ,private_fare_flag
                                 ,source_ref_id
-                                ,conv_inddatelong(updt_date_time) as updated_date_time
+                                ,conv_inddatelong(update_time) as updated_date_time
                                 ,et_serial_no                                    as serial_no
                                 ,round
                                 (
@@ -339,7 +339,7 @@ def ReadBsOldFaresPayment(conn, book_no, currency_code):
                                         (
                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                 where hcc.currency_code = bfp.paid_curr_code
-                                                and conv_inddatelong(bfp.updt_date_time) between
+                                                and conv_inddatelong(bfp.update_time) between
                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                         ,
                                                 (select max(nuc_rate) from currency_codes as cc
@@ -531,7 +531,7 @@ def ReadBsFares(conn, book_no, currency_code):
                                         (
                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                 where hcc.currency_code = bf.total_amount_curr
-                                                and conv_inddatelong(bf.updt_date_time) between
+                                                and conv_inddatelong(bf.update_time) between
                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                         ,
                                                 (select max(nuc_rate) from currency_codes as cc
@@ -608,7 +608,7 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         (
                                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                                 where hcc.currency_code = bc.comm_amount_curr
-                                                                and conv_inddatelong(bc.updt_date_time) between
+                                                                and conv_inddatelong(bc.update_time) between
                                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                                         ,
                                                                 (select max(nuc_rate) from currency_codes as cc
@@ -633,7 +633,7 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         (
                                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                                 where hcc.currency_code = bfp.paid_curr_code
-                                                                and conv_inddatelong(bfp.updt_date_time) between
+                                                                and conv_inddatelong(bfp.update_time) between
                                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                                         ,
                                                                 (select max(nuc_rate) from currency_codes as cc
@@ -657,7 +657,7 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         (
                                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                                 where hcc.currency_code = bfp.paid_curr_code
-                                                                and conv_inddatelong(bfp.updt_date_time) between
+                                                                and conv_inddatelong(bfp.update_time) between
                                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                                         ,
                                                                 (select max(nuc_rate) from currency_codes as cc
@@ -720,7 +720,7 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         (
                                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                                 where hcc.currency_code = bfp.paid_curr_code
-                                                                and conv_inddatelong(bfp.updt_date_time) between
+                                                                and conv_inddatelong(bfp.update_time) between
                                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                                         ,
                                                                 (select max(nuc_rate) from currency_codes as cc

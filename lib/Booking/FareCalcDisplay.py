@@ -3,7 +3,7 @@
 import psycopg2
     
 from BarsLog import printlog
-from PricingData import PricingData
+from PricingData import PricingData, FarePricingData
 
 def FareCalcDisplay(conn, 
                     acompany_code, 
@@ -82,7 +82,7 @@ def FareCalcDisplay(conn,
     pricings = []
     printlog(2, "Selected %d row(s)" % cur.rowcount)
     for row in cur:
-        fare_code = row[0]
+        fare_code = str(row[0])
         city_pair =  row[1]
         valid_from_date = row[2]
         valid_to_date = row[3]
@@ -93,16 +93,17 @@ def FareCalcDisplay(conn,
         byps_end_auth_lvl = row[8]
         selling_class = row[9]
         printlog(2, "Fare %s from %s to %s: %f" % (fare_code, valid_from_date, valid_to_date, fare_value))
-        pricing = PricingData(fare_code,
-                                city_pair,
-                                valid_from_date,
-                                valid_to_date,
-                                fare_value,
-                                short_description,
-                                onw_return_ind,
-                                byps_strt_auth_lvl,
-                                byps_end_auth_lvl,
-                                selling_class)
+        pricing = FarePricingData(fare_code,
+                                  city_pair,
+                                  valid_from_date,
+                                  valid_to_date,
+                                  fare_value,
+                                  short_description,
+                                  onw_return_ind,
+                                  byps_strt_auth_lvl,
+                                  byps_end_auth_lvl,
+                                  selling_class
+                                  )
         pricings.append(pricing)
         
     return pricings

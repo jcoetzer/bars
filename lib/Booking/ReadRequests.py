@@ -107,17 +107,17 @@ def ReadRequestsDaily(conn, recCount=0, start_date=None, end_date=None, dest_id=
     if recCount:
         FiSql += \
             " FIRST %d" % recCount
-    FiSql += " book_no,rqst_code,action_code,actn_number,processing_flag,updt_date_time,request_text," \
-             " updt_user_code,updt_dest_id,updt_date_time FROM book_requests"
+    FiSql += " book_no,rqst_code,action_code,actn_number,processing_flag,update_time,request_text," \
+             " update_user,update_group,update_time FROM book_requests"
     FiSql += " where 1=1"
     if dest_id is not None:
         print "\tBranch code (destination ID) '%s'" % dest_id
         if '%' in dest_id or '_' in dest_id:
             FiSql += \
-                " AND updt_dest_id LIKE '%s'" % dest_id
+                " AND update_group LIKE '%s'" % dest_id
         else:
             FiSql += \
-                " AND updt_dest_id='%s'" % dest_id
+                " AND update_group='%s'" % dest_id
     if start_date is not None:
         if end_date is None:
             print "\tFor %s" % start_date.strftime("%Y-%m-%d")
@@ -125,7 +125,7 @@ def ReadRequestsDaily(conn, recCount=0, start_date=None, end_date=None, dest_id=
         else:
             print "\tFrom %s to %s" % (start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
         FiSql += \
-            " AND updt_date_time>='%s' AND updt_date_time<='%s'" \
+            " AND update_time>='%s' AND update_time<='%s'" \
                 % (start_date.strftime("%Y/%m/%d/00/00/00"), end_date.strftime("%Y/%m/%d/23/59/59"))
 
     printlog(FiSql, 2)
@@ -137,7 +137,7 @@ def ReadRequestsDaily(conn, recCount=0, start_date=None, end_date=None, dest_id=
     for row in cur:
         print "%8d %5s %3s%1d %5s %8s %20s %s" % \
             (row['book_no'], row['rqst_code'], str(row['action_code'] or ''), int(row['actn_number'] or 0), \
-            row['updt_user_code'], row['updt_dest_id'], row['updt_date_time'], row['request_text'])
+            row['update_user'], row['update_group'], row['update_time'], row['request_text'])
     print
 
 

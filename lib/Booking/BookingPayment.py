@@ -5,7 +5,7 @@ Booking payment stuff.
 """
 import psycopg2
 
-import BarsLog import printlog
+from BarsLog import printlog
 
 
 def BookingIsPaid(conn, pbook_no, vbookstatus=None):

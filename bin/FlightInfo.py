@@ -5,7 +5,7 @@
 # @file FlightInfo.py
 #
 
-#import pdb
+import os
 import sys
 import getopt
 from configobj import ConfigObj
@@ -27,7 +27,7 @@ from ReadDateTime import ReadDate
                             #ReadFlightDateLegId, ReadFlightDateAllSeats, \
                             #ReadFlightDateLeg
 # from ReadFlightDateLegs import ReadFlightDateLegId
-from ReadFlights import ReadFlightSegmDates, ReadFlightSegmDate, ReadDeparture, \
+from Flight.ReadFlights import ReadFlightSegmDates, ReadFlightSegmDate, ReadDeparture, \
                         ReadFlights, ReadFlightsDate, \
                         ReadFlightDateClassSeatMaps, ReadCodeShare, \
                         SetCodeShare, ReadFlightDeparture, \
@@ -38,35 +38,35 @@ from ReadFlights import ReadFlightSegmDates, ReadFlightSegmDate, ReadDeparture, 
 #from SystemInfo import ReadSystemSettingInfo
 #from ReadItenaries import ReadBookingItenary
 #from ReadBookingRef import ReadLocator
-from ReadFlightPeriods import ReadFlightPeriodsGui, ReadFlightPeriods, \
+from Flight.ReadFlightPeriods import ReadFlightPeriodsGui, ReadFlightPeriods, \
                               ReadFlightPeriodsDate, ReadTestPeriods, \
                               ReadFlightPerdLegs, ReadFlightPerdCls, \
                               ReadFlightPerdSegCls, ReadFlightPerdSegm, \
                               ReadFlightPerdPrnt, ReadSchdChngAction, \
                               ReadTestInventrySegm, ReadTestPerdSegm, \
                               ReadTestPerdCls, ReadTestPerdPrnt
-from FlightData import FlightData
+from Flight.FlightData import FlightData
 #
 #from GetSeatMap import GetSeatMap, GetFlightDetail, GetFlightDetails
 #from GetSeatData import GetFlightDateClassSeatMaps
-from ReadSeatMap import ReadFlightSeatMap, \
+from Flight.ReadSeatMap import ReadFlightSeatMap, \
                         GetConfigTableNo, ReadSeatMapConfiguration, \
                         ReadFLightSeatMapId, ReadSeatMapId
 #from ReadFareRoute import ReadFareRouteIds, ReadFareRoutes, \
                           #ReadFareRoutesDate, ReadFareRouteBranches, \
                           #ReadFareRouteCompanies, ReadFareRouteDesignators, \
                           #ReadFareAgencies
-from ReadSchedPeriod import ReadSchedPeriod, ReadConfigNumberOfSeats, \
+from Flight.ReadSchedPeriod import ReadSchedPeriod, ReadConfigNumberOfSeats, \
                             ReadFlightPeriods, ReadFlightPeriodsLatest
 #from ReadFlightBookings import ReadFlightBookings, ReadFlightContacts, \
                                #ReadFlightPaxNames
-from ReadSsmData import ReadSsmFlightData, ReadSsmBookData, ReadSsmTim
-from ReadFlightLegs import ReadFlightSharedLeg, ReadFlightDateLegs, \
+from Ssm.ReadSsmData import ReadSsmFlightData, ReadSsmBookData, ReadSsmTim
+from Flight.ReadFlightLegs import ReadFlightSharedLeg, ReadFlightDateLegs, \
                            ReadtestPeriodLegs, ReadAsrReconcileHistory
-from ReadAircraftConfig import ReadAircraftConfig
+from Ssm.ReadAircraftConfig import ReadAircraftConfig
 #from CheckAvailability import CheckAvailability
-from ReadFlightSegments import ReadSegmentStatus, ReadFlightPax
-from ReadFlightTimes import ReadFlightTimes, ReadFlightPerdLegsTimes, \
+from Flight.ReadFlightSegments import ReadSegmentStatus, ReadFlightPax
+from Flight.ReadFlightTimes import ReadFlightTimes, ReadFlightPerdLegsTimes, \
                             ReadFlightSegmDateTimes, ReadFlightSegmDates, \
                             ReadFlightDateLegTimes, ReadFlightSharedLegTimes
 from DbConnect import OpenDb, CloseDb

@@ -68,12 +68,12 @@ def PrintGraph(bookings, dt1, dt2, ORIGIN, WIDTH):
 
 def InitGraphBookings(conn, dt1, dt2, ORIGIN=None, WIDTH=0):
 
-    SQL = "SELECT updt_date_time FROM book"
-    SQL += " WHERE updt_date_time>'%s' " % dt1.strftime("%Y/%m/%d/%H/%M/00")
-    SQL += " AND updt_date_time<'%s' " % dt2.strftime("%Y/%m/%d/%H/%M/59")
+    SQL = "SELECT update_time FROM book"
+    SQL += " WHERE update_time>'%s' " % dt1.strftime("%Y/%m/%d/%H/%M/00")
+    SQL += " AND update_time<'%s' " % dt2.strftime("%Y/%m/%d/%H/%M/59")
     if ORIGIN is not None:
         SQL += "and origin_address='%s'" % (ORIGIN)
-    SQL += "order by updt_date_time desc"
+    SQL += "order by update_time desc"
     printlog("%s" % SQL, 2)
 
     printlog(SQL, 2)
@@ -131,8 +131,8 @@ def GraphBookings(conn, show_mins, dt1=None, dt2=None, ORIGIN=None, WIDTH=0):
             dt2 = datetime.now() - timedelta(minutes=1)
 
             SQL = "SELECT count(book_no) nbook FROM book"
-            SQL += " WHERE updt_date_time>='%s' " % dt2.strftime("%Y/%m/%d/%H/%M/00")
-            SQL += " AND updt_date_time<='%s' " % dt2.strftime("%Y/%m/%d/%H/%M/59")
+            SQL += " WHERE update_time>='%s' " % dt2.strftime("%Y/%m/%d/%H/%M/00")
+            SQL += " AND update_time<='%s' " % dt2.strftime("%Y/%m/%d/%H/%M/59")
             if ORIGIN is not None:
                 SQL += "and origin_address='%s'" % (ORIGIN)
             printlog(SQL, 2)

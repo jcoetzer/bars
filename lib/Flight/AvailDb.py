@@ -31,7 +31,7 @@ def get_avail_flights(conn, fdate1, fdate2, city_pair,
               selling_class, company_code))
     AvlSql = \
         """
-        SELECT fsd.flight_number,   fsd.board_date,
+        SELECT DISTINCT fsd.flight_number,   fsd.board_date,
             fsd.departure_time,     fsd.city_pair,
             isg.departure_city,     isg.arrival_city,
             fsd.departure_airport,       fsd.arrival_airport,
@@ -65,7 +65,7 @@ def get_avail_flights(conn, fdate1, fdate2, city_pair,
         AND fsd.flight_number NOT IN
             (
             SELECT flight_number FROM flight_locked AS flck
-            WHERE flck.invalidated_date_time IS NULL AND flck.flight_number = fsd.flight_number AND flck.flight_date = fsd.board_date
+            WHERE flck.invalid_time IS NULL AND flck.flight_number = fsd.flight_number AND flck.flight_date = fsd.board_date
             )
         AND fsd.flgt_sched_status IN ('A', 'D', 'M', 'U', 'R')
         AND fp.flgt_sched_status IN ('A', 'D', 'M', 'U', 'R')""" \

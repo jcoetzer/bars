@@ -3,8 +3,8 @@
 import sys
 import psycopg2
 from BarsLog import printlog
-from ReadFlightPeriods import ReadFlightPeriods, ReadFlightPerdLegs
-from ReadFlights import CheckFlight
+from Flight.ReadFlightPeriods import ReadFlightPeriods, ReadFlightPerdLegs
+from Flight.ReadFlights import CheckFlight
 
 def ReadSsmFlightData(conn, flight, end_date):
 

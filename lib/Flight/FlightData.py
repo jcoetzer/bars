@@ -77,13 +77,13 @@ class FlightData(object):
             if self.board_weekday == 0:
                 self.board_weekday = 7
         if departure_time is not None:
-            self.departure_time = departure_time
+            self.departure_time = departure_time.strftime('%H:%M')
             # self.departure_time = ReadTime(departure_time)
             # self.departure_ts = str("%02d:%02d"
             #                        % (self.departure_time.hour,
             #                           self.departure_time.minute))
         if arrival_time is not None:
-            self.arrival_time = arrival_time
+            self.arrival_time = arrival_time.strftime('%H:%M')
             # self.arrival_time = ReadTime(arrival_time)
             # self.arrival_ts = str("%02s:%02d"
             #                       % (self.arrival_time.hour,
@@ -128,19 +128,18 @@ class FlightData(object):
 
     def display(self, eol=True, prefix=''):
         """Display flight data."""
-        print "%sFlight %6s board %s %s from %s to %s" \
+        print "%sFlight %6s board %s %s from %s to %s class %s" \
               % (prefix, self.flight_number, self.board_dow,
                  self.board_date_iso,
-                 self.departure_airport, self.arrival_airport),
+                 self.departure_airport, self.arrival_airport, self.class_code),
         if self.city_pair != 0:
             print " (city pair %4d)" % self.city_pair,
         if self.departure_time is not None and self.arrival_time is not None:
-            print "departs %02d:%02d arrives %02d:%02d" \
-                % (self.departure_time.hour, self.departure_time.minute,
-                   self.arrival_time.hour, self.arrival_time.minute),
+            print "departs %s arrives %s" \
+                % (self.departure_time, self.arrival_time),
         elif self.departure_time is not None:
-            print "departs %02d:%02d" \
-                % (self.departure_time.hour, self.departure_time.minute),
+            print "departs %s" \
+                % (self.departure_time),
         if self.journey_time is not None and self.journey_time > 0:
             print "(%-3d minutes)" % self.journey_time,
         if len(self.aircraft_code) > 0:

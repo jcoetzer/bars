@@ -1,3 +1,6 @@
 .kdev4/
 bars.kdev4
 tmp/
+*.pyc
+parser.out
+parsetab.py

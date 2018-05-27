@@ -12,7 +12,7 @@ def ReadSeatMapConfiguration(conn, seat_map_id=None, config_table_no=None):
     """Read seat map configuration from database."""
     print "Seat map configuration for",
     SmcSql = \
-        "SELECT seat_map_id, config_table_no,updt_user_code,updt_date_time FROM seat_map_configuration"
+        "SELECT seat_map_id, config_table_no,update_user,update_time FROM seat_map_configuration"
 
     if seat_map_id is not None and config_table_no is not None:
         print "seat map ID %d config table %s" \
@@ -43,7 +43,7 @@ def ReadSeatMapConfiguration(conn, seat_map_id=None, config_table_no=None):
         n += 1
         config_table_no = str(row['config_table_no'] or '???')
         print "\tseat map ID %d config table %s user %s update %s" \
-            % (row['seat_map_id'], config_table_no, row['updt_user_code'], row['updt_date_time'])
+            % (row['seat_map_id'], config_table_no, row['update_user'], row['update_time'])
     if n==0:
         print "\t not found"
 
@@ -55,7 +55,7 @@ def ReadFlightSeatMap(conn, flight_date_leg_id):
 
     print "Flight seat map for flight date leg ID %d [flight_seat_map]" % flight_date_leg_id
     SmcSql = \
-        "SELECT seat_map_id,updt_user_code,updt_date_time" \
+        "SELECT seat_map_id,update_user,update_time" \
         " FROM flight_seat_map WHERE flight_date_leg_id=%d" \
             % flight_date_leg_id
     printlog(SmcSql,2)
@@ -67,7 +67,7 @@ def ReadFlightSeatMap(conn, flight_date_leg_id):
         n += 1
         seat_map_id = int(row['seat_map_id'])
         print "\tseat map %d user %s update %s" \
-            % (seat_map_id, row['updt_user_code'], row['updt_date_time'])
+            % (seat_map_id, row['update_user'], row['update_time'])
     if n==0:
         print "\t not found"
 
@@ -422,7 +422,7 @@ def ReadAircraftConfig(conn, config_table_no):
 
     print "Configuration table for config table '%s' [aircraft_config] :" % config_table_no
     SmcSql = \
-        "SELECT config_table_no,aircraft_code,seat_capacity,selling_class,updt_date_time,updt_user_code" \
+        "SELECT config_table_no,aircraft_code,seat_capacity,selling_class,update_time,update_user" \
         " FROM aircraft_config " \
         " WHERE config_table_no = '%s'" \
             % config_table_no
@@ -437,7 +437,7 @@ def ReadAircraftConfig(conn, config_table_no):
         print "\tconfig %4s aircraft %4s seats %3s class %s user %s update %s" \
             % (row['config_table_no'], row['aircraft_code'],
                row['seat_capacity'], row['selling_class'],
-               row['updt_user_code'], row['updt_date_time'])
+               row['update_user'], row['update_time'])
     if n == 0:
         print "\tnot found"
 
@@ -446,7 +446,7 @@ def GetConfigTableNo(conn, aircraft_code):
 
     print "Configuration table for aircraft code '%s' [aircraft_config] :" % aircraft_code
     SmcSql = \
-        "SELECT config_table_no,aircraft_code,seat_capacity,selling_class,updt_date_time,updt_user_code" \
+        "SELECT config_table_no,aircraft_code,seat_capacity,selling_class,update_time,update_user" \
         " FROM aircraft_config " \
         " WHERE aircraft_code = '%s'" \
             % aircraft_code
@@ -461,7 +461,7 @@ def GetConfigTableNo(conn, aircraft_code):
         print "\tConfig %4s aircraft %4s seats %3s class %1s user %-5s update %s" \
             % (row['config_table_no'], row['aircraft_code'],
                row['seat_capacity'], row['selling_class'],
-               row['updt_user_code'], row['updt_date_time'])
+               row['update_user'], row['update_time'])
     if n == 0:
         print "\tnot found"
 
@@ -469,7 +469,7 @@ def GetConfigTableNo(conn, aircraft_code):
 def ReadFLightSeatMapId(conn, seat_map_id):
 
     print "Seat map for seat map ID %d [seat_map]" % seat_map_id
-    FdSql = "select description,updt_date_time,updt_user_code from seat_map where seat_map_id='%d'" \
+    FdSql = "select description,update_time,update_user from seat_map where seat_map_id='%d'" \
         % (seat_map_id)
     printlog(FdSql,2)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -481,7 +481,7 @@ def ReadFLightSeatMapId(conn, seat_map_id):
         n += 1
         aircraft_desc = row['description']
         print "\tdescription '%s' user %s update %s" \
-            % (aircraft_desc, row['updt_user_code'], row['updt_date_time'])
+            % (aircraft_desc, row['update_user'], row['update_time'])
     if n == 0:
         print "\tnot found"
 
@@ -491,7 +491,7 @@ def ReadFLightSeatMapId(conn, seat_map_id):
 def ReadSeatMapClass(conn, seat_map_id):
 
     print "Seat map class for seat map ID %d [seat_map_class]" % seat_map_id
-    FdSql = "select selling_class,updt_date_time,updt_user_code from seat_map_class where seat_map_id='%d'" \
+    FdSql = "select selling_class,update_time,update_user from seat_map_class where seat_map_id='%d'" \
         % (seat_map_id)
     printlog(FdSql,2)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -503,7 +503,7 @@ def ReadSeatMapClass(conn, seat_map_id):
         n += 1
         selling_class = row['selling_class']
         print "\tselling class '%s' user %s update %s" \
-            % (selling_class, row['updt_user_code'], row['updt_date_time'])
+            % (selling_class, row['update_user'], row['update_time'])
     if n == 0:
         print "\tnot found"
 
@@ -515,7 +515,7 @@ def ReadSeatDefinition(conn, seat_map_id):
     print "Seat definition for seat map ID %d [seat_definition]" % seat_map_id
 
     FdSql = \
-        "SELECT seat_definition_id,seat_code,updt_date_time,updt_user_code" \
+        "SELECT seat_definition_id,seat_code,update_time,update_user" \
         " FROM seat_definition WHERE seat_map_id=%d" \
             % (seat_map_id)
     printlog(FdSql,2)
@@ -528,7 +528,7 @@ def ReadSeatDefinition(conn, seat_map_id):
         n += 1
         print "\tdefinition %d code %s user %s date %s" \
             % (row['seat_definition_id'], row['seat_code'], \
-               row['updt_user_code'], row['updt_user_code'])
+               row['update_user'], row['update_user'])
     if n == 0:
         print "\tnot found"
 

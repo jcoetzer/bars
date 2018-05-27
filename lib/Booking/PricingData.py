@@ -7,20 +7,49 @@ from datetime import datetime, timedelta, date
 
 from BarsLog import printlog
 from ReadDateTime import ReadDate
-             
+       
+
+class FarePricingData(object):
+    
+    def __init__(self, 
+                 fare_code,            
+                 city_pair,
+                 valid_from_date,
+                 valid_to_date,
+                 fare_value,
+                 short_description,
+                 onw_return_ind,
+                 byps_strt_auth_lvl,
+                 byps_end_auth_lvl,
+                 selling_class):
+        self.fare_code =            fare_code,           
+        self.city_pair =            city_pair
+        self.valid_from_date =      valid_from_date
+        self.valid_to_date =        valid_to_date
+        self.fare_value =           fare_value
+        self.short_description =    short_description
+        self.onw_return_ind =       onw_return_ind
+        self.byps_strt_auth_lvl =   byps_strt_auth_lvl
+        self.byps_end_auth_lvl =    byps_end_auth_lvl
+        self.selling_class =        selling_class
+        
+    def display(self):
+        print "Fare data:"
+        print "\tFare code %s class %s value %.2f" % (self.fare_code, self.selling_class, self.fare_value)
+        
              
 class PricingData(object):
     
     pax_codes = []
 
-    def __init__(self, total_amount, tax_total_amount, fare_total_amount, \
-                 voyager_miles,voyager_rands,
+    def __init__(self, 
+                 total_amount,
+                 tax_total_amount, 
+                 fare_total_amount,
                  paxcodes):
         self.total_amount      = float(total_amount)
         self.fare_total_amount = float(fare_total_amount)
         self.tax_total_amount  = float(tax_total_amount)
-        self.voyager_miles     = int(voyager_miles)
-        self.voyager_rands     = float(voyager_rands)
         self.pax_codes         = paxcodes  
         printlog("New pricing amount %.2f" % (self.total_amount), 2)
     
@@ -29,8 +58,6 @@ class PricingData(object):
         print "*\tTotal           : R%.2f" % self.total_amount
         print "\tFare total      : R%.2f" % self.fare_total_amount
         print "\tTax total       : R%.2f" % self.tax_total_amount
-        print "\tVoyager miles   : %d" % self.voyager_miles
-        print "\tVoyager rands   : R%.2f" % self.voyager_rands
         print "\tPassenger codes :"
         for pax_code in self.pax_codes:
             pax_code.display()
@@ -40,8 +67,15 @@ class PassengerCode(object):
     fare_codes = []
     tax_codes = [] 
     
-    def __init__(self, passenger_code, seat_count, fare_value_per_seat, \
-                surcharge_per_seat, tax_value_per_seat, fare_ladder, farecodes, taxcodes):
+    def __init__(self, 
+                 passenger_code, 
+                 seat_count, 
+                 fare_value_per_seat,
+                 surcharge_per_seat, 
+                 tax_value_per_seat, 
+                 fare_ladder, 
+                 farecodes, 
+                 taxcodes):
         self.passenger_code      = passenger_code     
         self.seat_count          = int(seat_count)
         self.fare_value_per_seat = float(fare_value_per_seat)

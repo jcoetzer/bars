@@ -618,15 +618,16 @@ def ReadFlightsDate(conn, dts, ndays, departure_airport, arrival_airport, code_s
             % (row['flight_number'], row['flight_date'], row['departure_airport'], row['arrival_airport'], int(row['city_pair'])))
         flight_number = row['flight_number']
         departure_date = row['flight_date']
-        departure_time = str(row['departure_time'])
+        departure_time = row['departure_time']
         #arrival_date = ReadDate(row['arrival_date'])
-        arrival_time = str(row['arrival_time'])
+        arrival_time = row['arrival_time']
         if code_share:
             cs = ReadCodeShare(conn, flight_number, fdate)
         else:
             cs = None
         flights.append(FlightData(class_code, flight_number, departure_date, departure_time, arrival_time, \
-                       row['departure_airport'], row['arrival_airport'], int(row['city_pair']), aircraft_code=row['aircraft_code'],
+                       row['departure_airport'], row['arrival_airport'], ' ', ' ',
+                       int(row['city_pair']), aircraft_code=row['aircraft_code'],
                        schedule_period_no=row['schedule_period_no'], codeshare=cs))
 
     printlog(1, "Found %d flights for date %s" % (len(flights), dts.strftime("%Y-%m-%d")))

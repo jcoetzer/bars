@@ -180,6 +180,7 @@ def main(argv):
     paxNames = None
     paxDobs = None
     payAmount = None
+    sellClass = None
     vTimeLimit = datetime.now() + timedelta(days=2)
 
     # Option flags
@@ -309,7 +310,7 @@ def main(argv):
                 departTime, arriveTime,
                 departTerm, arriveTerm,
                 cityPairNo, sellClass,
-                cfg.TimeLimit,
+                vTimeLimit,
                 cfg.User, cfg.Group)
     elif dopay:
         GetPay(conn, cfg.Currency, payAmount, bn, paxNames, cfg.PaxCode,
