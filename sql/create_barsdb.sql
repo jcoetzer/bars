@@ -11334,7 +11334,7 @@ CREATE TABLE special_service_request_inventory (
     flight_number character(7) NOT NULL,
     flight_date date NOT NULL,
     city_pair integer NOT NULL,
-    booking_no integer NOT NULL,
+    book_no integer NOT NULL,
     rqst_code character(4) NOT NULL,
     usage_count integer NOT NULL,
     activated_user_code character(8),
@@ -16448,7 +16448,7 @@ ALTER TABLE ONLY sms_mesgs
 --
 
 ALTER TABLE ONLY special_service_request_inventory
-    ADD CONSTRAINT special_service_request_inventory_pkey PRIMARY KEY (flight_number, flight_date, city_pair, booking_no, rqst_code, passenger_name);
+    ADD CONSTRAINT special_service_request_inventory_pkey PRIMARY KEY (flight_number, flight_date, city_pair, book_no, rqst_code, passenger_name);
 
 
 --

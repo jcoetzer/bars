@@ -26,6 +26,7 @@ from Booking.BookingSummaryXml import ReadBsItinerary, ReadBsFaresPayment, \
     ReadBsOldPassengerFares, ReadBsOldFaresPayment, \
     ReadBsFares, ReadBsSummary, \
     ReadBsRetailer
+from Booking.ReadItenary import ReadItenary
 from DbConnect import OpenDb, CloseDb
 from BarsConfig import BarsConfig
 
@@ -64,17 +65,18 @@ def usage(pname="BookInfo.py"):
     print "\t%s [-v|-V] --book -B <BOOKNO>" % pname
     print "\t%s [-v|-V] --book -L <LOCATOR>" % pname
     print "Booking summary XML data :"
-    print "\t%s [-v|-V] --bs -B <BOOKNO> [-U <CURR>] [-G <AGENCY>] [-K <PAY>]" % pname
+    # print "\t%s [-v|-V] --bs -B <BOOKNO> [-U <CURR>] [-G <AGENCY>] [-K <PAY>]" % pname
+    print "\t%s [-v|-V] --bs -B <BOOKNO> [-G <AGENCY>] [-K <PAY>]" % pname
     print "\t%s [-v|-V] -T <TID>" % pname
     print "where"
     print "\t-A <ORIGIN>\t Origin address"
     print "\t-B <BOOKNO>\t Booking number"
-    print "\t-K <PAY>\tPayment form e.g. 'VI'"
+    print "\t-K <PAY>\t Payment form e.g. 'VI'"
     print "\t-G <AGENCY>\t Agency code"
     print "\t-L <LOCATOR>\t Locator"
     print "\t-T <TID>\t Transaction ID"
     print "\t-X <EXTLOC>\t External locator"
-    print "\t-U <CURR>\t Currency code : ZAR (Rand), VCM (Voyager) or DCM (Diners)"
+    # print "\t-U <CURR>\t Currency code : ZAR (Rand), VCM (Voyager) or DCM (Diners)"
     sys.exit(1)
 
 
@@ -171,6 +173,7 @@ def main(argv):
             doSeat = True
         elif opt == "--ssr":
             doSsr = True
+            printlog(2, "Check SSR")
         elif opt == '-t':
             bci_trl = True
         elif opt == '-1':
@@ -255,20 +258,26 @@ def main(argv):
     elif doBsXml:
         ReadBsRetailer(conn, bookno, agency_code, payment_form)
         ReadBsItinerary(conn, bookno)
-        ReadBsFares(conn, bookno, cfg.CurrencyCode)
-        ReadBsOldFares(conn, bookno, cfg.CurrencyCode)
-        ReadBsPassengerFares(conn, bookno, cfg.CurrencyCode)
-        ReadBsOldPassengerFares(conn, bookno, cfg.CurrencyCode)
-        ReadBsFaresPayment(conn, bookno, cfg.CurrencyCode)
-        ReadBsOldFaresPayment(conn, bookno, cfg.CurrencyCode)
-        ReadBsSummary(conn, bookno, cfg.CurrencyCode)
-    elif doSsr and bookno is not None and dt1 is not None:
-        n, departure_airport, arrival_airport, city_pair = \
-                ReadDeparture(conn, flight_number, dt1)
-        if n == 0:
-            print "Could not find flight %s on %s" % (flight_number, dt1.strftime("%Y-%m-%d"))
-            return 1
-        ReadRequestsPnl(conn, bookno, cfg.CompanyCode, departure_airport, dt1, PassengerName)
+        ReadBsFares(conn, bookno, cfg.Currency)
+        ReadBsOldFares(conn, bookno, cfg.Currency)
+        ReadBsPassengerFares(conn, bookno, cfg.Currency)
+        ReadBsOldPassengerFares(conn, bookno, cfg.Currency)
+        ReadBsFaresPayment(conn, bookno, cfg.Currency)
+        ReadBsOldFaresPayment(conn, bookno, cfg.Currency)
+        ReadBsSummary(conn, bookno, cfg.Currency)
+    elif doSsr and bookno is not None:
+        if dt1 is None:
+            pnr, dt1 = ReadBooking(conn, bookno)
+        irecs = ReadItenary(conn, None, bookno, None,
+                            fnumber=None, start_date=None, end_date=None)
+        for irec in irecs:
+            irec.display()
+            n, departure_airport, arrival_airport, city_pair = \
+                    ReadDeparture(conn, irec.flight_number, dt1)
+            if n == 0:
+                print "Could not find flight %s on %s" % (irec.flight_number, dt1.strftime("%Y-%m-%d"))
+                return 1
+            ReadRequestsPnl(conn, bookno, cfg.CompanyCode, departure_airport, dt1, PassengerName)
     elif bci_new and origin_address is not None and ext_book_numb is not None and locator is not None:
         check_bci_new(conn, origin_address, ext_book_numb, locator, bci_msk)
     elif bci_trl and origin_address is not None and ext_book_numb is not None and locator is not None:

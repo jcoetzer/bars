@@ -37,6 +37,8 @@ def ReadFlightPeriodsGui(conn, flight_number, schedule_period_no):
         print "count %s status %s" % (row['c'], row['flgt_sched_status'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
 
 # Read table flight_periods
@@ -67,6 +69,8 @@ def ReadFlightPeriods(conn, flight_number, schedule_period_no=None):
                row['flgt_sched_status'], row['gen_flag_invt'], row['invt_end_date'], row['user_name'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
 
 # Read table flight_periods
@@ -109,6 +113,8 @@ def ReadFlightPeriodsDate(conn, flight_number, dts):
              row['gen_flag_invt'], row['invt_end_date'], row['user_name'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
     return rvals
 
@@ -145,12 +151,13 @@ def ReadTestPeriods(conn, flight_number, schedule_period_no=None, dts=None):
                row['user_name'], int(row['schedule_period_no']), row['user_name'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
 
-# Read table test_inventry_segm
 def ReadTestInventrySegm(conn, flight_number, schedule_period_no=None,
                          selling_class=None):
-
+    """Read table test_inventry_segm."""
     print "<TEST> Inventory segment for flight %s [test_inventry_segm]" % flight_number,
     AdSql = \
         "SELECT flight_date,city_pair,selling_class,departure_city," \
@@ -180,10 +187,12 @@ def ReadTestInventrySegm(conn, flight_number, schedule_period_no=None,
                row['leg_number'], row['segment_number'], row['seat_capacity'], row['user_name'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
 
 def ReadFlightPerdLegs(conn, flight_number, schedule_period_no=None):
-
+    """Read flight period legs."""
     print "Flight period legs for flight %s [flight_perd_legs]" % flight_number,
     AdSql = \
         "SELECT departure_airport,arrival_airport," \
@@ -211,11 +220,12 @@ def ReadFlightPerdLegs(conn, flight_number, schedule_period_no=None):
                row['arrival'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
 
-# Read table flight_perd_segm
 def ReadFlightPerdSegm(conn, flight_number, schedule_period_no=None):
-
+    """Read table flight_perd_segm."""
     print "Flight period segment for flight %s [flight_perd_segm]" % flight_number,
     AdSql = \
         "SELECT city_pair,post_control_flag,aircraft_code," \
@@ -242,11 +252,12 @@ def ReadFlightPerdSegm(conn, flight_number, schedule_period_no=None):
                row['flight_brdng_flag'], row['segment_number'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
 
-# Read table test_perd_segm
 def ReadTestPerdSegm(conn, flight_number, schedule_period_no=None):
-
+    """Read table test_perd_segm."""
     print "<TEST> flight period segment for flight %s [test_perd_segm]" % flight_number,
     AdSql = \
         "SELECT city_pair,post_control_flag,aircraft_code," \
@@ -273,12 +284,13 @@ def ReadTestPerdSegm(conn, flight_number, schedule_period_no=None):
                row['flight_brdng_flag'], row['segment_number'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
 
-# Read table flight_perd_cls
 def ReadFlightPerdCls(conn, flight_number, schedule_period_no=None,
                          selling_class=None):
-
+    """Read table flight_perd_cls."""
     print "Flight period class for flight %s [flight_perd_cls]" % flight_number,
     AdSql = \
         "select flight_number,schedule_period_no,selling_class," \
@@ -305,12 +317,13 @@ def ReadFlightPerdCls(conn, flight_number, schedule_period_no=None,
             % (row['selling_class'], row['parent'], row['display_priority'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
 
-# Read table test_perd_cls
 def ReadTestPerdCls(conn, flight_number, schedule_period_no=None,
                     selling_class=None):
-
+    """Read table test_perd_cls."""
     print "<TEST> Flight period class for flight %s [test_perd_cls]" % flight_number,
     AdSql = \
         "select flight_number,schedule_period_no,selling_class," \
@@ -337,12 +350,13 @@ def ReadTestPerdCls(conn, flight_number, schedule_period_no=None,
             % (row['selling_class'], row['parent'], row['display_priority'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
 
-# Read table flt_perd_seg_cls
 def ReadFlightPerdSegCls(conn, flight_number, schedule_period_no=None,
                              selling_class=None):
-
+    """Read table flt_perd_seg_cls."""
     print "Flight period segment class for flight %s [flt_perd_seg_cls]" % flight_number,
     AdSql = \
         "SELECT city_pair,selling_class,segment_number,update_time " \
@@ -369,12 +383,13 @@ def ReadFlightPerdSegCls(conn, flight_number, schedule_period_no=None,
                row['segment_number'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
 
-# Read table flight_perd_prnt
 def ReadFlightPerdPrnt(conn, flight_number, schedule_period_no=None,
                           selling_class=None):
-
+    """Read table flight_perd_prnt."""
     print "Flight period parent for flight %s [flight_perd_prnt]" % flight_number,
     AdSql = \
         "select selling_class,parent_sell_cls,update_time " \
@@ -400,12 +415,13 @@ def ReadFlightPerdPrnt(conn, flight_number, schedule_period_no=None,
             % (row['selling_class'], row['parent_sell_cls'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
 
-# Read table test_perd_prnt
 def ReadTestPerdPrnt(conn, flight_number, schedule_period_no=None,
                           selling_class=None):
-
+    """Read table test_perd_prnt."""
     print "<TEST> Flight period parent for flight %s [test_perd_prnt]" % flight_number,
     AdSql = \
         "select selling_class,parent_sell_cls,update_time " \
@@ -431,16 +447,17 @@ def ReadTestPerdPrnt(conn, flight_number, schedule_period_no=None,
             % (row['selling_class'], row['parent_sell_cls'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
 
-# Read table inventry_realloc
 def read_inventry_realloc(conn, flight_number, schedule_period_no=None,
                           selling_class=None):
-
+    """Read table inventry_realloc."""
     print "Inventory reallocation for flight %s [inventry_realloc]" % flight_number,
     AdSql = \
         "select flight_date,city_pair,selling_class,start_date," \
-        "end_date,frequency_code,crea_user_code,update_time " \
+        "end_date,frequency_code,create_user,update_time " \
         " FROM inventry_realloc WHERE flight_number = '%s'" \
         % flight_number
     if selling_class is not None:
@@ -462,15 +479,16 @@ def read_inventry_realloc(conn, flight_number, schedule_period_no=None,
         print "\tclass %s city pair %s date %s start %s end %s frequency %s user %s update %s" \
             % (row['selling_class'], row['city_pair'],
                row['flight_date'], row['start_date'], row['end_date'],
-               row['frequency_code'], row['crea_user_code'], row['update_time'])
+               row['frequency_code'], row['create_user'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
-
-# Read table schd_chng_action
+ 
 def ReadSchdChngAction(conn, flight_number, schedule_period_no=None,
                           selling_class=None):
-
+    """Read table schd_chng_action."""
     print "Schedule change action for flight %s [schd_chng_action]" % flight_number,
     AdSql = \
         "select city_pair,selling_class,departure_airport,arrival_airport," \
@@ -502,5 +520,7 @@ def ReadSchdChngAction(conn, flight_number, schedule_period_no=None,
                row['action_date'], row['processing_flag'], row['update_time'])
     if n == 0:
         print "\tnot found"
+        
+    cur.close()
 
 

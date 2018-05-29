@@ -12,8 +12,8 @@ from BarsLog import set_verbose, get_verbose, printlog
 
 
 def ReadBooking(conn, book_no):
-
-    bcol = "booking_status,pax_name_rec,origin_address,first_segm_date,no_of_seats,book_agency_code"
+    dt1 = None
+    bcol = "booking_status,pax_name_rec,origin_address,first_segm_date,no_of_seats,book_agency"
     # GetBookColumns()
 
     bookSql = \
@@ -24,8 +24,13 @@ def ReadBooking(conn, book_no):
     # Run query
     cur.execute(bookSql)
     for row in cur:
+        pnr = row['pax_name_rec']
+        dt1 = row['first_segm_date']
         print "\t%s %s %s %s %s %s" \
-            % (row['booking_status'],row['pax_name_rec'],row['origin_address'],row['first_segm_date'],row['no_of_seats'],row['book_agency_code'])
+            % (row['booking_status'],row['pax_name_rec'],row['origin_address'],row['first_segm_date'],row['no_of_seats'],row['book_agency'])
+        
+    cur.close()
+    return pnr, dt1
 
 
 def ReadBookingData(conn, bk_cfg_files, book_no, locator):
@@ -92,6 +97,8 @@ def ReadBookingData(conn, bk_cfg_files, book_no, locator):
                     n += 1
                 print
             print
+        
+    cur.close()
 
 
 

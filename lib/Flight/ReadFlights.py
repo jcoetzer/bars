@@ -387,7 +387,7 @@ def get_special_service_request_inventory(conn, flight_number, flight_date, city
     print "SSR inventory for flight %s date %s city pair %s [special_service_request_inventory]" \
         % (flight_number, flight_date, city_pair)
     IsegSql = \
-        "SELECT booking_no, rqst_code" \
+        "SELECT book_no, rqst_code" \
         " FROM special_service_request_inventory" \
         " WHERE flight_number='%s' AND flight_date='%s' AND city_pair='%s' AND inactivated_date_time IS NULL" \
         % (flight_number, flight_date, city_pair)
@@ -402,11 +402,11 @@ def get_special_service_request_inventory(conn, flight_number, flight_date, city
         print "\tnot found"
 
 
-"""
-Adjust all nett_sold numbers caused by over-arching segments
-"""
-def nett_sold_reconcile(conn, flight_number, flight_date, class_code):
 
+def nett_sold_reconcile(conn, flight_number, flight_date, class_code):
+    """
+    Adjust all nett_sold numbers caused by over-arching segments.
+    """
     IsegSql = \
         "SELECT SUM(segm_sngl_sold),SUM(segm_group_sold),SUM(segm_nrev_sold)" \
         " FROM inventry_segment" \
@@ -415,10 +415,10 @@ def nett_sold_reconcile(conn, flight_number, flight_date, class_code):
     return
 
 
-"""
-Find all legs and segments for the selling class
-"""
 def get_inventry_segment_class(conn, flight_number, flight_date, class_code):
+    """
+    Find all legs and segments for the selling class.
+    """
 
     print "Inventory segment class %s for flight %s date %s [inventry_segment]" % (class_code, flight_number, flight_date)
     IsegSql = \
@@ -438,10 +438,10 @@ def get_inventry_segment_class(conn, flight_number, flight_date, class_code):
         print "\tnot found"
 
 
-"""
-Find all the legs and segments for the flight
-"""
 def get_inventry_segment(conn, flight_number, flight_date, reconcile_window):
+    """
+    Find all the legs and segments for the flight.
+    """
 
     print "Inventory segment for flight %s date %s [inventry_segment]" % (flight_number, flight_date)
 
@@ -469,7 +469,7 @@ def nett_sold_reconcile(conn):
 
 
 def ReadFlights(conn, flight_number, dt1, dt2, departure_airport, arrival_airport, code_share=False, class_code='Y', company_code='ZZ'):
-
+    """Read flights."""
     FsegSql=\
         "SELECT flight_number,flight_date,departure_airport,arrival_airport," \
         "city_pair,departure_time,arrival_time,aircraft_code,schedule_period_no" \
@@ -523,7 +523,7 @@ def ReadFlights(conn, flight_number, dt1, dt2, departure_airport, arrival_airpor
 
 
 def ReadFlight(conn, flight_number, dts, class_code='Y'):
-
+    """Read flight."""
     printlog(1, "Read flight %s for date %s [flight_segm_date]" % (flight_number, dts.strftime("%Y-%m-%d")))
     fdate=dts.strftime("%m/%d/%Y")
     FsegSql=\
@@ -563,7 +563,7 @@ def ReadFlight(conn, flight_number, dts, class_code='Y'):
 
 
 def CheckFlight(conn, flight_number, dts, class_code='Y'):
-
+    """Flight segment dates."""
     print "Flight segment dates for flight %s date %s [flight_segm_date]" % (flight_number, dts.strftime("%Y-%m-%d"))
     fdate=dts.strftime("%m/%d/%Y")
     FsegSql=\
@@ -593,7 +593,7 @@ def CheckFlight(conn, flight_number, dts, class_code='Y'):
 
 
 def ReadFlightsDate(conn, dts, ndays, departure_airport, arrival_airport, code_share=False, class_code='Y', company_code='ZZ'):
-
+    """Flights for date."""
     printlog(1, "Flights for date %s [flight_segm_date]" % dts.strftime("%Y-%m-%d"))
     if code_share: printlog(1, "With codeshare")
     fdate=dts.strftime("%m/%d/%Y")
@@ -635,7 +635,7 @@ def ReadFlightsDate(conn, dts, ndays, departure_airport, arrival_airport, code_s
 
 
 def ReadFlightsDateLeg(conn, dts, ndays, departure_airport, arrival_airport, class_code='Y', company_code='ZZ'):
-
+    """Flights for date."""
     printlog(1, "Flights for date %s [flight_segm_date]" % dts.strftime("%Y-%m-%d"), 1)
     fdate=dts.strftime("%m/%d/%Y")
     FsegSql = \

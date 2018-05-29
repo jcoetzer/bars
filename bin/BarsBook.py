@@ -39,7 +39,9 @@ def usage(pn):
     print("Detail:")
     print("\t%s --detail -F <FLIGHT> -P <CITY> -Q <CITY> -D <DATE> [-E <DATE>]" % pn)
     print("Book:")
-    print("\t%s --book -N <PAX> -F <FLIGHT> -P <CITY> -Q <CITY> -D <DATE> [-E <DATE>]" % pn)
+    print("\t%s --book -N <PAX> -F <FLIGHT> -N <NAME> -M <MISC> -D <DATE> [-E <DATE>]" % pn)
+    print("Check:")
+    print("\t%s --pay -B <BOOK> -A <AMOUNT> -N <NAME>" % pn)
     print("Check:")
     print("\t%s --chk -B <BOOK>" % pn)
     sys.exit(1)
@@ -88,15 +90,12 @@ def GetPrice(conn,
         fare.display()
 
 
-def GetBook(conn, vCompany, vBookCategory, vOriginAddress,
+def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
             vOriginBranchCode, vAgencyCode,
             paxNames, paxDobs,
-            payAmount,
             flightNumber, dt1,
-            departAirport, arriveAirport,
-            departTime, arriveTime,
-            departTerm, arriveTerm,
-            cityPairNo, sellClass,
+            flightNumber2, dt2,
+            sellClass,
             aTimeLimit,
             vUser, vGroup):
     """Make a booking."""
@@ -112,14 +111,19 @@ def GetBook(conn, vCompany, vBookCategory, vOriginAddress,
     if sellClass is None:
         sellClass = 'Y'
     if departAirport is None or arriveAirport is None:
-        n, fd = ReadFlightDeparture(conn, sellClass, flightNumber, dt1)
-        departAirport = fd.departure_airport
-        arriveAirport = fd.arrival_airport
-        cityPairNo = fd.city_pair
-        departTerm = fd.departure_terminal
-        arriveTerm = fd.arrival_terminal
-        departTime = fd.departure_time
-        arriveTime = fd.arrival_time
+        print "Flight number and date must be specified"
+        return
+    n, fd = ReadFlightDeparture(conn, sellClass, flightNumber, dt1)
+    if n == 0:
+        print "Flight number and date not found"
+        return
+    departAirport = fd.departure_airport
+    arriveAirport = fd.arrival_airport
+    cityPairNo = fd.city_pair
+    departTerm = fd.departure_terminal
+    arriveTerm = fd.arrival_terminal
+    departTime = fd.departure_time
+    arriveTime = fd.arrival_time
     bn, pnr = AddBookCrossIndex(conn, vBookCategory, vOriginAddress,
                                 vUser, vGroup)
     AddBook(conn, bn, pnr, vSeatQuantity, vOriginAddress, vBookCategory,
@@ -131,6 +135,25 @@ def GetBook(conn, vCompany, vBookCategory, vOriginAddress,
                departTerm, arriveTerm,
                cityPairNo, sellClass,
                vUser, vGroup)
+    if flightNumber2 is not None and dt is not None:
+        n, fd = ReadFlightDeparture(conn, sellClass, flightNumber2, dt2)
+        if n == 0:
+            print "Return flight number and date not found"
+            return
+        departAirport = fd.departure_airport
+        arriveAirport = fd.arrival_airport
+        cityPairNo = fd.city_pair
+        departTerm = fd.departure_terminal
+        arriveTerm = fd.arrival_terminal
+        departTime = fd.departure_time
+        arriveTime = fd.arrival_time
+        AddItenary(conn, bn, flightNumber2, dt2,
+                departAirport, arriveAirport,
+                departTime, arriveTime,
+                departTerm, arriveTerm,
+                cityPairNo, sellClass,
+                vUser, vGroup)
+        
     AddPassenger(conn, bn,
                  paxNames,
                  'ADULT', 'A',
@@ -139,7 +162,8 @@ def GetBook(conn, vCompany, vBookCategory, vOriginAddress,
     AddBookTimeLimit(conn, bn, vAgencyCode, vUser, vGroup)
 
 
-def GetPay(conn, aCurrency, aPayAmount, aBookNo, aPaxName, aPaxCode,
+def PutPay(conn, aCurrency, aPayAmount, aPayAmount2, aBookNo, aPaxNames, aPaxCode,
+           aDepart, aArrive,           
            aOriginBranchCode,
            aUser, aGroup):
     """Process payment."""
@@ -151,11 +175,31 @@ def GetPay(conn, aCurrency, aPayAmount, aBookNo, aPaxName, aPaxCode,
     vDocNum = '4242424242424242'
     vPaymentMode = ' '
     vRemark = ' '
+    vFareNo = 1
     AddPayment(conn, vPaymentForm, vPaymentType, aCurrency, aPayAmount,
                vDocNum, vPaymentMode,
-               aBookNo, aPaxName, aPaxCode,
+               aBookNo, aPaxNames[0], aPaxCode,
                aOriginBranchCode, vRemark,
                aUser, aGroup)
+    if aDepart is None or aArrive is None:
+        irecs = ReadItenary(conn, None, bookno, None,
+                            fnumber=None, start_date=None, end_date=None)
+        l = len(irecs)
+        if l > 2:
+            print "Found %d itenaries"
+            return 
+        elif l == 2:
+            for irec in irecs:
+        elif l == 1:
+            irec = irecs[0]
+            irec.display()
+            n, departure_airport, arrival_airport, city_pair = \
+                    ReadDeparture(conn, irec.flight_number, dt1)
+            AddBookFares(conn, aBookNo, vFareNo, aPaxCode, departure_airport, arrival_airport,
+                        aCurrency, aPayAmount, aUser, aGroup)
+    else:
+        AddBookFares(conn, aBookNo, vFareNo, aPaxCode, aDepart, aArrive,
+                     aCurrency, aPayAmount, aUser, aGroup)
     return 0
 
 
@@ -172,6 +216,7 @@ def main(argv):
     arriveAirport = None
     departAirport = None
     flightNumber = None
+    flightNumber2 = None
     departTerm = 'A'
     arriveTerm = 'B'
     bn = None
@@ -180,6 +225,7 @@ def main(argv):
     paxNames = None
     paxDobs = None
     payAmount = None
+    payAmount2 = None
     sellClass = None
     vTimeLimit = datetime.now() + timedelta(days=2)
 
@@ -195,12 +241,12 @@ def main(argv):
         usage(os.path.basename(sys.argv[0]))
 
     opts, args = getopt.getopt(argv,
-                               "cfhivyVA:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
+                               "cfhivyVB:C:D:E:F:G:I:K:L:M:N:P:Q:R:S:T:X:Y:",
                                ["help",
                                 "avail", "book", "detail", "price", "pay",
                                 "chk",
                                 "bn=", "dob="
-                                "date=", "edate=", "flight="])
+                                "date=", "edate=", "flight=", "rflight="])
 
     for opt, arg in opts:
         if opt == '-h' or opt == '--help':
@@ -222,8 +268,10 @@ def main(argv):
             doprice = True
         elif opt == '--pay':
             dopay = True
-        elif opt in ("-A", "--amount"):
-            payAmount = float(arg)
+        elif opt in ("-R", "--amount"):
+            payAmount = str(arg)
+        elif opt in ("-S", "--ramount"):
+            payAmount2 = str(arg)
         elif opt in ('-B', '--bn'):
             bn = int(arg)
             printlog(2, "Booking number %d" % bn)
@@ -242,6 +290,14 @@ def main(argv):
                 dt1 = ReadDate(fndata[1])
             else:
                 flightNumber = arg
+            printlog(2, "Flight number set to %s" % flightNumber)
+        elif opt in ("-G", "--rflight"):
+            if ',' in arg:
+                fndata = arg.split('/')
+                flightNumber2 = fndata[0]
+                dt2 = ReadDate(fndata[1])
+            else:
+                flightNumber2 = arg
             printlog(2, "Flight number set to %s" % flightNumber)
         elif opt in ("-N", "--name"):
             paxNames = str(arg).upper().split(',')
@@ -282,15 +338,26 @@ def main(argv):
         dt2 = dt1
 
     selling_classs = get_selling_conf(conn, cfg.CompanyCode)
-    cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
     if doavail:
+        cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
         GetAvail(conn, dt1, dt2, cityPairNo,
                  departAirport, arriveAirport,
                  selling_classs, cfg.CompanyCode)
     elif dodetail:
-        GetFlightDetails(conn, flightNumber, dt1,
+        GetFlightDetails(conn, flightNumber, dt1, flightNumber2, dt2,
                          departAirport, arriveAirport)
     elif doprice:
+        cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
+        GetPrice(conn,
+                 cfg.CompanyCode,
+                 cityPairNo,
+                 dt1,
+                 dt2,
+                 cfg.SellingClass,
+                 cfg.OnwReturnIndicator,
+                 cfg.FareCategory,
+                 cfg.AuthorityLevel)
+        cityPairNo = GetCityPair(conn, arriveAirport, departAirport)
         GetPrice(conn,
                  cfg.CompanyCode,
                  cityPairNo,
@@ -301,7 +368,8 @@ def main(argv):
                  cfg.FareCategory,
                  cfg.AuthorityLevel)
     elif dobook:
-        GetBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
+        cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
+        PutBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
                 cfg.OriginBranchCode, cfg.AgencyCode,
                 paxNames, paxDobs,
                 payAmount,
@@ -313,7 +381,8 @@ def main(argv):
                 vTimeLimit,
                 cfg.User, cfg.Group)
     elif dopay:
-        GetPay(conn, cfg.Currency, payAmount, bn, paxNames, cfg.PaxCode,
+        PutPay(conn, cfg.Currency, payAmount, payAmount2, bn, paxNames, cfg.PaxCode,
+               departAirport, arriveAirport,
                cfg.OriginBranchCode,
                cfg.User, cfg.Group)
     else:

@@ -88,6 +88,8 @@ insert into airport values('WEL', 'FAWM', 'Welkom Airport', 'Welkom', 'ZA', 'UTC
 insert into airport values('WKF', 'FAWK', 'Air Force Base Waterkloof', 'Pretoria', 'ZA', 'UTC+02:00', 'SSM', 'BARS', NOW());
 insert into airport values('ZEC', 'FASC', 'Secunda Airport', 'Secunda', 'ZA', 'UTC+02:00', 'SSM', 'BARS', NOW());
 
+insert into city select city_code, city_name, 'ZA', 'A', 'N', 'SSM', 'BARS', NOW() from airport;
+
 insert into city_pair(start_city,end_city,city_pair,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time) values('CPT', 'JNB', 1, 'A', 1500, '20kg', 1, '', 'SSM', 'BARS', NOW()); 
 insert into city_pair(start_city,end_city,city_pair,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time) values('JNB', 'CPT', 2, 'A', 1500, '20kg', 1, '', 'SSM', 'BARS', NOW()); 
 insert into city_pair(start_city,end_city,city_pair,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time) values('JNB', 'DUR', 3, 'A', 600 , '20kg', 1, '', 'SSM', 'BARS', NOW()); 
@@ -130,3 +132,4 @@ insert into fare_codes(company_code,fare_code,short_description,description,sell
 update fare_codes set acss_strt_auth_lvl=100;
 update fare_codes set acss_end_auth_lvl=100;
 
+insert into service_requests values('ZZ','CKIN','Passenger checkin details','CKIN',NULL,'S','Y','Y','Y','Y','Y','Y','Y','Y','TARFU','SRVRQ','SRVRQ','SRVRQ','SRVRQ','N','A','Y','A',NULL,NULL,'SSM','BARS',NOW(),1,NULL,NUll,NULL);INSERT 0 1

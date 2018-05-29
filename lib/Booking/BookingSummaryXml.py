@@ -19,8 +19,8 @@ def ReadBsRetailer(conn, elBookingNumber, epcAgencyCode, v_agencyPayForm):
         select CASE WHEN COUNT(*) > 0 THEN MAX(b.book_no) ELSE 0 END as bn
             from  book as b
             where b.book_no = %d
-            and  (b.book_agency_code = '%s' or
-                 (b.book_agency_code is null and b.book_no in
+            and  (b.agency_code = '%s' or
+                 (b.agency_code is null and b.book_no in
                              (select p.book_no
                               from   payments p
                               where  p.payment_type = 'TP'
@@ -28,7 +28,7 @@ def ReadBsRetailer(conn, elBookingNumber, epcAgencyCode, v_agencyPayForm):
                               and    p.book_no = b.book_no)))
     """ % (elBookingNumber, epcAgencyCode, v_agencyPayForm)
 
-    printlog("%s" % BsRetailerSql,2)
+    printlog(2, "%s" % BsRetailerSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -50,9 +50,9 @@ select fare_no,pass_code paxcode,payment_code,fare_calc_code,round(fare_paymt_am
 round(fare_paymt_amt, 5) unrounded_amount,paid_curr_code currency_code,
 tax_code,nation_code,refundable_flag,net_fare_flag,private_fare_flag,source_ref_id
 ,round( (select max(nuc_rate) from currency_codes cc where cc.currency_code = '%s') /
-        nvl( (select max(nuc_rate) from hist_currency_codes hcc
+        coalesce( (select max(nuc_rate) from hist_currency_codes hcc
               where hcc.currency_code = bfp.paid_curr_code
-              and conv_inddatelong(bfp.update_time) between
+              and bfp.update_time between
               hcc.valid_from_date_time and hcc.valid_to_date_time),
              (select max(nuc_rate) from currency_codes cc
                 where cc.currency_code = bfp.paid_curr_code) ), 5 ) common_currency_factor,
@@ -62,7 +62,7 @@ where book_no = %d
 and payment_code <> 'FEE'
 """ % (currency_code, book_no, book_no)
 
-    printlog("%s" % FaresPaymentSql,2)
+    printlog(2, "%s" % FaresPaymentSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -97,11 +97,11 @@ def ReadBsPassengerFares(conn, book_no, currency_code):
                                         (select max(nuc_rate) from currency_codes as cc
                                         where cc.currency_code = '%s')
                                         /
-                                        nvl
+                                        coalesce
                                         (
                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                 where hcc.currency_code = bfp.total_amount_curr
-                                                and conv_inddatelong(bfp.update_time) between
+                                                and bfp.update_time between
                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                         ,
                                                 (select max(nuc_rate) from currency_codes as cc
@@ -112,10 +112,10 @@ def ReadBsPassengerFares(conn, book_no, currency_code):
                                 )                                                                       as common_currency_factor
 
                         from book_fares_pass            as bfp
-                        inner join book_fares_paym      as bfpm  on bfpm.book_no        = bfp.book_no
-                                                                                                and bfpm.pass_code      = bfp.pass_code
-                                                                                                and bfp.book_no = %d
-
+                        inner join book_fares_paym      as bfpm  
+                        on bfpm.book_no        = bfp.book_no
+                        and bfpm.pass_code      = bfp.pass_code
+                        and bfp.book_no = %d
                         group by
                                  bfp.pass_code
                                 ,bfp.total_amount_curr
@@ -127,7 +127,7 @@ def ReadBsPassengerFares(conn, book_no, currency_code):
                                  bfp.pass_code
 """  % (currency_code, book_no)
 
-    printlog("%s" % PassengerFaresSql,2)
+    printlog(2, "%s" % PassengerFaresSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -149,7 +149,7 @@ def ReadBsOldFares(conn, book_no, currency_code):
     OldFaresSql = """
     select
             bf.et_serial_no                                         as serial_no
-            ,conv_inddatelong(bf.update_time)    as updated_date_time
+            ,bf.update_time    as updated_date_time
             ,bf.fare_no
             ,bf.pass_code                                           as passenger_description_code
             ,bf.start_city                                          as departure_city
@@ -161,14 +161,14 @@ def ReadBsOldFares(conn, book_no, currency_code):
             ,dcy.city_name                                          as departure_city_name
             ,acy.city_name                                          as arrival_city_name
             ,'0'                                                            as source_reference_id
-            ,nvl(
+            ,coalesce(
                     (select max(bfp2.refundable_flag)
                     from book_fares_paym as bfp2 where book_no = bf.book_no
                     and bfp2.fare_no = bf.fare_no and bfp2.pass_code = bf.pass_code
                     and bfp2.payment_code = bfp.payment_code
                     and bfp2.refundable_flag = 'N')
             ,'Y')                                                           as refundable_flag
-            ,round(nvl(
+            ,round(coalesce(
                     (select sum(bfp2.fare_paymt_amt)
                     from book_fares_paym as bfp2 where book_no = bf.book_no
                     and bfp2.fare_no = bf.fare_no and bfp2.pass_code = bf.pass_code
@@ -179,11 +179,11 @@ def ReadBsOldFares(conn, book_no, currency_code):
                     (select max(nuc_rate) from currency_codes as cc
                     where cc.currency_code = '%s')
                     /
-                    nvl
+                    coalesce
                     (
                             (select max(nuc_rate) from hist_currency_codes as hcc
                             where hcc.currency_code = bf.total_amount_curr
-                            and conv_inddatelong(bf.update_time) between
+                            and bf.update_time between
                             hcc.valid_from_date_time and hcc.valid_to_date_time)
                     ,
                             (select max(nuc_rate) from currency_codes as cc
@@ -222,7 +222,7 @@ def ReadBsOldFares(conn, book_no, currency_code):
                     ,bf.fare_no
 """ % (currency_code, book_no)
 
-    printlog("%s" % OldFaresSql,2)
+    printlog(2, "%s" % OldFaresSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -251,7 +251,7 @@ def ReadBsOldPassengerFares(conn, book_no, currency_code):
                                 ,bfp.endrsmnt_rstrctns                          as endorsement_restriction
                                 ,round(sum(bfpm.fare_paymt_amt), 2)     as fare_amount
                                 ,round(sum(bfpm.fare_paymt_amt), 5)     as unrounded_fare_amount
-                                ,conv_inddatelong(bfp.update_time) as updated_date_time
+                                ,bfp.update_time as updated_date_time
                                 ,bfp.et_serial_no                                        as serial_no
 
                                 ,round
@@ -259,11 +259,11 @@ def ReadBsOldPassengerFares(conn, book_no, currency_code):
                                         (select max(nuc_rate) from currency_codes as cc
                                         where cc.currency_code = '%s')
                                         /
-                                        nvl
+                                        coalesce
                                         (
                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                 where hcc.currency_code = bfp.total_amount_curr
-                                                and conv_inddatelong(bfp.update_time) between
+                                                and bfp.update_time between
                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                         ,
                                                 (select max(nuc_rate) from currency_codes as cc
@@ -294,7 +294,7 @@ def ReadBsOldPassengerFares(conn, book_no, currency_code):
                                 ,bfp.pass_code
 """  % (currency_code, book_no)
 
-    printlog("%s" % OldPassengerFaresSql,2)
+    printlog(2, "%s" % OldPassengerFaresSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -328,18 +328,18 @@ def ReadBsOldFaresPayment(conn, book_no, currency_code):
                                 ,net_fare_flag
                                 ,private_fare_flag
                                 ,source_ref_id
-                                ,conv_inddatelong(update_time) as updated_date_time
+                                ,update_time as updated_date_time
                                 ,et_serial_no                                    as serial_no
                                 ,round
                                 (
                                         (select max(nuc_rate) from currency_codes as cc
                                         where cc.currency_code = '%s')
                                         /
-                                        nvl
+                                        coalesce
                                         (
                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                 where hcc.currency_code = bfp.paid_curr_code
-                                                and conv_inddatelong(bfp.update_time) between
+                                                and bfp.update_time between
                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                         ,
                                                 (select max(nuc_rate) from currency_codes as cc
@@ -351,7 +351,7 @@ def ReadBsOldFaresPayment(conn, book_no, currency_code):
                         where book_no = %d and payment_code <> 'FEE'
 """  % (currency_code, book_no)
 
-    printlog("%s" % OldFaresPaymentSql,2)
+    printlog(2, "%s" % OldFaresPaymentSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -396,7 +396,7 @@ def ReadBsStopOvers(conn, flight_number, board_date, departure_airport, arrival_
                         and fsd.arrival_airport <> '%s'
 """ % (flight_number, board_date, departure_airport, departure_airport, arrival_airport)
 
-    printlog("%s" % StopOversSql,2)
+    printlog(2, "%s" % StopOversSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -414,27 +414,24 @@ def ReadBsStopOvers(conn, flight_number, board_date, departure_airport, arrival_
 def ReadBsItinerary(conn, book_no):
 
     print "Itenary for booking %d" % (book_no)
-    ItinerarySql = """
-                        select
-                                itn.route_no
-                                ,(select flight_number from flight_shared_leg where dup_flight_number = itn.flight_number and flight_date = itn.flight_date) as codeshareflightnumber
-                                ,itn.flight_number
+    ItinerarySql = """SELECT
+                                itn.route_no,
+                                (select flight_number from flight_shared_leg where dup_flight_number = itn.flight_number and flight_date = itn.flight_date) as codeshareflightnumber
+                                ,itn.flight_number as flight_number
                                 ,itn.selling_class
-                                ,to_char(itn.flight_date,'%%d%%b%%iY')     as flight_date
+                                ,itn.flight_date as flight_date
                                 ,itn.departure_city
                                 ,itn.arrival_city
                                 ,substr(itn.reserve_status, 1, 2)       as reserve_status
                                 ,itn.fare_nos
-                                ,substr(case when departure_time / 60 < 10 then '0' else '' end || departure_time / 60::char(2), 1, 2) || ':' ||
-                 substr('0' || mod(departure_time, 60), length(mod(departure_time, 60)::char(2)), 2)   as departure_time
-                                 ,substr(case when arrival_time / 60 < 10 then '0' else '' end || arrival_time / 60::char(2), 1, 2) || ':' ||
-                 substr('0' || mod(arrival_time, 60), length(mod(arrival_time, 60)::char(2)), 2)       as arrival_time
+                                ,departure_time
+                                 ,arrival_time
                                 ,ac.seat_rqst_type
                                 ,itn.book_no
                                 ,itn.alt_itenary_no     as alt_itinerary_no
                                 ,itn.itenary_no         as itinerary_no
-                                ,itn.departure_airport       as departure_airport_code
-                                ,itn.arrival_airport       as arrival_airport_code
+                                ,itn.departure_airport       as departure_airport
+                                ,itn.arrival_airport       as arrival_airport
                                 ,dap.airport_name       as departure_airport_name
                                 ,dcy.city_name          as departure_city_name
                                 ,aap.airport_name       as arrival_airport_name
@@ -444,7 +441,7 @@ def ReadBsItinerary(conn, book_no):
                                 ,itn.date_change_ind    as date_change_ind
                                 ,case when
                                          (
-                                                select  nvl(count(fsl.dup_flight_number),0)
+                                                select  coalesce(count(fsl.dup_flight_number),0)
                                                 from    flight_shared_leg as fsl
                                                 where   fsl.flight_number   = itn.flight_number
                                                         and fsl.flight_date = itn.flight_date
@@ -462,7 +459,7 @@ def ReadBsItinerary(conn, book_no):
                                         as marketing_flight_number
                         from  itenary            as itn
                         left join action_codes  as ac   on action_code  = substr(itn.reserve_status, 1, 2)
-                                                                                                                                  and ac.company_code = (select company_code from system_param)
+                             and ac.company_code = (select company_code from system_param)
                         left join airport       as dap on dap.airport_code      = itn.departure_airport
                         left join city          as dcy on dcy.city_code         = itn.departure_city
                         left join airport       as aap on aap.airport_code      = itn.arrival_airport
@@ -477,7 +474,7 @@ def ReadBsItinerary(conn, book_no):
                                                 itn.departure_time
 """  % (book_no)
 
-    printlog("%s" % ItinerarySql,2)
+    printlog(2, "%s" % ItinerarySql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -485,9 +482,9 @@ def ReadBsItinerary(conn, book_no):
     n = 0
     for row in cur:
         print "\tflight %s date %s depart %s arrive %s market '%s' codeshare '%s'" \
-            % (row['flight_number'], row['flight_date'], row['departure_airport_code'], row['arrival_airport_code'],
+            % (row['flight_number'], row['flight_date'], row['departure_airport'], row['arrival_airport'],
                row['marketing_flight_number'], str(row['codeshareflightnumber'] or ''))
-        ReadBsStopOvers(conn, row['flight_number'], row['flight_date'], row['departure_airport_code'], row['arrival_airport_code'])
+        ReadBsStopOvers(conn, row['flight_number'], row['flight_date'], row['departure_airport'], row['arrival_airport'])
         n += 1
     if n==0:
         print "\t--none--"
@@ -510,14 +507,14 @@ def ReadBsFares(conn, book_no, currency_code):
                                 ,dcy.city_name                                          as departure_city_name
                                 ,acy.city_name                                          as arrival_city_name
                                 ,'0'                                                            as source_reference_id
-                                ,nvl(
+                                ,coalesce(
                                         (select max(bfp2.refundable_flag)
                                         from book_fares_paym as bfp2 where book_no = bf.book_no
                                         and bfp2.fare_no = bf.fare_no and bfp2.pass_code = bf.pass_code
                                         and bfp2.payment_code = bfp.payment_code
                                         and bfp2.refundable_flag = 'N')
                                 ,'Y')                                                           as refundable_flag
-                                ,round(nvl(
+                                ,round(coalesce(
                                         (select sum(bfp2.fare_paymt_amt)
                                         from book_fares_paym as bfp2 where book_no = bf.book_no
                                         and bfp2.fare_no = bf.fare_no and bfp2.pass_code = bf.pass_code
@@ -527,11 +524,11 @@ def ReadBsFares(conn, book_no, currency_code):
                                         (select max(nuc_rate) from currency_codes as cc
                                         where cc.currency_code = '%s')
                                         /
-                                        nvl
+                                        coalesce
                                         (
                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                 where hcc.currency_code = bf.total_amount_curr
-                                                and conv_inddatelong(bf.update_time) between
+                                                and bf.update_time between
                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                         ,
                                                 (select max(nuc_rate) from currency_codes as cc
@@ -554,7 +551,7 @@ def ReadBsFares(conn, book_no, currency_code):
                         order by bf.pass_code, bf.fare_no
 """ % (currency_code, book_no)
 
-    printlog("%s" % FaresSql,2)
+    printlog(2, "%s" % FaresSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -575,18 +572,18 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
     print "Booking summary for booking %d currency %s" % (book_no, currency_code)
     SummarySql = """
                         select
-                                round(nvl(
+                                round(coalesce(
                                         (select sum
                                                 (
                                                         pa1.payment_amount *
                                                         (select max(nuc_rate) from currency_codes as cc
                                                         where cc.currency_code = '%s')
                                                         /
-                                                        nvl
+                                                        coalesce
                                                         (
                                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                                 where hcc.currency_code = pa1.paid_curr_code
-                                                                and conv_inddatelong(pa1.crea_date_time) between
+                                                                and pa1.crea_date_time) between
                                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                                         ,
                                                                 (select max(nuc_rate) from currency_codes as cc
@@ -595,20 +592,19 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                 ) from payments pa1
                                         where pa1.book_no = bo.book_no and pa1.paid_flag = 'Y'
                                         and  pa1.payment_type not in ('%s', '%s', '%s'))
-                                , 0), 2)                                                                        as total_payment
-
-                                ,round(nvl(
+                                , 0), 2) as total_payment
+                                ,round(coalesce(
                                         (select sum
                                                 (
                                                         bc.comm_amount *
                                                         (select max(nuc_rate) from currency_codes as cc
                                                         where cc.currency_code = '%s')
                                                         /
-                                                        nvl
+                                                        coalesce
                                                         (
                                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                                 where hcc.currency_code = bc.comm_amount_curr
-                                                                and conv_inddatelong(bc.update_time) between
+                                                                and bc.update_time between
                                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                                         ,
                                                                 (select max(nuc_rate) from currency_codes as cc
@@ -620,20 +616,19 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                         inner join passenger as pax on pax.book_no = bc.book_no
                                                 and pax.pass_code = bc.pass_code
                                                 and bc.book_no = bo.book_no)
-                                , 0), 2)                                                                        as total_comm
-
-                                ,round(nvl(
+                                , 0), 2) as total_comm
+                                ,round(coalesce(
                                         (select sum
                                                 (
                                                         bfp.fare_paymt_amt *
                                                         (select max(nuc_rate) from currency_codes as cc
                                                         where cc.currency_code = '%s')
                                                         /
-                                                        nvl
+                                                        coalesce
                                                         (
                                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                                 where hcc.currency_code = bfp.paid_curr_code
-                                                                and conv_inddatelong(bfp.update_time) between
+                                                                and bfp.update_time between
                                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                                         ,
                                                                 (select max(nuc_rate) from currency_codes as cc
@@ -644,20 +639,19 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                         inner join passenger as pax on pax.book_no = bfp.book_no
                                                 and pax.pass_code = bfp.pass_code
                                                 and bfp.book_no = bo.book_no)
-                                , 0), 2)
-                                                                                                                        as total_fare
-                                ,round(nvl(
+                                , 0), 2) as total_fare
+                                ,round(coalesce(
                                         (select sum
                                                 (
                                                         bfp.fare_paymt_amt *
                                                         (select max(nuc_rate) from currency_codes as cc
                                                         where cc.currency_code = '%s')
                                                         /
-                                                        nvl
+                                                        coalesce
                                                         (
                                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                                 where hcc.currency_code = bfp.paid_curr_code
-                                                                and conv_inddatelong(bfp.update_time) between
+                                                                and bfp.update_time between
                                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                                         ,
                                                                 (select max(nuc_rate) from currency_codes as cc
@@ -675,11 +669,11 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         (select max(nuc_rate) from currency_codes as cc
                                                         where cc.currency_code = '%s')
                                                         /
-                                                        nvl
+                                                        coalesce
                                                         (
                                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                                 where hcc.currency_code = pa1.paid_curr_code
-                                                                and conv_inddatelong(pa1.crea_date_time) between
+                                                                and pa1.crea_date_time between
                                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                                         ,
                                                                 (select max(nuc_rate) from currency_codes as cc
@@ -695,11 +689,11 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         (select max(nuc_rate) from currency_codes as cc
                                                         where cc.currency_code = '%s')
                                                         /
-                                                        nvl
+                                                        coalesce
                                                         (
                                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                                 where hcc.currency_code = pa.paid_curr_code
-                                                                and conv_inddatelong(pa.crea_date_time) between
+                                                                and pa.crea_date_time between
                                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                                         ,
                                                                 (select max(nuc_rate) from currency_codes as cc
@@ -708,19 +702,19 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                 )) from payments as pa
                                         where pa.book_no = bo.book_no
                                         and pa.payment_type in ('%s', '%s', '%s'))
-                                , 0), 2)                                                                        as total_outstanding
-                                ,round(nvl(
+                                , 0), 2) as total_outstanding
+                                ,round(coalesce(
                                         (select sum
                                                 (
                                                         bfp.fare_paymt_amt *
                                                         (select max(nuc_rate) from currency_codes as cc
                                                         where cc.currency_code = '%s')
                                                         /
-                                                        nvl
+                                                        coalesce
                                                         (
                                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                                 where hcc.currency_code = bfp.paid_curr_code
-                                                                and conv_inddatelong(bfp.update_time) between
+                                                                and bfp.update_time between
                                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                                         ,
                                                                 (select max(nuc_rate) from currency_codes as cc
@@ -732,28 +726,29 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                 and pax.pass_code = bfp.pass_code
                                                 and bfp.payment_code = 'FEE'
                                                 and bfp.book_no = bo.book_no)
-                                , 0), 2)                                                                        as total_insurance
-                                ,round(nvl(
+                                , 0), 2) as total_insurance
+                                ,round(coalesce(
                                         (select -1 * (sum
                                                 (
                                                         pa.payment_amount *
                                                         (select max(nuc_rate) from currency_codes as cc
                                                         where cc.currency_code = '%s')
                                                         /
-                                                        nvl
+                                                        coalesce
                                                         (
                                                                 (select max(nuc_rate) from hist_currency_codes as hcc
                                                                 where hcc.currency_code = pa.paid_curr_code
-                                                                and conv_inddatelong(pa.crea_date_time) between
+                                                                and pa.crea_date_time between
                                                                 hcc.valid_from_date_time and hcc.valid_to_date_time)
                                                         ,
                                                                 (select max(nuc_rate) from currency_codes as cc
                                                                 where cc.currency_code = pa.paid_curr_code)
-                                                        )
+                                                                                                                                            and bfpm.pass_code      = bfp.pass_code
+                                                                                                and bfp.book_no = %d            )
                                                 )) from payments as pa
                                         where pa.book_no = bo.book_no
                                         and pa.payment_type in ('%s', '%s', '%s'))
-                                , 0), 2)                                                                        as total_fee
+                                , 0), 2) as total_fee
                         from book as bo where bo.book_no = %s
 """ % (currency_code,
        PaymentTypeFee, PaymentTypeFeeTax, PaymentTypeFeeWaive,
@@ -769,7 +764,7 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
        PaymentTypeFee, PaymentTypeFeeTax, PaymentTypeFeeWaive,
        book_no)
 
-    printlog("%s" % SummarySql,2)
+    printlog(2, "%s" % SummarySql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query

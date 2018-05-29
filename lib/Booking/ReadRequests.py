@@ -40,9 +40,9 @@ def ReadRequestsPnl(conn, book_no, Company, DeprAirport, FlightDate, PassengerNa
     ssrSql += \
         " AND f.active_flag = 1" \
         " AND f.allow_segment_association = 1" \
-        " AND trim(nvl(f.pnl_adl_identifier,'')) <> ''" \
-        " AND conv_inddatelong(p.crea_date_time) BETWEEN f.valid_from_date_time AND nvl(f.valid_until_date_time, current+1 units year)"
-    printlog(ssrSql, 2)
+        " AND trim(coalesce(f.pnl_adl_identifier,'')) <> ''" \
+        " AND p.create_time BETWEEN f.valid_from_date_time AND coalesce(f.valid_until_date_time, current_date + interval '1' year)"
+    printlog(2, ssrSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -66,7 +66,7 @@ def ReadRequests(conn, book_no, rqst_code, delim=" ", booking_status='A'):
     elif book_no == 0:
         d_reqs.append(str("%3s%s%24s" % ("", delim, "")))
         return 0, d_reqs
-    printlog("Read book requests for booking %d" % (book_no), 2)
+    printlog(1, "Read book requests for booking %d" % (book_no))
     ssrSql = \
         "SELECT rqst_sequence_no,rqst_code,carrier_code,action_code,actn_number,request_text," \
         " processing_flag,all_passenger_flag,all_itenary_flag " \
@@ -81,7 +81,7 @@ def ReadRequests(conn, book_no, rqst_code, delim=" ", booking_status='A'):
         pass
     ssrSql += \
         " and rqst_code='%s'" % rqst_code
-    printlog(ssrSql, 2)
+    printlog(2, ssrSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -128,7 +128,7 @@ def ReadRequestsDaily(conn, recCount=0, start_date=None, end_date=None, dest_id=
             " AND update_time>='%s' AND update_time<='%s'" \
                 % (start_date.strftime("%Y/%m/%d/00/00/00"), end_date.strftime("%Y/%m/%d/23/59/59"))
 
-    printlog(FiSql, 2)
+    printlog(2, FiSql)
     sys.stdout.flush()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -150,7 +150,7 @@ def ListRequestCodes(conn, book_no, includes='', delim=" "):
             " AND rqst_code IN (%s)" % includes
     ssrSql += \
         " AND action_code NOT LIKE 'X%'"
-    printlog(ssrSql, 2)
+    printlog(2, ssrSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -163,7 +163,7 @@ def ListRequestCodes(conn, book_no, includes='', delim=" "):
         rval += str("%4s" % (row['rqst_code']))
         n += 1
 
-    printlog("%d request codes" % n)
+    printlog(1, "%d request codes" % n)
     return rval
 
 def ReadRequestCodes(conn, book_no, delim=" "):
@@ -174,14 +174,14 @@ def ReadRequestCodes(conn, book_no, delim=" "):
     elif book_no == 0:
         d_reqs.append(str("%4s%s%2s%s%24s" % ("", delim, "", delim, "")))
         return 0, d_reqs
-    printlog("Read request codes for booking %d" % (bookno), 2)
+    printlog(1, "Read request codes for booking %d" % (bookno), 2)
     ssrSql = \
         "SELECT rqst_sequence_no,rqst_code,carrier_code,action_code,actn_number,request_text," \
         " processing_flag,all_passenger_flag,all_itenary_flag" \
         " FROM book_requests WHERE book_no=%d" % book_no
     ssrSql += \
         " AND action_code NOT LIKE 'X%'"
-    printlog(ssrSql, 2)
+    printlog(2, ssrSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -193,6 +193,6 @@ def ReadRequestCodes(conn, book_no, delim=" "):
             % (row['rqst_code'], delim, row['action_code'], int(row['actn_number']), delim, row['request_text'])))
         n += 1
 
-    printlog("%d requests" % n)
+    printlog(1, "%d requests" % n)
     return n, d_reqs
 

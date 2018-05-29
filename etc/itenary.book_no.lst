@@ -9,8 +9,8 @@ itenary;route_no,itenary_no,itenary_type,flight_number,flight_date,departure_air
 #book_fares_segm;fare_no,pass_code,flight_number,departure_airport,arrival_airport,selling_class,fare_basis
 #pass_remarks;remark_sequence_no,remark_text
 #flight_seat_reservation;reserve_reason_rcd,blocked_flag,temporary_reserve_flag,release_date_time,active_flag
-#end_transaction_book;book_serial_no,processing_flag,crea_date_time,et_serial_no
-#book_history;hist_sequence_no,history_code,tran_type,item_text,crea_date_time
+#end_transaction_book;book_serial_no,processing_flag,create_time,et_serial_no
+#book_history;hist_sequence_no,history_code,tran_type,item_text,create_time
 passenger;passenger_no,passenger_name,request_nos,pass_code,processing_flag
 #hist_passenger;passenger_no,passenger_name,request_nos,pass_code,processing_flag,request_nos
 #post_hist_passenger;passenger_no,passenger_name,pass_code,processing_flag

@@ -35,7 +35,7 @@ class ItenaryData(object):
             % ( flight_number,departure_date, class_code,
                 departure_airport, arrival_airport,
                 status_flag, reserve_status),2)
-        self.flight_number      = flight_number
+        self.flight_number      = str(flight_number).replace(' ', '')
         self.company_code   = flight_number[0:2]
         self.flight_integer = int(flight_number[2:])
         self.board_dts          = ReadDate(str(departure_date))

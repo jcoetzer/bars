@@ -10,8 +10,8 @@ from Booking.ItenaryData import ItenaryData
 
 
 def ReadItenary(conn, booking_status, bookno, action_codes,
-                    fnumber=None, start_date=None, end_date=None):
-
+                fnumber=None, start_date=None, end_date=None):
+    """Read itenary."""
     itenaryrecs = []
 
     itenSql = \
@@ -43,11 +43,10 @@ def ReadItenary(conn, booking_status, bookno, action_codes,
             " AND flight_number like '%s'" % fnumber
     itenSql += \
         " ORDER BY flight_date,departure_time ASC"
-    printlog(itenSql, 2)
+    printlog(2, itenSql)
     sys.stdout.flush()
     n_itens = 0
-    cur = conn.cursor(rowformat = informixdb.ROW_AS_DICT)
-    cur.execute("set isolation dirty read")
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(itenSql)
     for row in cur:
         itenaryrecs.append(ItenaryData(row['flight_number'],

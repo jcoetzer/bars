@@ -129,8 +129,12 @@ def AddItenary(conn, aBookNo,
                aDepart, aArrive,
                aDepartTime, aArriveTime,
                aDepartTerm, aArriveTerm,
-               aCityPair, aSellClass, aUser, aGroup):
+               aCityPair, aSellClass, aUser, aGroup): 
     """Add entry for itenary."""
+    printlog(2, "Itenary for booking %d: flight %s date %s depart %s %s (%s) arrive %s %s (%s)" 
+             % (aBookNo, aFlightNumber, aFlightDate,
+                aDepart, aDepartTime, aDepartTerm,
+                aArrive, aArriveTime, aArriveTerm))
     dateChangeInd = 0
     flightPathCode = aDepart[0]
     physicalClass = 'Y'
@@ -473,9 +477,9 @@ def GetPreBookingInfo(conn, book_no):
         pax_name_rec = row[1]
         group_name = row[2]
         agency_code = row[4]
-        crea_date_time = row[5]
+        create_time = row[5]
         booking_status = row[6]
         print("Book %d PNR %s group %s agency %s time %s status %s"
               % (book_no, pax_name_rec, group_name.strip(), agency_code,
-                 crea_date_time, booking_status))
+                 create_time, booking_status))
     cur.close()
