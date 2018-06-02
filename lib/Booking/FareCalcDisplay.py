@@ -1,64 +1,64 @@
 # @file FareCalcDisplay.py
 
 import psycopg2
-    
+
 from BarsLog import printlog
 from PricingData import PricingData, FarePricingData
 
-def FareCalcDisplay(conn, 
-                    acompany_code, 
-                    acity_pair, 
-                    aflight_date, 
-                    areturn_date, 
-                    aselling_class, 
-                    aonw_return_ind, 
-                    afare_category, 
-                    aauthority_level, 
+def FareCalcDisplay(conn,
+                    acompany_code,
+                    acity_pair,
+                    aflight_date,
+                    areturn_date,
+                    aselling_class,
+                    aonw_return_flag,
+                    afare_category,
+                    aauthority_level,
                     aTargetDate):
-    
+
     fcdSql = \
     """
     SELECT fs.fare_code,
             fs.city_pair, fs.valid_from_date,
             fs.valid_to_date, fs.fare_value,
-            fc.short_description, fc.onw_return_ind,
+            fc.short_description, fc.onw_return_flag,
             fc.byps_strt_auth_lvl, fc.byps_end_auth_lvl,
             fc.selling_class
     FROM fare_segm fs, fare_codes fc
-    WHERE fs.company_code = '%s' 
+    WHERE fs.company_code = '%s'
     AND fs.active_flag = 'A'
     AND fs.city_pair = %d
-    AND 
+    AND
     (
         (
             fs.valid_from_date <= '%s'
             AND fs.valid_to_date >= '%s'
-            AND fc.onw_return_ind = 'O'
-        ) 
+            AND fc.onw_return_flag = 'O'
+        )
         OR
         (
             fs.valid_from_date <= '%s'
             AND fs.valid_to_date >= '%s'
-            AND fc.onw_return_ind = 'R' 
+            AND fc.onw_return_flag = 'R'
         )
-    ) 
-    AND fc.company_code = fs.company_code 
-    AND fc.fare_code = fs.fare_code 
+    )
+    AND fc.company_code = fs.company_code
+    AND fc.fare_code = fs.fare_code
     AND fc.selling_class = '%s'
-    AND fc.onw_return_ind = '%s'
+    AND fc.onw_return_flag = '%s'
     AND fc.fare_category = '%s'
-    AND fc.acss_strt_auth_lvl <= %d 
-    AND fc.acss_end_auth_lvl >= %d 
-    AND 
+    AND fc.acss_strt_auth_lvl <= %d
+    AND fc.acss_end_auth_lvl >= %d
+    AND
     (
         (
             fs.eff_from_date <= '%s'
             AND fs.eff_to_date >= '%s'
-        ) 
-        OR 
+        )
+        OR
         (
             fs.eff_from_date IS NULL
-        ) 
+        )
         OR
         (
             fs.eff_to_date IS NULL
@@ -69,9 +69,9 @@ def FareCalcDisplay(conn,
     acompany_code,
     acity_pair,
     aflight_date, aflight_date, aflight_date, aflight_date,
-    aselling_class, 
-    aonw_return_ind, 
-    afare_category, 
+    aselling_class,
+    aonw_return_flag,
+    afare_category,
     aauthority_level, aauthority_level,
     aTargetDate, aTargetDate)
     printlog(2, "%s" % fcdSql)
@@ -88,7 +88,7 @@ def FareCalcDisplay(conn,
         valid_to_date = row[3]
         fare_value = float(row[4])
         short_description = row[5]
-        onw_return_ind = row[6]
+        onw_return_flag = row[6]
         byps_strt_auth_lvl = row[7]
         byps_end_auth_lvl = row[8]
         selling_class = row[9]
@@ -99,13 +99,12 @@ def FareCalcDisplay(conn,
                                   valid_to_date,
                                   fare_value,
                                   short_description,
-                                  onw_return_ind,
+                                  onw_return_flag,
                                   byps_strt_auth_lvl,
                                   byps_end_auth_lvl,
                                   selling_class
                                   )
         pricings.append(pricing)
-        
+
     return pricings
 
-    

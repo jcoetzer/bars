@@ -35,7 +35,7 @@ def ReadRequestsPnl(conn, book_no, Company, DeprAirport, FlightDate, PassengerNa
                 % DeprAirport
     if PassengerName is not None:
         ssrSql += \
-            " AND p.passenger_name = '%s'" \
+            " AND p.pax_name = '%s'" \
                 % (PassengerName)
     ssrSql += \
         " AND f.active_flag = 1" \

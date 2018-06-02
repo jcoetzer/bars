@@ -203,7 +203,7 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
     """Add entry for book fare."""
     abfSql = """
         INSERT INTO book_fares(
-            book_no, fare_no, pass_code,
+            book_no, fare_no, pax_code,
             start_city, end_city, total_amount_curr, total_amount,
             fare_construction, endrsmnt_rstrctns, fare_stat_flag,
             update_user, update_group, update_time )
@@ -227,7 +227,7 @@ def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode, aFlight, aDate,
     """Add entry for book fare segment."""
     abfSql = """
         INSERT INTO book_fares_segm(
-            book_no, fare_no, pass_code,
+            book_no, fare_no, pax_code,
             flight_number, board_date,
             departure_airport, arrival_airport,
             selling_class, fare_basis,
@@ -262,7 +262,7 @@ def AddBookFarePassengers(conn, aBookNo, aPaxCode, aCurrency, aAmount,
     vRestrict = ' '
     abfSql = """
         INSERT INTO book_fares_pass(
-            book_no, pass_code,
+            book_no, pax_code,
             total_amount_curr, total_amount,
             fare_construction, endrsmnt_rstrctns,
             update_user, update_group,
@@ -286,7 +286,7 @@ def AddBookFaresPayments(conn, aBookNo, aFareNo, aPaxCode, aFareCode,
     """Add entry for book fare payment."""
     abfSql = """
         INSERT INTO book_fares_paym(
-            book_no, fare_no, pass_code,
+            book_no, fare_no, pax_code,
             payment_code, fare_calc_code,
             paid_curr_code, fare_paymt_amt,
             tax_code, nation_code,
@@ -372,9 +372,9 @@ def AddPassenger(conn, aBookNo,
         vPaxNo += 1
         apSql = """
             INSERT INTO passenger(
-                book_no, passenger_no, passenger_name,
+                book_no, passenger_no, pax_name,
                 client_prfl_no, request_nos, remark_nos, fare_nos,
-                contact_nos, timelmt_nos, ticket_nos, name_incl_type, pass_code, processing_flag,
+                contact_nos, timelmt_nos, ticket_nos, name_incl_type, pax_code, processing_flag,
                 update_user, update_group, update_time,
                 tty_pax_line_no, tty_pax_grp_no, tty_pax_grp_seq )
             VALUES (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', NOW(), %d, %d, %d)""" \
@@ -403,7 +403,7 @@ def AddPayment(conn, aPaymentForm, aPaymentType, aCurrency, aAmount,
                 payment_form, payment_type,
                 paid_curr_code, payment_amount,
                 payment_date, document_no, payment_mode,
-                book_no, passenger_name, pass_code,
+                book_no, pax_name, pax_code,
                 origin_branch_code, remarks_text, received_from,
                 paid_flag, pay_stat_flag, recpt_stat_flag, invc_stat_flag, payment_ind,
                 create_user, create_group, create_time,
@@ -438,7 +438,7 @@ def GetPreBookingInfo(conn, book_no):
         SELECT bo.book_no,
             bo.pax_name_rec,
             bo.group_name,
-            ( SELECT pax.passenger_name
+            ( SELECT pax.pax_name
               FROM passenger AS pax
               WHERE pax.book_no=bo.book_no AND pax.passenger_no=1),
             bo.agency_code,

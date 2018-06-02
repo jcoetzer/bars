@@ -12,6 +12,10 @@ all:
 	find ./etc/ -name "*.lst" -print -exec cp {} /opt/bars/etc/ \;
 	find ./etc/ -name "*.cfg" -print -exec cp {} /opt/bars/etc/ \;
 
+install:
+	mkdir -p /opt/bars/sql
+	find ./sql -name "*.sql" -print -exec cp {} /opt/bars/sql/ \;
+
 clean:
 	find . -name "*.pyc" -print -delete
 	find /opt/bars/lib/ -name "*.py" -print -delete

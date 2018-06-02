@@ -61,14 +61,14 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -81,22 +81,22 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: acc_sales_revenue; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: acc_sales_revenue; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE acc_sales_revenue (
     branch_code character(12) NOT NULL,
-    open_date_time timestamp with time zone NOT NULL,
+    open_date_time timestamp WITH time zone NOT NULL,
     transaction_type character(1) NOT NULL,
     document_type character(1) NOT NULL,
     document_number character(20) NOT NULL,
     ticket_type character(1),
-    valid_void_ind character(1) NOT NULL,
+    valid_void_flag character(1) NOT NULL,
     pax_name_rec character(6) NOT NULL,
-    passenger_name character(38) NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_name character(38) NOT NULL,
+    pax_code character(5) NOT NULL,
     tour_code character(20),
-    tckt_sequence_no smallint NOT NULL,
+    ticket_sequence_no smallint NOT NULL,
     payment_amount numeric(15,5) NOT NULL,
     paid_curr_code character(3) NOT NULL,
     payment_form character(3) NOT NULL,
@@ -113,7 +113,7 @@ CREATE TABLE acc_sales_revenue (
     equiv_fare_paid numeric(15,5),
     equiv_fare_curr character(3),
     agency_commission numeric(15,5),
-    agency_comm_cur character(3),
+    agency_comm_curr character(3),
     issued_in_exch character(13),
     book_agent_code character(10) NOT NULL,
     issue_agent_code character(10) NOT NULL,
@@ -122,14 +122,14 @@ CREATE TABLE acc_sales_revenue (
     create_time character(19) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.acc_sales_revenue OWNER TO postgres;
 
 --
--- Name: action_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: action_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE action_codes (
@@ -139,15 +139,15 @@ CREATE TABLE action_codes (
     short_description character(12),
     description character varying(255),
     action_category character(1) DEFAULT 'N'::bpchar,
-    seat_rqst_type character(1) DEFAULT 'N'::bpchar,
+    seat_request_type character(1) DEFAULT 'N'::bpchar,
     tty_flag character(1) DEFAULT 'N'::bpchar,
-    inter_sys_avl_flag character(1) DEFAULT 'N'::bpchar,
+    inter_sys_avail_flag character(1) DEFAULT 'N'::bpchar,
     action_flag character(1) DEFAULT 'N'::bpchar,
     group_flag character(1) DEFAULT 'N'::bpchar,
     ssr_flag character(1) DEFAULT 'N'::bpchar,
-    authority_lvl smallint NOT NULL,
+    authority_level smallint NOT NULL,
     to_action_codes character varying(45),
-    to_auth_lvls character varying(75),
+    to_auth_levels character varying(75),
     to_airline_type character varying(30),
     ttyo_cancel_code character(2),
     tty_time_flag character(1),
@@ -160,15 +160,15 @@ CREATE TABLE action_codes (
     waitlist_to_code character(2),
     final_to_code character(2),
     ticket_to_code character(2),
-    schdchg_to_code character(2),
+    schedchange_to_code character(2),
     timechg_to_code character(2),
     tty_sell_code character(2),
-    schdchg_sell_to character(2),
+    schedchange_sell_to character(2),
     tty_wl_code character(2),
     tty_final_code character(2),
     tty_schd_canx character(2),
     tty_schd_sell character(2),
-    final_queue_ind character(1) DEFAULT 'N'::bpchar,
+    final_queue_flag character(1) DEFAULT 'N'::bpchar,
     tran_type character(1),
     rts_group_code character(2),
     rts_unable_flag character(1),
@@ -182,17 +182,17 @@ CREATE TABLE action_codes (
     tty_unable_wl_code character(2),
     tty_unable_branch character(12),
     tty_unable_queue character(5),
+    pnl_adl_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    pnl_adl_flag character(1) DEFAULT 'N'::bpchar NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.action_codes OWNER TO postgres;
 
 --
--- Name: adl_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: adl_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE adl_rule (
@@ -204,30 +204,30 @@ CREATE TABLE adl_rule (
     adl_interval smallint NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.adl_rule OWNER TO postgres;
 
 --
--- Name: agency_book_agency; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: agency_book_agency; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE agency_book_agency (
     agency_code character(8) NOT NULL,
     auth_agency_code character(8) NOT NULL,
-    update_user character(5) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
     active_flag character(1) DEFAULT 'A'::bpchar,
-    inactive_date_time timestamp with time zone
+    inactive_date_time timestamp WITH time zone,
+    update_user character(5) NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.agency_book_agency OWNER TO postgres;
 
 --
--- Name: agency_comm; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: agency_comm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE agency_comm (
@@ -236,14 +236,14 @@ CREATE TABLE agency_comm (
     commission_code character(16) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.agency_comm OWNER TO postgres;
 
 --
--- Name: agency_fare_modifier; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: agency_fare_modifier; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE agency_fare_modifier (
@@ -251,11 +251,11 @@ CREATE TABLE agency_fare_modifier (
     agency_code character varying(255) NOT NULL,
     change_type character(1) NOT NULL,
     change_value numeric(12,2) NOT NULL,
+    invalidated_user character(5),
+    invalid_time timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
-    invalidated_user_code character(5),
-    invalid_time timestamp with time zone
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -283,7 +283,7 @@ ALTER SEQUENCE agency_fare_modifier_agency_fare_modifier_id_seq OWNED BY agency_
 
 
 --
--- Name: agency_hierarchy; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: agency_hierarchy; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE agency_hierarchy (
@@ -291,29 +291,29 @@ CREATE TABLE agency_hierarchy (
     agency_hierarchy character varying(135) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.agency_hierarchy OWNER TO postgres;
 
 --
--- Name: agency_office_status_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: agency_office_status_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE agency_office_status_ref (
     agency_office_status_rcd character(2) NOT NULL,
     name character varying(100) NOT NULL,
     active_flag integer NOT NULL,
-    created_by_user_code character(5) NOT NULL,
-    create_time timestamp with time zone NOT NULL
+    create_user character(5) NOT NULL,
+    create_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.agency_office_status_ref OWNER TO postgres;
 
 --
--- Name: agency_route_fare_modifier; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: agency_route_fare_modifier; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE agency_route_fare_modifier (
@@ -322,11 +322,11 @@ CREATE TABLE agency_route_fare_modifier (
     agency_code character varying(255) NOT NULL,
     change_type character(1) NOT NULL,
     change_value numeric(12,2) NOT NULL,
+    invalidated_user character(5),
+    invalid_time timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
-    invalidated_user_code character(5),
-    invalid_time timestamp with time zone
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -354,7 +354,7 @@ ALTER SEQUENCE agency_route_fare_modifier_agency_route_fare_modifier_id_seq OWNE
 
 
 --
--- Name: agency_user; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: agency_user; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE agency_user (
@@ -362,9 +362,6 @@ CREATE TABLE agency_user (
     agent_code character(5) NOT NULL,
     agent_name character varying(30),
     passwd_expiry_date date,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
     account_expired_flag integer DEFAULT 0,
     password_hash character varying(45),
     failed_logins smallint,
@@ -379,14 +376,17 @@ CREATE TABLE agency_user (
     email_address character varying(150),
     contact_phone_no character varying(30),
     contact_mobile_no character varying(30),
-    user_type character varying(20)
+    user_type character varying(20),
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.agency_user OWNER TO postgres;
 
 --
--- Name: aig_ezy_policies; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: aig_ezy_policies; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE aig_ezy_policies (
@@ -401,7 +401,7 @@ CREATE TABLE aig_ezy_policies (
 ALTER TABLE public.aig_ezy_policies OWNER TO postgres;
 
 --
--- Name: aig_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: aig_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE aig_transaction (
@@ -414,8 +414,8 @@ CREATE TABLE aig_transaction (
     failure_flag character(1) DEFAULT 'N'::bpchar,
     request_data character varying(16000),
     reply_data character varying(16000),
-    create_time timestamp with time zone DEFAULT now() NOT NULL,
-    update_time timestamp with time zone DEFAULT now() NOT NULL
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL,
+    update_time timestamp WITH time zone DEFAULT now() NOT NULL
 );
 
 
@@ -443,7 +443,7 @@ ALTER SEQUENCE aig_transaction_transaction_id_seq OWNED BY aig_transaction.trans
 
 
 --
--- Name: aircraft_config; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: aircraft_config; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE aircraft_config (
@@ -451,26 +451,26 @@ CREATE TABLE aircraft_config (
     company_code character(3) NOT NULL,
     selling_class character(2) NOT NULL,
     aircraft_code character(3) NOT NULL,
-    group_seat_lvl smallint NOT NULL,
-    seat_protect_lvl smallint NOT NULL,
-    limit_sale_lvl smallint NOT NULL,
-    overbooking_lvl smallint NOT NULL,
-    posting_lvl smallint NOT NULL,
-    sale_notify_lvl smallint NOT NULL,
-    cancel_notify_lvl smallint NOT NULL,
+    group_seat_level smallint NOT NULL,
+    seat_protect_level smallint NOT NULL,
+    limit_sale_level smallint NOT NULL,
+    overbooking_level smallint NOT NULL,
+    posting_level smallint NOT NULL,
+    sale_notify_level smallint NOT NULL,
+    cancel_notify_level smallint NOT NULL,
     seat_capacity smallint NOT NULL,
     scrutiny_flag character(1) NOT NULL,
     gen_flag_invt character(1) NOT NULL,
     update_user character(16) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.aircraft_config OWNER TO postgres;
 
 --
--- Name: airport; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: airport; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE airport (
@@ -482,14 +482,14 @@ CREATE TABLE airport (
     local_time_zone character varying(12),
     update_user character(16) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.airport OWNER TO postgres;
 
 --
--- Name: airport_device; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: airport_device; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE airport_device (
@@ -499,14 +499,14 @@ CREATE TABLE airport_device (
     airport_device_type_rcd character varying(5),
     airport_workstation_id integer,
     device_status_rcd character varying(5),
-    device_status_updated timestamp with time zone,
+    device_status_updated timestamp WITH time zone,
     active_flag character(1) NOT NULL,
     last_retrieved_adq_id integer,
     wait_for_response_flag character(1),
     device_mode character varying(255),
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -534,7 +534,7 @@ ALTER SEQUENCE airport_device_airport_device_id_seq OWNED BY airport_device.airp
 
 
 --
--- Name: airport_device_queue; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: airport_device_queue; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE airport_device_queue (
@@ -543,12 +543,12 @@ CREATE TABLE airport_device_queue (
     airport_device_queue_entry_type_rcd character varying(5) NOT NULL,
     original_message_id integer,
     processed_flag character(1),
-    queued_date_time timestamp with time zone,
-    processed_date_time timestamp with time zone,
+    queued_date_time timestamp WITH time zone,
+    processed_date_time timestamp WITH time zone,
     message_data character varying(31000),
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -576,7 +576,7 @@ ALTER SEQUENCE airport_device_queue_airport_device_queue_id_seq OWNED BY airport
 
 
 --
--- Name: airport_device_queue_entry_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: airport_device_queue_entry_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE airport_device_queue_entry_type_ref (
@@ -584,14 +584,14 @@ CREATE TABLE airport_device_queue_entry_type_ref (
     description character varying(255),
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.airport_device_queue_entry_type_ref OWNER TO postgres;
 
 --
--- Name: airport_device_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: airport_device_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE airport_device_type_ref (
@@ -599,14 +599,14 @@ CREATE TABLE airport_device_type_ref (
     description character varying(255),
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.airport_device_type_ref OWNER TO postgres;
 
 --
--- Name: airport_workstation; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: airport_workstation; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE airport_workstation (
@@ -618,7 +618,7 @@ CREATE TABLE airport_workstation (
     airport_workstation_type_rcd character varying(5),
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -646,7 +646,7 @@ ALTER SEQUENCE airport_workstation_airport_workstation_id_seq OWNED BY airport_w
 
 
 --
--- Name: airport_workstation_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: airport_workstation_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE airport_workstation_type_ref (
@@ -654,14 +654,14 @@ CREATE TABLE airport_workstation_type_ref (
     description character varying(255),
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.airport_workstation_type_ref OWNER TO postgres;
 
 --
--- Name: allotment_detail; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: allotment_detail; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE allotment_detail (
@@ -670,14 +670,14 @@ CREATE TABLE allotment_detail (
     allotment_book_no integer,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.allotment_detail OWNER TO postgres;
 
 --
--- Name: allotment_header; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: allotment_header; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE allotment_header (
@@ -698,7 +698,7 @@ CREATE TABLE allotment_header (
     allotment_status character(1) DEFAULT 'A'::bpchar,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -726,24 +726,24 @@ ALTER SEQUENCE allotment_header_allotment_id_seq OWNED BY allotment_header.allot
 
 
 --
--- Name: arpt_terminal; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: arpt_terminal; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE arpt_terminal (
     airport_code character(5) NOT NULL,
     start_terminal character(2) NOT NULL,
     end_terminal character(2) NOT NULL,
-    conn_time_mns smallint,
+    conn_time_mins smallint,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.arpt_terminal OWNER TO postgres;
 
 --
--- Name: asr_reconcile_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: asr_reconcile_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE asr_reconcile_history (
@@ -752,7 +752,7 @@ CREATE TABLE asr_reconcile_history (
     action_detail character varying(255),
     update_user character varying(5) NOT NULL,
     update_group character varying(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -780,7 +780,7 @@ ALTER SEQUENCE asr_reconcile_history_action_id_seq OWNED BY asr_reconcile_histor
 
 
 --
--- Name: atm_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: atm_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE atm_history (
@@ -796,28 +796,28 @@ CREATE TABLE atm_history (
     trans_amt character varying(13),
     trans_type character(1),
     trans_result character varying(20),
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.atm_history OWNER TO postgres;
 
 --
--- Name: attribute_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: attribute_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE attribute_rule (
     attribute_rule_id integer NOT NULL,
     seat_attribute_rcd character varying(5),
-    pass_code character varying(5),
+    pax_code character varying(5),
     request_code character varying(5),
     selling_class character varying(2),
     allow_flag integer DEFAULT 0 NOT NULL,
-    create_time timestamp with time zone,
-    created_user_code character varying(5),
-    invalid_time timestamp with time zone,
-    invalidated_user_code character varying(5),
-    remark character varying(240)
+    invalid_time timestamp WITH time zone,
+    invalidated_user character varying(5),
+    remark character varying(240),
+    create_time timestamp WITH time zone,
+    create_user character varying(5)
 );
 
 
@@ -845,7 +845,7 @@ ALTER SEQUENCE attribute_rule_attribute_rule_id_seq OWNED BY attribute_rule.attr
 
 
 --
--- Name: authority_levels; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: authority_levels; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE authority_levels (
@@ -855,14 +855,14 @@ CREATE TABLE authority_levels (
     authority_level smallint NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.authority_levels OWNER TO postgres;
 
 --
--- Name: availability_activity; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: availability_activity; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE availability_activity (
@@ -877,14 +877,14 @@ CREATE TABLE availability_activity (
     branch character(20),
     duration_ms integer,
     rows_returned smallint,
-    create_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.availability_activity OWNER TO postgres;
 
 --
--- Name: availbty_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: availbty_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE availbty_rule (
@@ -900,14 +900,14 @@ CREATE TABLE availbty_rule (
     max_no_of_conns smallint,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.availbty_rule OWNER TO postgres;
 
 --
--- Name: avs_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: avs_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE avs_history (
@@ -920,7 +920,7 @@ CREATE TABLE avs_history (
     board_date date NOT NULL,
     class character varying(2) NOT NULL,
     message character varying(1024) NOT NULL,
-    create_time timestamp with time zone DEFAULT now() NOT NULL
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL
 );
 
 
@@ -948,7 +948,7 @@ ALTER SEQUENCE avs_history_avs_history_id_seq OWNED BY avs_history.avs_history_i
 
 
 --
--- Name: bbl_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: bbl_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE bbl_transaction (
@@ -958,14 +958,14 @@ CREATE TABLE bbl_transaction (
     request text,
     request_data text,
     reply text,
-    rqst_date_time timestamp with time zone DEFAULT now() NOT NULL,
-    rply_date_time timestamp with time zone,
+    rqst_date_time timestamp WITH time zone DEFAULT now() NOT NULL,
+    rply_date_time timestamp WITH time zone,
     settled character(1) DEFAULT 'N'::bpchar NOT NULL,
     sett_request text,
     sett_request_data text,
     sett_reply text,
-    sett_rqst_date_time timestamp with time zone,
-    sett_rply_date_time timestamp with time zone,
+    sett_request_date_time timestamp WITH time zone,
+    sett_reply_date_time timestamp WITH time zone,
     external_tran_id character varying(30)
 );
 
@@ -994,7 +994,7 @@ ALTER SEQUENCE bbl_transaction_bbl_transaction_id_seq OWNED BY bbl_transaction.b
 
 
 --
--- Name: bilatrl_actn_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: bilatrl_actn_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE bilatrl_actn_codes (
@@ -1011,17 +1011,17 @@ CREATE TABLE bilatrl_actn_codes (
 ALTER TABLE public.bilatrl_actn_codes OWNER TO postgres;
 
 --
--- Name: blocked_seat_update_queue; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: blocked_seat_update_queue; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE blocked_seat_update_queue (
     seat_map_id integer NOT NULL,
-    change_date_time timestamp with time zone NOT NULL,
+    change_date_time timestamp WITH time zone NOT NULL,
     active_flag character(1) NOT NULL,
-    processed_date_time timestamp with time zone,
+    processed_date_time timestamp WITH time zone,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone,
+    update_time timestamp WITH time zone,
     CONSTRAINT blocked_seat_update_queue_active_flag_check CHECK ((active_flag = ANY (ARRAY['A'::bpchar, 'I'::bpchar])))
 );
 
@@ -1029,7 +1029,7 @@ CREATE TABLE blocked_seat_update_queue (
 ALTER TABLE public.blocked_seat_update_queue OWNER TO postgres;
 
 --
--- Name: boarding_control_number; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: boarding_control_number; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE boarding_control_number (
@@ -1039,7 +1039,7 @@ CREATE TABLE boarding_control_number (
     active_flag character(1),
     update_user character(5),
     update_group character(8),
-    update_time timestamp with time zone,
+    update_time timestamp WITH time zone,
     CONSTRAINT boarding_control_number_active_flag_check CHECK ((active_flag = ANY (ARRAY['A'::bpchar, 'I'::bpchar])))
 );
 
@@ -1068,7 +1068,7 @@ ALTER SEQUENCE boarding_control_number_boarding_control_number_id_seq OWNED BY b
 
 
 --
--- Name: book; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book (
@@ -1079,7 +1079,7 @@ CREATE TABLE book (
     no_of_seats smallint NOT NULL,
     book_category character(1) NOT NULL,
     group_wait_seats smallint,
-    group_rqst_seats smallint,
+    group_request_seats smallint,
     group_realtn_pcnt smallint,
     origin_branch_code character(12) NOT NULL,
     agency_code character(8),
@@ -1097,24 +1097,24 @@ CREATE TABLE book (
     divide_to_nos character varying(110),
     first_segm_date date NOT NULL,
     last_segm_date date NOT NULL,
-    reaccom_prty smallint NOT NULL,
+    reaccom_party smallint NOT NULL,
     dvd_process_flag character(1) NOT NULL,
     rdu_process_flag character(1) NOT NULL,
     grp_process_flag character(1) NOT NULL,
     nrl_process_flag character(1) NOT NULL,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
-    create_time timestamp with time zone,
+    create_time timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.book OWNER TO postgres;
 
 --
--- Name: book_additional_data; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_additional_data; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_additional_data (
@@ -1122,10 +1122,10 @@ CREATE TABLE book_additional_data (
     agency_code character varying(8),
     branch_code character varying(12),
     booking_category_code character(1),
+    description character varying(255) NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone,
-    description character varying(255) NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
@@ -1153,7 +1153,7 @@ ALTER SEQUENCE book_additional_data_book_additional_data_id_seq OWNED BY book_ad
 
 
 --
--- Name: book_additional_data_field; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_additional_data_field; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_additional_data_field (
@@ -1167,11 +1167,11 @@ CREATE TABLE book_additional_data_field (
     seq_no smallint,
     validation_regexp character varying(255),
     parse_regexp character varying(255),
+    allow_manual_edit character(1) DEFAULT 'Y'::bpchar NOT NULL,
+    allow_multiple_values character(1) DEFAULT 'Y'::bpchar NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone,
-    allow_manual_edit character(1) DEFAULT 'Y'::bpchar NOT NULL,
-    allow_multiple_values character(1) DEFAULT 'Y'::bpchar NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
@@ -1199,7 +1199,7 @@ ALTER SEQUENCE book_additional_data_field_book_additional_data_field_id_seq OWNE
 
 
 --
--- Name: book_additional_data_field_value; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_additional_data_field_value; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_additional_data_field_value (
@@ -1210,7 +1210,7 @@ CREATE TABLE book_additional_data_field_value (
     field_value_int integer,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -1238,7 +1238,7 @@ ALTER SEQUENCE book_additional_data_field_va_book_additional_data_field_va_seq O
 
 
 --
--- Name: book_category_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_category_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_category_ref (
@@ -1252,20 +1252,20 @@ CREATE TABLE book_category_ref (
 ALTER TABLE public.book_category_ref OWNER TO postgres;
 
 --
--- Name: book_commission; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_commission; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_commission (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     comm_amount_curr character(3) NOT NULL,
     comm_amount numeric(12,2) NOT NULL,
     commission_descr character varying(80),
     commission_sent numeric(12,2),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -1286,7 +1286,7 @@ CREATE SEQUENCE book_no_seq
 ALTER TABLE public.book_no_seq OWNER TO postgres;
 
 --
--- Name: book_cross_index; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_cross_index; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_cross_index (
@@ -1296,24 +1296,24 @@ CREATE TABLE book_cross_index (
     book_category character(1) NOT NULL,
     reply_poll_flag character(1),
     processing_flag character(1) NOT NULL,
+    ext_book_numb character(6),
+    codeshare_book_numb character(6),
     update_user character(5) NOT NULL,
     update_group character(12) NOT NULL,
-    update_time timestamp with time zone,
-    ext_book_numb character(6),
-    codeshare_book_numb character(6)
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.book_cross_index OWNER TO postgres;
 
 --
--- Name: book_fares; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_fares; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_fares (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     start_city character(5) NOT NULL,
     end_city character(5) NOT NULL,
     total_amount_curr character(3) NOT NULL,
@@ -1323,39 +1323,39 @@ CREATE TABLE book_fares (
     fare_stat_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.book_fares OWNER TO postgres;
 
 --
--- Name: book_fares_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_fares_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_fares_pass (
     book_no integer NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     total_amount_curr character(3) NOT NULL,
     total_amount numeric(15,5),
     fare_construction character varying(255),
     endrsmnt_rstrctns character varying(255),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.book_fares_pass OWNER TO postgres;
 
 --
--- Name: book_fares_paym; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_fares_paym; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_fares_paym (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     payment_code character(5) NOT NULL,
     fare_calc_code character(15) NOT NULL,
     fare_paymt_amt numeric(15,5) NOT NULL,
@@ -1364,9 +1364,6 @@ CREATE TABLE book_fares_paym (
     nation_code character(5),
     refund_stat_flag character(1) NOT NULL,
     exempt_stat_flag character(1) NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     refundable_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     net_fare_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     private_fare_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
@@ -1374,20 +1371,23 @@ CREATE TABLE book_fares_paym (
     board_date date,
     flight_origin character(5),
     flight_destination character(5),
-    source_ref_id bigint
+    source_ref_id bigint,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.book_fares_paym OWNER TO postgres;
 
 --
--- Name: book_fares_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_fares_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_fares_segm (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     flight_number character(7) NOT NULL,
     board_date date NOT NULL,
     departure_airport character(5) NOT NULL,
@@ -1398,32 +1398,32 @@ CREATE TABLE book_fares_segm (
     valid_to_date date NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.book_fares_segm OWNER TO postgres;
 
 --
--- Name: book_fares_tckt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_fares_tckt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_fares_tckt (
     book_no integer NOT NULL,
     fare_sequence_no smallint NOT NULL,
-    pass_code character(5) NOT NULL,
-    tckt_sequence_no smallint NOT NULL,
+    pax_code character(5) NOT NULL,
+    ticket_sequence_no smallint NOT NULL,
     baggage_alownce character varying(35),
     before_date character varying(35),
     after_date character varying(35),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.book_fares_tckt OWNER TO postgres;
 
 --
--- Name: book_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_history (
@@ -1446,7 +1446,7 @@ CREATE TABLE book_history (
 ALTER TABLE public.book_history OWNER TO postgres;
 
 --
--- Name: book_history_20140729; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_history_20140729; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_history_20140729 (
@@ -1469,7 +1469,7 @@ CREATE TABLE book_history_20140729 (
 ALTER TABLE public.book_history_20140729 OWNER TO postgres;
 
 --
--- Name: book_history_new; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_history_new; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_history_new (
@@ -1492,15 +1492,15 @@ CREATE TABLE book_history_new (
 ALTER TABLE public.book_history_new OWNER TO postgres;
 
 --
--- Name: book_paymt_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_paymt_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_paymt_pass (
     book_no integer NOT NULL,
     pay_sequence_no smallint NOT NULL,
-    passenger_no smallint,
+    pax_no smallint,
     fare_sequence_no smallint,
-    pass_code character(5),
+    pax_code character(5),
     flight_no character(7),
     board_date date,
     departure_airport character(5),
@@ -1514,19 +1514,19 @@ CREATE TABLE book_paymt_pass (
     paid_curr_code character(3) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.book_paymt_pass OWNER TO postgres;
 
 --
--- Name: book_paymt_tckt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_paymt_tckt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_paymt_tckt (
     book_no integer NOT NULL,
-    tckt_sequence_no smallint NOT NULL,
+    ticket_sequence_no smallint NOT NULL,
     payment_no integer NOT NULL,
     transaction_no smallint,
     transaction_type character(1),
@@ -1545,13 +1545,13 @@ CREATE TABLE book_paymt_tckt (
 ALTER TABLE public.book_paymt_tckt OWNER TO postgres;
 
 --
--- Name: book_reinstate_log; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_reinstate_log; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_reinstate_log (
     book_reinstate_log_no integer NOT NULL,
     record_locator character varying(6),
-    reinstated_date_time timestamp with time zone,
+    reinstated_date_time timestamp WITH time zone,
     requested_by character varying(20)
 );
 
@@ -1580,7 +1580,7 @@ ALTER SEQUENCE book_reinstate_log_book_reinstate_log_no_seq OWNED BY book_reinst
 
 
 --
--- Name: book_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_requests (
@@ -1595,18 +1595,18 @@ CREATE TABLE book_requests (
     processing_flag character(1) NOT NULL,
     rqr_count smallint,
     request_text character varying(255),
-    all_passenger_flag character(1) NOT NULL,
+    all_pax_flag character(1) NOT NULL,
     all_itenary_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.book_requests OWNER TO postgres;
 
 --
--- Name: book_requests_old; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_requests_old; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_requests_old (
@@ -1621,18 +1621,18 @@ CREATE TABLE book_requests_old (
     processing_flag character(1) NOT NULL,
     rqr_count smallint,
     request_text character varying(255),
-    all_passenger_flag character(1) NOT NULL,
+    all_pax_flag character(1) NOT NULL,
     all_itenary_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.book_requests_old OWNER TO postgres;
 
 --
--- Name: book_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_serial_nos (
@@ -1667,17 +1667,17 @@ ALTER SEQUENCE book_serial_nos_book_no_seq OWNED BY book_serial_nos.book_no;
 
 
 --
--- Name: book_summary_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_summary_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_summary_history (
     book_no integer NOT NULL,
     book_summary_history_rcd character(10) NOT NULL,
-    sent_date_time timestamp with time zone NOT NULL,
+    sent_date_time timestamp WITH time zone NOT NULL,
     user_code character(5) NOT NULL,
     email_address character varying(150),
     link_id bigint,
-    ackn_timestamp timestamp with time zone,
+    ackn_timestamp timestamp WITH time zone,
     ackn_information character varying(100)
 );
 
@@ -1685,12 +1685,12 @@ CREATE TABLE book_summary_history (
 ALTER TABLE public.book_summary_history OWNER TO postgres;
 
 --
--- Name: book_tckt_cpn; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_ticket_cpn; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE book_tckt_cpn (
+CREATE TABLE book_ticket_cpn (
     book_no integer NOT NULL,
-    tckt_sequence_no smallint NOT NULL,
+    ticket_sequence_no smallint NOT NULL,
     coupon_sequence_no smallint NOT NULL,
     xo_indicator character(1),
     departure_airport character(5) NOT NULL,
@@ -1709,22 +1709,22 @@ CREATE TABLE book_tckt_cpn (
     baggage_alownce character(5),
     coupon_number smallint,
     coupon_disposition character(1) NOT NULL,
+    sac_code character varying(20),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    sac_code character varying(20)
+    update_time timestamp WITH time zone
 );
 
 
-ALTER TABLE public.book_tckt_cpn OWNER TO postgres;
+ALTER TABLE public.book_ticket_cpn OWNER TO postgres;
 
 --
--- Name: book_ticket; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_ticket; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_ticket (
     book_no integer NOT NULL,
-    tckt_sequence_no smallint NOT NULL,
+    ticket_sequence_no smallint NOT NULL,
     tkt_document_no character(11),
     issued_by character varying(80),
     tour_code character(10),
@@ -1736,12 +1736,12 @@ CREATE TABLE book_ticket (
     airline_data character(10),
     issued_in_exch character(13),
     fare_no smallint NOT NULL,
-    passenger_no smallint NOT NULL,
-    pass_code character(5) NOT NULL,
-    passenger_name character(53) NOT NULL,
+    pax_no smallint NOT NULL,
+    pax_code character(5) NOT NULL,
+    pax_name character(53) NOT NULL,
     conjunction_tckts character varying(35),
-    conj_tckt_ind smallint NOT NULL,
-    conj_tckt_sequence_no smallint NOT NULL,
+    conj_ticket_ind smallint NOT NULL,
+    conj_ticket_sequence_no smallint NOT NULL,
     fare_value numeric(15,5) NOT NULL,
     fare_curr character(3) NOT NULL,
     fare_text character(2),
@@ -1783,7 +1783,7 @@ CREATE TABLE book_ticket (
     issue_date date,
     issue_branch character(12),
     ticket_type character(1),
-    tckt_stat_flag character(1) NOT NULL,
+    ticket_stat_flag character(1) NOT NULL,
     ticket_disposition character(1) NOT NULL,
     agency_commission numeric(12,2),
     agency_curr_code character(3),
@@ -1793,45 +1793,45 @@ CREATE TABLE book_ticket (
     create_time character(19) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.book_ticket OWNER TO postgres;
 
 --
--- Name: book_time_limits; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_time_limits; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_time_limits (
     book_no integer NOT NULL,
     timelmt_sequence_no smallint NOT NULL,
     timelmt_type character(1) NOT NULL,
-    limit_time timestamp with time zone,
+    limit_time timestamp WITH time zone,
     cancel_flag character(1) NOT NULL,
     queue_code character(5),
     dest_branch character(12) NOT NULL,
     remark_text character(240),
-    all_passenger_flag character(1) NOT NULL,
+    all_pax_flag character(1) NOT NULL,
     processing_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.book_time_limits OWNER TO postgres;
 
 --
--- Name: book_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE book_transaction (
     book_transaction_id integer NOT NULL,
     current_et_serial_no integer NOT NULL,
     book_no integer NOT NULL,
-    begin_date_time timestamp with time zone DEFAULT now() NOT NULL,
-    end_date_time timestamp with time zone,
+    begin_date_time timestamp WITH time zone DEFAULT now() NOT NULL,
+    end_date_time timestamp WITH time zone,
     rollback_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     commit_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     ext_transaction_ref character varying(32),
@@ -1863,13 +1863,13 @@ ALTER SEQUENCE book_transaction_book_transaction_id_seq OWNED BY book_transactio
 
 
 --
--- Name: booking_cleanup_book_ticket; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: booking_cleanup_book_ticket; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE booking_cleanup_book_ticket (
     action_id integer NOT NULL,
     book_no integer NOT NULL,
-    tckt_sequence_no smallint NOT NULL,
+    ticket_sequence_no smallint NOT NULL,
     tkt_document_no character(11),
     issued_by character varying(80),
     tour_code character(10),
@@ -1881,12 +1881,12 @@ CREATE TABLE booking_cleanup_book_ticket (
     airline_data character(10),
     issued_in_exch character(13),
     fare_no smallint NOT NULL,
-    passenger_no smallint NOT NULL,
-    pass_code character(5) NOT NULL,
-    passenger_name character(53) NOT NULL,
+    pax_no smallint NOT NULL,
+    pax_code character(5) NOT NULL,
+    pax_name character(53) NOT NULL,
     conjunction_tckts character varying(35),
-    conj_tckt_ind smallint NOT NULL,
-    conj_tckt_sequence_no smallint NOT NULL,
+    conj_ticket_ind smallint NOT NULL,
+    conj_ticket_sequence_no smallint NOT NULL,
     fare_value numeric(15,5) NOT NULL,
     fare_curr character(3) NOT NULL,
     fare_text character(2),
@@ -1928,7 +1928,7 @@ CREATE TABLE booking_cleanup_book_ticket (
     issue_date date,
     issue_branch character(12),
     ticket_type character(1),
-    tckt_stat_flag character(1) NOT NULL,
+    ticket_stat_flag character(1) NOT NULL,
     ticket_disposition character(1) NOT NULL,
     agency_commission numeric(12,2),
     agency_curr_code character(3),
@@ -1938,14 +1938,14 @@ CREATE TABLE booking_cleanup_book_ticket (
     create_time character(19) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.booking_cleanup_book_ticket OWNER TO postgres;
 
 --
--- Name: booking_cleanup_et; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: booking_cleanup_et; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE booking_cleanup_et (
@@ -1961,24 +1961,24 @@ CREATE TABLE booking_cleanup_et (
     validate_flag character(1) NOT NULL,
     processing_flag character(1) NOT NULL,
     proc_date_time character(19),
-    create_user character(5) NOT NULL,
-    create_group character(8) NOT NULL,
-    create_time character(19) NOT NULL,
-    update_time timestamp with time zone,
     et_info_1 character varying(250),
     et_info_2 character varying(250),
     et_info_3 character varying(250),
     et_info_4 character varying(250),
     et_info_5 character varying(250),
     et_info_6 character varying(250),
-    et_info_7 character varying(250)
+    et_info_7 character varying(250),
+    create_user character(5) NOT NULL,
+    create_group character(8) NOT NULL,
+    create_time character(19) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.booking_cleanup_et OWNER TO postgres;
 
 --
--- Name: booking_cleanup_log; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: booking_cleanup_log; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE booking_cleanup_log (
@@ -1987,7 +1987,7 @@ CREATE TABLE booking_cleanup_log (
     book_no integer,
     pax_name_rec character(6),
     action_reason character varying(100),
-    create_time timestamp with time zone,
+    create_time timestamp WITH time zone,
     create_user character(5)
 );
 
@@ -2016,14 +2016,14 @@ ALTER SEQUENCE booking_cleanup_log_action_id_seq OWNED BY booking_cleanup_log.ac
 
 
 --
--- Name: booking_cleanup_passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: booking_cleanup_passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE booking_cleanup_passenger (
     action_id integer NOT NULL,
     book_no integer NOT NULL,
-    passenger_no smallint NOT NULL,
-    passenger_name character(53) NOT NULL,
+    pax_no smallint NOT NULL,
+    pax_name character(53) NOT NULL,
     client_prfl_no character(15),
     request_nos character varying(1024),
     remark_nos character varying(30),
@@ -2032,21 +2032,21 @@ CREATE TABLE booking_cleanup_passenger (
     timelmt_nos character varying(30),
     ticket_nos character varying(50),
     name_incl_type character(1),
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     processing_flag character(1) NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     tty_pax_line_no integer DEFAULT 0 NOT NULL,
     tty_pax_grp_no integer DEFAULT 0 NOT NULL,
-    tty_pax_grp_seq integer DEFAULT 0 NOT NULL
+    tty_pax_grp_seq integer DEFAULT 0 NOT NULL,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.booking_cleanup_passenger OWNER TO postgres;
 
 --
--- Name: booking_cleanup_payment; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: booking_cleanup_payment; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE booking_cleanup_payment (
@@ -2061,9 +2061,9 @@ CREATE TABLE booking_cleanup_payment (
     payment_mode character(1),
     document_date date,
     book_no integer,
-    passenger_name character(53),
+    pax_name character(53),
     client_prfl_no character(15),
-    pass_code character(5),
+    pax_code character(5),
     book_agency_code character(8),
     origin_address character(10),
     origin_branch_code character(12) NOT NULL,
@@ -2084,30 +2084,30 @@ CREATE TABLE booking_cleanup_payment (
     pay_stat_flag character(1) NOT NULL,
     recpt_stat_flag character(1) NOT NULL,
     invc_stat_flag character(1) NOT NULL,
-    payment_ind character(1) NOT NULL,
+    payment_flag character(1) NOT NULL,
+    voucher_no integer,
+    credit_req_seq character varying(10),
+    cc_cvv character varying(10),
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
     create_time character(19) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    voucher_no integer,
-    credit_req_seq character varying(10),
-    cc_cvv character varying(10)
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.booking_cleanup_payment OWNER TO postgres;
 
 --
--- Name: booking_summary; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: booking_summary; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE booking_summary (
     booking_number integer NOT NULL,
-    booking_date_time timestamp with time zone NOT NULL,
+    booking_date_time timestamp WITH time zone NOT NULL,
     booking_summary_type_rcd character(10),
-    passenger_name character varying(53),
+    pax_name character varying(53),
     sid_no integer,
     voucher_number integer
 );
@@ -2116,16 +2116,16 @@ CREATE TABLE booking_summary (
 ALTER TABLE public.booking_summary OWNER TO postgres;
 
 --
--- Name: booking_summary_email_cc; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: booking_summary_email_cc; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE booking_summary_email_cc (
     booking_summary_email_cc_id bigint NOT NULL,
     email_address character varying(200) NOT NULL,
     user_code character(5) NOT NULL,
-    create_time timestamp with time zone DEFAULT now() NOT NULL,
-    created_user_code character(5) NOT NULL,
-    inactivated_date_time timestamp with time zone,
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL,
+    create_user character(5) NOT NULL,
+    inactivated_date_time timestamp WITH time zone,
     inactivated_user_code character(5),
     made_from_booking_summary_email_cc_id bigint
 );
@@ -2134,16 +2134,16 @@ CREATE TABLE booking_summary_email_cc (
 ALTER TABLE public.booking_summary_email_cc OWNER TO postgres;
 
 --
--- Name: booking_summary_email_cc_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: booking_summary_email_cc_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE booking_summary_email_cc_mapping (
     booking_summary_email_cc_mapping_id bigint NOT NULL,
     booking_summary_email_cc_id bigint NOT NULL,
     booking_summary_type_rcd character(10) NOT NULL,
-    create_time timestamp with time zone DEFAULT now() NOT NULL,
-    created_user_code character(5) NOT NULL,
-    inactivated_date_time timestamp with time zone,
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL,
+    create_user character(5) NOT NULL,
+    inactivated_date_time timestamp WITH time zone,
     inactivated_user_code character(5)
 );
 
@@ -2151,7 +2151,7 @@ CREATE TABLE booking_summary_email_cc_mapping (
 ALTER TABLE public.booking_summary_email_cc_mapping OWNER TO postgres;
 
 --
--- Name: booking_summary_header; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: booking_summary_header; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE booking_summary_header (
@@ -2163,14 +2163,14 @@ CREATE TABLE booking_summary_header (
 ALTER TABLE public.booking_summary_header OWNER TO postgres;
 
 --
--- Name: booking_summary_temp; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: booking_summary_temp; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE booking_summary_temp (
     booking_number integer NOT NULL,
-    booking_date_time timestamp with time zone NOT NULL,
+    booking_date_time timestamp WITH time zone NOT NULL,
     booking_summary_type_rcd character(10),
-    passenger_name character varying(53),
+    pax_name character varying(53),
     sid_no integer,
     voucher_number integer
 );
@@ -2179,21 +2179,21 @@ CREATE TABLE booking_summary_temp (
 ALTER TABLE public.booking_summary_temp OWNER TO postgres;
 
 --
--- Name: booking_summary_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: booking_summary_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE booking_summary_type_ref (
     booking_summary_type_rcd character(10) NOT NULL,
     description character(100) NOT NULL,
     user_code character(5) NOT NULL,
-    create_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.booking_summary_type_ref OWNER TO postgres;
 
 --
--- Name: branch; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: branch; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE branch (
@@ -2217,25 +2217,25 @@ CREATE TABLE branch (
     phone_no character varying(30),
     company_code character(3) NOT NULL,
     city_code character(5) NOT NULL,
-    utr_recycle_dys smallint,
-    utr_recycle_mns smallint,
-    lmtc_recycle_dys smallint,
-    lmtc_recycle_mns smallint,
+    utr_recycle_days smallint,
+    utr_recycle_mins smallint,
+    lmtc_recycle_days smallint,
+    lmtc_recycle_mins smallint,
     process_type character(5),
     numeric_code integer DEFAULT 0 NOT NULL,
     default_tty_addrs character(7),
+    block_avail_time integer DEFAULT 0 NOT NULL,
+    avail_display_mode character(1),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    block_avail_time integer DEFAULT 0 NOT NULL,
-    avail_display_mode character(1)
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.branch OWNER TO postgres;
 
 --
--- Name: branch_stock_tckt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: branch_stock_tckt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE branch_stock_tckt (
@@ -2253,7 +2253,7 @@ CREATE TABLE branch_stock_tckt (
 ALTER TABLE public.branch_stock_tckt OWNER TO postgres;
 
 --
--- Name: bsp_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: bsp_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE bsp_transaction (
@@ -2280,14 +2280,14 @@ CREATE TABLE bsp_transaction (
     issue_date date NOT NULL,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
-    create_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.bsp_transaction OWNER TO postgres;
 
 --
--- Name: bulk_sms_zb; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: bulk_sms_zb; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE bulk_sms_zb (
@@ -2298,7 +2298,7 @@ CREATE TABLE bulk_sms_zb (
     msisdn character varying(13),
     userid character varying(5),
     xslt_template_id character varying(100),
-    sent_date timestamp with time zone,
+    sent_date timestamp WITH time zone,
     status_code bigint,
     queued character(1),
     reply_ref_id bigint
@@ -2329,25 +2329,25 @@ ALTER SEQUENCE bulk_sms_zb_bulk_no_seq OWNED BY bulk_sms_zb.bulk_no;
 
 
 --
--- Name: business_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: business_pax; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE business_pass (
-    business_pass_id integer NOT NULL,
+CREATE TABLE business_pax (
+    business_pax_id integer NOT NULL,
     description character varying(255),
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
-ALTER TABLE public.business_pass OWNER TO postgres;
+ALTER TABLE public.business_pax OWNER TO postgres;
 
 --
--- Name: business_pass_business_pass_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: business_pax_business_pax_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE business_pass_business_pass_id_seq
+CREATE SEQUENCE business_pax_business_pax_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2355,53 +2355,53 @@ CREATE SEQUENCE business_pass_business_pass_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.business_pass_business_pass_id_seq OWNER TO postgres;
+ALTER TABLE public.business_pax_business_pax_id_seq OWNER TO postgres;
 
 --
--- Name: business_pass_business_pass_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: business_pax_business_pax_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE business_pass_business_pass_id_seq OWNED BY business_pass.business_pass_id;
+ALTER SEQUENCE business_pax_business_pax_id_seq OWNED BY business_pax.business_pax_id;
 
 
 --
--- Name: business_pass_class; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: business_pax_class; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE business_pass_class (
-    business_pass_id integer NOT NULL,
+CREATE TABLE business_pax_class (
+    business_pax_id integer NOT NULL,
     selling_class character varying(3) NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
-ALTER TABLE public.business_pass_class OWNER TO postgres;
+ALTER TABLE public.business_pax_class OWNER TO postgres;
 
 --
--- Name: business_pass_fare; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: business_pax_fare; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE business_pass_fare (
-    business_pass_id integer NOT NULL,
+CREATE TABLE business_pax_fare (
+    business_pax_id integer NOT NULL,
     fare_code character varying(15) NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
-ALTER TABLE public.business_pass_fare OWNER TO postgres;
+ALTER TABLE public.business_pax_fare OWNER TO postgres;
 
 --
--- Name: cancel_fees; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cancel_fees; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE cancel_fees (
     company_code character(3) NOT NULL,
     xcl_code character(5) NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     valid_from_date date NOT NULL,
     valid_to_date date NOT NULL,
     short_description character varying(30),
@@ -2414,24 +2414,24 @@ CREATE TABLE cancel_fees (
     apply_for_flag character(1) NOT NULL,
     selling_class character(2) NOT NULL,
     scrutiny_flag character(1) NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     applies_to_branch_code character varying(15),
     applies_to_payment_type character varying(5),
     applies_to_payment_form character varying(5),
     tax_type character(1),
     tax_rate numeric(15,5),
-    per_passenger_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
+    per_pax_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     fee_type character(1) DEFAULT 'B'::bpchar,
-    fare_code character varying(15)
+    fare_code character varying(15),
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.cancel_fees OWNER TO postgres;
 
 --
--- Name: cash_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cash_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE cash_transaction (
@@ -2476,7 +2476,7 @@ ALTER SEQUENCE cash_transaction_transaction_id_seq OWNED BY cash_transaction.tra
 
 
 --
--- Name: change_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: change_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE change_type_ref (
@@ -2484,14 +2484,14 @@ CREATE TABLE change_type_ref (
     description character varying(255),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.change_type_ref OWNER TO postgres;
 
 --
--- Name: changed_itenary; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: changed_itenary; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE changed_itenary (
@@ -2508,7 +2508,7 @@ CREATE TABLE changed_itenary (
 ALTER TABLE public.changed_itenary OWNER TO postgres;
 
 --
--- Name: char_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: char_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE char_mapping (
@@ -2521,7 +2521,7 @@ CREATE TABLE char_mapping (
 ALTER TABLE public.char_mapping OWNER TO postgres;
 
 --
--- Name: charging_stats; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: charging_stats; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE charging_stats (
@@ -2535,606 +2535,41 @@ CREATE TABLE charging_stats (
 ALTER TABLE public.charging_stats OWNER TO postgres;
 
 --
--- Name: ci_aps; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_aps (
-    ci_apsname character varying(30),
-    ci_apshistory double precision,
-    ci_auditing double precision,
-    ci_defrptoutdir character varying(255),
-    ci_deldonesch double precision,
-    ci_feedback double precision,
-    ci_notresponding double precision,
-    ci_launchinterval double precision,
-    ci_apsflags double precision,
-    ci_maxinstage double precision,
-    ci_maxinstobj double precision,
-    ci_maxinstuser double precision,
-    ci_maxusers character varying(100),
-    ci_htmldir character varying(255),
-    ci_htmlmaxsize double precision,
-    ci_heartbeat double precision,
-    ci_dbthdsleep double precision,
-    ci_nextobjwnd double precision,
-    ci_nextagntwnd double precision,
-    ci_versionnumber character varying(20)
-);
-
-
-ALTER TABLE public.ci_aps OWNER TO postgres;
-
---
--- Name: ci_apsmachines; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_apsmachines (
-    ci_apsname character varying(30) NOT NULL,
-    ci_machinename character varying(30) NOT NULL
-);
-
-
-ALTER TABLE public.ci_apsmachines OWNER TO postgres;
-
---
--- Name: ci_audittrace; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_audittrace (
-    ci_apsname character varying(30),
-    ci_audittext character varying(255)
-);
-
-
-ALTER TABLE public.ci_audittrace OWNER TO postgres;
-
---
--- Name: ci_clsmachines; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_clsmachines (
-    ci_apsname character varying(30) NOT NULL,
-    ci_machinename character varying(30) NOT NULL
-);
-
-
-ALTER TABLE public.ci_clsmachines OWNER TO postgres;
-
---
--- Name: ci_events; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_events (
-    ci_eventname character varying(50) NOT NULL,
-    ci_eventtype double precision,
-    ci_filename character varying(128),
-    ci_fileoncomputer character varying(30)
-);
-
-
-ALTER TABLE public.ci_events OWNER TO postgres;
-
---
--- Name: ci_foldercontents; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_foldercontents (
-    ci_apsname character varying(30) NOT NULL,
-    ci_folder double precision NOT NULL,
-    ci_report double precision NOT NULL
-);
-
-
-ALTER TABLE public.ci_foldercontents OWNER TO postgres;
-
---
--- Name: ci_folders; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_folders (
-    ci_apsname character varying(30) NOT NULL,
-    ci_folderid double precision NOT NULL,
-    ci_name character varying(50),
-    ci_description character varying(255),
-    ci_submitterid double precision,
-    ci_private double precision,
-    ci_flags32 double precision,
-    ci_parentid double precision,
-    ci_version_count double precision
-);
-
-
-ALTER TABLE public.ci_folders OWNER TO postgres;
-
---
--- Name: ci_govinfo; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_govinfo (
-    ci_gov_id double precision NOT NULL,
-    ci_name character varying(255)
-);
-
-
-ALTER TABLE public.ci_govinfo OWNER TO postgres;
-
---
--- Name: ci_grpinfo; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_grpinfo (
-    ci_apsname character varying(30) NOT NULL,
-    ci_group_id double precision NOT NULL,
-    ci_group_name character varying(40),
-    ci_descrip character varying(40),
-    ci_flags32 double precision
-);
-
-
-ALTER TABLE public.ci_grpinfo OWNER TO postgres;
-
---
--- Name: ci_grpusers; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_grpusers (
-    ci_apsname character varying(30) NOT NULL,
-    ci_group_id double precision NOT NULL,
-    ci_user_id double precision NOT NULL
-);
-
-
-ALTER TABLE public.ci_grpusers OWNER TO postgres;
-
---
--- Name: ci_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_history (
-    ci_apsname character varying(30),
-    ci_schedname character varying(50),
-    ci_description character varying(128),
-    ci_prcname character varying(128),
-    ci_prcid double precision,
-    ci_machine character varying(30),
-    ci_starttime timestamp with time zone,
-    ci_endtime timestamp with time zone,
-    ci_taskscompleted double precision,
-    ci_exitstate character varying(20),
-    ci_errormsg character varying(255),
-    ci_returncode double precision
-);
-
-
-ALTER TABLE public.ci_history OWNER TO postgres;
-
---
--- Name: ci_limits; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_limits (
-    ci_principal double precision,
-    ci_object double precision,
-    ci_privilege double precision,
-    ci_thetime double precision,
-    ci_thevalue double precision
-);
-
-
-ALTER TABLE public.ci_limits OWNER TO postgres;
-
---
--- Name: ci_machavail; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_machavail (
-    ci_apsname character varying(30) NOT NULL,
-    ci_machinename character varying(30) NOT NULL,
-    ci_group_id double precision NOT NULL,
-    ci_availabletime character varying(170)
-);
-
-
-ALTER TABLE public.ci_machavail OWNER TO postgres;
-
---
--- Name: ci_machineclass; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_machineclass (
-    ci_classname character varying(50) NOT NULL,
-    ci_osname character varying(64),
-    ci_osversion character varying(64),
-    ci_prc character varying(64),
-    ci_quantity double precision,
-    ci_totalmemory double precision
-);
-
-
-ALTER TABLE public.ci_machineclass OWNER TO postgres;
-
---
--- Name: ci_machinegroup; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_machinegroup (
-    ci_name character varying(50),
-    ci_subgroupname character varying(50)
-);
-
-
-ALTER TABLE public.ci_machinegroup OWNER TO postgres;
-
---
--- Name: ci_machinv; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_machinv (
-    ci_machinename character varying(30) NOT NULL,
-    ci_ipaddress character varying(64),
-    ci_osname character varying(64),
-    ci_osversion character varying(64),
-    ci_prc character varying(64),
-    ci_groupname character varying(64),
-    ci_netcardid character varying(64),
-    ci_ipxaddress character varying(64),
-    ci_rasentryname character varying(64),
-    ci_rasphone character varying(30),
-    ci_rascallback character varying(30),
-    ci_rasuid character varying(20),
-    ci_raspasswd character varying(20),
-    ci_rasdomain character varying(64),
-    ci_quantity double precision,
-    ci_totalmemory double precision,
-    ci_machineid double precision,
-    ci_ostype double precision,
-    ci_rastarget double precision,
-    ci_options double precision
-);
-
-
-ALTER TABLE public.ci_machinv OWNER TO postgres;
-
---
--- Name: ci_nextid; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_nextid (
-    ci_next_objid double precision,
-    ci_next_agentid double precision,
-    ci_next_agentkey double precision
-);
-
-
-ALTER TABLE public.ci_nextid OWNER TO postgres;
-
---
--- Name: ci_privs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_privs (
-    ci_principal double precision,
-    ci_object double precision,
-    ci_privilege double precision,
-    ci_thetime double precision
-);
-
-
-ALTER TABLE public.ci_privs OWNER TO postgres;
-
---
--- Name: ci_programs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_programs (
-    ci_apsname character varying(30) NOT NULL,
-    ci_programid double precision NOT NULL,
-    ci_path character varying(254),
-    ci_flags double precision,
-    ci_submitter character varying(40),
-    ci_submitterid double precision,
-    ci_title character varying(255),
-    ci_comments character varying(255),
-    ci_arguments character varying(255),
-    ci_currentdir character varying(254),
-    ci_localfilename character varying(128),
-    ci_version_count double precision
-);
-
-
-ALTER TABLE public.ci_programs OWNER TO postgres;
-
---
--- Name: ci_reports; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_reports (
-    ci_apsname character varying(30) NOT NULL,
-    ci_id double precision NOT NULL,
-    ci_path character varying(254),
-    ci_size double precision,
-    ci_ver double precision,
-    ci_cat_no double precision,
-    ci_time double precision,
-    ci_date double precision,
-    ci_flags double precision,
-    ci_group double precision,
-    ci_sessid character varying(64),
-    ci_server_name character varying(64),
-    ci_db_name character varying(64),
-    ci_logid character varying(64),
-    ci_submitter character varying(40),
-    ci_rpath_memo character varying(255),
-    ci_title_memo character varying(128),
-    ci_comm_memo character varying(128),
-    ci_local_name character varying(255),
-    ci_version_count double precision,
-    ci_rec_memo text
-);
-
-
-ALTER TABLE public.ci_reports OWNER TO postgres;
-
---
--- Name: ci_restrictions; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_restrictions (
-    ci_apsname character varying(30) NOT NULL,
-    ci_principal double precision NOT NULL,
-    ci_restriction double precision NOT NULL
-);
-
-
-ALTER TABLE public.ci_restrictions OWNER TO postgres;
-
---
--- Name: ci_rightroles; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_rightroles (
-    ci_rolename character varying(30) NOT NULL,
-    ci_rightid double precision NOT NULL,
-    ci_rolekind double precision NOT NULL
-);
-
-
-ALTER TABLE public.ci_rightroles OWNER TO postgres;
-
---
--- Name: ci_rptprompts; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_rptprompts (
-    ci_reportid double precision,
-    ci_type double precision,
-    ci_defaultset double precision,
-    ci_currentset double precision,
-    ci_name character varying(64),
-    ci_prompt character varying(128),
-    ci_defaultvalue character varying(255),
-    ci_currentvalue character varying(255),
-    ci_rptinstid double precision,
-    ci_subrptname character varying(255)
-);
-
-
-ALTER TABLE public.ci_rptprompts OWNER TO postgres;
-
---
--- Name: ci_runnabletime; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_runnabletime (
-    ci_principal double precision,
-    ci_object double precision,
-    ci_runnabletime character varying(170)
-);
-
-
-ALTER TABLE public.ci_runnabletime OWNER TO postgres;
-
---
--- Name: ci_runtimeimage; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_runtimeimage (
-    ci_apsname character varying(30) NOT NULL,
-    ci_parameter character varying(255),
-    ci_starttime timestamp with time zone,
-    ci_endtime timestamp with time zone,
-    ci_prcid double precision NOT NULL,
-    ci_submitter character varying(30),
-    ci_errormsg character varying(255),
-    ci_machine character varying(30),
-    ci_lschema double precision,
-    ci_uistatus double precision,
-    ci_reportid double precision,
-    ci_options double precision,
-    ci_rdofilename character varying(255),
-    ci_versioncount double precision,
-    ci_data bytea
-);
-
-
-ALTER TABLE public.ci_runtimeimage OWNER TO postgres;
-
---
--- Name: ci_schedules; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_schedules (
-    ci_apsname character varying(30) NOT NULL,
-    ci_schedname character varying(50) NOT NULL,
-    ci_userid character varying(20),
-    ci_autorefresh double precision,
-    ci_grantlaunch double precision,
-    ci_grantcontrol double precision,
-    ci_grantedit double precision,
-    ci_bgrantvw double precision,
-    ci_completed timestamp with time zone,
-    ci_jobran double precision,
-    ci_status double precision
-);
-
-
-ALTER TABLE public.ci_schedules OWNER TO postgres;
-
---
--- Name: ci_secrights; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_secrights (
-    ci_apsname character varying(30) NOT NULL,
-    ci_principal double precision NOT NULL,
-    ci_secright double precision NOT NULL
-);
-
-
-ALTER TABLE public.ci_secrights OWNER TO postgres;
-
---
--- Name: ci_specialdates; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_specialdates (
-    ci_apsname character varying(30) NOT NULL,
-    ci_schedulename character varying(50) NOT NULL,
-    ci_prcid double precision NOT NULL,
-    ci_excepton double precision,
-    ci_startdate timestamp with time zone NOT NULL,
-    ci_enddate timestamp with time zone NOT NULL,
-    ci_allyears double precision,
-    ci_allmonths double precision
-);
-
-
-ALTER TABLE public.ci_specialdates OWNER TO postgres;
-
---
--- Name: ci_specialdays; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_specialdays (
-    ci_apsname character varying(50) NOT NULL,
-    ci_schedulename character varying(50) NOT NULL,
-    ci_prcid double precision NOT NULL,
-    ci_excepton double precision,
-    ci_nthweek double precision NOT NULL,
-    ci_dayofweek double precision NOT NULL,
-    ci_month double precision NOT NULL,
-    ci_year double precision NOT NULL
-);
-
-
-ALTER TABLE public.ci_specialdays OWNER TO postgres;
-
---
--- Name: ci_templatedates; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_templatedates (
-    ci_templatename character varying(50),
-    ci_startdate timestamp with time zone,
-    ci_enddate timestamp with time zone,
-    ci_allyears double precision,
-    ci_allmonths double precision
-);
-
-
-ALTER TABLE public.ci_templatedates OWNER TO postgres;
-
---
--- Name: ci_templatedays; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_templatedays (
-    ci_templatename character varying(50),
-    ci_nthweek double precision,
-    ci_dayofweek double precision,
-    ci_month double precision,
-    ci_year double precision
-);
-
-
-ALTER TABLE public.ci_templatedays OWNER TO postgres;
-
---
--- Name: ci_templates; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_templates (
-    ci_templatename character varying(50) NOT NULL,
-    ci_usebuscal double precision
-);
-
-
-ALTER TABLE public.ci_templates OWNER TO postgres;
-
---
--- Name: ci_timeinfo; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_timeinfo (
-    ci_time_id double precision NOT NULL,
-    ci_time_name character varying(40),
-    ci_time_flags character varying(168)
-);
-
-
-ALTER TABLE public.ci_timeinfo OWNER TO postgres;
-
---
--- Name: ci_users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE ci_users (
-    ci_apsname character varying(30) NOT NULL,
-    ci_usersecid double precision NOT NULL,
-    ci_userid character varying(20),
-    ci_password character varying(20),
-    ci_userdesc character varying(30)
-);
-
-
-ALTER TABLE public.ci_users OWNER TO postgres;
-
---
--- Name: city; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: city; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE city (
     city_code character(5) NOT NULL,
     city_name character varying(60),
     state_code character(2) NOT NULL,
-    flgt_serv_ind character(1) NOT NULL,
+    flgt_serv_flag character(1) NOT NULL,
     generate_flag character(1) NOT NULL,
     update_user character(16) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.city OWNER TO postgres;
 
 --
--- Name: city_airport; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: city_airport; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE city_airport (
     start_airport character(5) NOT NULL,
     end_airport character(5) NOT NULL,
-    conn_time_mns smallint,
+    conn_time_mins smallint,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.city_airport OWNER TO postgres;
 
 --
--- Name: city_pair; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: city_pair; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE city_pair (
@@ -3151,7 +2586,7 @@ CREATE TABLE city_pair (
     remarks character varying(80),
     update_user character(16) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -3179,24 +2614,24 @@ ALTER SEQUENCE city_pair_city_pair_seq OWNED BY city_pair.city_pair;
 
 
 --
--- Name: class_comb_route; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: class_comb_route; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE class_comb_route (
     class_combine_id bigint NOT NULL,
     route_id bigint NOT NULL,
     active_flag character(1) NOT NULL,
-    inactive_date_time timestamp with time zone,
+    inactive_date_time timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.class_comb_route OWNER TO postgres;
 
 --
--- Name: class_combinability; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: class_combinability; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE class_combinability (
@@ -3207,17 +2642,17 @@ CREATE TABLE class_combinability (
     allow_comb_flag character(1) NOT NULL,
     description character varying(200),
     active_flag character(1) NOT NULL,
-    inactive_date_time timestamp with time zone,
+    inactive_date_time timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.class_combinability OWNER TO postgres;
 
 --
--- Name: client_contact_details; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_contact_details; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_contact_details (
@@ -3234,14 +2669,14 @@ CREATE TABLE client_contact_details (
     email_address character varying(150),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.client_contact_details OWNER TO postgres;
 
 --
--- Name: client_credit_hist; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_credit_hist; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_credit_hist (
@@ -3253,14 +2688,14 @@ CREATE TABLE client_credit_hist (
     description character(80),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.client_credit_hist OWNER TO postgres;
 
 --
--- Name: client_credits; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_credits; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_credits (
@@ -3277,14 +2712,14 @@ CREATE TABLE client_credits (
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
     create_time character(19) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.client_credits OWNER TO postgres;
 
 --
--- Name: client_documents; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_documents; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_documents (
@@ -3301,14 +2736,14 @@ CREATE TABLE client_documents (
     type_sequence_no smallint,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.client_documents OWNER TO postgres;
 
 --
--- Name: client_family; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_family; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_family (
@@ -3318,19 +2753,19 @@ CREATE TABLE client_family (
     family_name character varying(30),
     first_name character varying(30) NOT NULL,
     title character(5),
-    initial character(3),
+    initials character(3),
     birth_date date,
     anniversary_date date,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.client_family OWNER TO postgres;
 
 --
--- Name: client_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_history (
@@ -3350,36 +2785,36 @@ CREATE TABLE client_history (
 ALTER TABLE public.client_history OWNER TO postgres;
 
 --
--- Name: client_pass_code; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_pax_code; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE client_pass_code (
+CREATE TABLE client_pax_code (
     client_prfl_no character varying(15) NOT NULL,
-    pass_code character varying(5) NOT NULL,
+    pax_code character varying(5) NOT NULL,
     update_user character(5),
     update_group character(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
-ALTER TABLE public.client_pass_code OWNER TO postgres;
+ALTER TABLE public.client_pax_code OWNER TO postgres;
 
 --
--- Name: client_pos_defn; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_pos_defn; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_pos_defn (
     client_no smallint NOT NULL,
     pos_srno smallint NOT NULL,
     pos_table_no character(25) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.client_pos_defn OWNER TO postgres;
 
 --
--- Name: client_preferences; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_preferences; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_preferences (
@@ -3388,20 +2823,20 @@ CREATE TABLE client_preferences (
     file_code character(4) NOT NULL,
     master_code character(5) NOT NULL,
     update_user character(5) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.client_preferences OWNER TO postgres;
 
 --
--- Name: client_profile; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_profile; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_profile (
     client_prfl_no character(15) NOT NULL,
     client_name character(53) NOT NULL,
-    pass_code character(5) DEFAULT 'ADULT'::bpchar NOT NULL,
+    pax_code character(5) DEFAULT 'ADULT'::bpchar NOT NULL,
     profile_type character(1) NOT NULL,
     company_prfl_no character(15),
     company_name character varying(30),
@@ -3456,19 +2891,19 @@ CREATE TABLE client_profile (
     anniversary_date date,
     file_expry_date date NOT NULL,
     scrutiny_flag character(1) NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     email_address character varying(150),
     password_hash character varying(45) DEFAULT ''::character varying NOT NULL,
-    alt_client_prfl_no character varying(255)
+    alt_client_prfl_no character varying(255),
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.client_profile OWNER TO postgres;
 
 --
--- Name: client_remarks; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_remarks; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_remarks (
@@ -3478,38 +2913,38 @@ CREATE TABLE client_remarks (
     remark_text character varying(240),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.client_remarks OWNER TO postgres;
 
 --
--- Name: client_request; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_request; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_request (
     client_prfl_no character varying(15) NOT NULL,
-    pass_code character varying(5) NOT NULL,
+    pax_code character varying(5) NOT NULL,
     rqst_code character varying(4) NOT NULL,
     request_text character varying(255),
     request_type_indicator character(1),
     update_user character(5),
     update_group character(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.client_request OWNER TO postgres;
 
 --
--- Name: client_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_requests (
     client_prfl_no character(15) NOT NULL,
     rqst_sequence_no smallint NOT NULL,
-    indicator character(1),
+    rqst_indicator character(1),
     rqst_code character(4),
     carrier_code character(3),
     action_code character(2),
@@ -3517,14 +2952,14 @@ CREATE TABLE client_requests (
     request_text character varying(255),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.client_requests OWNER TO postgres;
 
 --
--- Name: client_security; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_security; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_security (
@@ -3539,7 +2974,7 @@ CREATE TABLE client_security (
     process_code character(15),
     client_no integer NOT NULL,
     status character(1) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -3567,7 +3002,7 @@ ALTER SEQUENCE client_security_client_no_seq OWNED BY client_security.client_no;
 
 
 --
--- Name: client_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_serial_nos (
@@ -3602,7 +3037,7 @@ ALTER SEQUENCE client_serial_nos_client_id_seq OWNED BY client_serial_nos.client
 
 
 --
--- Name: client_travel; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_travel; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE client_travel (
@@ -3622,14 +3057,14 @@ CREATE TABLE client_travel (
     fare_amount numeric(12,2),
     travel_credits numeric(12,2),
     update_user character(5) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.client_travel OWNER TO postgres;
 
 --
--- Name: cls_exclusion_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cls_exclusion_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE cls_exclusion_rule (
@@ -3643,14 +3078,14 @@ CREATE TABLE cls_exclusion_rule (
     config_table_no character(5) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.cls_exclusion_rule OWNER TO postgres;
 
 --
--- Name: comm_exception; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: comm_exception; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE comm_exception (
@@ -3666,18 +3101,18 @@ CREATE TABLE comm_exception (
     valid_to_date date NOT NULL,
     commission_meth character(1) NOT NULL,
     commission_value numeric(12,2) NOT NULL,
+    active_flag character(1) DEFAULT 'A'::bpchar,
+    inactive_date_time timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    active_flag character(1) DEFAULT 'A'::bpchar,
-    inactive_date_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.comm_exception OWNER TO postgres;
 
 --
--- Name: command_text; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: command_text; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE command_text (
@@ -3699,7 +3134,7 @@ CREATE TABLE command_text (
 ALTER TABLE public.command_text OWNER TO postgres;
 
 --
--- Name: commission_basic; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: commission_basic; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE commission_basic (
@@ -3712,16 +3147,16 @@ CREATE TABLE commission_basic (
     commission_value numeric(12,2) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
+    update_time timestamp WITH time zone,
     active_flag character(1) DEFAULT 'A'::bpchar,
-    inactive_date_time timestamp with time zone
+    inactive_date_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.commission_basic OWNER TO postgres;
 
 --
--- Name: commission_volum; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: commission_volum; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE commission_volum (
@@ -3732,18 +3167,18 @@ CREATE TABLE commission_volum (
     comm_range_to numeric(12,2) NOT NULL,
     commission_meth character(1) NOT NULL,
     commission_value numeric(12,2) NOT NULL,
+    active_flag character(1) DEFAULT 'A'::bpchar,
+    inactive_date_time timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    active_flag character(1) DEFAULT 'A'::bpchar,
-    inactive_date_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.commission_volum OWNER TO postgres;
 
 --
--- Name: comp_ticket_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: comp_ticket_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE comp_ticket_nos (
@@ -3761,7 +3196,7 @@ CREATE TABLE comp_ticket_nos (
 ALTER TABLE public.comp_ticket_nos OWNER TO postgres;
 
 --
--- Name: company; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: company; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE company (
@@ -3777,14 +3212,14 @@ CREATE TABLE company (
     numeric_code integer DEFAULT 0 NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.company OWNER TO postgres;
 
 --
--- Name: compartment_position_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: compartment_position_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE compartment_position_mapping (
@@ -3796,7 +3231,7 @@ CREATE TABLE compartment_position_mapping (
 ALTER TABLE public.compartment_position_mapping OWNER TO postgres;
 
 --
--- Name: config; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: config; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE config (
@@ -3813,7 +3248,7 @@ CREATE TABLE config (
 ALTER TABLE public.config OWNER TO postgres;
 
 --
--- Name: connect_city; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: connect_city; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE connect_city (
@@ -3824,14 +3259,14 @@ CREATE TABLE connect_city (
     min_connect_time character varying(255) DEFAULT ''::character varying NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.connect_city OWNER TO postgres;
 
 --
--- Name: corporate_fare_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: corporate_fare_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE corporate_fare_codes (
@@ -3839,14 +3274,14 @@ CREATE TABLE corporate_fare_codes (
     fare_code character(15) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.corporate_fare_codes OWNER TO postgres;
 
 --
--- Name: counter_sales_in_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: counter_sales_in_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE counter_sales_in_mesgs (
@@ -3856,8 +3291,8 @@ CREATE TABLE counter_sales_in_mesgs (
     failure_flag character(1) DEFAULT 'N'::bpchar,
     failure_reason character varying(100),
     message_body text,
-    create_time timestamp with time zone NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -3885,7 +3320,7 @@ ALTER SEQUENCE counter_sales_in_mesgs_serial_no_seq OWNED BY counter_sales_in_me
 
 
 --
--- Name: counter_sales_mesg_types; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: counter_sales_mesg_types; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE counter_sales_mesg_types (
@@ -3897,7 +3332,7 @@ CREATE TABLE counter_sales_mesg_types (
 ALTER TABLE public.counter_sales_mesg_types OWNER TO postgres;
 
 --
--- Name: counter_sales_out_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: counter_sales_out_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE counter_sales_out_mesgs (
@@ -3906,7 +3341,7 @@ CREATE TABLE counter_sales_out_mesgs (
     message_type smallint DEFAULT 0,
     sent_flag character(1) DEFAULT 'Y'::bpchar,
     message_body text,
-    create_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -3934,7 +3369,7 @@ ALTER SEQUENCE counter_sales_out_mesgs_serial_no_seq OWNED BY counter_sales_out_
 
 
 --
--- Name: credit_card_fraud; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: credit_card_fraud; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE credit_card_fraud (
@@ -3943,36 +3378,36 @@ CREATE TABLE credit_card_fraud (
     last_name character(30),
     first_name character(30),
     origin_airport character(5),
-    create_time timestamp with time zone DEFAULT now() NOT NULL,
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL,
     destination_airport character(5),
-    created_user_code character(5) NOT NULL,
+    create_user character(5) NOT NULL,
     number_field character(50) NOT NULL,
-    level integer,
+    credit_card_fraud_level integer,
     credit_card_fraud_number_rcd character(5) NOT NULL,
     inactivated_user_code character(5),
-    inactivated_date_time timestamp with time zone
+    inactivated_date_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.credit_card_fraud OWNER TO postgres;
 
 --
--- Name: credit_card_fraud_number_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: credit_card_fraud_number_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE credit_card_fraud_number_ref (
     credit_card_fraud_number_rcd character(5) NOT NULL,
     number_name character(18),
     active_flag integer,
-    create_time timestamp with time zone DEFAULT now() NOT NULL,
-    created_user_code character(5) NOT NULL
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL,
+    create_user character(5) NOT NULL
 );
 
 
 ALTER TABLE public.credit_card_fraud_number_ref OWNER TO postgres;
 
 --
--- Name: credit_card_message; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: credit_card_message; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE credit_card_message (
@@ -3982,14 +3417,14 @@ CREATE TABLE credit_card_message (
     accept_approval character(1),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.credit_card_message OWNER TO postgres;
 
 --
--- Name: credit_card_tran_serial; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: credit_card_tran_serial; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE credit_card_tran_serial (
@@ -4024,7 +3459,7 @@ ALTER SEQUENCE credit_card_tran_serial_cc_tran_no_seq OWNED BY credit_card_tran_
 
 
 --
--- Name: credit_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: credit_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE credit_requests (
@@ -4042,7 +3477,7 @@ CREATE TABLE credit_requests (
     street_address character varying(20),
     ticket_count integer,
     request character varying(1024) NOT NULL,
-    create_stamp timestamp with time zone DEFAULT now() NOT NULL,
+    create_stamp timestamp WITH time zone DEFAULT now() NOT NULL,
     cvv2 character varying(5),
     currency_code character varying(3),
     ecommerce_indicator character varying(2)
@@ -4073,7 +3508,7 @@ ALTER SEQUENCE credit_requests_id_seq OWNED BY credit_requests.id;
 
 
 --
--- Name: credit_settlement; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: credit_settlement; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE credit_settlement (
@@ -4083,7 +3518,7 @@ CREATE TABLE credit_settlement (
     avs_code character(1),
     approval_code character(6),
     transaction_id character varying(10),
-    updated_date timestamp with time zone NOT NULL,
+    updated_date timestamp WITH time zone NOT NULL,
     message character varying(255),
     answer character varying(255),
     cvvcode character varying(4)
@@ -4114,7 +3549,7 @@ ALTER SEQUENCE credit_settlement_id_seq OWNED BY credit_settlement.id;
 
 
 --
--- Name: credt_card_branch; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: credt_card_branch; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE credt_card_branch (
@@ -4123,14 +3558,14 @@ CREATE TABLE credt_card_branch (
     auth_phone_no character varying(30) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.credt_card_branch OWNER TO postgres;
 
 --
--- Name: credt_card_nation; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: credt_card_nation; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE credt_card_nation (
@@ -4142,14 +3577,14 @@ CREATE TABLE credt_card_nation (
     card_number_mask character(25),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.credt_card_nation OWNER TO postgres;
 
 --
--- Name: crystal_reports_hierarchy; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: crystal_reports_hierarchy; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE crystal_reports_hierarchy (
@@ -4161,14 +3596,14 @@ CREATE TABLE crystal_reports_hierarchy (
     security_hook_name character varying(30),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.crystal_reports_hierarchy OWNER TO postgres;
 
 --
--- Name: curr_convert; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: curr_convert; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE curr_convert (
@@ -4179,14 +3614,14 @@ CREATE TABLE curr_convert (
     bank_rate numeric(9,5) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.curr_convert OWNER TO postgres;
 
 --
--- Name: currency_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: currency_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE currency_codes (
@@ -4195,17 +3630,17 @@ CREATE TABLE currency_codes (
     "precision" smallint NOT NULL,
     round_units smallint NOT NULL,
     nuc_rate numeric(9,5) NOT NULL,
+    numeric_code integer,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    numeric_code integer
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.currency_codes OWNER TO postgres;
 
 --
--- Name: db_purge_control; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: db_purge_control; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE db_purge_control (
@@ -4217,8 +3652,8 @@ CREATE TABLE db_purge_control (
     active_flag character(1) NOT NULL,
     last_purged_date date NOT NULL,
     rows_deleted integer,
-    start_date_time timestamp with time zone,
-    end_date_time timestamp with time zone,
+    start_date_time timestamp WITH time zone,
+    end_date_time timestamp WITH time zone,
     create_date date NOT NULL,
     level integer,
     sub_column character varying(128),
@@ -4230,7 +3665,7 @@ CREATE TABLE db_purge_control (
 ALTER TABLE public.db_purge_control OWNER TO postgres;
 
 --
--- Name: db_purge_temp; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: db_purge_temp; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE db_purge_temp (
@@ -4242,7 +3677,7 @@ CREATE TABLE db_purge_temp (
 ALTER TABLE public.db_purge_temp OWNER TO postgres;
 
 --
--- Name: db_purge_track; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: db_purge_track; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE db_purge_track (
@@ -4257,7 +3692,7 @@ ALTER TABLE public.db_purge_track OWNER TO postgres;
 
 
 --
--- Name: denied_cc_adjustments; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: denied_cc_adjustments; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE denied_cc_adjustments (
@@ -4272,9 +3707,9 @@ CREATE TABLE denied_cc_adjustments (
     payment_mode character(1),
     document_date date,
     book_no integer,
-    passenger_name character(53),
+    pax_name character(53),
     client_prfl_no character(15),
-    pass_code character(5),
+    pax_code character(5),
     book_agency_code character(8),
     origin_address character(10),
     origin_branch_code character(12) NOT NULL,
@@ -4295,15 +3730,15 @@ CREATE TABLE denied_cc_adjustments (
     pay_stat_flag character(1) NOT NULL,
     recpt_stat_flag character(1) NOT NULL,
     invc_stat_flag character(1) NOT NULL,
-    payment_ind character(1) NOT NULL,
+    payment_flag character(1) NOT NULL,
+    voucher_no integer,
+    credit_req_seq character varying(10),
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
     create_time character(19) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    voucher_no integer,
-    credit_req_seq character varying(10)
+    update_time timestamp WITH time zone
 );
 
 
@@ -4331,7 +3766,7 @@ ALTER SEQUENCE denied_cc_adjustments_ka_number_seq OWNED BY denied_cc_adjustment
 
 
 --
--- Name: department; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: department; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE department (
@@ -4339,14 +3774,14 @@ CREATE TABLE department (
     description character varying(255),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.department OWNER TO postgres;
 
 --
--- Name: dest; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: dest; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE dest (
@@ -4361,14 +3796,14 @@ CREATE TABLE dest (
     receipt_status character(1),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.dest OWNER TO postgres;
 
 --
--- Name: dest_process; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: dest_process; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE dest_process (
@@ -4381,7 +3816,7 @@ CREATE TABLE dest_process (
 ALTER TABLE public.dest_process OWNER TO postgres;
 
 --
--- Name: device; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: device; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE device (
@@ -4391,14 +3826,14 @@ CREATE TABLE device (
     device_time_out smallint NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.device OWNER TO postgres;
 
 --
--- Name: device_status_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: device_status_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE device_status_ref (
@@ -4406,14 +3841,14 @@ CREATE TABLE device_status_ref (
     description character varying(255),
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.device_status_ref OWNER TO postgres;
 
 --
--- Name: diners_club_tx; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: diners_club_tx; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE diners_club_tx (
@@ -4433,17 +3868,17 @@ CREATE TABLE diners_club_tx (
     points_spent integer,
     points_refund integer,
     book_no integer,
-    create_time timestamp with time zone,
-    update_time timestamp with time zone,
     info_sent character(1),
-    exchange_rate double precision
+    exchange_rate double precision,
+    create_time timestamp WITH time zone,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.diners_club_tx OWNER TO postgres;
 
 --
--- Name: document_category; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: document_category; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE document_category (
@@ -4451,15 +3886,12 @@ CREATE TABLE document_category (
     document_catg character(3) NOT NULL,
     document_grp character(2) NOT NULL,
     payment_key character(1) NOT NULL,
-    doc_strt_auth_lvl smallint NOT NULL,
-    doc_end_auth_lvl smallint NOT NULL,
+    doc_strt_auth_level smallint NOT NULL,
+    doc_end_auth_level smallint NOT NULL,
     type_description character varying(160),
     description character varying(160),
     crdt_expry_intvl smallint,
     fop_format character(1) NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     default_paid_flag character(1) DEFAULT 'N'::bpchar,
     single_payment_flag character(1) DEFAULT 'N'::bpchar,
     installments_enabled character(1) DEFAULT 'N'::bpchar,
@@ -4469,14 +3901,17 @@ CREATE TABLE document_category (
     installment_period integer,
     installment_period_type character(1),
     reference_constant smallint,
-    reference_id_type character(5) DEFAULT 'NONE'::bpchar
+    reference_id_type character(5) DEFAULT 'NONE'::bpchar,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.document_category OWNER TO postgres;
 
 --
--- Name: document_category_save; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: document_category_save; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE document_category_save (
@@ -4484,15 +3919,12 @@ CREATE TABLE document_category_save (
     document_catg character(3) NOT NULL,
     document_grp character(2) NOT NULL,
     payment_key character(1) NOT NULL,
-    doc_strt_auth_lvl smallint NOT NULL,
-    doc_end_auth_lvl smallint NOT NULL,
+    doc_strt_auth_level smallint NOT NULL,
+    doc_end_auth_level smallint NOT NULL,
     type_description character varying(160),
     description character varying(160),
     crdt_expry_intvl smallint,
     fop_format character(1) NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     default_paid_flag character(1) DEFAULT 'N'::bpchar,
     single_payment_flag character(1) DEFAULT 'N'::bpchar,
     installments_enabled character(1) DEFAULT 'N'::bpchar,
@@ -4501,14 +3933,17 @@ CREATE TABLE document_category_save (
     number_of_installments integer,
     installment_period integer,
     installment_period_type character(1),
-    reference_id_type character(5) DEFAULT 'NONE'::bpchar
+    reference_id_type character(5) DEFAULT 'NONE'::bpchar,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.document_category_save OWNER TO postgres;
 
 --
--- Name: dup_maint_names; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: dup_maint_names; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE dup_maint_names (
@@ -4533,7 +3968,7 @@ CREATE TABLE dup_maint_names (
 ALTER TABLE public.dup_maint_names OWNER TO postgres;
 
 --
--- Name: employee; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: employee; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE employee (
@@ -4548,23 +3983,23 @@ CREATE TABLE employee (
     return_to_work_date date,
     national_identity_no character varying(15),
     job_title character varying(255),
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
     remarks character varying(250),
     jump_seat_code character varying(20),
     suspension_date date,
     travel_start_date date,
     travel_end_date date,
     department_name character varying(100),
-    buddy_pass_code character varying(5)
+    buddy_pax_code character varying(5),
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.employee OWNER TO postgres;
 
 --
--- Name: employee_buddy_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: employee_buddy_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE employee_buddy_pass (
@@ -4574,17 +4009,17 @@ CREATE TABLE employee_buddy_pass (
     book_no integer,
     valid_from_date date NOT NULL,
     valid_until_date date NOT NULL,
+    remarks character varying(255),
     update_user character(5),
     update_group character(8),
-    update_time timestamp with time zone,
-    remarks character varying(255)
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.employee_buddy_pass OWNER TO postgres;
 
 --
--- Name: employee_family; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: employee_family; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE employee_family (
@@ -4593,14 +4028,14 @@ CREATE TABLE employee_family (
     relationship_type_id integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.employee_family OWNER TO postgres;
 
 --
--- Name: employee_travel_benefit; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: employee_travel_benefit; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE employee_travel_benefit (
@@ -4609,14 +4044,14 @@ CREATE TABLE employee_travel_benefit (
     buddy_pass_prefix character varying(5),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.employee_travel_benefit OWNER TO postgres;
 
 --
--- Name: end_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: end_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE end_transaction (
@@ -4631,34 +4066,34 @@ CREATE TABLE end_transaction (
     validate_flag character(1) NOT NULL,
     processing_flag character(1) NOT NULL,
     proc_date_time character(19),
-    create_user character(5) NOT NULL,
-    create_group character(8) NOT NULL,
-    create_time character(19) NOT NULL,
-    update_time timestamp with time zone,
     et_info_1 character varying(250),
     et_info_2 character varying(250),
     et_info_3 character varying(250),
     et_info_4 character varying(250),
     et_info_5 character varying(250),
     et_info_6 character varying(250),
-    et_info_7 character varying(250)
+    et_info_7 character varying(250),
+    create_user character(5) NOT NULL,
+    create_group character(8) NOT NULL,
+    create_time character(19) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.end_transaction OWNER TO postgres;
 
 --
--- Name: end_transaction_book; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: end_transaction_book; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE end_transaction_book (
     book_serial_no integer NOT NULL,
     book_no integer,
     processing_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
-    create_time timestamp with time zone NOT NULL,
-    update_time timestamp with time zone NOT NULL,
     payment_no integer,
-    et_serial_no integer DEFAULT 0 NOT NULL
+    et_serial_no integer DEFAULT 0 NOT NULL,
+    create_time timestamp WITH time zone NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -4686,7 +4121,7 @@ ALTER SEQUENCE end_transaction_book_book_serial_no_seq OWNED BY end_transaction_
 
 
 --
--- Name: equipment_change_processing_serial; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: equipment_change_processing_serial; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE equipment_change_processing_serial (
@@ -4718,7 +4153,7 @@ ALTER SEQUENCE equipment_change_processing_s_equipment_change_processing_i_seq O
 
 
 --
--- Name: equipment_change_seat_reallocation; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: equipment_change_seat_reallocation; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE equipment_change_seat_reallocation (
@@ -4726,11 +4161,11 @@ CREATE TABLE equipment_change_seat_reallocation (
     old_seat_definition_id integer NOT NULL,
     new_seat_definition_id integer NOT NULL,
     active_flag character(1) NOT NULL,
-    update_user character varying(5),
-    update_group character varying(8),
-    update_time timestamp with time zone,
     from_seat_map_id integer NOT NULL,
     to_seat_map_id integer NOT NULL,
+    update_user character varying(5),
+    update_group character varying(8),
+    update_time timestamp WITH time zone,
     CONSTRAINT equipment_change_seat_reallocation_active_flag_check CHECK ((active_flag = ANY (ARRAY['A'::bpchar, 'I'::bpchar])))
 );
 
@@ -4759,7 +4194,7 @@ ALTER SEQUENCE equipment_change_seat_realloc_equipment_change_seat_realloc_seq O
 
 
 --
--- Name: error_code; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: error_code; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE error_code (
@@ -4771,15 +4206,15 @@ CREATE TABLE error_code (
     severity integer,
     language character(20) NOT NULL,
     create_user character(5) NOT NULL,
-    create_time timestamp with time zone NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.error_code OWNER TO postgres;
 
 --
--- Name: et_payments; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: et_payments; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE et_payments (
@@ -4791,7 +4226,7 @@ CREATE TABLE et_payments (
 ALTER TABLE public.et_payments OWNER TO postgres;
 
 --
--- Name: et_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: et_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE et_serial_nos (
@@ -4826,7 +4261,7 @@ ALTER SEQUENCE et_serial_nos_et_serial_no_seq OWNED BY et_serial_nos.et_serial_n
 
 
 --
--- Name: et_valid_check; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: et_valid_check; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE et_valid_check (
@@ -4843,14 +4278,14 @@ CREATE TABLE et_valid_check (
     process_codes smallint NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.et_valid_check OWNER TO postgres;
 
 --
--- Name: et_valid_usr_exit; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: et_valid_usr_exit; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE et_valid_usr_exit (
@@ -4864,14 +4299,14 @@ CREATE TABLE et_valid_usr_exit (
     usr_exit_no integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.et_valid_usr_exit OWNER TO postgres;
 
 --
--- Name: eticket_action; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: eticket_action; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE eticket_action (
@@ -4919,7 +4354,7 @@ ALTER SEQUENCE eticket_action_eticket_action_id_seq OWNED BY eticket_action.etic
 
 
 --
--- Name: eticket_in_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: eticket_in_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE eticket_in_mesgs (
@@ -4930,17 +4365,17 @@ CREATE TABLE eticket_in_mesgs (
     failure_flag character(1) DEFAULT 'N'::bpchar,
     failure_reason character varying(50),
     message_body character varying(1024),
-    create_time timestamp with time zone NOT NULL,
-    update_time timestamp with time zone NOT NULL,
     xml character varying(4096) DEFAULT ''::character varying,
-    edifact character varying(4096) DEFAULT ''::character varying
+    edifact character varying(4096) DEFAULT ''::character varying,
+    create_time timestamp WITH time zone NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.eticket_in_mesgs OWNER TO postgres;
 
 --
--- Name: eticket_in_mesgs_old; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: eticket_in_mesgs_old; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE eticket_in_mesgs_old (
@@ -4951,10 +4386,10 @@ CREATE TABLE eticket_in_mesgs_old (
     failure_flag character(1) DEFAULT 'N'::bpchar,
     failure_reason character varying(50),
     message_body character varying(1024),
-    create_time timestamp with time zone NOT NULL,
-    update_time timestamp with time zone NOT NULL,
     xml character varying(4096) DEFAULT ''::character varying,
-    edifact character varying(4096) DEFAULT ''::character varying
+    edifact character varying(4096) DEFAULT ''::character varying,
+    create_time timestamp WITH time zone NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -5003,7 +4438,7 @@ ALTER SEQUENCE eticket_in_mesgs_serial_no_seq OWNED BY eticket_in_mesgs.serial_n
 
 
 --
--- Name: eticket_out_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: eticket_out_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE eticket_out_mesgs (
@@ -5014,7 +4449,7 @@ CREATE TABLE eticket_out_mesgs (
     status character varying(5),
     description character varying(50),
     message_body character varying(1024),
-    create_time timestamp with time zone NOT NULL,
+    create_time timestamp WITH time zone NOT NULL,
     edifact character varying(4096) DEFAULT ''::character varying,
     xml character varying(4096) DEFAULT ''::character varying
 );
@@ -5023,7 +4458,7 @@ CREATE TABLE eticket_out_mesgs (
 ALTER TABLE public.eticket_out_mesgs OWNER TO postgres;
 
 --
--- Name: eticket_out_mesgs_old; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: eticket_out_mesgs_old; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE eticket_out_mesgs_old (
@@ -5034,7 +4469,7 @@ CREATE TABLE eticket_out_mesgs_old (
     status character varying(5),
     description character varying(50),
     message_body character varying(1024),
-    create_time timestamp with time zone NOT NULL,
+    create_time timestamp WITH time zone NOT NULL,
     edifact character varying(4096) DEFAULT ''::character varying,
     xml character varying(4096) DEFAULT ''::character varying
 );
@@ -5085,7 +4520,7 @@ ALTER SEQUENCE eticket_out_mesgs_serial_no_seq OWNED BY eticket_out_mesgs.serial
 
 
 --
--- Name: eticket_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: eticket_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE eticket_transaction (
@@ -5093,14 +4528,14 @@ CREATE TABLE eticket_transaction (
     et_serial_no integer NOT NULL,
     book_no integer NOT NULL,
     tran_type character(5) NOT NULL,
-    create_time timestamp with time zone NOT NULL,
+    create_time timestamp WITH time zone NOT NULL,
     message_xml_req character varying(8192),
     message_edi_req character varying(8192),
     message_xml_res character varying(8192),
     message_edi_res character varying(4096),
     error_description character varying(1024),
     status character(1) DEFAULT 'N'::bpchar NOT NULL,
-    upd_date_time timestamp with time zone NOT NULL
+    upd_date_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -5128,7 +4563,7 @@ ALTER SEQUENCE eticket_transaction_transaction_id_seq OWNED BY eticket_transacti
 
 
 --
--- Name: euroline_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: euroline_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE euroline_transaction (
@@ -5138,14 +4573,14 @@ CREATE TABLE euroline_transaction (
     request text,
     request_data text,
     reply text,
-    rqst_date_time timestamp with time zone DEFAULT now() NOT NULL,
-    rply_date_time timestamp with time zone,
+    rqst_date_time timestamp WITH time zone DEFAULT now() NOT NULL,
+    rply_date_time timestamp WITH time zone,
     settled character(1) DEFAULT 'N'::bpchar NOT NULL,
     sett_request text,
     sett_request_data text,
     sett_reply text,
-    sett_rqst_date_time timestamp with time zone,
-    sett_rply_date_time timestamp with time zone,
+    sett_request_date_time timestamp WITH time zone,
+    sett_reply_date_time timestamp WITH time zone,
     external_tran_id character varying(30),
     cc_approval_code character(6)
 );
@@ -5175,7 +4610,7 @@ ALTER SEQUENCE euroline_transaction_transaction_id_seq OWNED BY euroline_transac
 
 
 --
--- Name: fact_note; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fact_note; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fact_note (
@@ -5184,14 +4619,14 @@ CREATE TABLE fact_note (
     fact_text character varying(255),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.fact_note OWNER TO postgres;
 
 --
--- Name: fare; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare (
@@ -5221,31 +4656,31 @@ CREATE TABLE fare (
     net_fare_flag character(1),
     atpco_export_flag character(1),
     activate_batch_id character(5),
-    access_auth_lvl_low smallint,
-    access_auth_lvl_high smallint,
-    bypass_auth_lvl_low smallint,
-    bypass_auth_lvl_high smallint,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
+    access_auth_level_low smallint,
+    access_auth_level_high smallint,
+    bypass_auth_level_low smallint,
+    bypass_auth_level_high smallint,
     active_flag character(1) DEFAULT 'A'::bpchar,
-    inactive_date_time timestamp with time zone,
+    inactive_date_time timestamp WITH time zone,
     footnote character(2),
     companion_fare character varying(15),
     companion_count integer,
     private_fare_flag character(1),
     tariff_code character varying(20),
     timelimit_days smallint,
-    timelimit_time time with time zone,
+    timelimit_time time WITH time zone,
     all_agency_flag character(1) DEFAULT 'Y'::bpchar NOT NULL,
-    all_branch_flag character(1) DEFAULT 'Y'::bpchar NOT NULL
+    all_branch_flag character(1) DEFAULT 'Y'::bpchar NOT NULL,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare OWNER TO postgres;
 
 --
--- Name: fare_agency; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_agency; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_agency (
@@ -5253,14 +4688,14 @@ CREATE TABLE fare_agency (
     agency_code character varying(20) NOT NULL,
     update_user character(5),
     update_group character(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.fare_agency OWNER TO postgres;
 
 --
--- Name: fare_batch_operation; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_batch_operation; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_batch_operation (
@@ -5271,16 +4706,16 @@ CREATE TABLE fare_batch_operation (
     user_comment character varying(255),
     system_name character varying(100),
     process_id integer,
-    started_date_time timestamp with time zone,
-    last_seen_date_time timestamp with time zone,
+    started_date_time timestamp WITH time zone,
+    last_seen_date_time timestamp WITH time zone,
     last_operation_status_rcd character varying(5) NOT NULL,
-    completed_date_time timestamp with time zone,
+    completed_date_time timestamp WITH time zone,
     can_be_cancelled_flag character(1) NOT NULL,
     cancel_flag character(1) NOT NULL,
     cancelled_by_user_code character varying(5),
     update_user character varying(5),
     update_group character varying(5),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -5308,19 +4743,19 @@ ALTER SEQUENCE fare_batch_operation_fare_batch_operation_id_seq OWNED BY fare_ba
 
 
 --
--- Name: fare_batch_operation_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_batch_operation_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_batch_operation_history (
     fare_batch_operation_history_id integer NOT NULL,
     fare_batch_operation_id integer NOT NULL,
-    event_date_time timestamp with time zone,
+    event_date_time timestamp WITH time zone,
     op_status_rcd character varying(5) NOT NULL,
     can_be_cancelled_flag character(1) NOT NULL,
     cancel_flag character(1) NOT NULL,
     update_user character varying(5),
     update_group character varying(5),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -5348,7 +4783,7 @@ ALTER SEQUENCE fare_batch_operation_history_fare_batch_operation_history_i_seq O
 
 
 --
--- Name: fare_blackout; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_blackout; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_blackout (
@@ -5356,14 +4791,14 @@ CREATE TABLE fare_blackout (
     blackout_date date NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_blackout OWNER TO postgres;
 
 --
--- Name: fare_branch; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_branch; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_branch (
@@ -5371,14 +4806,14 @@ CREATE TABLE fare_branch (
     branch_code character varying(20) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_branch OWNER TO postgres;
 
 --
--- Name: fare_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_codes (
@@ -5388,38 +4823,38 @@ CREATE TABLE fare_codes (
     description character varying(255),
     selling_class character(2) NOT NULL,
     fare_category character(4) NOT NULL,
-    onw_return_ind character(1) NOT NULL,
-    acss_strt_auth_lvl smallint,
-    acss_end_auth_lvl smallint,
-    byps_strt_auth_lvl smallint,
-    byps_end_auth_lvl smallint,
+    onw_return_flag character(1) NOT NULL,
+    acss_strt_auth_level smallint,
+    acss_end_auth_level smallint,
+    byps_strt_auth_level smallint,
+    byps_end_auth_level smallint,
     update_user character(5) NOT NULL,
     group_name character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.fare_codes OWNER TO postgres;
 
 --
--- Name: fare_comb_route; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_comb_route; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_comb_route (
     fare_combine_id bigint NOT NULL,
     route_id bigint NOT NULL,
     active_flag character(1) NOT NULL,
-    inactive_date_time timestamp with time zone,
+    inactive_date_time timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_comb_route OWNER TO postgres;
 
 --
--- Name: fare_combinability; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_combinability; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_combinability (
@@ -5430,17 +4865,17 @@ CREATE TABLE fare_combinability (
     allow_comb_flag character(1) NOT NULL,
     description character varying(200),
     active_flag character(1) NOT NULL,
-    inactive_date_time timestamp with time zone,
+    inactive_date_time timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_combinability OWNER TO postgres;
 
 --
--- Name: fare_combinations; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_combinations; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_combinations (
@@ -5451,44 +4886,44 @@ CREATE TABLE fare_combinations (
     refundable_flag character(1),
     ow_return_flag character(1),
     active_flag character(1) DEFAULT 'A'::bpchar,
-    inactive_date_time timestamp with time zone,
+    inactive_date_time timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_combinations OWNER TO postgres;
 
 --
--- Name: fare_companion; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_companion; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_companion (
     fare_id bigint NOT NULL,
-    passenger_desc character(5) NOT NULL,
-    passenger_count smallint NOT NULL,
+    pax_desc character(5) NOT NULL,
+    pax_count smallint NOT NULL,
     companion_count smallint NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_companion OWNER TO postgres;
 
 --
--- Name: fare_date_period; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_date_period; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_date_period (
     fare_date_period_id bigint NOT NULL,
     fare_date_period_code character varying(2),
     description character varying(255),
+    active_flag character(1) DEFAULT 'A'::bpchar NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone,
-    active_flag character(1) DEFAULT 'A'::bpchar NOT NULL,
+    update_time timestamp WITH time zone,
     CONSTRAINT fare_date_period_active_flag_check CHECK ((active_flag = ANY (ARRAY['A'::bpchar, 'I'::bpchar])))
 );
 
@@ -5496,20 +4931,20 @@ CREATE TABLE fare_date_period (
 ALTER TABLE public.fare_date_period OWNER TO postgres;
 
 --
--- Name: fare_date_period_dates; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_date_period_dates; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_date_period_dates (
     fare_date_period_id bigint NOT NULL,
     seq_no integer NOT NULL,
-    effective_from_date timestamp with time zone NOT NULL,
-    effective_to_date timestamp with time zone NOT NULL,
-    valid_from_date timestamp with time zone NOT NULL,
-    valid_to_date timestamp with time zone NOT NULL,
+    effective_from_date timestamp WITH time zone NOT NULL,
+    effective_to_date timestamp WITH time zone NOT NULL,
+    valid_from_date timestamp WITH time zone NOT NULL,
+    valid_to_date timestamp WITH time zone NOT NULL,
     active_flag character(1) NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone,
+    update_time timestamp WITH time zone,
     CONSTRAINT fare_date_period_dates_active_flag_check CHECK ((active_flag = ANY (ARRAY['A'::bpchar, 'I'::bpchar])))
 );
 
@@ -5538,25 +4973,25 @@ ALTER SEQUENCE fare_date_period_fare_date_period_id_seq OWNED BY fare_date_perio
 
 
 --
--- Name: fare_day_time; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_day_time; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_day_time (
     fare_id bigint NOT NULL,
     tod_sequence smallint NOT NULL,
     weekday smallint,
-    start_time time with time zone,
-    end_time time with time zone,
+    start_time time WITH time zone,
+    end_time time WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_day_time OWNER TO postgres;
 
 --
--- Name: fare_designator; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_designator; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_designator (
@@ -5566,14 +5001,14 @@ CREATE TABLE fare_designator (
     change_value numeric(12,2) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_designator OWNER TO postgres;
 
 --
--- Name: fare_endorsements; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_endorsements; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_endorsements (
@@ -5584,18 +5019,18 @@ CREATE TABLE fare_endorsements (
     fare_description character varying(255),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_endorsements OWNER TO postgres;
 
 --
--- Name: fare_export; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_export; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_export (
-    exp_date_time timestamp with time zone NOT NULL,
+    exp_date_time timestamp WITH time zone NOT NULL,
     exp_destination character(10) NOT NULL,
     exp_user_id character(5),
     exp_dest_id character(8)
@@ -5605,24 +5040,24 @@ CREATE TABLE fare_export (
 ALTER TABLE public.fare_export OWNER TO postgres;
 
 --
--- Name: fare_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_pass (
     fare_id bigint NOT NULL,
-    passenger_desc character(5) NOT NULL,
+    pax_desc character(5) NOT NULL,
     change_type character(1),
     change_value numeric(12,2),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_pass OWNER TO postgres;
 
 --
--- Name: fare_route; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_route; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_route (
@@ -5633,28 +5068,28 @@ CREATE TABLE fare_route (
     currency_code character(3),
     valid_from_date date,
     valid_to_date date,
-    effective_from_date timestamp with time zone,
-    effective_to_date timestamp with time zone,
+    effective_from_date timestamp WITH time zone,
+    effective_to_date timestamp WITH time zone,
     active_flag character(1),
-    inactive_date_time timestamp with time zone,
+    inactive_date_time timestamp WITH time zone,
     original_fare_route_id bigint,
     activate_batch_id character(5),
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
-    atpco_upload_date timestamp with time zone,
+    atpco_upload_date timestamp WITH time zone,
     atpco_custom_data character varying(255),
     fare_date_period_id bigint,
     seq_no integer,
     timelimit_days smallint,
-    timelimit_time time with time zone
+    timelimit_time time WITH time zone,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_route OWNER TO postgres;
 
 --
--- Name: fare_route_agency; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_route_agency; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_route_agency (
@@ -5663,14 +5098,14 @@ CREATE TABLE fare_route_agency (
     agency_code character varying(20) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_route_agency OWNER TO postgres;
 
 --
--- Name: fare_route_branch; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_route_branch; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_route_branch (
@@ -5679,14 +5114,14 @@ CREATE TABLE fare_route_branch (
     branch_code character varying(20) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_route_branch OWNER TO postgres;
 
 --
--- Name: fare_route_company; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_route_company; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_route_company (
@@ -5696,14 +5131,14 @@ CREATE TABLE fare_route_company (
     all_branch_flag character(1),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_route_company OWNER TO postgres;
 
 --
--- Name: fare_route_designator; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_route_designator; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_route_designator (
@@ -5713,14 +5148,14 @@ CREATE TABLE fare_route_designator (
     change_value numeric(12,2) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_route_designator OWNER TO postgres;
 
 --
--- Name: fare_route_flight; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_route_flight; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_route_flight (
@@ -5728,31 +5163,31 @@ CREATE TABLE fare_route_flight (
     flight_number character varying(20) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_route_flight OWNER TO postgres;
 
 --
--- Name: fare_route_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_route_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_route_pass (
     fare_route_id bigint NOT NULL,
-    passenger_desc character(5) NOT NULL,
+    pax_desc character(5) NOT NULL,
     change_type character(1),
     change_value numeric(12,2),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fare_route_pass OWNER TO postgres;
 
 --
--- Name: fare_rule_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_rule_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_rule_codes (
@@ -5765,17 +5200,17 @@ CREATE TABLE fare_rule_codes (
     rule_code_text character varying(255),
     tkt_description character varying(90),
     refund_flag character(1),
+    flno_appl_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    flno_appl_flag character(1) DEFAULT 'N'::bpchar NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.fare_rule_codes OWNER TO postgres;
 
 --
--- Name: fare_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_segm (
@@ -5787,19 +5222,19 @@ CREATE TABLE fare_segm (
     eff_from_date date,
     eff_to_date date,
     fare_value numeric(15,5) NOT NULL,
+    active_flag character(1) DEFAULT 'A'::bpchar NOT NULL,
+    export_timestamp timestamp WITH time zone,
+    inactive_date timestamp WITH time zone,
     update_user character(8) NOT NULL,
     group_name character(8) NOT NULL,
-    update_time timestamp with time zone,
-    active_flag character(1) DEFAULT 'A'::bpchar NOT NULL,
-    export_timestamp timestamp with time zone,
-    inactive_date timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.fare_segm OWNER TO postgres;
 
 --
--- Name: fare_segm_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_segm_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fare_segm_rule (
@@ -5809,19 +5244,19 @@ CREATE TABLE fare_segm_rule (
     valid_from_date date NOT NULL,
     fare_rule_no character(8) NOT NULL,
     valid_to_date date NOT NULL,
+    active_flag character(1) DEFAULT 'A'::bpchar NOT NULL,
+    export_timestamp timestamp WITH time zone,
+    flight_number character(7),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    active_flag character(1) DEFAULT 'A'::bpchar NOT NULL,
-    export_timestamp timestamp with time zone,
-    flight_number character(7)
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.fare_segm_rule OWNER TO postgres;
 
 --
--- Name: fee; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fee; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fee (
@@ -5830,8 +5265,8 @@ CREATE TABLE fee (
     fee_type_rcd character(10) NOT NULL,
     fee_code character(5) NOT NULL,
     description character varying(250) NOT NULL,
-    valid_from_date_time timestamp with time zone NOT NULL,
-    valid_until_date_time timestamp with time zone NOT NULL,
+    valid_from_date_time timestamp WITH time zone NOT NULL,
+    valid_until_date_time timestamp WITH time zone NOT NULL,
     fee_value numeric(12,2) NOT NULL,
     fee_currency character(3),
     fee_percent_flag integer NOT NULL,
@@ -5840,17 +5275,17 @@ CREATE TABLE fee (
     selling_class_code character(2),
     days_before_departure integer,
     use_days_before_departure_flag integer NOT NULL,
-    per_passenger_flag integer,
-    passenger_code character(5),
+    per_pax_flag integer,
+    pax_code character(5),
     branch_code character varying(15),
     payment_type character(5),
     payment_form character(5),
     booking_category character(1),
     fare_code character varying(15),
-    created_user_code character(5) NOT NULL,
-    create_time timestamp with time zone DEFAULT now() NOT NULL,
+    create_user character(5) NOT NULL,
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL,
     inactivated_user_code character(5),
-    inactivated_date_time timestamp with time zone,
+    inactivated_date_time timestamp WITH time zone,
     active_flag integer NOT NULL,
     international_domestic_indicator character(1) NOT NULL,
     ssr_code character(4),
@@ -5872,7 +5307,7 @@ CREATE TABLE fee (
 ALTER TABLE public.fee OWNER TO postgres;
 
 --
--- Name: fee_branch; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fee_branch; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fee_branch (
@@ -5880,14 +5315,14 @@ CREATE TABLE fee_branch (
     branch_code character varying(20) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fee_branch OWNER TO postgres;
 
 --
--- Name: fee_class; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fee_class; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fee_class (
@@ -5895,14 +5330,14 @@ CREATE TABLE fee_class (
     class_code character varying(20) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fee_class OWNER TO postgres;
 
 --
--- Name: fee_fare; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fee_fare; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fee_fare (
@@ -5910,44 +5345,44 @@ CREATE TABLE fee_fare (
     fare_code character varying(20) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fee_fare OWNER TO postgres;
 
 --
--- Name: fee_passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fee_passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fee_passenger (
     fee_id bigint NOT NULL,
-    passenger_code character varying(20) NOT NULL,
+    pax_code character varying(20) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.fee_passenger OWNER TO postgres;
 
 --
--- Name: fee_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fee_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE fee_type_ref (
     fee_type_rcd character(10) NOT NULL,
     description character varying(250) NOT NULL,
     active_flag integer NOT NULL,
-    create_time timestamp with time zone DEFAULT now() NOT NULL,
-    created_user_code character(5) NOT NULL
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL,
+    create_user character(5) NOT NULL
 );
 
 
 ALTER TABLE public.fee_type_ref OWNER TO postgres;
 
 --
--- Name: field_control_type; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: field_control_type; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE field_control_type (
@@ -5960,14 +5395,14 @@ CREATE TABLE field_control_type (
     source_caption_field character varying(100),
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.field_control_type OWNER TO postgres;
 
 --
--- Name: financial_transaction_book; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: financial_transaction_book; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE financial_transaction_book (
@@ -5975,8 +5410,8 @@ CREATE TABLE financial_transaction_book (
     book_no integer NOT NULL,
     et_serial_no integer DEFAULT 0 NOT NULL,
     processing_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
-    create_time timestamp with time zone NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -6004,25 +5439,25 @@ ALTER SEQUENCE financial_transaction_book_serial_no_seq OWNED BY financial_trans
 
 
 --
--- Name: flgt_dt_availbty; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flgt_dt_availbty; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flgt_dt_availbty (
-    live_test_avlbty character(1) NOT NULL,
+    live_test_availbty character(1) NOT NULL,
     flight_number character(7) NOT NULL,
     city_pair integer NOT NULL,
     schedule_period_no smallint NOT NULL,
     flight_date date NOT NULL,
     selling_class character(2) NOT NULL,
-    dt_avlb_seats smallint NOT NULL,
-    prd_avlb_seats smallint NOT NULL
+    dt_availb_seats smallint NOT NULL,
+    prd_availb_seats smallint NOT NULL
 );
 
 
 ALTER TABLE public.flgt_dt_availbty OWNER TO postgres;
 
 --
--- Name: flight_checkin; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_checkin; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_checkin (
@@ -6030,9 +5465,9 @@ CREATE TABLE flight_checkin (
     board_date date NOT NULL,
     departure_airport character(5) NOT NULL,
     book_no integer NOT NULL,
-    passenger_no smallint NOT NULL,
+    pax_no smallint NOT NULL,
     check_sequence_no smallint NOT NULL,
-    passenger_name character(53) NOT NULL,
+    pax_name character(53) NOT NULL,
     gender character(1),
     paddle_no smallint,
     check_code character(5),
@@ -6040,14 +5475,14 @@ CREATE TABLE flight_checkin (
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
     create_time character(19) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flight_checkin OWNER TO postgres;
 
 --
--- Name: flight_configuration; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_configuration; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_configuration (
@@ -6060,7 +5495,7 @@ CREATE TABLE flight_configuration (
 ALTER TABLE public.flight_configuration OWNER TO postgres;
 
 --
--- Name: flight_date_leg; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_date_leg; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_date_leg (
@@ -6068,13 +5503,13 @@ CREATE TABLE flight_date_leg (
     flight_number character varying(7) NOT NULL,
     board_date date NOT NULL,
     flight_date date NOT NULL,
-    departure_time time with time zone NOT NULL,
+    departure_time time WITH time zone NOT NULL,
     departure_airport character varying(5) NOT NULL,
     arrival_airport character varying(5) NOT NULL,
     leg_number smallint NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -6102,7 +5537,7 @@ ALTER SEQUENCE flight_date_leg_flight_date_leg_id_seq OWNED BY flight_date_leg.f
 
 
 --
--- Name: flight_event_ctrl; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_event_ctrl; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_event_ctrl (
@@ -6124,14 +5559,14 @@ CREATE TABLE flight_event_ctrl (
     tty_address2 character varying(144),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flight_event_ctrl OWNER TO postgres;
 
 --
--- Name: flight_exceptions; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_exceptions; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_exceptions (
@@ -6152,14 +5587,14 @@ CREATE TABLE flight_exceptions (
     create_time character(19) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flight_exceptions OWNER TO postgres;
 
 --
--- Name: flight_hierarchy; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_hierarchy; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_hierarchy (
@@ -6167,14 +5602,14 @@ CREATE TABLE flight_hierarchy (
     child_flight_date_leg_id integer NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flight_hierarchy OWNER TO postgres;
 
 --
--- Name: flight_information; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_information; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_information (
@@ -6185,10 +5620,10 @@ CREATE TABLE flight_information (
     seq_no integer NOT NULL,
     delay_code character(30),
     delay_description character varying(255),
-    etd_time time with time zone,
-    atd_time time with time zone,
-    eta_time time with time zone,
-    ata_time time with time zone,
+    etd_time time WITH time zone,
+    atd_time time WITH time zone,
+    eta_time time WITH time zone,
+    ata_time time WITH time zone,
     remarks text,
     supp_comment character varying(255),
     flight_landed_code character varying(20),
@@ -6202,14 +5637,14 @@ CREATE TABLE flight_information (
     departure_gate_number character varying(20),
     update_user character(16) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flight_information OWNER TO postgres;
 
 --
--- Name: flight_locked; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_locked; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_locked (
@@ -6217,19 +5652,19 @@ CREATE TABLE flight_locked (
     flight_number character(7) NOT NULL,
     flight_date date NOT NULL,
     description character varying(255) NOT NULL,
-    invalidated_user_code character(5),
+    invalidated_user character(5),
     invalidated_dest_id character(8),
-    invalid_time timestamp with time zone,
-    created_user_code character(5) NOT NULL,
+    invalid_time timestamp WITH time zone,
+    create_user character(5) NOT NULL,
     created_dest_id character(8) NOT NULL,
-    create_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.flight_locked OWNER TO postgres;
 
 --
--- Name: flight_perd_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_perd_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_perd_cls (
@@ -6238,14 +5673,14 @@ CREATE TABLE flight_perd_cls (
     selling_class character(2) NOT NULL,
     parent_sell_cls character varying(240) NOT NULL,
     display_priority smallint NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flight_perd_cls OWNER TO postgres;
 
 --
--- Name: flight_perd_dates; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_perd_dates; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_perd_dates (
@@ -6258,7 +5693,7 @@ CREATE TABLE flight_perd_dates (
 ALTER TABLE public.flight_perd_dates OWNER TO postgres;
 
 --
--- Name: flight_perd_legs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_perd_legs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_perd_legs (
@@ -6266,8 +5701,8 @@ CREATE TABLE flight_perd_legs (
     schedule_period_no smallint NOT NULL,
     departure_airport character(5) NOT NULL,
     arrival_airport character(5) NOT NULL,
-    departure_time time with time zone,
-    arrival_time time with time zone,
+    departure_time time WITH time zone,
+    arrival_time time WITH time zone,
     date_change_ind smallint NOT NULL,
     config_table_no character(5) NOT NULL,
     flight_path_code character(1) NOT NULL,
@@ -6276,14 +5711,14 @@ CREATE TABLE flight_perd_legs (
     leg_number smallint NOT NULL,
     update_user character(16) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flight_perd_legs OWNER TO postgres;
 
 --
--- Name: flight_perd_prnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_perd_prnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_perd_prnt (
@@ -6291,14 +5726,14 @@ CREATE TABLE flight_perd_prnt (
     schedule_period_no smallint NOT NULL,
     selling_class character(2) NOT NULL,
     parent_sell_cls character(2) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flight_perd_prnt OWNER TO postgres;
 
 --
--- Name: flight_perd_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_perd_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_perd_segm (
@@ -6310,14 +5745,14 @@ CREATE TABLE flight_perd_segm (
     flight_closed_flag character(1) NOT NULL,
     flight_brdng_flag character(1) NOT NULL,
     segment_number character(22) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flight_perd_segm OWNER TO postgres;
 
 --
--- Name: flight_periods; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_periods; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_periods (
@@ -6337,14 +5772,14 @@ CREATE TABLE flight_periods (
     gen_flag_invt character(1) NOT NULL,
     update_user character(16) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flight_periods OWNER TO postgres;
 
 --
--- Name: flight_reconcile; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_reconcile; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_reconcile (
@@ -6372,7 +5807,7 @@ CREATE TABLE flight_reconcile (
 ALTER TABLE public.flight_reconcile OWNER TO postgres;
 
 --
--- Name: flight_seat_map; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_seat_map; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_seat_map (
@@ -6380,14 +5815,14 @@ CREATE TABLE flight_seat_map (
     seat_map_id integer NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flight_seat_map OWNER TO postgres;
 
 --
--- Name: flight_seat_reservation; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_seat_reservation; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_seat_reservation (
@@ -6399,14 +5834,14 @@ CREATE TABLE flight_seat_reservation (
     book_no integer,
     blocked_flag character(1),
     temporary_reserve_flag character(1),
-    release_date_time timestamp with time zone,
+    release_date_time timestamp WITH time zone,
     active_flag character(1) NOT NULL,
-    update_user character varying(5),
-    update_group character varying(8),
-    update_time timestamp with time zone,
     main_flight_seat_reservation_id integer,
     boarding_control_number_id integer,
     equipment_change_processing_id integer,
+    update_user character varying(5),
+    update_group character varying(8),
+    update_time timestamp WITH time zone,
     CONSTRAINT flight_seat_reservation_active_flag_check CHECK ((active_flag = ANY (ARRAY['A'::bpchar, 'I'::bpchar]))),
     CONSTRAINT flight_seat_reservation_blocked_flag_check CHECK ((blocked_flag = ANY (ARRAY['Y'::bpchar, 'N'::bpchar]))),
     CONSTRAINT flight_seat_reservation_temporary_reserve_flag_check CHECK ((temporary_reserve_flag = ANY (ARRAY['Y'::bpchar, 'N'::bpchar])))
@@ -6437,14 +5872,14 @@ ALTER SEQUENCE flight_seat_reservation_flight_seat_reservation_id_seq OWNED BY f
 
 
 --
--- Name: flight_seat_reservation_group; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_seat_reservation_group; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_seat_reservation_group (
     flight_seat_reservation_group_id integer NOT NULL,
+    update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone,
-    update_user character varying(5)
+    update_time timestamp WITH time zone
 );
 
 
@@ -6472,7 +5907,7 @@ ALTER SEQUENCE flight_seat_reservation_group_flight_seat_reservation_group_seq O
 
 
 --
--- Name: flight_segm_date; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_segm_date; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_segm_date (
@@ -6482,8 +5917,8 @@ CREATE TABLE flight_segm_date (
     flight_date date NOT NULL,
     departure_airport character(5) NOT NULL,
     arrival_airport character(5) NOT NULL,
-    departure_time time with time zone,
-    arrival_time time with time zone,
+    departure_time time WITH time zone,
+    arrival_time time WITH time zone,
     date_change_ind smallint NOT NULL,
     flight_path_code character(1) NOT NULL,
     departure_terminal character(2) NOT NULL,
@@ -6498,14 +5933,14 @@ CREATE TABLE flight_segm_date (
     schedule_period_no smallint NOT NULL,
     update_user character(16) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flight_segm_date OWNER TO postgres;
 
 --
--- Name: flight_segment_overlap; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_segment_overlap; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_segment_overlap (
@@ -6513,14 +5948,14 @@ CREATE TABLE flight_segment_overlap (
     overlap_flight_date_leg_id integer NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flight_segment_overlap OWNER TO postgres;
 
 --
--- Name: flight_shared_leg; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_shared_leg; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flight_shared_leg (
@@ -6545,14 +5980,14 @@ CREATE TABLE flight_shared_leg (
     aircraft_code character(3),
     leg_number smallint,
     update_user character(5) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.flight_shared_leg OWNER TO postgres;
 
 --
--- Name: floating_definition; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: floating_definition; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE floating_definition (
@@ -6577,10 +6012,10 @@ CREATE TABLE floating_definition (
     active_flag character(1) NOT NULL,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
-    create_time timestamp with time zone NOT NULL,
+    create_time timestamp WITH time zone NOT NULL,
     update_user character(5) NOT NULL,
     uptd_dest_id character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -6608,7 +6043,7 @@ ALTER SEQUENCE floating_definition_floating_def_id_seq OWNED BY floating_definit
 
 
 --
--- Name: flt_check_bags; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flt_check_bags; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flt_check_bags (
@@ -6616,7 +6051,7 @@ CREATE TABLE flt_check_bags (
     board_date date NOT NULL,
     departure_airport character(5) NOT NULL,
     book_no integer NOT NULL,
-    passenger_no smallint NOT NULL,
+    pax_no smallint NOT NULL,
     bag_cnt smallint,
     bag_tag_no character(12),
     bag_weight real,
@@ -6624,14 +6059,14 @@ CREATE TABLE flt_check_bags (
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
     create_time character(19) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flt_check_bags OWNER TO postgres;
 
 --
--- Name: flt_check_sequence_no; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flt_check_sequence_no; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flt_check_sequence_no (
@@ -6645,7 +6080,7 @@ CREATE TABLE flt_check_sequence_no (
 ALTER TABLE public.flt_check_sequence_no OWNER TO postgres;
 
 --
--- Name: flt_check_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flt_check_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flt_check_status (
@@ -6662,7 +6097,7 @@ CREATE TABLE flt_check_status (
 ALTER TABLE public.flt_check_status OWNER TO postgres;
 
 --
--- Name: flt_config_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flt_config_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flt_config_rule (
@@ -6677,14 +6112,14 @@ CREATE TABLE flt_config_rule (
     config_table_no character(5) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flt_config_rule OWNER TO postgres;
 
 --
--- Name: flt_perd_seg_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flt_perd_seg_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flt_perd_seg_cls (
@@ -6692,31 +6127,31 @@ CREATE TABLE flt_perd_seg_cls (
     schedule_period_no smallint NOT NULL,
     city_pair integer NOT NULL,
     selling_class character(2) NOT NULL,
-    group_seat_lvl smallint NOT NULL,
-    seat_protect_lvl smallint NOT NULL,
-    limit_sale_lvl smallint NOT NULL,
-    overbooking_lvl smallint NOT NULL,
-    posting_lvl smallint NOT NULL,
-    sale_notify_lvl smallint NOT NULL,
-    cancel_notify_lvl smallint NOT NULL,
+    group_seat_level smallint NOT NULL,
+    seat_protect_level smallint NOT NULL,
+    limit_sale_level smallint NOT NULL,
+    overbooking_level smallint NOT NULL,
+    posting_level smallint NOT NULL,
+    sale_notify_level smallint NOT NULL,
+    cancel_notify_level smallint NOT NULL,
     seat_capacity smallint NOT NULL,
     ob_profile_no character(5) NOT NULL,
     segment_closed_flag character(1) NOT NULL,
     wl_closed_flag character(1) NOT NULL,
-    wl_clr_inhibit_flag character(1) NOT NULL,
-    wl_rel_prty_flag character(1) NOT NULL,
+    wl_clear_inhibit_flag character(1) NOT NULL,
+    wl_release_party_flag character(1) NOT NULL,
     meal_code character(7),
     beverage_code character(1),
     inflgt_serv_code character(17),
     segment_number character(22) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flt_perd_seg_cls OWNER TO postgres;
 
 --
--- Name: flt_perd_seg_rstr; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flt_perd_seg_rstr; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flt_perd_seg_rstr (
@@ -6733,14 +6168,14 @@ CREATE TABLE flt_perd_seg_rstr (
     gen_flag_rstr character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flt_perd_seg_rstr OWNER TO postgres;
 
 --
--- Name: flt_seg_note_dt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flt_seg_note_dt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flt_seg_note_dt (
@@ -6751,14 +6186,14 @@ CREATE TABLE flt_seg_note_dt (
     restrict_key character(5) NOT NULL,
     selling_classs character varying(60),
     rstr_perd_no smallint NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flt_seg_note_dt OWNER TO postgres;
 
 --
--- Name: flt_seg_pos_dt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flt_seg_pos_dt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE flt_seg_pos_dt (
@@ -6768,14 +6203,14 @@ CREATE TABLE flt_seg_pos_dt (
     selling_class character(2) NOT NULL,
     pos_table_no character(25) NOT NULL,
     rstr_perd_no smallint NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.flt_seg_pos_dt OWNER TO postgres;
 
 --
--- Name: forced_fare; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: forced_fare; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE forced_fare (
@@ -6804,10 +6239,10 @@ CREATE TABLE forced_fare (
     base_class character(2),
     base_amount numeric(12,5),
     book_no integer,
-    pass_code character(5) DEFAULT NULL::bpchar,
+    pax_code character(5) DEFAULT NULL::bpchar,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
-    create_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -6835,7 +6270,7 @@ ALTER SEQUENCE forced_fare_forced_fare_id_seq OWNED BY forced_fare.forced_fare_i
 
 
 --
--- Name: gmt_lc_con; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: gmt_lc_con; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE gmt_lc_con (
@@ -6851,7 +6286,7 @@ CREATE TABLE gmt_lc_con (
 ALTER TABLE public.gmt_lc_con OWNER TO postgres;
 
 --
--- Name: group_; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: group_; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE group_ (
@@ -6861,37 +6296,37 @@ CREATE TABLE group_ (
     branch_codes character varying(130),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.group_ OWNER TO postgres;
 
 --
--- Name: group_review; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: group_review; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE group_review (
     company_code character(3) NOT NULL,
     action_type character(12) NOT NULL,
-    review_dys smallint NOT NULL,
+    review_days smallint NOT NULL,
     tlt_interval smallint NOT NULL,
     auto_chck_flag character(1) NOT NULL,
     auto_chck_value smallint,
     disp_flag character(1) NOT NULL,
     rev_branch character(12),
     rev_queue_code character(5),
-    seat_rqst_type character(1) NOT NULL,
+    seat_request_type character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.group_review OWNER TO postgres;
 
 --
--- Name: group_security_function_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: group_security_function_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE group_security_function_mapping (
@@ -6899,9 +6334,9 @@ CREATE TABLE group_security_function_mapping (
     security_group_id bigint NOT NULL,
     function_id bigint NOT NULL,
     qualifier character varying(240),
-    created_by_user character(5) NOT NULL,
+    create_user character(5) NOT NULL,
     create_time date NOT NULL,
-    created_destination_id character(8) NOT NULL,
+    create_group character(8) NOT NULL,
     inactivated_by_user character(5),
     inactivated_date_time date,
     inactivated_destination_id character(8)
@@ -6911,7 +6346,7 @@ CREATE TABLE group_security_function_mapping (
 ALTER TABLE public.group_security_function_mapping OWNER TO postgres;
 
 --
--- Name: grp_queue_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: grp_queue_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE grp_queue_codes (
@@ -6921,14 +6356,14 @@ CREATE TABLE grp_queue_codes (
     rqst_queue_code character(5) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.grp_queue_codes OWNER TO postgres;
 
 --
--- Name: hist_book; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_book; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE hist_book (
@@ -6939,7 +6374,7 @@ CREATE TABLE hist_book (
     no_of_seats smallint NOT NULL,
     book_category character(1) NOT NULL,
     group_wait_seats smallint,
-    group_rqst_seats smallint,
+    group_request_seats smallint,
     group_realtn_pcnt smallint,
     origin_branch_code character(12) NOT NULL,
     book_agency_code character(8),
@@ -6957,31 +6392,31 @@ CREATE TABLE hist_book (
     divide_to_nos character varying(110),
     first_segm_date date NOT NULL,
     last_segm_date date NOT NULL,
-    reaccom_prty smallint NOT NULL,
+    reaccom_party smallint NOT NULL,
     dvd_process_flag character(1) NOT NULL,
     rdu_process_flag character(1) NOT NULL,
     grp_process_flag character(1) NOT NULL,
     nrl_process_flag character(1) NOT NULL,
+    et_serial_no integer NOT NULL,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
     create_time character(19) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    et_serial_no integer NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.hist_book OWNER TO postgres;
 
 --
--- Name: hist_book_fares; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_book_fares; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE hist_book_fares (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     start_city character(5) NOT NULL,
     end_city character(5) NOT NULL,
     total_amount_curr character(3) NOT NULL,
@@ -6989,43 +6424,43 @@ CREATE TABLE hist_book_fares (
     fare_construction character varying(255),
     endrsmnt_rstrctns character varying(90),
     fare_stat_flag character(1) NOT NULL,
+    et_serial_no integer DEFAULT 0 NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    et_serial_no integer DEFAULT 0 NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.hist_book_fares OWNER TO postgres;
 
 --
--- Name: hist_book_fares_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_book_fares_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE hist_book_fares_pass (
     book_no integer NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     total_amount_curr character(3) NOT NULL,
     total_amount numeric(15,5),
     fare_construction character varying(255),
     endrsmnt_rstrctns character varying(255),
+    et_serial_no integer DEFAULT 0 NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    et_serial_no integer DEFAULT 0 NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.hist_book_fares_pass OWNER TO postgres;
 
 --
--- Name: hist_book_fares_paym; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_book_fares_paym; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE hist_book_fares_paym (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     payment_code character(5) NOT NULL,
     fare_calc_code character(15) NOT NULL,
     fare_paymt_amt numeric(15,5) NOT NULL,
@@ -7034,9 +6469,6 @@ CREATE TABLE hist_book_fares_paym (
     nation_code character(5),
     refund_stat_flag character(1) NOT NULL,
     exempt_stat_flag character(1) NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     refundable_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     net_fare_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     private_fare_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
@@ -7045,20 +6477,23 @@ CREATE TABLE hist_book_fares_paym (
     board_date date,
     flight_origin character(5),
     flight_destination character(5),
-    source_ref_id bigint
+    source_ref_id bigint,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.hist_book_fares_paym OWNER TO postgres;
 
 --
--- Name: hist_book_fares_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_book_fares_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE hist_book_fares_segm (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     flight_number character(7) NOT NULL,
     board_date date NOT NULL,
     departure_airport character(5) NOT NULL,
@@ -7069,7 +6504,7 @@ CREATE TABLE hist_book_fares_segm (
     valid_to_date date NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
+    update_time timestamp WITH time zone,
     et_serial_no integer DEFAULT 0 NOT NULL
 );
 
@@ -7077,7 +6512,7 @@ CREATE TABLE hist_book_fares_segm (
 ALTER TABLE public.hist_book_fares_segm OWNER TO postgres;
 
 --
--- Name: hist_book_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_book_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE hist_book_requests (
@@ -7092,44 +6527,44 @@ CREATE TABLE hist_book_requests (
     processing_flag character(1) NOT NULL,
     rqr_count smallint,
     request_text character varying(255),
-    all_passenger_flag character(1) NOT NULL,
+    all_pax_flag character(1) NOT NULL,
     all_itenary_flag character(1) NOT NULL,
+    et_serial_no integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    et_serial_no integer NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.hist_book_requests OWNER TO postgres;
 
 --
--- Name: hist_book_time_limits; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_book_time_limits; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE hist_book_time_limits (
     book_no integer NOT NULL,
     timelmt_sequence_no smallint NOT NULL,
     timelmt_type character(1) NOT NULL,
-    limit_time_mns smallint NOT NULL,
+    limit_time_mins smallint NOT NULL,
     limit_date date NOT NULL,
     cancel_flag character(1) NOT NULL,
     queue_code character(5),
     dest_branch character(12) NOT NULL,
     remark_text character(240),
-    all_passenger_flag character(1) NOT NULL,
+    all_pax_flag character(1) NOT NULL,
     processing_flag character(1) NOT NULL,
+    et_serial_no integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    et_serial_no integer NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.hist_book_time_limits OWNER TO postgres;
 
 --
--- Name: hist_coupon; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_coupon; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE hist_coupon (
@@ -7142,35 +6577,35 @@ CREATE TABLE hist_coupon (
     cos_state character(1),
     hist_serial_no integer NOT NULL,
     update_user character(5) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.hist_coupon OWNER TO postgres;
 
 --
--- Name: hist_currency_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_currency_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE hist_currency_codes (
     currency_code character(3) NOT NULL,
-    valid_from_date_time timestamp with time zone NOT NULL,
-    valid_to_date_time timestamp with time zone NOT NULL,
+    valid_from_date_time timestamp WITH time zone NOT NULL,
+    valid_to_date_time timestamp WITH time zone NOT NULL,
     description character varying(30),
     "precision" smallint NOT NULL,
     round_units smallint NOT NULL,
     nuc_rate numeric(9,5) NOT NULL,
+    numeric_code integer,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    numeric_code integer
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.hist_currency_codes OWNER TO postgres;
 
 --
--- Name: hist_itenary; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_itenary; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE hist_itenary (
@@ -7204,23 +6639,23 @@ CREATE TABLE hist_itenary (
     other_rloc character(30),
     rlr_rqr_count smallint,
     action_to_company character(3),
+    et_serial_no integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    et_serial_no integer NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.hist_itenary OWNER TO postgres;
 
 --
--- Name: hist_passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE hist_passenger (
     book_no integer NOT NULL,
-    passenger_no smallint NOT NULL,
-    passenger_name character(53) NOT NULL,
+    pax_no smallint NOT NULL,
+    pax_name character(53) NOT NULL,
     client_prfl_no character(15),
     request_nos character varying(1024),
     remark_nos character varying(30),
@@ -7229,42 +6664,42 @@ CREATE TABLE hist_passenger (
     timelmt_nos character varying(30),
     ticket_nos character varying(50),
     name_incl_type character(1),
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     processing_flag character(1) NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     tty_pax_line_no integer DEFAULT 0 NOT NULL,
     tty_pax_grp_no integer DEFAULT 0 NOT NULL,
     tty_pax_grp_seq integer DEFAULT 0 NOT NULL,
-    et_serial_no integer NOT NULL
+    et_serial_no integer NOT NULL,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.hist_passenger OWNER TO postgres;
 
 --
--- Name: hist_ticket; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_ticket; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE hist_ticket (
     ticket_no character varying(20) NOT NULL,
-    tckt_stat_flag character(1) NOT NULL,
-    pass_code character(5) NOT NULL,
+    ticket_stat_flag character(1) NOT NULL,
+    pax_code character(5) NOT NULL,
     issued_in_exch character varying(13),
     total_amount numeric(15,5) DEFAULT 0 NOT NULL,
     conjunction_tckts character varying(20),
-    conj_tckt_sequence_no smallint DEFAULT 0 NOT NULL,
+    conj_ticket_sequence_no smallint DEFAULT 0 NOT NULL,
     hist_serial_no integer NOT NULL,
     update_user character(5) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.hist_ticket OWNER TO postgres;
 
 --
--- Name: hsbc_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hsbc_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE hsbc_transaction (
@@ -7273,8 +6708,8 @@ CREATE TABLE hsbc_transaction (
     request text,
     request_data text,
     reply text,
-    rqst_date_time timestamp with time zone DEFAULT now() NOT NULL,
-    rply_date_time timestamp with time zone,
+    rqst_date_time timestamp WITH time zone DEFAULT now() NOT NULL,
+    rply_date_time timestamp WITH time zone,
     settled character(1) DEFAULT 'N'::bpchar NOT NULL,
     reference_number character varying(20),
     error_description text,
@@ -7306,7 +6741,7 @@ ALTER SEQUENCE hsbc_transaction_hsbc_transaction_id_seq OWNED BY hsbc_transactio
 
 
 --
--- Name: iline_req_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: iline_req_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE iline_req_mesgs (
@@ -7318,16 +6753,16 @@ CREATE TABLE iline_req_mesgs (
     xml character varying(1024) DEFAULT NULL::character varying,
     error_text character varying(1024) DEFAULT NULL::character varying,
     create_user character(5) NOT NULL,
-    create_time timestamp with time zone DEFAULT now() NOT NULL,
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL,
     update_user character(5) NOT NULL,
-    update_time timestamp with time zone DEFAULT now() NOT NULL
+    update_time timestamp WITH time zone DEFAULT now() NOT NULL
 );
 
 
 ALTER TABLE public.iline_req_mesgs OWNER TO postgres;
 
 --
--- Name: iline_resp_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: iline_resp_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE iline_resp_mesgs (
@@ -7338,16 +6773,16 @@ CREATE TABLE iline_resp_mesgs (
     xml character varying(1024) DEFAULT NULL::character varying,
     error_text character varying(1024) DEFAULT NULL::character varying,
     create_user character(5) NOT NULL,
-    create_time timestamp with time zone DEFAULT now() NOT NULL,
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL,
     update_user character(5) NOT NULL,
-    update_time timestamp with time zone DEFAULT now() NOT NULL
+    update_time timestamp WITH time zone DEFAULT now() NOT NULL
 );
 
 
 ALTER TABLE public.iline_resp_mesgs OWNER TO postgres;
 
 --
--- Name: inf11_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: inf11_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE inf11_transaction (
@@ -7360,8 +6795,8 @@ CREATE TABLE inf11_transaction (
     failure_flag character(1) DEFAULT 'N'::bpchar,
     request_data character varying(16000),
     reply_data character varying(16000),
-    create_time timestamp with time zone DEFAULT now() NOT NULL,
-    update_time timestamp with time zone DEFAULT now() NOT NULL
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL,
+    update_time timestamp WITH time zone DEFAULT now() NOT NULL
 );
 
 
@@ -7389,7 +6824,7 @@ ALTER SEQUENCE inf11_transaction_transaction_id_seq OWNED BY inf11_transaction.t
 
 
 --
--- Name: inventory_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: inventory_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE inventory_history (
@@ -7412,14 +6847,14 @@ CREATE TABLE inventory_history (
     segm_nrev_change_wait integer,
     pid integer,
     user_code character varying(10),
-    action_date_time timestamp with time zone DEFAULT now() NOT NULL
+    action_date_time timestamp WITH time zone DEFAULT now() NOT NULL
 );
 
 
 ALTER TABLE public.inventory_history OWNER TO postgres;
 
 --
--- Name: inventory_history_detail; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: inventory_history_detail; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE inventory_history_detail (
@@ -7434,7 +6869,7 @@ CREATE TABLE inventory_history_detail (
 ALTER TABLE public.inventory_history_detail OWNER TO postgres;
 
 --
--- Name: inventory_history_detail_specific; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: inventory_history_detail_specific; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE inventory_history_detail_specific (
@@ -7473,13 +6908,13 @@ ALTER SEQUENCE inventory_history_id_seq OWNED BY inventory_history.id;
 
 
 --
--- Name: inventory_history_update; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: inventory_history_update; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE inventory_history_update (
     inventory_history_update_id bigint NOT NULL,
-    create_time timestamp with time zone DEFAULT now() NOT NULL,
-    created_user_code character(5) NOT NULL,
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL,
+    create_user character(5) NOT NULL,
     flight_number character(7) NOT NULL,
     flight_date date NOT NULL
 );
@@ -7488,7 +6923,7 @@ CREATE TABLE inventory_history_update (
 ALTER TABLE public.inventory_history_update OWNER TO postgres;
 
 --
--- Name: inventry_auto_rules; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: inventry_auto_rules; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE inventry_auto_rules (
@@ -7505,14 +6940,14 @@ CREATE TABLE inventry_auto_rules (
     frequency character varying(7),
     future_to_scan integer,
     update_user character(5),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.inventry_auto_rules OWNER TO postgres;
 
 --
--- Name: inventry_auto_rules_details; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: inventry_auto_rules_details; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE inventry_auto_rules_details (
@@ -7570,7 +7005,7 @@ ALTER SEQUENCE inventry_auto_rules_rule_id_seq OWNED BY inventry_auto_rules.rule
 
 
 --
--- Name: inventry_realloc; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: inventry_realloc; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE inventry_realloc (
@@ -7592,17 +7027,17 @@ CREATE TABLE inventry_realloc (
     perd_sequence_no smallint NOT NULL,
     action_flag character(1) NOT NULL,
     processing_flag character(1) NOT NULL,
+    remarks character varying(255),
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    remarks character varying(255)
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.inventry_realloc OWNER TO postgres;
 
 --
--- Name: inventry_segment; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: inventry_segment; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE inventry_segment (
@@ -7615,13 +7050,13 @@ CREATE TABLE inventry_segment (
     leg_number smallint NOT NULL,
     segment_number character(22) NOT NULL,
     ob_profile_no character(5) NOT NULL,
-    group_seat_lvl smallint NOT NULL,
-    seat_protect_lvl smallint NOT NULL,
-    limit_sale_lvl smallint NOT NULL,
-    overbooking_lvl smallint NOT NULL,
-    posting_lvl smallint NOT NULL,
-    sale_notify_lvl smallint NOT NULL,
-    cancel_notify_lvl smallint NOT NULL,
+    group_seat_level smallint NOT NULL,
+    seat_protect_level smallint NOT NULL,
+    limit_sale_level smallint NOT NULL,
+    overbooking_level smallint NOT NULL,
+    posting_level smallint NOT NULL,
+    sale_notify_level smallint NOT NULL,
+    cancel_notify_level smallint NOT NULL,
     overbooking_percnt smallint NOT NULL,
     seat_capacity smallint NOT NULL,
     nett_sngl_sold smallint NOT NULL,
@@ -7642,22 +7077,22 @@ CREATE TABLE inventry_segment (
     segm_nrev_ticktd smallint NOT NULL,
     segment_closed_flag character(1) NOT NULL,
     wl_closed_flag character(1) NOT NULL,
-    wl_clr_inhibit_flag character(1) NOT NULL,
-    wl_rel_prty_flag character(1) NOT NULL,
+    wl_clear_inhibit_flag character(1) NOT NULL,
+    wl_release_party_flag character(1) NOT NULL,
     scrutiny_flag character(1) NOT NULL,
     display_priority smallint NOT NULL,
     schedule_period_no smallint NOT NULL,
-    invt_updt_flag character(1) NOT NULL,
+    invt_update_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     group_name character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.inventry_segment OWNER TO postgres;
 
 --
--- Name: invoice_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: invoice_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE invoice_serial_nos (
@@ -7692,7 +7127,7 @@ ALTER SEQUENCE invoice_serial_nos_invoice_no_seq OWNED BY invoice_serial_nos.inv
 
 
 --
--- Name: invoices; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: invoices; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE invoices (
@@ -7712,7 +7147,7 @@ CREATE TABLE invoices (
 ALTER TABLE public.invoices OWNER TO postgres;
 
 --
--- Name: invt_status_chng; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: invt_status_chng; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE invt_status_chng (
@@ -7724,17 +7159,17 @@ CREATE TABLE invt_status_chng (
     control_set_flag character(1),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.invt_status_chng OWNER TO postgres;
 
 --
--- Name: invt_updt_ignore; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: invt_update_ignore; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE invt_updt_ignore (
+CREATE TABLE invt_update_ignore (
     flight_number character(7) NOT NULL,
     flight_date date NOT NULL,
     city_pair integer NOT NULL,
@@ -7744,10 +7179,10 @@ CREATE TABLE invt_updt_ignore (
 );
 
 
-ALTER TABLE public.invt_updt_ignore OWNER TO postgres;
+ALTER TABLE public.invt_update_ignore OWNER TO postgres;
 
 --
--- Name: itenary; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: itenary; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE itenary (
@@ -7761,8 +7196,8 @@ CREATE TABLE itenary (
     arrival_city character(5),
     departure_airport character(5),
     arrival_airport character(5),
-    departure_time time with time zone,
-    arrival_time time with time zone,
+    departure_time time WITH time zone,
+    arrival_time time WITH time zone,
     date_change_ind smallint,
     flight_path_code character(1),
     departure_terminal character(2),
@@ -7783,14 +7218,14 @@ CREATE TABLE itenary (
     action_to_company character(3),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.itenary OWNER TO postgres;
 
 --
--- Name: itenary_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: itenary_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE itenary_pass (
@@ -7802,11 +7237,11 @@ CREATE TABLE itenary_pass (
     transit_state character(25),
     transit_zip character(15),
     transit_nation character(25),
-    all_passenger_flag character(1) NOT NULL,
+    all_pax_flag character(1) NOT NULL,
     all_itenary_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -7814,7 +7249,7 @@ ALTER TABLE public.itenary_pass OWNER TO postgres;
 
 
 --
--- Name: k2_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: k2_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE k2_transaction (
@@ -7824,14 +7259,14 @@ CREATE TABLE k2_transaction (
     request text,
     request_data text,
     reply text,
-    rqst_date_time timestamp with time zone DEFAULT now() NOT NULL,
-    rply_date_time timestamp with time zone,
+    rqst_date_time timestamp WITH time zone DEFAULT now() NOT NULL,
+    rply_date_time timestamp WITH time zone,
     settled character(1) DEFAULT 'N'::bpchar NOT NULL,
     sett_request text,
     sett_request_data text,
     sett_reply text,
-    sett_rqst_date_time timestamp with time zone,
-    sett_rply_date_time timestamp with time zone,
+    sett_request_date_time timestamp WITH time zone,
+    sett_reply_date_time timestamp WITH time zone,
     reference_number character varying(20),
     approval_code character varying(7),
     avs_code character(1),
@@ -7865,21 +7300,21 @@ ALTER SEQUENCE k2_transaction_k2_transaction_id_seq OWNED BY k2_transaction.k2_t
 
 
 --
--- Name: language_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: language_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE language_ref (
     language_rcd character varying(20) NOT NULL,
     description character varying(240) NOT NULL,
     create_user character(5) NOT NULL,
-    create_time timestamp with time zone DEFAULT now() NOT NULL
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL
 );
 
 
 ALTER TABLE public.language_ref OWNER TO postgres;
 
 --
--- Name: last_operation_status_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: last_operation_status_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE last_operation_status_ref (
@@ -7887,106 +7322,15 @@ CREATE TABLE last_operation_status_ref (
     description character varying(255) NOT NULL,
     update_user character varying(5),
     update_group character varying(5),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.last_operation_status_ref OWNER TO postgres;
 
---
--- Name: load_no_fly_list; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE load_no_fly_list (
-    entry_no integer NOT NULL,
-    last_name character varying(100),
-    first_name character varying(100),
-    middle_name character varying(100),
-    type character(10),
-    dob character varying(200),
-    pob character varying(100),
-    citizenship character varying(100),
-    passport character varying(1000),
-    misc character varying(1000),
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    cleared character varying(250),
-    sid integer DEFAULT 0 NOT NULL
-);
-
-
-ALTER TABLE public.load_no_fly_list OWNER TO postgres;
 
 --
--- Name: load_no_fly_list_entry_no_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE load_no_fly_list_entry_no_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.load_no_fly_list_entry_no_seq OWNER TO postgres;
-
---
--- Name: load_no_fly_list_entry_no_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE load_no_fly_list_entry_no_seq OWNED BY load_no_fly_list.entry_no;
-
-
---
--- Name: load_selectee_list; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE load_selectee_list (
-    entry_no integer NOT NULL,
-    last_name character varying(100),
-    first_name character varying(100),
-    middle_name character varying(100),
-    type character(10),
-    dob character varying(200),
-    pob character varying(100),
-    citizenship character varying(100),
-    passport character varying(1000),
-    misc character varying(1000),
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    sid integer DEFAULT 0 NOT NULL,
-    cleared character(250)
-);
-
-
-ALTER TABLE public.load_selectee_list OWNER TO postgres;
-
---
--- Name: load_selectee_list_entry_no_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE load_selectee_list_entry_no_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.load_selectee_list_entry_no_seq OWNER TO postgres;
-
---
--- Name: load_selectee_list_entry_no_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE load_selectee_list_entry_no_seq OWNED BY load_selectee_list.entry_no;
-
-
---
--- Name: log_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: log_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE log_serial_nos (
@@ -8021,7 +7365,7 @@ ALTER SEQUENCE log_serial_nos_log_id_seq OWNED BY log_serial_nos.log_id;
 
 
 --
--- Name: master_files; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: master_files; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE master_files (
@@ -8030,14 +7374,14 @@ CREATE TABLE master_files (
     description character varying(160),
     update_user character(16) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.master_files OWNER TO postgres;
 
 --
--- Name: mco_info; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: mco_info; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE mco_info (
@@ -8046,14 +7390,14 @@ CREATE TABLE mco_info (
     mco_id integer NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.mco_info OWNER TO postgres;
 
 --
--- Name: menu_item; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: menu_item; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE menu_item (
@@ -8073,14 +7417,14 @@ CREATE TABLE menu_item (
     active_flag character(1),
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.menu_item OWNER TO postgres;
 
 --
--- Name: misc_charge; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: misc_charge; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE misc_charge (
@@ -8091,14 +7435,14 @@ CREATE TABLE misc_charge (
     tax_application character(1),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.misc_charge OWNER TO postgres;
 
 --
--- Name: mvt_delay_code; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: mvt_delay_code; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE mvt_delay_code (
@@ -8107,7 +7451,7 @@ CREATE TABLE mvt_delay_code (
     delay_type character varying(30),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -8115,7 +7459,7 @@ ALTER TABLE public.mvt_delay_code OWNER TO postgres;
 
 
 --
--- Name: nation; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: nation; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE nation (
@@ -8128,85 +7472,14 @@ CREATE TABLE nation (
     general_info character varying(200),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.nation OWNER TO postgres;
 
-
 --
--- Name: no_fly_list; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE no_fly_list (
-    entry_no integer NOT NULL,
-    last_name character varying(100),
-    first_name character varying(100),
-    middle_name character varying(100),
-    type character(10),
-    dob character varying(200),
-    pob character varying(100),
-    citizenship character varying(100),
-    passport character varying(1000),
-    misc character varying(1000),
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    cleared character varying(250),
-    sid integer DEFAULT 0 NOT NULL
-);
-
-
-ALTER TABLE public.no_fly_list OWNER TO postgres;
-
---
--- Name: no_fly_list_entry_no_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE no_fly_list_entry_no_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.no_fly_list_entry_no_seq OWNER TO postgres;
-
---
--- Name: no_fly_list_entry_no_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE no_fly_list_entry_no_seq OWNED BY no_fly_list.entry_no;
-
-
---
--- Name: no_fly_list_temp; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE no_fly_list_temp (
-    last_name character varying(100),
-    first_name character varying(100),
-    middle_name character varying(100),
-    type character(10),
-    dob character varying(50),
-    pob character varying(100),
-    citizenship character varying(100),
-    passport character varying(1000),
-    misc character varying(1000),
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    cleared character varying(250),
-    sid integer NOT NULL
-);
-
-
-ALTER TABLE public.no_fly_list_temp OWNER TO postgres;
-
---
--- Name: ob_profiles; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ob_profiles; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ob_profiles (
@@ -8217,14 +7490,14 @@ CREATE TABLE ob_profiles (
     scrutiny_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.ob_profiles OWNER TO postgres;
 
 --
--- Name: office_mail; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: office_mail; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE office_mail (
@@ -8239,7 +7512,7 @@ CREATE TABLE office_mail (
 ALTER TABLE public.office_mail OWNER TO postgres;
 
 --
--- Name: oledb_tran_test; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oledb_tran_test; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE oledb_tran_test (
@@ -8256,7 +7529,7 @@ CREATE TABLE oledb_tran_test (
 ALTER TABLE public.oledb_tran_test OWNER TO postgres;
 
 --
--- Name: origin_address_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: origin_address_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE origin_address_name (
@@ -8268,7 +7541,7 @@ CREATE TABLE origin_address_name (
 ALTER TABLE public.origin_address_name OWNER TO postgres;
 
 --
--- Name: origin_addrs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: origin_addrs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE origin_addrs (
@@ -8279,14 +7552,14 @@ CREATE TABLE origin_addrs (
     gds_origin character(1) DEFAULT 'N'::bpchar NOT NULL,
     address_type character(1) DEFAULT 'I'::bpchar NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.origin_addrs OWNER TO postgres;
 
 --
--- Name: origin_addrs_old; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: origin_addrs_old; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE origin_addrs_old (
@@ -8296,30 +7569,30 @@ CREATE TABLE origin_addrs_old (
     address_type character(1) DEFAULT 'I'::bpchar NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.origin_addrs_old OWNER TO postgres;
 
 --
--- Name: osi_et_text; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: osi_et_text; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE osi_et_text (
     osi_airport character(5) NOT NULL,
-    osi_rqst_code character(4) NOT NULL,
+    osi_request_code character(4) NOT NULL,
     osi_request_text character varying(255),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.osi_et_text OWNER TO postgres;
 
 --
--- Name: paradox_chg; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: paradox_chg; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE paradox_chg (
@@ -8340,12 +7613,12 @@ CREATE TABLE paradox_chg (
 ALTER TABLE public.paradox_chg OWNER TO postgres;
 
 --
--- Name: pass_contact; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pass_contact; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pass_contact (
     book_no integer NOT NULL,
-    passenger_no smallint NOT NULL,
+    pax_no smallint NOT NULL,
     home_phone_no character varying(30),
     buss_phone_no character varying(30),
     contact_phone_no character varying(30),
@@ -8370,41 +7643,41 @@ CREATE TABLE pass_contact (
     agent_state character(25),
     agent_zip character(15),
     agent_nation character(25),
+    email_address character varying(150),
+    fax_number character varying(30),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    email_address character varying(150),
-    fax_number character varying(30)
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.pass_contact OWNER TO postgres;
 
 --
--- Name: pass_desc_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pass_desc_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pass_desc_codes (
     company_code character(3) NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     description character varying(30),
     osi_indicator character(1) NOT NULL,
     rqst_code character(4),
     fqt_indicator character(1) NOT NULL,
     rcfm_canx_flag character(1) NOT NULL,
     book_category character(1),
+    employee_no_required_flag character(1),
+    buddy_pass_required_flag character(1),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    employee_no_required_flag character(1),
-    buddy_pass_required_flag character(1)
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.pass_desc_codes OWNER TO postgres;
 
 --
--- Name: pass_itin_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pass_itin_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pass_itin_ref (
@@ -8413,21 +7686,21 @@ CREATE TABLE pass_itin_ref (
     flight_date date NOT NULL,
     departure_airport character(5) NOT NULL,
     arrival_airport character(5) NOT NULL,
-    passenger_seq smallint,
-    passenger_name character(53) NOT NULL,
+    pax_seq smallint,
+    pax_name character(53) NOT NULL,
     prl_flag character(1) NOT NULL,
     book_no integer,
-    passenger_no smallint,
+    pax_no smallint,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.pass_itin_ref OWNER TO postgres;
 
 --
--- Name: pass_itin_ref_det; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pass_itin_ref_det; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pass_itin_ref_det (
@@ -8438,37 +7711,37 @@ CREATE TABLE pass_itin_ref_det (
     item_text character varying(50),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.pass_itin_ref_det OWNER TO postgres;
 
 --
--- Name: pass_remarks; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pass_remarks; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pass_remarks (
     book_no integer NOT NULL,
     remark_sequence_no smallint NOT NULL,
     remark_text character varying(240),
-    all_passenger_flag character(1) NOT NULL,
+    all_pax_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.pass_remarks OWNER TO postgres;
 
 --
--- Name: passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE passenger (
     book_no integer NOT NULL,
-    passenger_no smallint NOT NULL,
-    passenger_name character(53) NOT NULL,
+    pax_no smallint NOT NULL,
+    pax_name character(53) NOT NULL,
     client_prfl_no character(15),
     request_nos character varying(1024),
     remark_nos character varying(30),
@@ -8477,26 +7750,26 @@ CREATE TABLE passenger (
     timelmt_nos character varying(30),
     ticket_nos character varying(50),
     name_incl_type character(1),
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     processing_flag character(1) NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     tty_pax_line_no integer DEFAULT 0 NOT NULL,
     tty_pax_grp_no integer DEFAULT 0 NOT NULL,
-    tty_pax_grp_seq integer DEFAULT 0 NOT NULL
+    tty_pax_grp_seq integer DEFAULT 0 NOT NULL,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.passenger OWNER TO postgres;
 
 --
--- Name: pax_refund; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pax_refund; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pax_refund (
     book_no integer NOT NULL,
-    passenger_name character(53),
+    pax_name character(53),
     crdt_sequence_no smallint NOT NULL,
     payment_form character(3) NOT NULL,
     payment_type character(2) NOT NULL,
@@ -8508,14 +7781,14 @@ CREATE TABLE pax_refund (
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
     create_time character(19) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.pax_refund OWNER TO postgres;
 
 --
--- Name: payment_amount_limits; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_amount_limits; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE payment_amount_limits (
@@ -8526,14 +7799,14 @@ CREATE TABLE payment_amount_limits (
     upper_amount numeric(15,5),
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.payment_amount_limits OWNER TO postgres;
 
 --
--- Name: payment_backup; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_backup; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE payment_backup (
@@ -8547,9 +7820,9 @@ CREATE TABLE payment_backup (
     payment_mode character(1),
     document_date date,
     book_no integer,
-    passenger_name character(53),
+    pax_name character(53),
     client_prfl_no character(15),
-    pass_code character(5),
+    pax_code character(5),
     book_agency_code character(8),
     origin_address character(10),
     origin_branch_code character(12) NOT NULL,
@@ -8570,22 +7843,22 @@ CREATE TABLE payment_backup (
     pay_stat_flag character(1) NOT NULL,
     recpt_stat_flag character(1) NOT NULL,
     invc_stat_flag character(1) NOT NULL,
-    payment_ind character(1) NOT NULL,
+    payment_flag character(1) NOT NULL,
+    voucher_no integer,
+    credit_req_seq character varying(10),
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
     create_time character(19) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    voucher_no integer,
-    credit_req_seq character varying(10)
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.payment_backup OWNER TO postgres;
 
 --
--- Name: payment_channel_config; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_channel_config; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE payment_channel_config (
@@ -8595,10 +7868,10 @@ CREATE TABLE payment_channel_config (
     minutes_before_departure integer NOT NULL,
     deadline_in_minutes integer NOT NULL,
     deadline_is_instant_flag integer DEFAULT 0,
-    created_by_user_code character(5) NOT NULL,
-    create_time timestamp with time zone NOT NULL,
+    create_user character(5) NOT NULL,
+    create_time timestamp WITH time zone NOT NULL,
     inactivated_by_user_code character(5),
-    inactivated_date_time timestamp with time zone,
+    inactivated_date_time timestamp WITH time zone,
     document_type character(2),
     deadline_in_workdays integer DEFAULT 0 NOT NULL,
     deadline_default_time integer DEFAULT 0 NOT NULL,
@@ -8615,20 +7888,20 @@ CREATE TABLE payment_channel_config (
 ALTER TABLE public.payment_channel_config OWNER TO postgres;
 
 --
--- Name: payment_et_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_et_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE payment_et_ref (
     payment_no integer NOT NULL,
     et_serial_no integer NOT NULL,
-    create_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.payment_et_ref OWNER TO postgres;
 
 --
--- Name: payment_form_field; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_form_field; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE payment_form_field (
@@ -8662,7 +7935,7 @@ ALTER SEQUENCE payment_form_field_payment_form_field_id_seq OWNED BY payment_for
 
 
 --
--- Name: payment_form_field_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_form_field_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE payment_form_field_status (
@@ -8694,7 +7967,7 @@ CREATE SEQUENCE payment_no_seq
 ALTER TABLE public.payment_no_seq OWNER TO postgres;
 
 --
--- Name: payment_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE payment_serial_nos (
@@ -8729,7 +8002,7 @@ ALTER SEQUENCE payment_serial_nos_payment_no_seq OWNED BY payment_serial_nos.pay
 
 
 --
--- Name: payments; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payments; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE payments (
@@ -8743,9 +8016,9 @@ CREATE TABLE payments (
     payment_mode character(1),
     document_date date,
     book_no integer,
-    passenger_name character(53),
+    pax_name character(53),
     client_prfl_no character(15),
-    pass_code character(5),
+    pax_code character(5),
     book_agency_code character(8),
     origin_address character(10),
     origin_branch_code character(12) NOT NULL,
@@ -8766,23 +8039,23 @@ CREATE TABLE payments (
     pay_stat_flag character(1) NOT NULL,
     recpt_stat_flag character(1) NOT NULL,
     invc_stat_flag character(1) NOT NULL,
-    payment_ind character(1) NOT NULL,
-    create_user character(5) NOT NULL,
-    create_group character(8) NOT NULL,
-    create_time timestamp with time zone,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
+    payment_flag character(1) NOT NULL,
     voucher_no integer,
     credit_req_seq character varying(10),
-    cc_cvv character varying(10)
+    cc_cvv character varying(10),
+    create_user character(5) NOT NULL,
+    create_group character(8) NOT NULL,
+    create_time timestamp WITH time zone,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.payments OWNER TO postgres;
 
 --
--- Name: payments_reference; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payments_reference; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE payments_reference (
@@ -8820,7 +8093,7 @@ ALTER SEQUENCE payments_reference_payments_reference_id_seq OWNED BY payments_re
 
 
 --
--- Name: payments_uplift; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payments_uplift; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE payments_uplift (
@@ -8828,7 +8101,7 @@ CREATE TABLE payments_uplift (
     batch_nr character(9) NOT NULL,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
-    create_time timestamp with time zone NOT NULL,
+    create_time timestamp WITH time zone NOT NULL,
     batch_description character varying(50)
 );
 
@@ -8836,7 +8109,7 @@ CREATE TABLE payments_uplift (
 ALTER TABLE public.payments_uplift OWNER TO postgres;
 
 --
--- Name: payments_uplift_detail; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payments_uplift_detail; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE payments_uplift_detail (
@@ -8852,15 +8125,15 @@ CREATE TABLE payments_uplift_detail (
     payment_difference numeric(15,5),
     document_no character(25),
     book_no integer,
-    passenger_no smallint,
-    posting_ind character(1) DEFAULT 'N'::bpchar NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
+    pax_no smallint,
+    posting_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     payment_no_ref integer,
     pax_name_rec character(6),
     ins_upd_flag character(1),
-    payment_no_diff_ref integer
+    payment_no_diff_ref integer,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -8870,7 +8143,7 @@ ALTER TABLE public.payments_uplift_detail OWNER TO postgres;
 
 
 --
--- Name: pfs_counts; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pfs_counts; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pfs_counts (
@@ -8881,14 +8154,14 @@ CREATE TABLE pfs_counts (
     count1 integer,
     count2 integer,
     count3 integer,
-    update_time timestamp with time zone DEFAULT now() NOT NULL
+    update_time timestamp WITH time zone DEFAULT now() NOT NULL
 );
 
 
 ALTER TABLE public.pfs_counts OWNER TO postgres;
 
 --
--- Name: pnl_adl_book; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnl_adl_book; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnl_adl_book (
@@ -8908,7 +8181,7 @@ CREATE TABLE pnl_adl_book (
 ALTER TABLE public.pnl_adl_book OWNER TO postgres;
 
 --
--- Name: pnl_adl_iten; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnl_adl_iten; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnl_adl_iten (
@@ -8926,7 +8199,7 @@ CREATE TABLE pnl_adl_iten (
 ALTER TABLE public.pnl_adl_iten OWNER TO postgres;
 
 --
--- Name: pnl_adl_pax; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnl_adl_pax; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnl_adl_pax (
@@ -8934,14 +8207,14 @@ CREATE TABLE pnl_adl_pax (
     record_id integer NOT NULL,
     book_no integer NOT NULL,
     pax_id integer NOT NULL,
-    passenger_name character(64)
+    pax_name character(64)
 );
 
 
 ALTER TABLE public.pnl_adl_pax OWNER TO postgres;
 
 --
--- Name: pnl_adl_rem; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnl_adl_rem; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnl_adl_rem (
@@ -8957,7 +8230,7 @@ CREATE TABLE pnl_adl_rem (
 ALTER TABLE public.pnl_adl_rem OWNER TO postgres;
 
 --
--- Name: pnl_adl_rout; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnl_adl_rout; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnl_adl_rout (
@@ -8966,14 +8239,14 @@ CREATE TABLE pnl_adl_rout (
     tty_report_addrs character(7) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.pnl_adl_rout OWNER TO postgres;
 
 --
--- Name: pnl_adl_store; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnl_adl_store; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnl_adl_store (
@@ -8994,7 +8267,7 @@ CREATE TABLE pnl_adl_store (
 ALTER TABLE public.pnl_adl_store OWNER TO postgres;
 
 --
--- Name: pnl_adl_tmp; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnl_adl_tmp; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnl_adl_tmp (
@@ -9007,7 +8280,7 @@ CREATE TABLE pnl_adl_tmp (
 ALTER TABLE public.pnl_adl_tmp OWNER TO postgres;
 
 --
--- Name: pnl_adl_trigger; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnl_adl_trigger; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnl_adl_trigger (
@@ -9030,7 +8303,7 @@ CREATE TABLE pnl_adl_trigger (
 ALTER TABLE public.pnl_adl_trigger OWNER TO postgres;
 
 --
--- Name: pnl_flight; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnl_flight; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnl_flight (
@@ -9046,14 +8319,14 @@ CREATE TABLE pnl_flight (
     total_transit_cnt smallint,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.pnl_flight OWNER TO postgres;
 
 --
--- Name: pnl_flt_seg_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnl_flt_seg_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnl_flt_seg_cls (
@@ -9067,14 +8340,14 @@ CREATE TABLE pnl_flt_seg_cls (
     total_transit_cnt smallint,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.pnl_flt_seg_cls OWNER TO postgres;
 
 --
--- Name: pnl_pass_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnl_pass_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnl_pass_name (
@@ -9082,11 +8355,11 @@ CREATE TABLE pnl_pass_name (
     board_date date NOT NULL,
     departure_airport character(5) NOT NULL,
     pnl_type character(1) NOT NULL,
-    pnl_passenger_no smallint NOT NULL,
+    pnl_pax_no smallint NOT NULL,
     arrival_airport character(5) NOT NULL,
     selling_class character(2) NOT NULL,
     pnl_code_type character(1) NOT NULL,
-    passenger_name character(53) NOT NULL,
+    pax_name character(53) NOT NULL,
     noof_passengers smallint,
     book_no integer NOT NULL,
     inbound_conn character(13),
@@ -9098,33 +8371,33 @@ CREATE TABLE pnl_pass_name (
     board_status character(2) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.pnl_pass_name OWNER TO postgres;
 
 --
--- Name: pnl_pass_rqst; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnl_pass_request; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE pnl_pass_rqst (
+CREATE TABLE pnl_pass_request (
     flight_number character(7) NOT NULL,
     board_date date NOT NULL,
     departure_airport character(5) NOT NULL,
     pnl_type character(1) NOT NULL,
-    pnl_passenger_no smallint NOT NULL,
+    pnl_pax_no smallint NOT NULL,
     request_text character varying(75) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
-ALTER TABLE public.pnl_pass_rqst OWNER TO postgres;
+ALTER TABLE public.pnl_pass_request OWNER TO postgres;
 
 --
--- Name: pnl_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnl_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnl_rule (
@@ -9142,14 +8415,14 @@ CREATE TABLE pnl_rule (
     pnl_adl_route_ind smallint,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.pnl_rule OWNER TO postgres;
 
 --
--- Name: pnr_filter; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnr_filter; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnr_filter (
@@ -9174,7 +8447,7 @@ CREATE TABLE pnr_filter (
     group_bookings integer,
     passengers_with_ticket integer,
     passengers_without_ticket integer,
-    passenger_name character varying(254),
+    pax_name character varying(254),
     flight_number character(7),
     flight_date_from date,
     flight_date_until date,
@@ -9197,7 +8470,7 @@ CREATE TABLE pnr_filter (
 ALTER TABLE public.pnr_filter OWNER TO postgres;
 
 --
--- Name: pnr_query; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnr_query; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnr_query (
@@ -9206,10 +8479,10 @@ CREATE TABLE pnr_query (
     dest_branch character(12) NOT NULL,
     qry_description character varying(255),
     qry_type character(1) NOT NULL,
-    read_strt_auth_lvl smallint NOT NULL,
-    read_end_auth_lvl smallint NOT NULL,
-    upd_strt_auth_lvl smallint NOT NULL,
-    upd_end_auth_lvl smallint NOT NULL,
+    read_strt_auth_level smallint NOT NULL,
+    read_end_auth_level smallint NOT NULL,
+    upd_strt_auth_level smallint NOT NULL,
+    upd_end_auth_level smallint NOT NULL,
     qry_value_1 character varying(255),
     qry_value_2 character varying(255),
     qry_value_3 character varying(255),
@@ -9227,7 +8500,7 @@ CREATE TABLE pnr_query (
 ALTER TABLE public.pnr_query OWNER TO postgres;
 
 --
--- Name: pnr_query_descr; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnr_query_descr; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnr_query_descr (
@@ -9242,7 +8515,7 @@ CREATE TABLE pnr_query_descr (
 ALTER TABLE public.pnr_query_descr OWNER TO postgres;
 
 --
--- Name: pnrnm; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnrnm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnrnm (
@@ -9254,7 +8527,7 @@ CREATE TABLE pnrnm (
 ALTER TABLE public.pnrnm OWNER TO postgres;
 
 --
--- Name: pnt_of_sale_defn; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnt_of_sale_defn; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnt_of_sale_defn (
@@ -9264,45 +8537,45 @@ CREATE TABLE pnt_of_sale_defn (
     incl_excl_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.pnt_of_sale_defn OWNER TO postgres;
 
 --
--- Name: pnt_of_sale_tabl; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pnt_of_sale_tabl; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pnt_of_sale_tabl (
     pos_table_no character(25) NOT NULL,
     group_other_flag character(1) NOT NULL,
-    limit_sale_lvl smallint NOT NULL,
+    limit_sale_level smallint NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.pnt_of_sale_tabl OWNER TO postgres;
 
 --
--- Name: pos_code_prtys; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pos_code_parties; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE pos_code_prtys (
+CREATE TABLE pos_code_parties (
     pos_code_type character(4) NOT NULL,
-    pos_code_prty character(2) NOT NULL,
+    pos_code_party character(2) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
-ALTER TABLE public.pos_code_prtys OWNER TO postgres;
+ALTER TABLE public.pos_code_parties OWNER TO postgres;
 
 --
--- Name: post_departure; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_departure; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE post_departure (
@@ -9323,7 +8596,7 @@ CREATE TABLE post_departure (
 ALTER TABLE public.post_departure OWNER TO postgres;
 
 --
--- Name: post_departure_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_departure_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE post_departure_ref (
@@ -9337,7 +8610,7 @@ CREATE TABLE post_departure_ref (
 ALTER TABLE public.post_departure_ref OWNER TO postgres;
 
 --
--- Name: post_hist_book; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_hist_book; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE post_hist_book (
@@ -9348,7 +8621,7 @@ CREATE TABLE post_hist_book (
     no_of_seats smallint NOT NULL,
     book_category character(1) NOT NULL,
     group_wait_seats smallint,
-    group_rqst_seats smallint,
+    group_request_seats smallint,
     group_realtn_pcnt smallint,
     origin_branch_code character(12) NOT NULL,
     book_agency_code character(8),
@@ -9366,31 +8639,31 @@ CREATE TABLE post_hist_book (
     divide_to_nos character varying(110),
     first_segm_date date NOT NULL,
     last_segm_date date NOT NULL,
-    reaccom_prty smallint NOT NULL,
+    reaccom_party smallint NOT NULL,
     dvd_process_flag character(1) NOT NULL,
     rdu_process_flag character(1) NOT NULL,
     grp_process_flag character(1) NOT NULL,
     nrl_process_flag character(1) NOT NULL,
+    et_serial_no integer NOT NULL,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
     create_time character(19) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    et_serial_no integer NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.post_hist_book OWNER TO postgres;
 
 --
--- Name: post_hist_book_fares; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_hist_book_fares; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE post_hist_book_fares (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     start_city character(5) NOT NULL,
     end_city character(5) NOT NULL,
     total_amount_curr character(3) NOT NULL,
@@ -9398,43 +8671,43 @@ CREATE TABLE post_hist_book_fares (
     fare_construction character varying(255),
     endrsmnt_rstrctns character varying(90),
     fare_stat_flag character(1) NOT NULL,
+    et_serial_no integer DEFAULT 0 NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    et_serial_no integer DEFAULT 0 NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.post_hist_book_fares OWNER TO postgres;
 
 --
--- Name: post_hist_book_fares_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_hist_book_fares_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE post_hist_book_fares_pass (
     book_no integer NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     total_amount_curr character(3) NOT NULL,
     total_amount numeric(15,5),
     fare_construction character varying(255),
     endrsmnt_rstrctns character varying(255),
+    et_serial_no integer DEFAULT 0 NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    et_serial_no integer DEFAULT 0 NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.post_hist_book_fares_pass OWNER TO postgres;
 
 --
--- Name: post_hist_book_fares_paym; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_hist_book_fares_paym; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE post_hist_book_fares_paym (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     payment_code character(5) NOT NULL,
     fare_calc_code character(15) NOT NULL,
     fare_paymt_amt numeric(15,5) NOT NULL,
@@ -9443,9 +8716,6 @@ CREATE TABLE post_hist_book_fares_paym (
     nation_code character(5),
     refund_stat_flag character(1) NOT NULL,
     exempt_stat_flag character(1) NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     refundable_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     net_fare_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     private_fare_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
@@ -9455,7 +8725,10 @@ CREATE TABLE post_hist_book_fares_paym (
     flight_origin character(5),
     flight_destination character(5),
     source_ref_id bigint,
-    post_hist_book_fares_paym_id integer NOT NULL
+    post_hist_book_fares_paym_id integer NOT NULL,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
@@ -9483,13 +8756,13 @@ ALTER SEQUENCE post_hist_book_fares_paym_post_hist_book_fares_paym_id_seq OWNED 
 
 
 --
--- Name: post_hist_book_fares_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_hist_book_fares_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE post_hist_book_fares_segm (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     flight_number character(7) NOT NULL,
     board_date date NOT NULL,
     departure_airport character(5) NOT NULL,
@@ -9502,7 +8775,7 @@ CREATE TABLE post_hist_book_fares_segm (
     post_hist_book_fares_segm_id integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -9530,7 +8803,7 @@ ALTER SEQUENCE post_hist_book_fares_segm_post_hist_book_fares_segm_id_seq OWNED 
 
 
 --
--- Name: post_hist_book_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_hist_book_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE post_hist_book_requests (
@@ -9545,44 +8818,44 @@ CREATE TABLE post_hist_book_requests (
     processing_flag character(1) NOT NULL,
     rqr_count smallint,
     request_text character varying(255),
-    all_passenger_flag character(1) NOT NULL,
+    all_pax_flag character(1) NOT NULL,
     all_itenary_flag character(1) NOT NULL,
     et_serial_no integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.post_hist_book_requests OWNER TO postgres;
 
 --
--- Name: post_hist_book_time_limits; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_hist_book_time_limits; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE post_hist_book_time_limits (
     book_no integer NOT NULL,
     timelmt_sequence_no smallint NOT NULL,
     timelmt_type character(1) NOT NULL,
-    limit_time_mns smallint NOT NULL,
+    limit_time_mins smallint NOT NULL,
     limit_date date NOT NULL,
     cancel_flag character(1) NOT NULL,
     queue_code character(5),
     dest_branch character(12) NOT NULL,
     remark_text character(240),
-    all_passenger_flag character(1) NOT NULL,
+    all_pax_flag character(1) NOT NULL,
     processing_flag character(1) NOT NULL,
     et_serial_no integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.post_hist_book_time_limits OWNER TO postgres;
 
 --
--- Name: post_hist_itenary; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_hist_itenary; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE post_hist_itenary (
@@ -9619,20 +8892,20 @@ CREATE TABLE post_hist_itenary (
     et_serial_no integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.post_hist_itenary OWNER TO postgres;
 
 --
--- Name: post_hist_passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_hist_passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE post_hist_passenger (
     book_no integer NOT NULL,
-    passenger_no smallint NOT NULL,
-    passenger_name character(53) NOT NULL,
+    pax_no smallint NOT NULL,
+    pax_name character(53) NOT NULL,
     client_prfl_no character(15),
     request_nos character varying(1024),
     remark_nos character varying(30),
@@ -9641,7 +8914,7 @@ CREATE TABLE post_hist_passenger (
     timelmt_nos character varying(30),
     ticket_nos character varying(50),
     name_incl_type character(1),
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     processing_flag character(1) NOT NULL,
     tty_pax_line_no integer DEFAULT 0 NOT NULL,
     tty_pax_grp_no integer DEFAULT 0 NOT NULL,
@@ -9649,7 +8922,7 @@ CREATE TABLE post_hist_passenger (
     et_serial_no integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -9657,7 +8930,7 @@ ALTER TABLE public.post_hist_passenger OWNER TO postgres;
 
 
 --
--- Name: prl_serial; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: prl_serial; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE prl_serial (
@@ -9692,7 +8965,7 @@ ALTER SEQUENCE prl_serial_prl_id_seq OWNED BY prl_serial.prl_id;
 
 
 --
--- Name: process_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: process_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE process_status (
@@ -9700,7 +8973,7 @@ CREATE TABLE process_status (
     process_srno integer NOT NULL,
     process_code character(10) NOT NULL,
     process_status character(1) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -9728,7 +9001,7 @@ ALTER SEQUENCE process_status_process_srno_seq OWNED BY process_status.process_s
 
 
 --
--- Name: processing_indicators; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: processing_indicators; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE processing_indicators (
@@ -9751,7 +9024,7 @@ CREATE TABLE processing_indicators (
 ALTER TABLE public.processing_indicators OWNER TO postgres;
 
 --
--- Name: pros_upload_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pros_upload_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pros_upload_history (
@@ -9759,14 +9032,14 @@ CREATE TABLE pros_upload_history (
     pros_time character(10) NOT NULL,
     inventory_items integer NOT NULL,
     inventory_items_failed integer NOT NULL,
-    create_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.pros_upload_history OWNER TO postgres;
 
 --
--- Name: prosv_aircraft_config; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: prosv_aircraft_config; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE prosv_aircraft_config (
@@ -9780,7 +9053,7 @@ CREATE TABLE prosv_aircraft_config (
 ALTER TABLE public.prosv_aircraft_config OWNER TO postgres;
 
 --
--- Name: prosv_aircraft_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: prosv_aircraft_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE prosv_aircraft_mapping (
@@ -9792,7 +9065,7 @@ CREATE TABLE prosv_aircraft_mapping (
 ALTER TABLE public.prosv_aircraft_mapping OWNER TO postgres;
 
 --
--- Name: pta; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pta; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pta (
@@ -9806,7 +9079,7 @@ CREATE TABLE pta (
     review_date date,
     status character(1) NOT NULL,
     sponser_name character(53) NOT NULL,
-    passenger_name character(53) NOT NULL,
+    pax_name character(53) NOT NULL,
     group_name character(53),
     pax_address character varying(200),
     pax_city character(25),
@@ -9834,7 +9107,7 @@ CREATE TABLE pta (
     scrutiny_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -9862,7 +9135,7 @@ ALTER SEQUENCE pta_pta_number_seq OWNED BY pta.pta_number;
 
 
 --
--- Name: pta_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pta_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pta_status (
@@ -9872,14 +9145,14 @@ CREATE TABLE pta_status (
     status_remark character(80),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.pta_status OWNER TO postgres;
 
 --
--- Name: que_grp_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: que_grp_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE que_grp_serial_nos (
@@ -9914,7 +9187,7 @@ ALTER SEQUENCE que_grp_serial_nos_queue_grp_id_seq OWNED BY que_grp_serial_nos.q
 
 
 --
--- Name: que_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: que_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE que_serial_nos (
@@ -9949,7 +9222,7 @@ ALTER SEQUENCE que_serial_nos_queue_id_seq OWNED BY que_serial_nos.queue_id;
 
 
 --
--- Name: queue_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: queue_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE queue_codes (
@@ -9960,20 +9233,20 @@ CREATE TABLE queue_codes (
     def_dest_branch character(12) NOT NULL,
     queue_catg character(3) NOT NULL,
     queue_type character(4) NOT NULL,
-    read_strt_auth_lvl smallint NOT NULL,
-    read_end_auth_lvl smallint NOT NULL,
-    upd_strt_auth_lvl smallint NOT NULL,
-    upd_end_auth_lvl smallint NOT NULL,
+    read_strt_auth_level smallint NOT NULL,
+    read_end_auth_level smallint NOT NULL,
+    upd_strt_auth_level smallint NOT NULL,
+    upd_end_auth_level smallint NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.queue_codes OWNER TO postgres;
 
 --
--- Name: queues; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: queues; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE queues (
@@ -9988,7 +9261,7 @@ CREATE TABLE queues (
     city_pair integer,
     selling_class character(2),
     book_no integer,
-    passenger_name character varying(77),
+    pax_name character varying(77),
     no_of_seats smallint,
     book_category character(1),
     tty_message_id character varying(12),
@@ -10008,14 +9281,14 @@ CREATE TABLE queues (
     create_group character(8) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.queues OWNER TO postgres;
 
 --
--- Name: realloc_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: realloc_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE realloc_history (
@@ -10061,7 +9334,7 @@ CREATE TABLE realloc_history (
 ALTER TABLE public.realloc_history OWNER TO postgres;
 
 --
--- Name: reallocation_request; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: reallocation_request; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE reallocation_request (
@@ -10069,22 +9342,22 @@ CREATE TABLE reallocation_request (
     request_description character varying(255),
     old_flight_count integer NOT NULL,
     new_flight_count integer NOT NULL,
-    passenger_retain_flag character(1) DEFAULT 'Y'::bpchar NOT NULL,
+    pax_retain_flag character(1) DEFAULT 'Y'::bpchar NOT NULL,
     waitlist_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     reallocate_to_cancel character(1) DEFAULT 'N'::bpchar NOT NULL,
     reallocate_to_other character(1) DEFAULT 'N'::bpchar NOT NULL,
     run_as_user_code character(5) NOT NULL,
     run_as_dest character(8) NOT NULL,
     run_as_branch character(12) NOT NULL,
-    run_at_timestamp timestamp with time zone,
-    started_at_timestamp timestamp with time zone,
-    done_at_timestamp timestamp with time zone,
+    run_at_timestamp timestamp WITH time zone,
+    started_at_timestamp timestamp WITH time zone,
+    done_at_timestamp timestamp WITH time zone,
     call_output character varying(1024),
     bookings_bad_connection integer,
     bookings_to_process integer,
     items_to_process integer,
     items_processed integer,
-    create_time timestamp with time zone NOT NULL,
+    create_time timestamp WITH time zone NOT NULL,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
     active_flag character(1) DEFAULT 'A'::bpchar NOT NULL,
@@ -10095,7 +9368,7 @@ CREATE TABLE reallocation_request (
 ALTER TABLE public.reallocation_request OWNER TO postgres;
 
 --
--- Name: reallocation_request_flights; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: reallocation_request_flights; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE reallocation_request_flights (
@@ -10142,7 +9415,7 @@ ALTER SEQUENCE reallocation_request_reallocation_request_id_seq OWNED BY realloc
 
 
 --
--- Name: reconcile_reconciliation; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: reconcile_reconciliation; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE reconcile_reconciliation (
@@ -10153,14 +9426,14 @@ CREATE TABLE reconcile_reconciliation (
     from_status_code character(2),
     to_status_code character(2),
     because_inventory_is integer,
-    create_time timestamp with time zone DEFAULT now()
+    create_time timestamp WITH time zone DEFAULT now()
 );
 
 
 ALTER TABLE public.reconcile_reconciliation OWNER TO postgres;
 
 --
--- Name: relationship_type; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: relationship_type; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE relationship_type (
@@ -10168,23 +9441,23 @@ CREATE TABLE relationship_type (
     description character varying(255),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.relationship_type OWNER TO postgres;
 
 --
--- Name: release_log; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: release_log; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE release_log (
     id integer NOT NULL,
     release_major character varying(10) NOT NULL,
     release_minor character varying(10) NOT NULL,
-    loaded_date_time timestamp with time zone DEFAULT now() NOT NULL,
+    loaded_date_time timestamp WITH time zone DEFAULT now() NOT NULL,
     release_notes character varying(1024),
-    rollback_date_time timestamp with time zone
+    rollback_date_time timestamp WITH time zone
 );
 
 
@@ -10212,10 +9485,10 @@ ALTER SEQUENCE release_log_id_seq OWNED BY release_log.id;
 
 
 --
--- Name: rep_inventry_cnts; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: rep_inventry_counts; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE rep_inventry_cnts (
+CREATE TABLE rep_inventry_counts (
     dest_id character(8) NOT NULL,
     rep_type character(3) NOT NULL,
     flight_number character(7) NOT NULL,
@@ -10229,27 +9502,27 @@ CREATE TABLE rep_inventry_cnts (
     segm_available smallint NOT NULL,
     segm_booked smallint NOT NULL,
     segm_wlisted smallint NOT NULL,
-    group_seat_lvl smallint NOT NULL,
-    seat_protect_lvl smallint NOT NULL,
-    limit_sale_lvl smallint NOT NULL,
-    overbooking_lvl smallint NOT NULL,
-    posting_lvl smallint NOT NULL,
-    sale_notify_lvl smallint NOT NULL,
-    cancel_notify_lvl smallint NOT NULL,
+    group_seat_level smallint NOT NULL,
+    seat_protect_level smallint NOT NULL,
+    limit_sale_level smallint NOT NULL,
+    overbooking_level smallint NOT NULL,
+    posting_level smallint NOT NULL,
+    sale_notify_level smallint NOT NULL,
+    cancel_notify_level smallint NOT NULL,
     overbooking_percnt smallint NOT NULL,
     segment_closed_flag character(1) NOT NULL,
     wl_closed_flag character(1) NOT NULL,
-    wl_clr_inhibit_flag character(1) NOT NULL,
-    wl_rel_prty_flag character(1) NOT NULL,
+    wl_clear_inhibit_flag character(1) NOT NULL,
+    wl_release_party_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
-ALTER TABLE public.rep_inventry_cnts OWNER TO postgres;
+ALTER TABLE public.rep_inventry_counts OWNER TO postgres;
 
 --
--- Name: report_address; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: report_address; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE report_address (
@@ -10266,7 +9539,7 @@ CREATE TABLE report_address (
 ALTER TABLE public.report_address OWNER TO postgres;
 
 --
--- Name: report_template_xslt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: report_template_xslt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE report_template_xslt (
@@ -10274,9 +9547,6 @@ CREATE TABLE report_template_xslt (
     report_code character varying(30),
     description character varying(255),
     file_path character varying(255),
-    update_user character(5),
-    update_group character(8),
-    update_time timestamp with time zone,
     seq_no smallint,
     allow_email character(1),
     allow_fax character(1),
@@ -10289,14 +9559,17 @@ CREATE TABLE report_template_xslt (
     print_margin_top numeric(5,2) DEFAULT 0.75 NOT NULL,
     print_margin_bottom numeric(5,2) DEFAULT 0.75 NOT NULL,
     print_margin_left numeric(5,2) DEFAULT 0.75 NOT NULL,
-    print_margin_right numeric(5,2) DEFAULT 0.75 NOT NULL
+    print_margin_right numeric(5,2) DEFAULT 0.75 NOT NULL,
+    update_user character(5),
+    update_group character(8),
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.report_template_xslt OWNER TO postgres;
 
 --
--- Name: reserve_reason_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: reserve_reason_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE reserve_reason_ref (
@@ -10304,14 +9577,14 @@ CREATE TABLE reserve_reason_ref (
     description character varying(250) NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.reserve_reason_ref OWNER TO postgres;
 
 --
--- Name: response_data; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: response_data; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE response_data (
@@ -10327,7 +9600,7 @@ CREATE TABLE response_data (
 ALTER TABLE public.response_data OWNER TO postgres;
 
 --
--- Name: restrict_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: restrict_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE restrict_rule (
@@ -10349,7 +9622,7 @@ CREATE TABLE restrict_rule (
 ALTER TABLE public.restrict_rule OWNER TO postgres;
 
 --
--- Name: route_surcharge; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: route_surcharge; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE route_surcharge (
@@ -10360,28 +9633,28 @@ CREATE TABLE route_surcharge (
     surcharge_currency character(3) NOT NULL,
     valid_from_date date NOT NULL,
     valid_to_date date NOT NULL,
-    effective_from_date timestamp with time zone,
-    effective_to_date timestamp with time zone,
+    effective_from_date timestamp WITH time zone,
+    effective_to_date timestamp WITH time zone,
     active_flag character(1) NOT NULL,
-    inactive_date_time timestamp with time zone,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
+    inactive_date_time timestamp WITH time zone,
     company_code character(3) NOT NULL,
-    passenger_desc character(5),
+    pax_desc character(5),
     default_flag character(1),
     exclude_from_zero_fare character(1) DEFAULT 'N'::bpchar,
     exclude_from_non_revenue character(1) DEFAULT 'N'::bpchar,
     exclude_from_net_fare character(1) DEFAULT 'N'::bpchar,
     exclude_from_private_fare character(1) DEFAULT 'N'::bpchar,
-    original_route_surcharge_id bigint
+    original_route_surcharge_id bigint,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.route_surcharge OWNER TO postgres;
 
 --
--- Name: route_surcharge_fare; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: route_surcharge_fare; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE route_surcharge_fare (
@@ -10389,14 +9662,14 @@ CREATE TABLE route_surcharge_fare (
     fare_id bigint NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.route_surcharge_fare OWNER TO postgres;
 
 --
--- Name: routings; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: routings; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE routings (
@@ -10411,10 +9684,10 @@ CREATE TABLE routings (
     route_description character varying(255),
     atpco_route_no character(3),
     active_flag character(1) DEFAULT 'A'::bpchar,
-    inactive_date_time timestamp with time zone,
+    inactive_date_time timestamp WITH time zone,
     update_user character(5),
     update_group character(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -10442,7 +9715,7 @@ ALTER SEQUENCE routings_route_id_seq OWNED BY routings.route_id;
 
 
 --
--- Name: rule_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: rule_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE rule_type_ref (
@@ -10450,33 +9723,33 @@ CREATE TABLE rule_type_ref (
     description character varying(80),
     update_user character(5),
     update_group character(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.rule_type_ref OWNER TO postgres;
 
 --
--- Name: saccode_messageid; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: saccode_messageid; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE saccode_messageid (
     sac_code character varying(20) NOT NULL,
     message_id bigint DEFAULT 0,
     create_user character(5) NOT NULL,
-    create_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.saccode_messageid OWNER TO postgres;
 
 --
--- Name: sales_report; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: sales_report; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE sales_report (
     branch_code character(12) NOT NULL,
-    open_date_time timestamp with time zone NOT NULL,
+    open_date_time timestamp WITH time zone NOT NULL,
     report_status character(1) NOT NULL,
     authorized_date date,
     scrutiny_flag character(1) NOT NULL,
@@ -10485,7 +9758,7 @@ CREATE TABLE sales_report (
     create_time character(19) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -10493,7 +9766,7 @@ ALTER TABLE public.sales_report OWNER TO postgres;
 
 
 --
--- Name: schd_chng_action; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: schd_chng_action; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE schd_chng_action (
@@ -10504,18 +9777,18 @@ CREATE TABLE schd_chng_action (
     departure_airport character(5) NOT NULL,
     arrival_airport character(5) NOT NULL,
     segm_update_flag character(1) NOT NULL,
-    seg_cls_updt_flag character(1) NOT NULL,
+    seg_cls_update_flag character(1) NOT NULL,
     action_date date NOT NULL,
     action_type character(1) NOT NULL,
     processing_flag character(1) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.schd_chng_action OWNER TO postgres;
 
 --
--- Name: schd_chng_reject; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: schd_chng_reject; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE schd_chng_reject (
@@ -10528,14 +9801,14 @@ CREATE TABLE schd_chng_reject (
     action_type character(1) NOT NULL,
     schedule_period_no smallint NOT NULL,
     processing_flag character(1) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.schd_chng_reject OWNER TO postgres;
 
 --
--- Name: schd_routing; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: schd_routing; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE schd_routing (
@@ -10551,27 +9824,27 @@ CREATE TABLE schd_routing (
     ssm_mess_priority character(2) NOT NULL,
     ssm_active_flag character(1) NOT NULL,
     ssm_time_format character(1) NOT NULL,
-    trans_ssm_del_dys smallint NOT NULL,
+    trans_ssm_del_days smallint NOT NULL,
     trans_ssm_del_hrs smallint NOT NULL,
     ssm_avs_hold character(1) NOT NULL,
     asm_report_addr character(10) NOT NULL,
     asm_mess_priority character(2) NOT NULL,
     asm_active_flag character(1) NOT NULL,
     asm_time_format character(1) NOT NULL,
-    trans_asm_del_dys smallint NOT NULL,
+    trans_asm_del_days smallint NOT NULL,
     trans_asm_del_hrs smallint NOT NULL,
     asm_avs_hold character(1) NOT NULL,
     rsd_processing_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.schd_routing OWNER TO postgres;
 
 --
--- Name: seat_attribute; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_attribute; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE seat_attribute (
@@ -10579,14 +9852,14 @@ CREATE TABLE seat_attribute (
     seat_attribute_rcd character varying(5) NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.seat_attribute OWNER TO postgres;
 
 --
--- Name: seat_attribute_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_attribute_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE seat_attribute_ref (
@@ -10596,7 +9869,7 @@ CREATE TABLE seat_attribute_ref (
     active_flag character(1),
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone,
+    update_time timestamp WITH time zone,
     CONSTRAINT seat_attribute_ref_active_flag_check CHECK ((active_flag = ANY (ARRAY['A'::bpchar, 'I'::bpchar])))
 );
 
@@ -10625,7 +9898,7 @@ ALTER SEQUENCE seat_attribute_seat_definition_id_seq OWNED BY seat_attribute.sea
 
 
 --
--- Name: seat_definition; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_definition; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE seat_definition (
@@ -10641,10 +9914,10 @@ CREATE TABLE seat_definition (
     stop_selling_time integer,
     next_seat_right_id integer,
     next_seat_left_id integer,
+    assignment_priority_number integer,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone,
-    assignment_priority_number integer,
+    update_time timestamp WITH time zone,
     CONSTRAINT seat_definition_default_blocked_flag_check CHECK ((default_blocked_flag = ANY (ARRAY['Y'::bpchar, 'N'::bpchar])))
 );
 
@@ -10673,7 +9946,7 @@ ALTER SEQUENCE seat_definition_seat_definition_id_seq OWNED BY seat_definition.s
 
 
 --
--- Name: seat_map; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_map; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE seat_map (
@@ -10688,10 +9961,10 @@ CREATE TABLE seat_map (
     vacant_image character varying(250),
     unavailable_image character varying(250),
     reserve_image character varying(250),
+    vertical_layout_flag character(1),
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone,
-    vertical_layout_flag character(1),
+    update_time timestamp WITH time zone,
     CONSTRAINT seat_map_vertical_layout_flag_check CHECK ((vertical_layout_flag = ANY (ARRAY['Y'::bpchar, 'N'::bpchar])))
 );
 
@@ -10699,7 +9972,7 @@ CREATE TABLE seat_map (
 ALTER TABLE public.seat_map OWNER TO postgres;
 
 --
--- Name: seat_map_class; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_map_class; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE seat_map_class (
@@ -10707,14 +9980,14 @@ CREATE TABLE seat_map_class (
     selling_class character varying(2) NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.seat_map_class OWNER TO postgres;
 
 --
--- Name: seat_map_configuration; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_map_configuration; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE seat_map_configuration (
@@ -10722,7 +9995,7 @@ CREATE TABLE seat_map_configuration (
     config_table_no character varying(5) NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -10750,7 +10023,7 @@ ALTER SEQUENCE seat_map_seat_map_id_seq OWNED BY seat_map.seat_map_id;
 
 
 --
--- Name: seat_reconfig_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_reconfig_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE seat_reconfig_history (
@@ -10760,15 +10033,15 @@ CREATE TABLE seat_reconfig_history (
     departure_airport character(7),
     arrival_airport character(7),
     book_no integer,
-    passenger_number integer,
+    pax_number integer,
     old_seat character varying(20),
     new_seat character varying(20),
     old_seat_map_id integer,
     new_seat_map_id integer,
-    created_user_code character(20),
-    create_time timestamp with time zone DEFAULT now(),
-    invalid_time timestamp with time zone,
-    invalidated_user_code character(20)
+    invalid_time timestamp WITH time zone,
+    invalidated_user character(20),
+    create_user character(20),
+    create_time timestamp WITH time zone DEFAULT now()
 );
 
 
@@ -10796,7 +10069,7 @@ ALTER SEQUENCE seat_reconfig_history_seat_reconfig_history_id_seq OWNED BY seat_
 
 
 --
--- Name: seat_reservation_setting; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_reservation_setting; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE seat_reservation_setting (
@@ -10806,11 +10079,11 @@ CREATE TABLE seat_reservation_setting (
     flight_number character varying(10),
     start_date date,
     end_date date,
-    start_selling_time time with time zone,
-    stop_selling_time time with time zone,
+    start_selling_time time WITH time zone,
+    stop_selling_time time WITH time zone,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -10838,7 +10111,7 @@ ALTER SEQUENCE seat_reservation_setting_seat_reservation_setting_id_seq OWNED BY
 
 
 --
--- Name: sec_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: sec_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE sec_mapping (
@@ -10847,18 +10120,18 @@ CREATE TABLE sec_mapping (
     auth_sequence_no smallint NOT NULL,
     function_name character(80),
     condition_code character(2) NOT NULL,
-    acss_strt_auth_lvl smallint NOT NULL,
-    acss_end_auth_lvl smallint NOT NULL,
+    acss_strt_auth_level smallint NOT NULL,
+    acss_end_auth_level smallint NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.sec_mapping OWNER TO postgres;
 
 --
--- Name: secu_func; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: secu_func; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE secu_func (
@@ -10870,7 +10143,7 @@ ALTER TABLE public.secu_func OWNER TO postgres;
 
 
 --
--- Name: security_function; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: security_function; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE security_function (
@@ -10878,9 +10151,9 @@ CREATE TABLE security_function (
     security_function_rcd character varying(10) NOT NULL,
     function_code character varying(100) NOT NULL,
     function_name character varying(240) NOT NULL,
-    created_by_user character(5) NOT NULL,
+    create_user character(5) NOT NULL,
     create_time date NOT NULL,
-    created_destination_id character(8) NOT NULL,
+    create_group character(8) NOT NULL,
     inactivated_by_user character(5),
     inactivated_date_time date,
     inactivated_destination_id character(8)
@@ -10890,15 +10163,15 @@ CREATE TABLE security_function (
 ALTER TABLE public.security_function OWNER TO postgres;
 
 --
--- Name: security_function_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: security_function_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE security_function_ref (
     security_function_rcd character varying(10) NOT NULL,
     name character varying(240) NOT NULL,
-    created_by_user character(5) NOT NULL,
+    create_user character(5) NOT NULL,
     create_time date NOT NULL,
-    created_destination_id character(8) NOT NULL,
+    create_group character(8) NOT NULL,
     inactivated_by_user character(5),
     inactivated_date_time date,
     inactivated_destination_id character(8)
@@ -10908,15 +10181,15 @@ CREATE TABLE security_function_ref (
 ALTER TABLE public.security_function_ref OWNER TO postgres;
 
 --
--- Name: security_group; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: security_group; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE security_group (
     security_group_id bigint NOT NULL,
     group_name character(240) NOT NULL,
-    created_by_user character(5) NOT NULL,
+    create_user character(5) NOT NULL,
     create_time date NOT NULL,
-    created_destination_id character(8) NOT NULL,
+    create_group character(8) NOT NULL,
     inactivated_by_user character(5),
     inactivated_date_time date,
     inactivated_destination_id character(8)
@@ -10926,22 +10199,22 @@ CREATE TABLE security_group (
 ALTER TABLE public.security_group OWNER TO postgres;
 
 --
--- Name: security_group_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: security_group_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE security_group_history (
     security_group_id bigint NOT NULL,
     inactivated_by_user character(5),
-    inactivated_date_time timestamp with time zone,
+    inactivated_date_time timestamp WITH time zone,
     inactivated_destination_id character(8),
-    activated_date_time timestamp with time zone
+    activated_date_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.security_group_history OWNER TO postgres;
 
 --
--- Name: security_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: security_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE security_mapping (
@@ -10954,58 +10227,58 @@ CREATE TABLE security_mapping (
     update_flag integer,
     delete_flag integer,
     cancel_flag integer,
-    created_by_user character(5) NOT NULL,
-    create_time date NOT NULL,
-    created_destination_id character(8) NOT NULL,
     inactivated_by_user character(5),
     inactivated_date_time date,
     inactivated_destination_id character(8),
     from_code character(10),
-    to_code character(10)
+    to_code character(10),
+    create_user character(5) NOT NULL,
+    create_group character(8) NOT NULL,
+    create_time date NOT NULL
 );
 
 
 ALTER TABLE public.security_mapping OWNER TO postgres;
 
 --
--- Name: security_mapping_dimension; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: security_mapping_dimension; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE security_mapping_dimension (
     security_mapping_dimension_id bigint NOT NULL,
     code_from character(5) NOT NULL,
     code_to character(5) NOT NULL,
-    created_by_user character(5) NOT NULL,
-    create_time date NOT NULL,
-    created_destination_id character(8) NOT NULL,
     inactivated_by_user character(5),
     inactivated_date_time date,
-    inactivated_destination_id character(8)
+    inactivated_destination_id character(8),
+    create_user character(5) NOT NULL,
+    create_group character(8) NOT NULL,
+    create_time date NOT NULL
 );
 
 
 ALTER TABLE public.security_mapping_dimension OWNER TO postgres;
 
 --
--- Name: security_mapping_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: security_mapping_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE security_mapping_ref (
     security_mapping_rcd character(5) NOT NULL,
     name character(240) NOT NULL,
-    created_by_user character(5) NOT NULL,
-    create_time date NOT NULL,
-    created_destination_id character(8) NOT NULL,
     inactivated_by_user character(5),
     inactivated_date_time date,
-    inactivated_destination_id character(8)
+    inactivated_destination_id character(8),
+    create_user character(5) NOT NULL,
+    create_group character(8) NOT NULL,
+    create_time date NOT NULL
 );
 
 
 ALTER TABLE public.security_mapping_ref OWNER TO postgres;
 
 --
--- Name: segment_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: segment_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE segment_status (
@@ -11016,7 +10289,7 @@ CREATE TABLE segment_status (
     status_type character(1) NOT NULL,
     segm_status_code character(2),
     leg_status_code character(2),
-    first_post_ind character(1),
+    first_post_flag character(1),
     tty_out_msg_id integer,
     recap_flag character(1),
     prev_avn_value smallint,
@@ -11025,103 +10298,34 @@ CREATE TABLE segment_status (
     processing_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.segment_status OWNER TO postgres;
 
 --
--- Name: segment_status_update_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: segment_status_update_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE segment_status_update_history (
     segment_status_update_history_id bigint NOT NULL,
     origin character(5),
-    create_time timestamp with time zone DEFAULT now() NOT NULL,
     destination character(5),
-    created_user_code character(5) NOT NULL,
     flight_number character(7),
     selling_class character(2),
     from_date date NOT NULL,
-    until_date date NOT NULL
+    until_date date NOT NULL,
+    create_user character(5) NOT NULL,
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL
 );
 
 
 ALTER TABLE public.segment_status_update_history OWNER TO postgres;
 
---
--- Name: selectee_list; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE selectee_list (
-    entry_no integer NOT NULL,
-    last_name character varying(100),
-    first_name character varying(100),
-    middle_name character varying(100),
-    type character(10),
-    dob character varying(200),
-    pob character varying(100),
-    citizenship character varying(100),
-    passport character varying(1000),
-    misc character varying(1000),
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    sid integer DEFAULT 0 NOT NULL,
-    cleared character(250)
-);
-
-
-ALTER TABLE public.selectee_list OWNER TO postgres;
 
 --
--- Name: selectee_list_entry_no_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE selectee_list_entry_no_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.selectee_list_entry_no_seq OWNER TO postgres;
-
---
--- Name: selectee_list_entry_no_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE selectee_list_entry_no_seq OWNED BY selectee_list.entry_no;
-
-
---
--- Name: selectee_list_temp; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE selectee_list_temp (
-    last_name character varying(100),
-    first_name character varying(100),
-    middle_name character varying(100),
-    type character(10),
-    dob character varying(50),
-    pob character varying(100),
-    citizenship character varying(100),
-    passport character varying(1000),
-    misc character varying(1000),
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    sid integer,
-    cleared character(250)
-);
-
-
-ALTER TABLE public.selectee_list_temp OWNER TO postgres;
-
---
--- Name: selling_class_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: selling_class_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE selling_class_mapping (
@@ -11135,7 +10339,7 @@ CREATE TABLE selling_class_mapping (
 ALTER TABLE public.selling_class_mapping OWNER TO postgres;
 
 --
--- Name: selling_conf; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: selling_conf; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE selling_conf (
@@ -11147,14 +10351,14 @@ CREATE TABLE selling_conf (
     ffp_fact_mult numeric(5,2),
     update_user character(5) NOT NULL,
     group_name character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.selling_conf OWNER TO postgres;
 
 --
--- Name: server_mast; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: server_mast; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE server_mast (
@@ -11163,14 +10367,14 @@ CREATE TABLE server_mast (
     lan_type character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.server_mast OWNER TO postgres;
 
 --
--- Name: service_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: service_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE service_requests (
@@ -11199,20 +10403,20 @@ CREATE TABLE service_requests (
     que_action_flag character(1) NOT NULL,
     fin_actn_code character(2),
     bilateral_carrs character varying(40),
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     active_flag integer DEFAULT 1,
     validation_regexp character varying(100),
     remove_permission_flag character(1),
-    validation_error_message character varying(250)
+    validation_error_message character varying(250),
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.service_requests OWNER TO postgres;
 
 --
--- Name: slrv_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: slrv_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE slrv_serial_nos (
@@ -11247,22 +10451,22 @@ ALTER SEQUENCE slrv_serial_nos_sales_revenue_id_seq OWNED BY slrv_serial_nos.sal
 
 
 --
--- Name: sms_bulk; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: sms_bulk; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE sms_bulk (
     bulk_no integer NOT NULL,
     messagecount integer,
-    requestuser character(5),
     reason text,
     request1 text,
     request2 text,
     request3 text,
-    rqst_date_time timestamp with time zone,
+    rqst_date_time timestamp WITH time zone,
     reply1 text,
     reply2 text,
     reply3 text,
-    update_time timestamp with time zone NOT NULL
+    requestuser character(5),
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -11290,7 +10494,7 @@ ALTER SEQUENCE sms_bulk_bulk_no_seq OWNED BY sms_bulk.bulk_no;
 
 
 --
--- Name: sms_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: sms_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE sms_mesgs (
@@ -11298,8 +10502,8 @@ CREATE TABLE sms_mesgs (
     book_no integer,
     request text,
     reply text,
-    create_time timestamp with time zone NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -11327,7 +10531,7 @@ ALTER SEQUENCE sms_mesgs_serial_no_seq OWNED BY sms_mesgs.serial_no;
 
 
 --
--- Name: special_service_request_inventory; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: special_service_request_inventory; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE special_service_request_inventory (
@@ -11343,14 +10547,14 @@ CREATE TABLE special_service_request_inventory (
     inactivated_user_code character(8),
     inactivated_dest_id character(8),
     inactivated_date_time character(19),
-    passenger_name character varying(53) NOT NULL
+    pax_name character varying(53) NOT NULL
 );
 
 
 ALTER TABLE public.special_service_request_inventory OWNER TO postgres;
 
 --
--- Name: special_service_request_rules; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: special_service_request_rules; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE special_service_request_rules (
@@ -11361,19 +10565,19 @@ CREATE TABLE special_service_request_rules (
     limit_number integer NOT NULL,
     default_price numeric(16,2) NOT NULL,
     active_flag integer NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     flight_to_date date NOT NULL,
     currency_code character(3),
-    ssr_type_rule character(1) DEFAULT 'N'::bpchar NOT NULL
+    ssr_type_rule character(1) DEFAULT 'N'::bpchar NOT NULL,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.special_service_request_rules OWNER TO postgres;
 
 --
--- Name: ssd_config; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssd_config; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssd_config (
@@ -11385,7 +10589,7 @@ CREATE TABLE ssd_config (
 ALTER TABLE public.ssd_config OWNER TO postgres;
 
 --
--- Name: ssd_t1; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssd_t1; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssd_t1 (
@@ -11407,7 +10611,7 @@ CREATE TABLE ssd_t1 (
 ALTER TABLE public.ssd_t1 OWNER TO postgres;
 
 --
--- Name: ssd_t2; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssd_t2; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssd_t2 (
@@ -11420,7 +10624,7 @@ CREATE TABLE ssd_t2 (
 ALTER TABLE public.ssd_t2 OWNER TO postgres;
 
 --
--- Name: ssd_t3; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssd_t3; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssd_t3 (
@@ -11457,7 +10661,7 @@ ALTER SEQUENCE ssd_t3_col1_seq OWNED BY ssd_t3.col1;
 
 
 --
--- Name: ssd_t4; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssd_t4; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssd_t4 (
@@ -11493,7 +10697,7 @@ ALTER SEQUENCE ssd_t4_col1_seq OWNED BY ssd_t4.col1;
 
 
 --
--- Name: ssd_t5; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssd_t5; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssd_t5 (
@@ -11511,7 +10715,7 @@ CREATE TABLE ssd_t5 (
 ALTER TABLE public.ssd_t5 OWNER TO postgres;
 
 --
--- Name: ssd_t6; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssd_t6; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssd_t6 (
@@ -11549,7 +10753,7 @@ ALTER SEQUENCE ssd_t6_col1_seq OWNED BY ssd_t6.col1;
 
 
 --
--- Name: ssd_t7; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssd_t7; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssd_t7 (
@@ -11589,7 +10793,7 @@ ALTER SEQUENCE ssd_t7_col1_seq OWNED BY ssd_t7.col1;
 
 
 --
--- Name: ssd_vcobjects; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssd_vcobjects; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssd_vcobjects (
@@ -11601,7 +10805,7 @@ CREATE TABLE ssd_vcobjects (
     parm_list text,
     status integer,
     locked_by character varying(128),
-    locked_when timestamp with time zone,
+    locked_when timestamp WITH time zone,
     last_revision_no integer,
     revision_count integer
 );
@@ -11631,7 +10835,7 @@ ALTER SEQUENCE ssd_vcobjects_vc_objid_seq OWNED BY ssd_vcobjects.vc_objid;
 
 
 --
--- Name: ssd_vcversions; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssd_vcversions; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssd_vcversions (
@@ -11640,7 +10844,7 @@ CREATE TABLE ssd_vcversions (
     revision_no integer,
     project_ver_no character varying(20),
     revision_comment character varying(255),
-    created_when timestamp with time zone,
+    created_when timestamp WITH time zone,
     created_by character varying(128),
     by_operation character varying(10),
     line text
@@ -11671,7 +10875,7 @@ ALTER SEQUENCE ssd_vcversions_rev_id_seq OWNED BY ssd_vcversions.rev_id;
 
 
 --
--- Name: ssm_tmp_acft_config; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssm_tmp_acft_config; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssm_tmp_acft_config (
@@ -11679,13 +10883,13 @@ CREATE TABLE ssm_tmp_acft_config (
     company_code character(3) NOT NULL,
     selling_class character(2) NOT NULL,
     aircraft_code character(3) NOT NULL,
-    group_seat_lvl smallint NOT NULL,
-    seat_protect_lvl smallint NOT NULL,
-    limit_sale_lvl smallint NOT NULL,
-    overbooking_lvl smallint NOT NULL,
-    posting_lvl smallint NOT NULL,
-    sale_notify_lvl smallint NOT NULL,
-    cancel_notify_lvl smallint NOT NULL,
+    group_seat_level smallint NOT NULL,
+    seat_protect_level smallint NOT NULL,
+    limit_sale_level smallint NOT NULL,
+    overbooking_level smallint NOT NULL,
+    posting_level smallint NOT NULL,
+    sale_notify_level smallint NOT NULL,
+    cancel_notify_level smallint NOT NULL,
     seat_capacity smallint NOT NULL,
     scrutiny_flag character(1) NOT NULL,
     gen_flag_invt character(1) NOT NULL,
@@ -11698,7 +10902,7 @@ CREATE TABLE ssm_tmp_acft_config (
 ALTER TABLE public.ssm_tmp_acft_config OWNER TO postgres;
 
 --
--- Name: ssm_tmp_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssm_tmp_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssm_tmp_cls (
@@ -11710,7 +10914,7 @@ CREATE TABLE ssm_tmp_cls (
 ALTER TABLE public.ssm_tmp_cls OWNER TO postgres;
 
 --
--- Name: ssm_tmp_date; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssm_tmp_date; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssm_tmp_date (
@@ -11721,19 +10925,19 @@ CREATE TABLE ssm_tmp_date (
 ALTER TABLE public.ssm_tmp_date OWNER TO postgres;
 
 --
--- Name: ssm_tmp_hirarchy_avl_cnts; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssm_tmp_hirarchy_avail_counts; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE ssm_tmp_hirarchy_avl_cnts (
+CREATE TABLE ssm_tmp_hirarchy_avail_counts (
     selling_class character(2) NOT NULL,
-    nett_avlb_seats smallint NOT NULL
+    nett_availb_seats smallint NOT NULL
 );
 
 
-ALTER TABLE public.ssm_tmp_hirarchy_avl_cnts OWNER TO postgres;
+ALTER TABLE public.ssm_tmp_hirarchy_avail_counts OWNER TO postgres;
 
 --
--- Name: ssm_tmp_old_flight_perd_legs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssm_tmp_old_flight_perd_legs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssm_tmp_old_flight_perd_legs (
@@ -11752,15 +10956,15 @@ CREATE TABLE ssm_tmp_old_flight_perd_legs (
     departure_terminal character(2) NOT NULL,
     arrival_terminal character(2) NOT NULL,
     leg_number smallint NOT NULL,
-    update_time character(19) NOT NULL,
-    table_selector smallint NOT NULL
+    table_selector smallint NOT NULL,
+    update_time character(19) NOT NULL
 );
 
 
 ALTER TABLE public.ssm_tmp_old_flight_perd_legs OWNER TO postgres;
 
 --
--- Name: ssm_tmp_old_inventry_segment; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssm_tmp_old_inventry_segment; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssm_tmp_old_inventry_segment (
@@ -11774,13 +10978,13 @@ CREATE TABLE ssm_tmp_old_inventry_segment (
     leg_number smallint NOT NULL,
     segment_number character(22) NOT NULL,
     ob_profile_no character(5) NOT NULL,
-    group_seat_lvl smallint NOT NULL,
-    seat_protect_lvl smallint NOT NULL,
-    limit_sale_lvl smallint NOT NULL,
-    overbooking_lvl smallint NOT NULL,
-    posting_lvl smallint NOT NULL,
-    sale_notify_lvl smallint NOT NULL,
-    cancel_notify_lvl smallint NOT NULL,
+    group_seat_level smallint NOT NULL,
+    seat_protect_level smallint NOT NULL,
+    limit_sale_level smallint NOT NULL,
+    overbooking_level smallint NOT NULL,
+    posting_level smallint NOT NULL,
+    sale_notify_level smallint NOT NULL,
+    cancel_notify_level smallint NOT NULL,
     overbooking_percnt smallint NOT NULL,
     seat_capacity smallint NOT NULL,
     nett_sngl_sold smallint NOT NULL,
@@ -11801,23 +11005,23 @@ CREATE TABLE ssm_tmp_old_inventry_segment (
     segm_nrev_ticktd smallint NOT NULL,
     segment_closed_flag character(1) NOT NULL,
     wl_closed_flag character(1) NOT NULL,
-    wl_clr_inhibit_flag character(1) NOT NULL,
-    wl_rel_prty_flag character(1) NOT NULL,
+    wl_clear_inhibit_flag character(1) NOT NULL,
+    wl_release_party_flag character(1) NOT NULL,
     scrutiny_flag character(1) NOT NULL,
     display_priority smallint NOT NULL,
     schedule_period_no smallint NOT NULL,
-    invt_updt_flag character(1) NOT NULL,
+    invt_update_flag character(1) NOT NULL,
+    table_selector smallint NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time character(19) NOT NULL,
-    table_selector smallint NOT NULL
+    update_time character(19) NOT NULL
 );
 
 
 ALTER TABLE public.ssm_tmp_old_inventry_segment OWNER TO postgres;
 
 --
--- Name: ssm_tmp_parent_sell_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssm_tmp_parent_sell_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssm_tmp_parent_sell_cls (
@@ -11828,7 +11032,7 @@ CREATE TABLE ssm_tmp_parent_sell_cls (
 ALTER TABLE public.ssm_tmp_parent_sell_cls OWNER TO postgres;
 
 --
--- Name: ssm_tmp_wl_invt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssm_tmp_wl_invt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ssm_tmp_wl_invt (
@@ -11843,7 +11047,7 @@ CREATE TABLE ssm_tmp_wl_invt (
 ALTER TABLE public.ssm_tmp_wl_invt OWNER TO postgres;
 
 --
--- Name: state; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: state; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE state (
@@ -11852,18 +11056,18 @@ CREATE TABLE state (
     nation_code character(2) NOT NULL,
     summer_start_date date NOT NULL,
     winter_start_date date NOT NULL,
-    summer_diff_mns smallint NOT NULL,
-    winter_diff_mns smallint NOT NULL,
+    summer_diff_mins smallint NOT NULL,
+    winter_diff_mins smallint NOT NULL,
     update_user character(16) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.state OWNER TO postgres;
 
 --
--- Name: std_comment; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: std_comment; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE std_comment (
@@ -11871,14 +11075,14 @@ CREATE TABLE std_comment (
     comment_text character varying(255),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.std_comment OWNER TO postgres;
 
 --
--- Name: sub_fare_seg_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: sub_fare_seg_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE sub_fare_seg_rule (
@@ -11887,40 +11091,40 @@ CREATE TABLE sub_fare_seg_rule (
     city_pair integer NOT NULL,
     sub_fare_code character(5) NOT NULL,
     fare_rule_no character(8) NOT NULL,
+    active_flag character(1) DEFAULT 'A'::bpchar NOT NULL,
+    export_timestamp timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    active_flag character(1) DEFAULT 'A'::bpchar NOT NULL,
-    export_timestamp timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.sub_fare_seg_rule OWNER TO postgres;
 
 --
--- Name: sub_fare_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: sub_fare_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE sub_fare_segm (
     company_code character(3) NOT NULL,
     fare_code character(15) NOT NULL,
     city_pair integer NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     sub_fare_code character(5) NOT NULL,
     change_type character(1) NOT NULL,
     change_value numeric(12,2) NOT NULL,
+    active_flag character(1) DEFAULT 'A'::bpchar NOT NULL,
+    export_timestamp timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    active_flag character(1) DEFAULT 'A'::bpchar NOT NULL,
-    export_timestamp timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.sub_fare_segm OWNER TO postgres;
 
 --
--- Name: surcharge; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: surcharge; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE surcharge (
@@ -11929,7 +11133,7 @@ CREATE TABLE surcharge (
     description character varying(200),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -11937,7 +11141,7 @@ ALTER TABLE public.surcharge OWNER TO postgres;
 
 
 --
--- Name: system_errors; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: system_errors; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE system_errors (
@@ -11946,14 +11150,14 @@ CREATE TABLE system_errors (
     message character(80) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.system_errors OWNER TO postgres;
 
 --
--- Name: system_log; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: system_log; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE system_log (
@@ -11966,7 +11170,7 @@ CREATE TABLE system_log (
     city_pair integer,
     selling_class character(2),
     book_no integer,
-    passenger_name character varying(77),
+    pax_name character varying(77),
     no_of_seats smallint,
     book_category character(1),
     tty_message_id character varying(12),
@@ -11980,14 +11184,14 @@ CREATE TABLE system_log (
     create_group character(8) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.system_log OWNER TO postgres;
 
 --
--- Name: system_param; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: system_param; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE system_param (
@@ -11995,8 +11199,8 @@ CREATE TABLE system_param (
     branch_code character(12),
     console_dest_id character(8) NOT NULL,
     local_crypt_key character(10),
-    client_expiry_dys smallint NOT NULL,
-    last_tckt_end_no integer NOT NULL,
+    client_expiry_days smallint NOT NULL,
+    last_ticket_end_no integer NOT NULL,
     book_time_limit smallint NOT NULL,
     book_days_limit smallint NOT NULL,
     avl_display_digits smallint NOT NULL,
@@ -12010,22 +11214,22 @@ CREATE TABLE system_param (
     no_of_flts_back smallint NOT NULL,
     max_no_of_stops smallint NOT NULL,
     max_no_of_conns smallint NOT NULL,
-    aa_conn_mns smallint NOT NULL,
-    tt_conn_mns smallint NOT NULL,
-    st_conn_mns smallint NOT NULL,
+    aa_conn_mins smallint NOT NULL,
+    tt_conn_mins smallint NOT NULL,
+    st_conn_mins smallint NOT NULL,
     baggage_alownce character varying(105) NOT NULL,
     default_group_size smallint NOT NULL,
-    wl_clr_inhibit_mns smallint NOT NULL,
+    wl_clear_inhibit_mins smallint NOT NULL,
     wl_close_percnt smallint NOT NULL,
     wait_lst_ctrl_flag character(1) NOT NULL,
     perd_range_mnths smallint NOT NULL,
     add_to_current_dt smallint NOT NULL,
     rec_locator_len smallint NOT NULL,
-    passwd_expiry_dys smallint NOT NULL,
-    que_recycle_dys smallint NOT NULL,
-    que_recycle_mns smallint NOT NULL,
-    flight_purge_dys smallint NOT NULL,
-    book_purge_dys smallint NOT NULL,
+    passwd_expiry_days smallint NOT NULL,
+    que_recycle_days smallint NOT NULL,
+    que_recycle_mins smallint NOT NULL,
+    flight_purge_days smallint NOT NULL,
+    book_purge_days smallint NOT NULL,
     pnl_incl_class character(1),
     typb_msg_size smallint,
     flight_purge_hrs smallint NOT NULL,
@@ -12039,34 +11243,34 @@ CREATE TABLE system_param (
     rcfm_check_hrs smallint NOT NULL,
     tlt_check_hrs smallint NOT NULL,
     rcfm_perd_hrs smallint NOT NULL,
-    dupe_intntnl_dys smallint NOT NULL,
-    dupe_domstic_dys smallint NOT NULL,
+    dupe_intntnl_days smallint NOT NULL,
+    dupe_domstic_days smallint NOT NULL,
     crc_branch character(12) NOT NULL,
     tlt_canx_flag character(2) NOT NULL,
     grp_canx_flag character(2) NOT NULL,
     rcfm_canx_flag character(1) NOT NULL,
-    dupe_range_dys smallint NOT NULL,
+    dupe_range_days smallint NOT NULL,
     flt_rec_flt_rng smallint NOT NULL,
     flt_rec_dte_rng smallint NOT NULL,
-    tmch_int_befr_mns smallint NOT NULL,
-    tmch_int_aftr_mns smallint NOT NULL,
-    tmch_dom_befr_mns smallint NOT NULL,
-    tmch_dom_aftr_mns smallint NOT NULL,
-    utr_recycle_dys smallint NOT NULL,
-    utr_recycle_mns smallint NOT NULL,
-    lmtc_recycle_dys smallint NOT NULL,
-    lmtc_recycle_mns smallint NOT NULL,
-    super_auth_lvl smallint NOT NULL,
-    ctrl_auth_lvl smallint NOT NULL,
-    tty_strt_auth_lvl smallint NOT NULL,
-    tty_end_auth_lvl smallint NOT NULL,
-    system_auth_lvl smallint NOT NULL,
-    chkin_auth_lvl smallint,
-    gate_auth_lvl smallint,
-    mngr_auth_lvl smallint,
-    stnsup_auth_lvl smallint,
-    flifo_auth_lvl smallint,
-    avn_trigger_lvl smallint NOT NULL,
+    tmch_int_befr_mins smallint NOT NULL,
+    tmch_int_aftr_mins smallint NOT NULL,
+    tmch_dom_befr_mins smallint NOT NULL,
+    tmch_dom_aftr_mins smallint NOT NULL,
+    utr_recycle_days smallint NOT NULL,
+    utr_recycle_mins smallint NOT NULL,
+    lmtc_recycle_days smallint NOT NULL,
+    lmtc_recycle_mins smallint NOT NULL,
+    super_auth_level smallint NOT NULL,
+    ctrl_auth_level smallint NOT NULL,
+    tty_strt_auth_level smallint NOT NULL,
+    tty_end_auth_level smallint NOT NULL,
+    system_auth_level smallint NOT NULL,
+    chkin_auth_level smallint,
+    gate_auth_level smallint,
+    mngr_auth_level smallint,
+    stnsup_auth_level smallint,
+    flifo_auth_level smallint,
+    avn_trigger_level smallint NOT NULL,
     last_maint_date date NOT NULL,
     no_of_clients smallint NOT NULL,
     fetch_retries smallint NOT NULL,
@@ -12074,7 +11278,7 @@ CREATE TABLE system_param (
     global_resp_status character(1) NOT NULL,
     process_type character(5) NOT NULL,
     local_time_zone character varying(50),
-    queue_purge_dys smallint,
+    queue_purge_days smallint,
     et_rej_actn_flag character(1),
     et_process_time interval hour to second,
     wl_default_cap smallint NOT NULL,
@@ -12102,14 +11306,14 @@ CREATE TABLE system_param (
     create_time character(19) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.system_param OWNER TO postgres;
 
 --
--- Name: system_setting; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: system_setting; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE system_setting (
@@ -12120,14 +11324,14 @@ CREATE TABLE system_setting (
     company_code character varying(3),
     update_user character(16),
     update_group character(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.system_setting OWNER TO postgres;
 
 --
--- Name: system_setting_category_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: system_setting_category_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE system_setting_category_ref (
@@ -12135,14 +11339,14 @@ CREATE TABLE system_setting_category_ref (
     description character varying(250) NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.system_setting_category_ref OWNER TO postgres;
 
 --
--- Name: system_stock; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: system_stock; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE system_stock (
@@ -12163,14 +11367,14 @@ CREATE TABLE system_stock (
     create_time character(19) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.system_stock OWNER TO postgres;
 
 --
--- Name: system_tables; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: system_tables; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE system_tables (
@@ -12182,14 +11386,14 @@ CREATE TABLE system_tables (
     updt_priority smallint NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.system_tables OWNER TO postgres;
 
 --
--- Name: tax_appl_code; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tax_appl_code; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tax_appl_code (
@@ -12197,14 +11401,14 @@ CREATE TABLE tax_appl_code (
     apply_descr character varying(50),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.tax_appl_code OWNER TO postgres;
 
 --
--- Name: tax_category; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tax_category; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tax_category (
@@ -12224,25 +11428,25 @@ CREATE TABLE tax_category (
     active_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
-    create_time timestamp with time zone NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
+    create_time timestamp WITH time zone NOT NULL,
     incl_in_availab character(1),
     apply_to_zero_fare character(3),
     oneway_cap_count integer,
     return_cap_count integer,
     apply_to_non_revenue character(1),
     apply_to_vias character(1) DEFAULT 'N'::bpchar NOT NULL,
-    effective_from_date timestamp with time zone,
-    effective_to_date timestamp with time zone,
+    effective_from_date timestamp WITH time zone,
+    effective_to_date timestamp WITH time zone,
     apply_to_net_fare character(1) DEFAULT 'Y'::bpchar NOT NULL,
     apply_to_private_fare character(1) DEFAULT 'Y'::bpchar NOT NULL,
     international_flag character(1) DEFAULT 'D'::bpchar NOT NULL,
     apply_for_origin_airport character(1) DEFAULT 'N'::bpchar NOT NULL,
     apply_for_book_origin character(1) DEFAULT 'N'::bpchar NOT NULL,
     apply_for_agency_location character(1) DEFAULT 'N'::bpchar NOT NULL,
-    vat_percent numeric(6,3)
+    vat_percent numeric(6,3),
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -12270,7 +11474,7 @@ ALTER SEQUENCE tax_category_tax_cat_id_seq OWNED BY tax_category.tax_cat_id;
 
 
 --
--- Name: tax_coverage_type; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tax_coverage_type; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tax_coverage_type (
@@ -12278,21 +11482,21 @@ CREATE TABLE tax_coverage_type (
     coverage_descr character varying(50),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.tax_coverage_type OWNER TO postgres;
 
 --
--- Name: tax_detail; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tax_detail; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tax_detail (
     tax_detail_id integer NOT NULL,
     tax_cat_id integer NOT NULL,
     default_flag character(1),
-    pass_code character(5),
+    pax_code character(5),
     valid_from_date date NOT NULL,
     valid_to_date date NOT NULL,
     tax_type character(1) NOT NULL,
@@ -12305,20 +11509,20 @@ CREATE TABLE tax_detail (
     active_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
-    create_time timestamp with time zone NOT NULL,
+    create_time timestamp WITH time zone NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
+    update_time timestamp WITH time zone NOT NULL,
     tax_appliance character(1),
-    effective_from_date timestamp with time zone,
-    effective_to_date timestamp with time zone
+    effective_from_date timestamp WITH time zone,
+    effective_to_date timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tax_detail OWNER TO postgres;
 
 --
--- Name: tax_detail_currency; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tax_detail_currency; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tax_detail_currency (
@@ -12329,10 +11533,10 @@ CREATE TABLE tax_detail_currency (
     active_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
-    create_time timestamp with time zone NOT NULL,
+    create_time timestamp WITH time zone NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -12360,7 +11564,7 @@ ALTER SEQUENCE tax_detail_currency_tax_detail_currency_id_seq OWNED BY tax_detai
 
 
 --
--- Name: tax_detail_exclude; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tax_detail_exclude; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tax_detail_exclude (
@@ -12369,13 +11573,13 @@ CREATE TABLE tax_detail_exclude (
     airport_code character varying(5),
     state_code character varying(5),
     nation_code character varying(5),
+    allow_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
-    create_time timestamp with time zone NOT NULL,
+    create_time timestamp WITH time zone NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
-    allow_flag character(1) DEFAULT 'N'::bpchar NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
@@ -12424,7 +11628,7 @@ ALTER SEQUENCE tax_detail_tax_detail_id_seq OWNED BY tax_detail.tax_detail_id;
 
 
 --
--- Name: tax_type_descr; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tax_type_descr; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tax_type_descr (
@@ -12432,20 +11636,20 @@ CREATE TABLE tax_type_descr (
     tax_type_descr character varying(50),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.tax_type_descr OWNER TO postgres;
 
 --
--- Name: taxes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: taxes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE taxes (
     company_code character(3) NOT NULL,
     tax_code character(5) NOT NULL,
-    pass_code character(5) NOT NULL,
+    pax_code character(5) NOT NULL,
     valid_from_date date NOT NULL,
     valid_to_date date NOT NULL,
     short_description character varying(30),
@@ -12460,10 +11664,10 @@ CREATE TABLE taxes (
     tax_sequence smallint NOT NULL,
     misc_charge_code character(10),
     scrutiny_flag character(1) NOT NULL,
+    tax_serial integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    tax_serial integer NOT NULL
+    update_time timestamp WITH time zone
 );
 
 
@@ -12491,12 +11695,12 @@ ALTER SEQUENCE taxes_tax_serial_seq OWNED BY taxes.tax_serial;
 
 
 --
--- Name: tckt_layout; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ticket_layout; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE tckt_layout (
-    tckt_layout_code character(5) NOT NULL,
-    tckt_format character(1) NOT NULL,
+CREATE TABLE ticket_layout (
+    ticket_layout_code character(5) NOT NULL,
+    ticket_format character(1) NOT NULL,
     uom_code character(3) NOT NULL,
     xyorigin_coord character(12) NOT NULL,
     xyendorse_start character(12) NOT NULL,
@@ -12529,7 +11733,7 @@ CREATE TABLE tckt_layout (
     xytotal character(12) NOT NULL,
     xyfare_calc_strt character(12) NOT NULL,
     xyfare_calc_end character(12) NOT NULL,
-    xytckt_docmno character(12) NOT NULL,
+    xyticket_docmno character(12) NOT NULL,
     xyform_of_payment character(12) NOT NULL,
     xyorginal_issue character(12) NOT NULL,
     xyvalid_info_strt character(12) NOT NULL,
@@ -12537,11 +11741,11 @@ CREATE TABLE tckt_layout (
 );
 
 
-ALTER TABLE public.tckt_layout OWNER TO postgres;
+ALTER TABLE public.ticket_layout OWNER TO postgres;
 
 
 --
--- Name: temp_fare_route_agency; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: temp_fare_route_agency; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE temp_fare_route_agency (
@@ -12550,14 +11754,14 @@ CREATE TABLE temp_fare_route_agency (
     agency_code character varying(10) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.temp_fare_route_agency OWNER TO postgres;
 
 --
--- Name: template_xslt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: template_xslt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE template_xslt (
@@ -12569,9 +11773,9 @@ CREATE TABLE template_xslt (
     xsl_template character varying(31500) NOT NULL,
     template_sequence_no smallint DEFAULT 0 NOT NULL,
     create_user character(5) NOT NULL,
-    create_time timestamp with time zone DEFAULT now() NOT NULL,
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL,
     inactivated_user_code character(5),
-    inactivated_date_time timestamp with time zone,
+    inactivated_date_time timestamp WITH time zone,
     print_page_header character varying(255) DEFAULT '&w&bPage &p of &P'::character varying NOT NULL,
     print_page_footer character varying(255) DEFAULT ''::character varying NOT NULL,
     print_margin_top numeric(5,2) DEFAULT 0.75 NOT NULL,
@@ -12584,7 +11788,7 @@ CREATE TABLE template_xslt (
 ALTER TABLE public.template_xslt OWNER TO postgres;
 
 --
--- Name: template_xslt_components; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: template_xslt_components; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE template_xslt_components (
@@ -12594,9 +11798,9 @@ CREATE TABLE template_xslt_components (
     xsl_template character varying(31500) NOT NULL,
     template_sequence_no integer NOT NULL,
     inactivated_user_code character(5),
-    inactivated_date_time timestamp with time zone,
+    inactivated_date_time timestamp WITH time zone,
     create_user character(5) NOT NULL,
-    create_time timestamp with time zone DEFAULT now() NOT NULL
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL
 );
 
 
@@ -12624,27 +11828,27 @@ ALTER SEQUENCE template_xslt_components_template_sequence_no_seq OWNED BY templa
 
 
 --
--- Name: terminal; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: terminal; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE terminal (
     airport_code character(5) NOT NULL,
     terminal_no character(2) NOT NULL,
     terminal_name character varying(60),
-    dd_conn_mns smallint,
-    di_conn_mns smallint,
-    id_conn_mns smallint,
-    ii_conn_mns smallint,
+    dd_conn_mins smallint,
+    di_conn_mins smallint,
+    id_conn_mins smallint,
+    ii_conn_mins smallint,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.terminal OWNER TO postgres;
 
 --
--- Name: test_inventry_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: test_inventry_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE test_inventry_segm (
@@ -12657,13 +11861,13 @@ CREATE TABLE test_inventry_segm (
     leg_number smallint NOT NULL,
     segment_number character(22) NOT NULL,
     ob_profile_no character(5) NOT NULL,
-    group_seat_lvl smallint NOT NULL,
-    seat_protect_lvl smallint NOT NULL,
-    limit_sale_lvl smallint NOT NULL,
-    overbooking_lvl smallint NOT NULL,
-    posting_lvl smallint NOT NULL,
-    sale_notify_lvl smallint NOT NULL,
-    cancel_notify_lvl smallint NOT NULL,
+    group_seat_level smallint NOT NULL,
+    seat_protect_level smallint NOT NULL,
+    limit_sale_level smallint NOT NULL,
+    overbooking_level smallint NOT NULL,
+    posting_level smallint NOT NULL,
+    sale_notify_level smallint NOT NULL,
+    cancel_notify_level smallint NOT NULL,
     overbooking_percnt smallint NOT NULL,
     seat_capacity smallint NOT NULL,
     nett_sngl_sold smallint NOT NULL,
@@ -12684,22 +11888,22 @@ CREATE TABLE test_inventry_segm (
     segm_nrev_ticktd smallint NOT NULL,
     segment_closed_flag character(1) NOT NULL,
     wl_closed_flag character(1) NOT NULL,
-    wl_clr_inhibit_flag character(1) NOT NULL,
-    wl_rel_prty_flag character(1) NOT NULL,
+    wl_clear_inhibit_flag character(1) NOT NULL,
+    wl_release_party_flag character(1) NOT NULL,
     scrutiny_flag character(1) NOT NULL,
     display_priority smallint NOT NULL,
     schedule_period_no smallint NOT NULL,
-    invt_updt_flag character(1) NOT NULL,
+    invt_update_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.test_inventry_segm OWNER TO postgres;
 
 --
--- Name: test_perd_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: test_perd_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE test_perd_cls (
@@ -12708,14 +11912,14 @@ CREATE TABLE test_perd_cls (
     selling_class character(2) NOT NULL,
     parent_sell_cls character varying(240) NOT NULL,
     display_priority smallint NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.test_perd_cls OWNER TO postgres;
 
 --
--- Name: test_perd_legs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: test_perd_legs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE test_perd_legs (
@@ -12731,14 +11935,14 @@ CREATE TABLE test_perd_legs (
     departure_terminal character(2) NOT NULL,
     arrival_terminal character(2) NOT NULL,
     leg_number smallint NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.test_perd_legs OWNER TO postgres;
 
 --
--- Name: test_perd_prnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: test_perd_prnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE test_perd_prnt (
@@ -12746,14 +11950,14 @@ CREATE TABLE test_perd_prnt (
     schedule_period_no smallint NOT NULL,
     selling_class character(2) NOT NULL,
     parent_sell_cls character(2) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.test_perd_prnt OWNER TO postgres;
 
 --
--- Name: test_perd_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: test_perd_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE test_perd_segm (
@@ -12765,14 +11969,14 @@ CREATE TABLE test_perd_segm (
     flight_closed_flag character(1) NOT NULL,
     flight_brdng_flag character(1) NOT NULL,
     segment_number character(22) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.test_perd_segm OWNER TO postgres;
 
 --
--- Name: test_periods; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: test_periods; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE test_periods (
@@ -12794,14 +11998,14 @@ CREATE TABLE test_periods (
     chng_category character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.test_periods OWNER TO postgres;
 
 --
--- Name: test_replication; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: test_replication; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE test_replication (
@@ -12813,7 +12017,7 @@ CREATE TABLE test_replication (
 ALTER TABLE public.test_replication OWNER TO postgres;
 
 --
--- Name: text_test; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: text_test; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE text_test (
@@ -12846,13 +12050,13 @@ ALTER SEQUENCE text_test_serial_no_seq OWNED BY text_test.serial_no;
 
 
 --
--- Name: ticket_history_event; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ticket_history_event; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ticket_history_event (
     hist_serial_no integer NOT NULL,
     create_user character(5) NOT NULL,
-    create_time timestamp with time zone DEFAULT now() NOT NULL
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL
 );
 
 
@@ -12880,7 +12084,7 @@ ALTER SEQUENCE ticket_history_event_hist_serial_no_seq OWNED BY ticket_history_e
 
 
 --
--- Name: ticket_payment; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ticket_payment; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ticket_payment (
@@ -12889,14 +12093,14 @@ CREATE TABLE ticket_payment (
     et_serial_no integer DEFAULT 0 NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.ticket_payment OWNER TO postgres;
 
 --
--- Name: ticket_segment; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ticket_segment; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ticket_segment (
@@ -12908,20 +12112,20 @@ CREATE TABLE ticket_segment (
     message_type smallint DEFAULT 0 NOT NULL,
     segment_text character varying(128) NOT NULL,
     create_user character(5) NOT NULL,
-    create_time timestamp with time zone DEFAULT now() NOT NULL
+    create_time timestamp WITH time zone DEFAULT now() NOT NULL
 );
 
 
 ALTER TABLE public.ticket_segment OWNER TO postgres;
 
 --
--- Name: ticket_stock; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ticket_stock; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ticket_stock (
     printer_dest_id character(8) NOT NULL,
     printer_type character(5) NOT NULL,
-    tckt_layout_code character(5) NOT NULL,
+    ticket_layout_code character(5) NOT NULL,
     validtn_code integer NOT NULL,
     validtn_location character varying(40),
     start_number integer,
@@ -12931,14 +12135,14 @@ CREATE TABLE ticket_stock (
     end_number2 integer,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.ticket_stock OWNER TO postgres;
 
 --
--- Name: tmp_flt_check; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tmp_flt_check; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tmp_flt_check (
@@ -12954,7 +12158,7 @@ CREATE TABLE tmp_flt_check (
 ALTER TABLE public.tmp_flt_check OWNER TO postgres;
 
 --
--- Name: tmp_flt_perd_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tmp_flt_perd_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tmp_flt_perd_segm (
@@ -12968,7 +12172,7 @@ CREATE TABLE tmp_flt_perd_segm (
 ALTER TABLE public.tmp_flt_perd_segm OWNER TO postgres;
 
 --
--- Name: tmp_seg_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tmp_seg_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tmp_seg_status (
@@ -12979,7 +12183,7 @@ CREATE TABLE tmp_seg_status (
     status_type character(1) NOT NULL,
     segm_status_code character(2),
     leg_status_code character(2),
-    first_post_ind character(1),
+    first_post_flag character(1),
     tty_out_msg_id integer,
     recap_flag character(1),
     prev_avn_value smallint,
@@ -12988,14 +12192,14 @@ CREATE TABLE tmp_seg_status (
     processing_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tmp_seg_status OWNER TO postgres;
 
 --
--- Name: tmp_ser; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tmp_ser; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tmp_ser (
@@ -13028,7 +12232,7 @@ ALTER SEQUENCE tmp_ser_ser_no_seq OWNED BY tmp_ser.ser_no;
 
 
 --
--- Name: traff_restrict; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: traff_restrict; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE traff_restrict (
@@ -13037,14 +12241,14 @@ CREATE TABLE traff_restrict (
     avl_display_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.traff_restrict OWNER TO postgres;
 
 --
--- Name: travel_agency; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: travel_agency; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE travel_agency (
@@ -13082,9 +12286,6 @@ CREATE TABLE travel_agency (
     accrediting_entity character(4),
     accreditation_type character(4),
     office_status character(2),
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     nation_code character(2),
     time_limit smallint,
     mail_nation_code character(2),
@@ -13107,14 +12308,17 @@ CREATE TABLE travel_agency (
     agency_bank_branch character varying(30),
     agency_bank_account character varying(30),
     agency_passwd_expiry smallint,
-    agency_branch_code character(12)
+    agency_branch_code character(12),
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.travel_agency OWNER TO postgres;
 
 --
--- Name: travel_agency_internet_special; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: travel_agency_internet_special; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE travel_agency_internet_special (
@@ -13122,29 +12326,29 @@ CREATE TABLE travel_agency_internet_special (
     agency_name character(25) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.travel_agency_internet_special OWNER TO postgres;
 
 --
--- Name: travel_agency_limit_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: travel_agency_limit_type_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE travel_agency_limit_type_ref (
     travel_agency_limit_type_rcd character(5) NOT NULL,
     name character varying(100) NOT NULL,
     active_flag integer NOT NULL,
-    created_by_user_code character(5) NOT NULL,
-    create_time timestamp with time zone NOT NULL
+    create_user character(5) NOT NULL,
+    create_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.travel_agency_limit_type_ref OWNER TO postgres;
 
 --
--- Name: tst_perd_seg_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tst_perd_seg_cls; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tst_perd_seg_cls (
@@ -13152,31 +12356,31 @@ CREATE TABLE tst_perd_seg_cls (
     schedule_period_no smallint NOT NULL,
     city_pair integer NOT NULL,
     selling_class character(2) NOT NULL,
-    group_seat_lvl smallint NOT NULL,
-    seat_protect_lvl smallint NOT NULL,
-    limit_sale_lvl smallint NOT NULL,
-    overbooking_lvl smallint NOT NULL,
-    posting_lvl smallint NOT NULL,
-    sale_notify_lvl smallint NOT NULL,
-    cancel_notify_lvl smallint NOT NULL,
+    group_seat_level smallint NOT NULL,
+    seat_protect_level smallint NOT NULL,
+    limit_sale_level smallint NOT NULL,
+    overbooking_level smallint NOT NULL,
+    posting_level smallint NOT NULL,
+    sale_notify_level smallint NOT NULL,
+    cancel_notify_level smallint NOT NULL,
     seat_capacity smallint NOT NULL,
     ob_profile_no character(5) NOT NULL,
     segment_closed_flag character(1) NOT NULL,
     wl_closed_flag character(1) NOT NULL,
-    wl_clr_inhibit_flag character(1) NOT NULL,
-    wl_rel_prty_flag character(1) NOT NULL,
+    wl_clear_inhibit_flag character(1) NOT NULL,
+    wl_release_party_flag character(1) NOT NULL,
     meal_code character(7),
     beverage_code character(1),
     inflgt_serv_code character(17),
     segment_number character(22) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tst_perd_seg_cls OWNER TO postgres;
 
 --
--- Name: tst_perd_seg_rstr; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tst_perd_seg_rstr; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tst_perd_seg_rstr (
@@ -13193,14 +12397,14 @@ CREATE TABLE tst_perd_seg_rstr (
     gen_flag_rstr character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tst_perd_seg_rstr OWNER TO postgres;
 
 --
--- Name: tty_avsstat_agrmnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tty_avsstat_agrmnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tty_avsstat_agrmnt (
@@ -13213,21 +12417,21 @@ CREATE TABLE tty_avsstat_agrmnt (
     agrmnt_code character(2) NOT NULL,
     apply_flag character(1) NOT NULL,
     agrmnt_status_flag character(1) NOT NULL,
-    avn_trigger_lvl smallint NOT NULL,
+    avn_trigger_level smallint NOT NULL,
     report_address character(10) NOT NULL,
     message_code character(4),
     avn_limit_control character(1),
     priority_code character(2),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tty_avsstat_agrmnt OWNER TO postgres;
 
 --
--- Name: tty_depstat_agrmnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tty_depstat_agrmnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tty_depstat_agrmnt (
@@ -13241,20 +12445,20 @@ CREATE TABLE tty_depstat_agrmnt (
     agrmnt_code character(2) NOT NULL,
     agrmnt_status_flag character(1) NOT NULL,
     report_address character(10) NOT NULL,
-    avn_trigger_lvl smallint,
+    avn_trigger_level smallint,
     message_code character(4),
     avn_limit_control character(1),
     priority_code character(2),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tty_depstat_agrmnt OWNER TO postgres;
 
 --
--- Name: tty_flight_agrmnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tty_flight_agrmnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tty_flight_agrmnt (
@@ -13269,7 +12473,7 @@ CREATE TABLE tty_flight_agrmnt (
     agrmnt_code character(2) NOT NULL,
     apply_flag character(1) NOT NULL,
     agrmnt_status_flag character(1) NOT NULL,
-    seat_accept_lvl smallint NOT NULL,
+    seat_accept_level smallint NOT NULL,
     asr_flag character(1) NOT NULL,
     sell_deadline smallint,
     reporting_type character(1),
@@ -13292,14 +12496,14 @@ CREATE TABLE tty_flight_agrmnt (
     rlr_queue_cnt smallint,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tty_flight_agrmnt OWNER TO postgres;
 
 --
--- Name: tty_fltstat_agrmnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tty_fltstat_agrmnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tty_fltstat_agrmnt (
@@ -13313,20 +12517,20 @@ CREATE TABLE tty_fltstat_agrmnt (
     agrmnt_code character(2) NOT NULL,
     agrmnt_status_flag character(1) NOT NULL,
     report_address character(10) NOT NULL,
-    avn_trigger_lvl smallint,
+    avn_trigger_level smallint,
     message_code character(4),
     avn_limit_control character(1),
     priority_code character(2),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tty_fltstat_agrmnt OWNER TO postgres;
 
 --
--- Name: tty_in_addrs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tty_in_addrs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tty_in_addrs (
@@ -13335,14 +12539,14 @@ CREATE TABLE tty_in_addrs (
     processing_flag character(1) NOT NULL,
     updt_usr_code character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tty_in_addrs OWNER TO postgres;
 
 --
--- Name: tty_in_hash; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tty_in_hash; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tty_in_hash (
@@ -13355,13 +12559,12 @@ CREATE TABLE tty_in_hash (
 ALTER TABLE public.tty_in_hash OWNER TO postgres;
 
 --
--- Name: tty_in_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tty_in_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tty_in_mesgs (
     tty_in_msg_id integer NOT NULL,
     msg_sequence_no smallint NOT NULL,
-    create_time character(19) NOT NULL,
     message_code character(4) NOT NULL,
     priority_code character(2) NOT NULL,
     origin_address character(10) NOT NULL,
@@ -13370,19 +12573,20 @@ CREATE TABLE tty_in_mesgs (
     message_length smallint,
     company_code character(3) NOT NULL,
     processing_flag character(1) NOT NULL,
+    ignore_until timestamp WITH time zone,
+    create_time character(19) NOT NULL,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    ignore_until timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tty_in_mesgs OWNER TO postgres;
 
 --
--- Name: tty_map; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tty_map; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tty_map (
@@ -13397,14 +12601,14 @@ CREATE TABLE tty_map (
     dest_branch character(12),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tty_map OWNER TO postgres;
 
 --
--- Name: tty_out_addrs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tty_out_addrs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tty_out_addrs (
@@ -13415,14 +12619,14 @@ CREATE TABLE tty_out_addrs (
     transmit_date_time character(19),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tty_out_addrs OWNER TO postgres;
 
 --
--- Name: tty_out_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tty_out_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tty_out_mesgs (
@@ -13435,35 +12639,35 @@ CREATE TABLE tty_out_mesgs (
     message character varying(250),
     message_length smallint,
     processing_flag character(1) NOT NULL,
+    ignore_until timestamp WITH time zone,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
-    ignore_until timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tty_out_mesgs OWNER TO postgres;
 
 --
--- Name: tty_passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tty_passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tty_passenger (
     book_no integer NOT NULL,
-    passenger_no smallint NOT NULL,
+    pax_no smallint NOT NULL,
     fam_name_no smallint NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tty_passenger OWNER TO postgres;
 
 --
--- Name: tty_sales_agrmnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tty_sales_agrmnt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tty_sales_agrmnt (
@@ -13478,7 +12682,7 @@ CREATE TABLE tty_sales_agrmnt (
     agrmnt_code character(2) NOT NULL,
     apply_flag character(1) NOT NULL,
     agrmnt_status_flag character(1) NOT NULL,
-    seat_accept_lvl smallint NOT NULL,
+    seat_accept_level smallint NOT NULL,
     asr_flag character(1) NOT NULL,
     sell_deadline smallint,
     reporting_type character(1),
@@ -13501,14 +12705,14 @@ CREATE TABLE tty_sales_agrmnt (
     rlr_queue_cnt smallint,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.tty_sales_agrmnt OWNER TO postgres;
 
 --
--- Name: ttyi_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ttyi_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ttyi_serial_nos (
@@ -13543,7 +12747,7 @@ ALTER SEQUENCE ttyi_serial_nos_tty_in_msg_id_seq OWNED BY ttyi_serial_nos.tty_in
 
 
 --
--- Name: ttyo_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ttyo_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE ttyo_serial_nos (
@@ -13578,7 +12782,7 @@ ALTER SEQUENCE ttyo_serial_nos_tty_out_msg_id_seq OWNED BY ttyo_serial_nos.tty_o
 
 
 --
--- Name: unit_of_meas; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: unit_of_meas; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE unit_of_meas (
@@ -13588,14 +12792,14 @@ CREATE TABLE unit_of_meas (
     factor numeric(5,2) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.unit_of_meas OWNER TO postgres;
 
 --
--- Name: unusable_stock; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: unusable_stock; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE unusable_stock (
@@ -13611,22 +12815,22 @@ CREATE TABLE unusable_stock (
 ALTER TABLE public.unusable_stock OWNER TO postgres;
 
 --
--- Name: user_activity; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_activity; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE user_activity (
     user_activity_id bigint NOT NULL,
     user_activity_rcd character(10) NOT NULL,
     user_code character(5) NOT NULL,
-    create_time timestamp with time zone NOT NULL,
-    logout_date_time timestamp with time zone
+    logout_date_time timestamp WITH time zone,
+    create_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.user_activity OWNER TO postgres;
 
 --
--- Name: user_activity_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_activity_ref; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE user_activity_ref (
@@ -13640,26 +12844,26 @@ CREATE TABLE user_activity_ref (
 ALTER TABLE public.user_activity_ref OWNER TO postgres;
 
 --
--- Name: user_group_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_group_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE user_group_mapping (
     user_group_mapping_id bigint NOT NULL,
     user_code character(5) NOT NULL,
     security_group_id bigint NOT NULL,
-    created_by_user character(5) NOT NULL,
-    create_time date NOT NULL,
-    created_destination_id character(8) NOT NULL,
     inactivated_by_user character(5),
     inactivated_date_time date,
-    inactivated_destination_id character(8)
+    inactivated_destination_id character(8),
+    create_user character(5) NOT NULL,
+    create_group character(8) NOT NULL,
+    create_time date NOT NULL
 );
 
 
 ALTER TABLE public.user_group_mapping OWNER TO postgres;
 
 --
--- Name: user_gui_config; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_gui_config; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE user_gui_config (
@@ -13668,14 +12872,14 @@ CREATE TABLE user_gui_config (
     profile_string1 character varying(255),
     profile_string2 character varying(255),
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.user_gui_config OWNER TO postgres;
 
 --
--- Name: update_users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: update_users; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE user_names (
@@ -13700,18 +12904,18 @@ CREATE TABLE user_names (
     join_date date,
     expiry_date date,
     mail_id smallint,
+    account_expired_flag integer DEFAULT 0,
+    password_hash character varying(45),
     update_user character(5),
     update_group character(8),
-    update_time character(19),
-    account_expired_flag integer DEFAULT 0,
-    password_hash character varying(45)
+    update_time character(19)
 );
 
 
 ALTER TABLE public.user_names OWNER TO postgres;
 
 --
--- Name: user_security_function_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_security_function_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE user_security_function_mapping (
@@ -13719,35 +12923,35 @@ CREATE TABLE user_security_function_mapping (
     user_code character(5) NOT NULL,
     function_id bigint NOT NULL,
     qualifier character varying(240),
-    created_by_user character(5) NOT NULL,
-    create_time date NOT NULL,
-    created_destination_id character(8) NOT NULL,
     inactivated_by_user character(5),
     inactivated_date_time date,
-    inactivated_destination_id character(8)
+    inactivated_destination_id character(8),
+    create_user character(5) NOT NULL,
+    create_time date NOT NULL,
+    create_group character(8) NOT NULL
 );
 
 
 ALTER TABLE public.user_security_function_mapping OWNER TO postgres;
 
 --
--- Name: user_setting; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_setting; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE user_setting (
     user_setting_code character varying(20) NOT NULL,
     description character varying(250),
+    default_value character varying(250),
     update_user character(5),
     update_group character(8),
-    update_time timestamp with time zone,
-    default_value character varying(250)
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.user_setting OWNER TO postgres;
 
 --
--- Name: user_setting_user; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_setting_user; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE user_setting_user (
@@ -13756,7 +12960,7 @@ CREATE TABLE user_setting_user (
     user_setting_value character varying(250),
     update_user character(5),
     update_group character(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -13764,7 +12968,7 @@ ALTER TABLE public.user_setting_user OWNER TO postgres;
 
 
 --
--- Name: vips; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: vips; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE vips (
@@ -13772,13 +12976,13 @@ CREATE TABLE vips (
     fname character varying(64) NOT NULL,
     lname character varying(64) NOT NULL,
     title character varying(8) NOT NULL,
-    bdate timestamp with time zone NOT NULL,
+    bdate timestamp WITH time zone NOT NULL,
     comment character varying(64),
     last_book_no integer DEFAULT 0,
     create_user character(5) NOT NULL,
-    create_time timestamp with time zone DEFAULT now(),
+    create_time timestamp WITH time zone DEFAULT now(),
     update_user character(5) NOT NULL,
-    update_time timestamp with time zone DEFAULT now()
+    update_time timestamp WITH time zone DEFAULT now()
 );
 
 
@@ -13806,7 +13010,7 @@ ALTER SEQUENCE vips_id_seq OWNED BY vips.id;
 
 
 --
--- Name: voucher; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: voucher; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE voucher (
@@ -13839,12 +13043,6 @@ CREATE TABLE voucher (
     cc_number character(16),
     cc_expiry character(5),
     voucher_notes character varying(255),
-    create_user character(5) NOT NULL,
-    create_group character(8) NOT NULL,
-    create_time character(19) NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     commision_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     percent_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     voucher_number character varying(12),
@@ -13857,14 +13055,20 @@ CREATE TABLE voucher (
     agency_code character(8),
     origin_voucher character varying(12),
     client_prfl_no character(15),
-    business_pass_id integer
+    business_pax_id integer,
+    create_user character(5) NOT NULL,
+    create_group character(8) NOT NULL,
+    create_time character(19) NOT NULL,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.voucher OWNER TO postgres;
 
 --
--- Name: voucher_payment; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: voucher_payment; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE voucher_payment (
@@ -13872,14 +13076,14 @@ CREATE TABLE voucher_payment (
     payment_no integer NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.voucher_payment OWNER TO postgres;
 
 --
--- Name: voucher_reason; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: voucher_reason; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE voucher_reason (
@@ -13887,9 +13091,6 @@ CREATE TABLE voucher_reason (
     reason_descr character varying(50),
     require_book_no character(1) DEFAULT 'N'::bpchar NOT NULL,
     refundable character(1) DEFAULT 'N'::bpchar NOT NULL,
-    update_user character(5) NOT NULL,
-    update_group character(8) NOT NULL,
-    update_time timestamp with time zone,
     require_payment character(1) DEFAULT 'N'::bpchar,
     discard_residual character(1) DEFAULT 'N'::bpchar,
     use_for_modify character(1) DEFAULT 'N'::bpchar,
@@ -13910,15 +13111,18 @@ CREATE TABLE voucher_reason (
     for_tax_amount character(1) DEFAULT 'Y'::bpchar,
     for_fee_amount character(1) DEFAULT 'Y'::bpchar,
     for_surcharge_amount character(1) DEFAULT 'Y'::bpchar,
-    per_passenger_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
-    per_segment_flag character(1) DEFAULT 'N'::bpchar NOT NULL
+    per_pax_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
+    per_segment_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
+    update_user character(5) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.voucher_reason OWNER TO postgres;
 
 --
--- Name: voucher_reason_class; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: voucher_reason_class; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE voucher_reason_class (
@@ -13927,14 +13131,14 @@ CREATE TABLE voucher_reason_class (
     class_code character(3) NOT NULL,
     create_user character(5) NOT NULL,
     create_group character(8) NOT NULL,
-    create_time timestamp with time zone NOT NULL
+    create_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.voucher_reason_class OWNER TO postgres;
 
 --
--- Name: voucher_reason_fop; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: voucher_reason_fop; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE voucher_reason_fop (
@@ -13950,7 +13154,7 @@ CREATE TABLE voucher_reason_fop (
 ALTER TABLE public.voucher_reason_fop OWNER TO postgres;
 
 --
--- Name: voucher_serial; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: voucher_serial; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE voucher_serial (
@@ -13985,7 +13189,7 @@ ALTER SEQUENCE voucher_serial_voucher_id_seq OWNED BY voucher_serial.voucher_id;
 
 
 --
--- Name: wait_list_release; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: wait_list_release; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE wait_list_release (
@@ -14001,14 +13205,14 @@ CREATE TABLE wait_list_release (
     processing_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.wait_list_release OWNER TO postgres;
 
 --
--- Name: wait_list_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: wait_list_status; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE wait_list_status (
@@ -14017,18 +13221,18 @@ CREATE TABLE wait_list_status (
     flight_number character(7) NOT NULL,
     flight_date date NOT NULL,
     action_type character(2) NOT NULL,
-    queue_prty character(1) NOT NULL,
-    duty_code_lvl character(5) NOT NULL,
+    queue_party character(1) NOT NULL,
+    duty_code_level character(5) NOT NULL,
     auto_process_flag character(1) NOT NULL,
     wait_list_status character(1) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.wait_list_status OWNER TO postgres;
 
 --
--- Name: wait_lst_seg_rel; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: wait_lst_seg_rel; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE wait_lst_seg_rel (
@@ -14041,14 +13245,14 @@ CREATE TABLE wait_lst_seg_rel (
     create_time character(19) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
 ALTER TABLE public.wait_lst_seg_rel OWNER TO postgres;
 
 --
--- Name: wait_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: wait_serial_nos; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE wait_serial_nos (
@@ -14083,24 +13287,24 @@ ALTER SEQUENCE wait_serial_nos_wait_list_id_seq OWNED BY wait_serial_nos.wait_li
 
 
 --
--- Name: waiver_reason; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: waiver_reason; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE waiver_reason (
     reason_code character(3) NOT NULL,
     reason_descr character varying(50),
     inactive_user_code character(5),
-    inactive_date_time timestamp with time zone,
+    inactive_date_time timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone NOT NULL
+    update_time timestamp WITH time zone NOT NULL
 );
 
 
 ALTER TABLE public.waiver_reason OWNER TO postgres;
 
 --
--- Name: watch_list; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: watch_list; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE watch_list (
@@ -14111,10 +13315,10 @@ CREATE TABLE watch_list (
     first_name character varying(50) NOT NULL,
     last_name character varying(50) NOT NULL,
     middle_name character varying(50),
-    email_sent timestamp with time zone,
+    email_sent timestamp WITH time zone,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
-    update_time timestamp with time zone
+    update_time timestamp WITH time zone
 );
 
 
@@ -14282,10 +13486,10 @@ ALTER TABLE ONLY bulk_sms_zb ALTER COLUMN bulk_no SET DEFAULT nextval('bulk_sms_
 
 
 --
--- Name: business_pass_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: business_pax_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY business_pass ALTER COLUMN business_pass_id SET DEFAULT nextval('business_pass_business_pass_id_seq'::regclass);
+ALTER TABLE ONLY business_pax ALTER COLUMN business_pax_id SET DEFAULT nextval('business_pax_business_pax_id_seq'::regclass);
 
 
 --
@@ -14547,31 +13751,10 @@ ALTER TABLE ONLY k2_transaction ALTER COLUMN k2_transaction_id SET DEFAULT nextv
 
 
 --
--- Name: entry_no; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY load_no_fly_list ALTER COLUMN entry_no SET DEFAULT nextval('load_no_fly_list_entry_no_seq'::regclass);
-
-
---
--- Name: entry_no; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY load_selectee_list ALTER COLUMN entry_no SET DEFAULT nextval('load_selectee_list_entry_no_seq'::regclass);
-
-
---
 -- Name: log_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY log_serial_nos ALTER COLUMN log_id SET DEFAULT nextval('log_serial_nos_log_id_seq'::regclass);
-
-
---
--- Name: entry_no; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY no_fly_list ALTER COLUMN entry_no SET DEFAULT nextval('no_fly_list_entry_no_seq'::regclass);
 
 
 --
@@ -14698,13 +13881,6 @@ ALTER TABLE ONLY seat_reconfig_history ALTER COLUMN seat_reconfig_history_id SET
 --
 
 ALTER TABLE ONLY seat_reservation_setting ALTER COLUMN seat_reservation_setting_id SET DEFAULT nextval('seat_reservation_setting_seat_reservation_setting_id_seq'::regclass);
-
-
---
--- Name: entry_no; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY selectee_list ALTER COLUMN entry_no SET DEFAULT nextval('selectee_list_entry_no_seq'::regclass);
 
 
 --
@@ -14876,7 +14052,7 @@ ALTER TABLE ONLY watch_list ALTER COLUMN entry_no SET DEFAULT nextval('watch_lis
 
 
 --
--- Name: agency_book_agency_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: agency_book_agency_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY agency_book_agency
@@ -14884,7 +14060,7 @@ ALTER TABLE ONLY agency_book_agency
 
 
 --
--- Name: agency_comm_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: agency_comm_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY agency_comm
@@ -14892,7 +14068,7 @@ ALTER TABLE ONLY agency_comm
 
 
 --
--- Name: agency_hierarchy_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: agency_hierarchy_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY agency_hierarchy
@@ -14900,7 +14076,7 @@ ALTER TABLE ONLY agency_hierarchy
 
 
 --
--- Name: agency_office_status_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: agency_office_status_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY agency_office_status_ref
@@ -14908,7 +14084,7 @@ ALTER TABLE ONLY agency_office_status_ref
 
 
 --
--- Name: agency_user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: agency_user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY agency_user
@@ -14916,7 +14092,7 @@ ALTER TABLE ONLY agency_user
 
 
 --
--- Name: aig_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: aig_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY aig_transaction
@@ -14924,7 +14100,7 @@ ALTER TABLE ONLY aig_transaction
 
 
 --
--- Name: airport_device_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: airport_device_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY airport_device
@@ -14932,7 +14108,7 @@ ALTER TABLE ONLY airport_device
 
 
 --
--- Name: airport_device_queue_entry_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: airport_device_queue_entry_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY airport_device_queue_entry_type_ref
@@ -14940,7 +14116,7 @@ ALTER TABLE ONLY airport_device_queue_entry_type_ref
 
 
 --
--- Name: airport_device_queue_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: airport_device_queue_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY airport_device_queue
@@ -14948,7 +14124,7 @@ ALTER TABLE ONLY airport_device_queue
 
 
 --
--- Name: airport_device_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: airport_device_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY airport_device_type_ref
@@ -14956,7 +14132,7 @@ ALTER TABLE ONLY airport_device_type_ref
 
 
 --
--- Name: airport_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: airport_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY airport_workstation
@@ -14964,7 +14140,7 @@ ALTER TABLE ONLY airport_workstation
 
 
 --
--- Name: airport_workstation_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: airport_workstation_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY airport_workstation_type_ref
@@ -14972,7 +14148,7 @@ ALTER TABLE ONLY airport_workstation_type_ref
 
 
 --
--- Name: allotment_detail_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: allotment_detail_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY allotment_detail
@@ -14980,7 +14156,7 @@ ALTER TABLE ONLY allotment_detail
 
 
 --
--- Name: allotment_header_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: allotment_header_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY allotment_header
@@ -14988,7 +14164,7 @@ ALTER TABLE ONLY allotment_header
 
 
 --
--- Name: asr_reconcile_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: asr_reconcile_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY asr_reconcile_history
@@ -14996,7 +14172,7 @@ ALTER TABLE ONLY asr_reconcile_history
 
 
 --
--- Name: attribute_rule_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: attribute_rule_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY attribute_rule
@@ -15004,7 +14180,7 @@ ALTER TABLE ONLY attribute_rule
 
 
 --
--- Name: avs_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: avs_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY avs_history
@@ -15012,7 +14188,7 @@ ALTER TABLE ONLY avs_history
 
 
 --
--- Name: bbl_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: bbl_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY bbl_transaction
@@ -15020,7 +14196,7 @@ ALTER TABLE ONLY bbl_transaction
 
 
 --
--- Name: blocked_seat_update_queue_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: blocked_seat_update_queue_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY blocked_seat_update_queue
@@ -15028,7 +14204,7 @@ ALTER TABLE ONLY blocked_seat_update_queue
 
 
 --
--- Name: boarding_control_number_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: boarding_control_number_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY boarding_control_number
@@ -15036,7 +14212,7 @@ ALTER TABLE ONLY boarding_control_number
 
 
 --
--- Name: book_additional_data_field_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_additional_data_field_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY book_additional_data_field
@@ -15044,7 +14220,7 @@ ALTER TABLE ONLY book_additional_data_field
 
 
 --
--- Name: book_additional_data_field_value_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_additional_data_field_value_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY book_additional_data_field_value
@@ -15052,7 +14228,7 @@ ALTER TABLE ONLY book_additional_data_field_value
 
 
 --
--- Name: book_additional_data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_additional_data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY book_additional_data
@@ -15060,15 +14236,15 @@ ALTER TABLE ONLY book_additional_data
 
 
 --
--- Name: book_commission_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_commission_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY book_commission
-    ADD CONSTRAINT book_commission_pkey PRIMARY KEY (book_no, fare_no, pass_code);
+    ADD CONSTRAINT book_commission_pkey PRIMARY KEY (book_no, fare_no, pax_code);
 
 
 --
--- Name: book_crs_index_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_crs_index_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY book_cross_index
@@ -15076,23 +14252,23 @@ ALTER TABLE ONLY book_cross_index
 
 
 --
--- Name: book_fares_pass_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_fares_pass_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY book_fares_pass
-    ADD CONSTRAINT book_fares_pass_pkey PRIMARY KEY (book_no, pass_code);
+    ADD CONSTRAINT book_fares_pass_pkey PRIMARY KEY (book_no, pax_code);
 
 
 --
--- Name: book_fares_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_fares_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY book_fares
-    ADD CONSTRAINT book_fares_pkey PRIMARY KEY (book_no, fare_no, pass_code);
+    ADD CONSTRAINT book_fares_pkey PRIMARY KEY (book_no, fare_no, pax_code);
 
 
 --
--- Name: book_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY book
@@ -15100,7 +14276,7 @@ ALTER TABLE ONLY book
 
 
 --
--- Name: book_reinstate_log_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_reinstate_log_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY book_reinstate_log
@@ -15108,7 +14284,7 @@ ALTER TABLE ONLY book_reinstate_log
 
 
 --
--- Name: book_requests_old_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_requests_old_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY book_requests_old
@@ -15116,7 +14292,7 @@ ALTER TABLE ONLY book_requests_old
 
 
 --
--- Name: book_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY book_requests
@@ -15124,15 +14300,15 @@ ALTER TABLE ONLY book_requests
 
 
 --
--- Name: book_ticket_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: book_ticket_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY book_ticket
-    ADD CONSTRAINT book_ticket_pkey PRIMARY KEY (book_no, tckt_sequence_no);
+    ADD CONSTRAINT book_ticket_pkey PRIMARY KEY (book_no, ticket_sequence_no);
 
 
 --
--- Name: bsp_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: bsp_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY bsp_transaction
@@ -15140,31 +14316,31 @@ ALTER TABLE ONLY bsp_transaction
 
 
 --
--- Name: business_pass_class_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: business_pax_class_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
-ALTER TABLE ONLY business_pass_class
-    ADD CONSTRAINT business_pass_class_pkey PRIMARY KEY (business_pass_id, selling_class);
-
-
---
--- Name: business_pass_fare_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY business_pass_fare
-    ADD CONSTRAINT business_pass_fare_pkey PRIMARY KEY (business_pass_id, fare_code);
+ALTER TABLE ONLY business_pax_class
+    ADD CONSTRAINT business_pax_class_pkey PRIMARY KEY (business_pax_id, selling_class);
 
 
 --
--- Name: business_pass_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: business_pax_fare_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
-ALTER TABLE ONLY business_pass
-    ADD CONSTRAINT business_pass_pkey PRIMARY KEY (business_pass_id);
+ALTER TABLE ONLY business_pax_fare
+    ADD CONSTRAINT business_pax_fare_pkey PRIMARY KEY (business_pax_id, fare_code);
 
 
 --
--- Name: cash_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: business_pax_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
+--
+
+ALTER TABLE ONLY business_pax
+    ADD CONSTRAINT business_pax_pkey PRIMARY KEY (business_pax_id);
+
+
+--
+-- Name: cash_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY cash_transaction
@@ -15172,7 +14348,7 @@ ALTER TABLE ONLY cash_transaction
 
 
 --
--- Name: change_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: change_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY change_type_ref
@@ -15180,7 +14356,7 @@ ALTER TABLE ONLY change_type_ref
 
 
 --
--- Name: char_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: char_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY char_mapping
@@ -15188,191 +14364,7 @@ ALTER TABLE ONLY char_mapping
 
 
 --
--- Name: ci_apsmachines_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_apsmachines
-    ADD CONSTRAINT ci_apsmachines_pkey PRIMARY KEY (ci_apsname, ci_machinename);
-
-
---
--- Name: ci_clsmachines_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_clsmachines
-    ADD CONSTRAINT ci_clsmachines_pkey PRIMARY KEY (ci_apsname, ci_machinename);
-
-
---
--- Name: ci_events_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_events
-    ADD CONSTRAINT ci_events_pkey PRIMARY KEY (ci_eventname);
-
-
---
--- Name: ci_foldercontents_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_foldercontents
-    ADD CONSTRAINT ci_foldercontents_pkey PRIMARY KEY (ci_apsname, ci_folder, ci_report);
-
-
---
--- Name: ci_folders_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_folders
-    ADD CONSTRAINT ci_folders_pkey PRIMARY KEY (ci_apsname, ci_folderid);
-
-
---
--- Name: ci_govinfo_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_govinfo
-    ADD CONSTRAINT ci_govinfo_pkey PRIMARY KEY (ci_gov_id);
-
-
---
--- Name: ci_grpinfo_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_grpinfo
-    ADD CONSTRAINT ci_grpinfo_pkey PRIMARY KEY (ci_apsname, ci_group_id);
-
-
---
--- Name: ci_grpusers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_grpusers
-    ADD CONSTRAINT ci_grpusers_pkey PRIMARY KEY (ci_apsname, ci_group_id, ci_user_id);
-
-
---
--- Name: ci_machavail_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_machavail
-    ADD CONSTRAINT ci_machavail_pkey PRIMARY KEY (ci_apsname, ci_machinename, ci_group_id);
-
-
---
--- Name: ci_machineclass_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_machineclass
-    ADD CONSTRAINT ci_machineclass_pkey PRIMARY KEY (ci_classname);
-
-
---
--- Name: ci_machinv_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_machinv
-    ADD CONSTRAINT ci_machinv_pkey PRIMARY KEY (ci_machinename);
-
-
---
--- Name: ci_programs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_programs
-    ADD CONSTRAINT ci_programs_pkey PRIMARY KEY (ci_apsname, ci_programid);
-
-
---
--- Name: ci_reports_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_reports
-    ADD CONSTRAINT ci_reports_pkey PRIMARY KEY (ci_apsname, ci_id);
-
-
---
--- Name: ci_restrictions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_restrictions
-    ADD CONSTRAINT ci_restrictions_pkey PRIMARY KEY (ci_apsname, ci_principal, ci_restriction);
-
-
---
--- Name: ci_rightroles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_rightroles
-    ADD CONSTRAINT ci_rightroles_pkey PRIMARY KEY (ci_rolename, ci_rightid, ci_rolekind);
-
-
---
--- Name: ci_runtimeimage_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_runtimeimage
-    ADD CONSTRAINT ci_runtimeimage_pkey PRIMARY KEY (ci_apsname, ci_prcid);
-
-
---
--- Name: ci_schedules_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_schedules
-    ADD CONSTRAINT ci_schedules_pkey PRIMARY KEY (ci_apsname, ci_schedname);
-
-
---
--- Name: ci_secrights_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_secrights
-    ADD CONSTRAINT ci_secrights_pkey PRIMARY KEY (ci_apsname, ci_principal, ci_secright);
-
-
---
--- Name: ci_specialdates_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_specialdates
-    ADD CONSTRAINT ci_specialdates_pkey PRIMARY KEY (ci_apsname, ci_schedulename, ci_prcid, ci_startdate, ci_enddate);
-
-
---
--- Name: ci_specialdays_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_specialdays
-    ADD CONSTRAINT ci_specialdays_pkey PRIMARY KEY (ci_apsname, ci_schedulename, ci_prcid, ci_nthweek, ci_dayofweek, ci_month, ci_year);
-
-
---
--- Name: ci_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_templates
-    ADD CONSTRAINT ci_templates_pkey PRIMARY KEY (ci_templatename);
-
-
---
--- Name: ci_timeinfo_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_timeinfo
-    ADD CONSTRAINT ci_timeinfo_pkey PRIMARY KEY (ci_time_id);
-
-
---
--- Name: ci_users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY ci_users
-    ADD CONSTRAINT ci_users_pkey PRIMARY KEY (ci_apsname, ci_usersecid);
-
-
---
--- Name: client_contact_details_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_contact_details_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY client_contact_details
@@ -15380,15 +14372,15 @@ ALTER TABLE ONLY client_contact_details
 
 
 --
--- Name: client_pass_code_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_pax_code_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
-ALTER TABLE ONLY client_pass_code
-    ADD CONSTRAINT client_pass_code_pkey PRIMARY KEY (client_prfl_no, pass_code);
+ALTER TABLE ONLY client_pax_code
+    ADD CONSTRAINT client_pax_code_pkey PRIMARY KEY (client_prfl_no, pax_code);
 
 
 --
--- Name: client_preferences_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_preferences_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY client_preferences
@@ -15396,15 +14388,15 @@ ALTER TABLE ONLY client_preferences
 
 
 --
--- Name: client_request_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: client_request_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY client_request
-    ADD CONSTRAINT client_request_pkey PRIMARY KEY (client_prfl_no, pass_code, rqst_code);
+    ADD CONSTRAINT client_request_pkey PRIMARY KEY (client_prfl_no, pax_code, rqst_code);
 
 
 --
--- Name: comm_exception_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: comm_exception_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY comm_exception
@@ -15412,7 +14404,7 @@ ALTER TABLE ONLY comm_exception
 
 
 --
--- Name: command_text_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: command_text_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY command_text
@@ -15420,7 +14412,7 @@ ALTER TABLE ONLY command_text
 
 
 --
--- Name: commission_basic_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: commission_basic_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY commission_basic
@@ -15428,7 +14420,7 @@ ALTER TABLE ONLY commission_basic
 
 
 --
--- Name: commission_volum_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: commission_volum_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY commission_volum
@@ -15436,7 +14428,7 @@ ALTER TABLE ONLY commission_volum
 
 
 --
--- Name: counter_sales_in_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: counter_sales_in_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY counter_sales_in_mesgs
@@ -15444,7 +14436,7 @@ ALTER TABLE ONLY counter_sales_in_mesgs
 
 
 --
--- Name: counter_sales_mesg_types_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: counter_sales_mesg_types_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY counter_sales_mesg_types
@@ -15452,7 +14444,7 @@ ALTER TABLE ONLY counter_sales_mesg_types
 
 
 --
--- Name: counter_sales_out_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: counter_sales_out_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY counter_sales_out_mesgs
@@ -15460,7 +14452,7 @@ ALTER TABLE ONLY counter_sales_out_mesgs
 
 
 --
--- Name: credit_card_fraud_number_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: credit_card_fraud_number_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY credit_card_fraud_number_ref
@@ -15468,7 +14460,7 @@ ALTER TABLE ONLY credit_card_fraud_number_ref
 
 
 --
--- Name: credit_card_fraud_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: credit_card_fraud_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY credit_card_fraud
@@ -15476,7 +14468,7 @@ ALTER TABLE ONLY credit_card_fraud
 
 
 --
--- Name: credit_card_message_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: credit_card_message_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY credit_card_message
@@ -15484,7 +14476,7 @@ ALTER TABLE ONLY credit_card_message
 
 
 --
--- Name: credit_requests_transaction_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: credit_requests_transaction_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY credit_requests
@@ -15492,7 +14484,7 @@ ALTER TABLE ONLY credit_requests
 
 
 --
--- Name: credit_settlement_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: credit_settlement_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY credit_settlement
@@ -15500,7 +14492,7 @@ ALTER TABLE ONLY credit_settlement
 
 
 --
--- Name: crystal_reports_hierarchy_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: crystal_reports_hierarchy_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY crystal_reports_hierarchy
@@ -15508,7 +14500,7 @@ ALTER TABLE ONLY crystal_reports_hierarchy
 
 
 --
--- Name: db_purge_temp_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: db_purge_temp_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY db_purge_temp
@@ -15516,7 +14508,7 @@ ALTER TABLE ONLY db_purge_temp
 
 
 --
--- Name: db_purge_track_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: db_purge_track_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY db_purge_track
@@ -15524,7 +14516,7 @@ ALTER TABLE ONLY db_purge_track
 
 
 --
--- Name: denied_cc_adjustments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: denied_cc_adjustments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY denied_cc_adjustments
@@ -15532,7 +14524,7 @@ ALTER TABLE ONLY denied_cc_adjustments
 
 
 --
--- Name: department_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: department_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY department
@@ -15540,7 +14532,7 @@ ALTER TABLE ONLY department
 
 
 --
--- Name: device_status_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: device_status_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY device_status_ref
@@ -15548,7 +14540,7 @@ ALTER TABLE ONLY device_status_ref
 
 
 --
--- Name: employee_buddy_pass_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: employee_buddy_pass_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY employee_buddy_pass
@@ -15556,7 +14548,7 @@ ALTER TABLE ONLY employee_buddy_pass
 
 
 --
--- Name: employee_family_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: employee_family_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY employee_family
@@ -15564,7 +14556,7 @@ ALTER TABLE ONLY employee_family
 
 
 --
--- Name: employee_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: employee_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY employee
@@ -15572,7 +14564,7 @@ ALTER TABLE ONLY employee
 
 
 --
--- Name: employee_travel_benefit_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: employee_travel_benefit_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY employee_travel_benefit
@@ -15580,7 +14572,7 @@ ALTER TABLE ONLY employee_travel_benefit
 
 
 --
--- Name: end_transaction_book_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: end_transaction_book_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY end_transaction_book
@@ -15588,7 +14580,7 @@ ALTER TABLE ONLY end_transaction_book
 
 
 --
--- Name: equipment_change_processing_serial_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: equipment_change_processing_serial_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY equipment_change_processing_serial
@@ -15596,7 +14588,7 @@ ALTER TABLE ONLY equipment_change_processing_serial
 
 
 --
--- Name: equipment_change_seat_reallocation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: equipment_change_seat_reallocation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY equipment_change_seat_reallocation
@@ -15604,7 +14596,7 @@ ALTER TABLE ONLY equipment_change_seat_reallocation
 
 
 --
--- Name: et_payments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: et_payments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY et_payments
@@ -15612,7 +14604,7 @@ ALTER TABLE ONLY et_payments
 
 
 --
--- Name: eticket_in_mesgs_old_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: eticket_in_mesgs_old_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY eticket_in_mesgs_old
@@ -15620,7 +14612,7 @@ ALTER TABLE ONLY eticket_in_mesgs_old
 
 
 --
--- Name: eticket_in_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: eticket_in_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY eticket_in_mesgs
@@ -15628,7 +14620,7 @@ ALTER TABLE ONLY eticket_in_mesgs
 
 
 --
--- Name: eticket_out_mesgs_old_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: eticket_out_mesgs_old_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY eticket_out_mesgs_old
@@ -15636,7 +14628,7 @@ ALTER TABLE ONLY eticket_out_mesgs_old
 
 
 --
--- Name: eticket_out_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: eticket_out_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY eticket_out_mesgs
@@ -15644,7 +14636,7 @@ ALTER TABLE ONLY eticket_out_mesgs
 
 
 --
--- Name: eticket_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: eticket_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY eticket_transaction
@@ -15652,7 +14644,7 @@ ALTER TABLE ONLY eticket_transaction
 
 
 --
--- Name: euroline_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: euroline_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY euroline_transaction
@@ -15660,7 +14652,7 @@ ALTER TABLE ONLY euroline_transaction
 
 
 --
--- Name: fare_agency_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_agency_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare_agency
@@ -15668,7 +14660,7 @@ ALTER TABLE ONLY fare_agency
 
 
 --
--- Name: fare_batch_operation_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_batch_operation_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare_batch_operation_history
@@ -15676,7 +14668,7 @@ ALTER TABLE ONLY fare_batch_operation_history
 
 
 --
--- Name: fare_batch_operation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_batch_operation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare_batch_operation
@@ -15684,7 +14676,7 @@ ALTER TABLE ONLY fare_batch_operation
 
 
 --
--- Name: fare_blackout_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_blackout_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare_blackout
@@ -15692,7 +14684,7 @@ ALTER TABLE ONLY fare_blackout
 
 
 --
--- Name: fare_branch_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_branch_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare_branch
@@ -15700,7 +14692,7 @@ ALTER TABLE ONLY fare_branch
 
 
 --
--- Name: fare_combinations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_combinations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare_combinations
@@ -15708,15 +14700,15 @@ ALTER TABLE ONLY fare_combinations
 
 
 --
--- Name: fare_companion_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_companion_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare_companion
-    ADD CONSTRAINT fare_companion_pkey PRIMARY KEY (fare_id, passenger_desc);
+    ADD CONSTRAINT fare_companion_pkey PRIMARY KEY (fare_id, pax_desc);
 
 
 --
--- Name: fare_date_period_dates_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_date_period_dates_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare_date_period_dates
@@ -15724,7 +14716,7 @@ ALTER TABLE ONLY fare_date_period_dates
 
 
 --
--- Name: fare_date_period_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_date_period_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare_date_period
@@ -15732,7 +14724,7 @@ ALTER TABLE ONLY fare_date_period
 
 
 --
--- Name: fare_day_time_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_day_time_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare_day_time
@@ -15740,7 +14732,7 @@ ALTER TABLE ONLY fare_day_time
 
 
 --
--- Name: fare_endorsements_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_endorsements_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare_endorsements
@@ -15748,7 +14740,7 @@ ALTER TABLE ONLY fare_endorsements
 
 
 --
--- Name: fare_export_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_export_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare_export
@@ -15756,7 +14748,7 @@ ALTER TABLE ONLY fare_export
 
 
 --
--- Name: fare_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare
@@ -15764,7 +14756,7 @@ ALTER TABLE ONLY fare
 
 
 --
--- Name: fare_route_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fare_route_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fare_route
@@ -15772,7 +14764,7 @@ ALTER TABLE ONLY fare_route
 
 
 --
--- Name: fee_branch_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fee_branch_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fee_branch
@@ -15780,7 +14772,7 @@ ALTER TABLE ONLY fee_branch
 
 
 --
--- Name: fee_class_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fee_class_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fee_class
@@ -15788,7 +14780,7 @@ ALTER TABLE ONLY fee_class
 
 
 --
--- Name: fee_fare_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fee_fare_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fee_fare
@@ -15796,15 +14788,15 @@ ALTER TABLE ONLY fee_fare
 
 
 --
--- Name: fee_passenger_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fee_pax_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fee_passenger
-    ADD CONSTRAINT fee_passenger_pkey PRIMARY KEY (fee_id, passenger_code);
+    ADD CONSTRAINT fee_pax_pkey PRIMARY KEY (fee_id, pax_code);
 
 
 --
--- Name: fee_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fee_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fee
@@ -15812,7 +14804,7 @@ ALTER TABLE ONLY fee
 
 
 --
--- Name: fee_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: fee_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY fee_type_ref
@@ -15820,7 +14812,7 @@ ALTER TABLE ONLY fee_type_ref
 
 
 --
--- Name: field_control_type_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: field_control_type_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY field_control_type
@@ -15828,7 +14820,7 @@ ALTER TABLE ONLY field_control_type
 
 
 --
--- Name: financial_transaction_book_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: financial_transaction_book_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY financial_transaction_book
@@ -15836,7 +14828,7 @@ ALTER TABLE ONLY financial_transaction_book
 
 
 --
--- Name: flight_configuration_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_configuration_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY flight_configuration
@@ -15844,7 +14836,7 @@ ALTER TABLE ONLY flight_configuration
 
 
 --
--- Name: flight_date_leg_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_date_leg_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY flight_date_leg
@@ -15852,7 +14844,7 @@ ALTER TABLE ONLY flight_date_leg
 
 
 --
--- Name: flight_hierarchy_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_hierarchy_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY flight_hierarchy
@@ -15860,7 +14852,7 @@ ALTER TABLE ONLY flight_hierarchy
 
 
 --
--- Name: flight_information_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_information_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY flight_information
@@ -15868,7 +14860,7 @@ ALTER TABLE ONLY flight_information
 
 
 --
--- Name: flight_locked_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_locked_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY flight_locked
@@ -15876,7 +14868,7 @@ ALTER TABLE ONLY flight_locked
 
 
 --
--- Name: flight_seat_map_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_seat_map_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY flight_seat_map
@@ -15884,7 +14876,7 @@ ALTER TABLE ONLY flight_seat_map
 
 
 --
--- Name: flight_seat_reservation_group_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_seat_reservation_group_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY flight_seat_reservation_group
@@ -15892,7 +14884,7 @@ ALTER TABLE ONLY flight_seat_reservation_group
 
 
 --
--- Name: flight_seat_reservation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_seat_reservation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY flight_seat_reservation
@@ -15900,7 +14892,7 @@ ALTER TABLE ONLY flight_seat_reservation
 
 
 --
--- Name: flight_segment_overlap_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_segment_overlap_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY flight_segment_overlap
@@ -15908,7 +14900,7 @@ ALTER TABLE ONLY flight_segment_overlap
 
 
 --
--- Name: flight_shared_leg_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_shared_leg_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY flight_shared_leg
@@ -15916,7 +14908,7 @@ ALTER TABLE ONLY flight_shared_leg
 
 
 --
--- Name: floating_definition_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: floating_definition_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY floating_definition
@@ -15924,7 +14916,7 @@ ALTER TABLE ONLY floating_definition
 
 
 --
--- Name: forced_fare_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: forced_fare_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY forced_fare
@@ -15932,7 +14924,7 @@ ALTER TABLE ONLY forced_fare
 
 
 --
--- Name: group_security_function_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: group_security_function_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY group_security_function_mapping
@@ -15940,7 +14932,7 @@ ALTER TABLE ONLY group_security_function_mapping
 
 
 --
--- Name: hist_coupon_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_coupon_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY hist_coupon
@@ -15948,7 +14940,7 @@ ALTER TABLE ONLY hist_coupon
 
 
 --
--- Name: hist_currency_codes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_currency_codes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY hist_currency_codes
@@ -15956,7 +14948,7 @@ ALTER TABLE ONLY hist_currency_codes
 
 
 --
--- Name: hist_ticket_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hist_ticket_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY hist_ticket
@@ -15964,7 +14956,7 @@ ALTER TABLE ONLY hist_ticket
 
 
 --
--- Name: hsbc_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: hsbc_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY hsbc_transaction
@@ -15972,7 +14964,7 @@ ALTER TABLE ONLY hsbc_transaction
 
 
 --
--- Name: iline_req_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: iline_req_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY iline_req_mesgs
@@ -15980,7 +14972,7 @@ ALTER TABLE ONLY iline_req_mesgs
 
 
 --
--- Name: iline_resp_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: iline_resp_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY iline_resp_mesgs
@@ -15988,7 +14980,7 @@ ALTER TABLE ONLY iline_resp_mesgs
 
 
 --
--- Name: inventory_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: inventory_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY inventory_history
@@ -15996,7 +14988,7 @@ ALTER TABLE ONLY inventory_history
 
 
 --
--- Name: inventry_auto_rules_details_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: inventry_auto_rules_details_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY inventry_auto_rules_details
@@ -16004,7 +14996,7 @@ ALTER TABLE ONLY inventry_auto_rules_details
 
 
 --
--- Name: itenary_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: itenary_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY itenary
@@ -16012,7 +15004,7 @@ ALTER TABLE ONLY itenary
 
 
 --
--- Name: k2_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: k2_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY k2_transaction
@@ -16020,7 +15012,7 @@ ALTER TABLE ONLY k2_transaction
 
 
 --
--- Name: language_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: language_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY language_ref
@@ -16028,31 +15020,16 @@ ALTER TABLE ONLY language_ref
 
 
 --
--- Name: last_operation_status_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: last_operation_status_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY last_operation_status_ref
     ADD CONSTRAINT last_operation_status_ref_pkey PRIMARY KEY (last_operation_status_rcd);
 
 
---
--- Name: load_no_fly_list_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY load_no_fly_list
-    ADD CONSTRAINT load_no_fly_list_pkey PRIMARY KEY (entry_no);
-
 
 --
--- Name: load_selectee_list_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY load_selectee_list
-    ADD CONSTRAINT load_selectee_list_pkey PRIMARY KEY (entry_no);
-
-
---
--- Name: mco_info_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: mco_info_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY mco_info
@@ -16060,7 +15037,7 @@ ALTER TABLE ONLY mco_info
 
 
 --
--- Name: menu_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: menu_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY menu_item
@@ -16068,7 +15045,7 @@ ALTER TABLE ONLY menu_item
 
 
 --
--- Name: mvt_delay_code_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: mvt_delay_code_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY mvt_delay_code
@@ -16076,15 +15053,7 @@ ALTER TABLE ONLY mvt_delay_code
 
 
 --
--- Name: no_fly_list_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY no_fly_list
-    ADD CONSTRAINT no_fly_list_pkey PRIMARY KEY (entry_no);
-
-
---
--- Name: oledb_tran_test_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oledb_tran_test_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY oledb_tran_test
@@ -16092,7 +15061,7 @@ ALTER TABLE ONLY oledb_tran_test
 
 
 --
--- Name: origin_address_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: origin_address_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY origin_address_name
@@ -16100,23 +15069,23 @@ ALTER TABLE ONLY origin_address_name
 
 
 --
--- Name: osi_et_text_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: osi_et_text_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY osi_et_text
-    ADD CONSTRAINT osi_et_text_pkey PRIMARY KEY (osi_airport, osi_rqst_code);
+    ADD CONSTRAINT osi_et_text_pkey PRIMARY KEY (osi_airport, osi_request_code);
 
 
 --
--- Name: pass_contact_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pass_contact_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY pass_contact
-    ADD CONSTRAINT pass_contact_pkey PRIMARY KEY (book_no, passenger_no);
+    ADD CONSTRAINT pass_contact_pkey PRIMARY KEY (book_no, pax_no);
 
 
 --
--- Name: pass_itin_ref_det_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pass_itin_ref_det_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY pass_itin_ref_det
@@ -16124,7 +15093,7 @@ ALTER TABLE ONLY pass_itin_ref_det
 
 
 --
--- Name: pass_itin_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pass_itin_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY pass_itin_ref
@@ -16132,7 +15101,7 @@ ALTER TABLE ONLY pass_itin_ref
 
 
 --
--- Name: pass_remarks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pass_remarks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY pass_remarks
@@ -16140,15 +15109,15 @@ ALTER TABLE ONLY pass_remarks
 
 
 --
--- Name: passenger_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: pax_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY passenger
-    ADD CONSTRAINT passenger_pkey PRIMARY KEY (book_no, passenger_no);
+    ADD CONSTRAINT pax_pkey PRIMARY KEY (book_no, pax_no);
 
 
 --
--- Name: payment_amount_limits_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_amount_limits_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY payment_amount_limits
@@ -16156,7 +15125,7 @@ ALTER TABLE ONLY payment_amount_limits
 
 
 --
--- Name: payment_backup_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_backup_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY payment_backup
@@ -16164,7 +15133,7 @@ ALTER TABLE ONLY payment_backup
 
 
 --
--- Name: payment_channel_config_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_channel_config_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY payment_channel_config
@@ -16172,7 +15141,7 @@ ALTER TABLE ONLY payment_channel_config
 
 
 --
--- Name: payment_et_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_et_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY payment_et_ref
@@ -16180,7 +15149,7 @@ ALTER TABLE ONLY payment_et_ref
 
 
 --
--- Name: payment_form_field_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_form_field_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY payment_form_field
@@ -16188,7 +15157,7 @@ ALTER TABLE ONLY payment_form_field
 
 
 --
--- Name: payment_form_field_status_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payment_form_field_status_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY payment_form_field_status
@@ -16196,7 +15165,7 @@ ALTER TABLE ONLY payment_form_field_status
 
 
 --
--- Name: payments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY payments
@@ -16204,7 +15173,7 @@ ALTER TABLE ONLY payments
 
 
 --
--- Name: payments_uplift_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: payments_uplift_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY payments_uplift
@@ -16212,7 +15181,7 @@ ALTER TABLE ONLY payments_uplift
 
 
 --
--- Name: post_departure_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_departure_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY post_departure
@@ -16220,7 +15189,7 @@ ALTER TABLE ONLY post_departure
 
 
 --
--- Name: post_hist_book_fares_paym_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_hist_book_fares_paym_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY post_hist_book_fares_paym
@@ -16228,7 +15197,7 @@ ALTER TABLE ONLY post_hist_book_fares_paym
 
 
 --
--- Name: post_hist_book_fares_segm_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: post_hist_book_fares_segm_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY post_hist_book_fares_segm
@@ -16236,7 +15205,7 @@ ALTER TABLE ONLY post_hist_book_fares_segm
 
 
 --
--- Name: prl_serial_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: prl_serial_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY prl_serial
@@ -16244,7 +15213,7 @@ ALTER TABLE ONLY prl_serial
 
 
 --
--- Name: processing_indicators_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: processing_indicators_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY processing_indicators
@@ -16252,7 +15221,7 @@ ALTER TABLE ONLY processing_indicators
 
 
 --
--- Name: queues_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: queues_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY queues
@@ -16260,7 +15229,7 @@ ALTER TABLE ONLY queues
 
 
 --
--- Name: relationship_type_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: relationship_type_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY relationship_type
@@ -16268,7 +15237,7 @@ ALTER TABLE ONLY relationship_type
 
 
 --
--- Name: report_template_xslt_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: report_template_xslt_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY report_template_xslt
@@ -16276,7 +15245,7 @@ ALTER TABLE ONLY report_template_xslt
 
 
 --
--- Name: reserve_reason_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: reserve_reason_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY reserve_reason_ref
@@ -16284,7 +15253,7 @@ ALTER TABLE ONLY reserve_reason_ref
 
 
 --
--- Name: route_surcharge_fare_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: route_surcharge_fare_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY route_surcharge_fare
@@ -16292,7 +15261,7 @@ ALTER TABLE ONLY route_surcharge_fare
 
 
 --
--- Name: routings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: routings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY routings
@@ -16300,7 +15269,7 @@ ALTER TABLE ONLY routings
 
 
 --
--- Name: rule_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: rule_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY rule_type_ref
@@ -16308,7 +15277,7 @@ ALTER TABLE ONLY rule_type_ref
 
 
 --
--- Name: saccode_messageid_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: saccode_messageid_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY saccode_messageid
@@ -16316,7 +15285,7 @@ ALTER TABLE ONLY saccode_messageid
 
 
 --
--- Name: seat_attribute_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_attribute_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY seat_attribute
@@ -16324,7 +15293,7 @@ ALTER TABLE ONLY seat_attribute
 
 
 --
--- Name: seat_attribute_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_attribute_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY seat_attribute_ref
@@ -16332,7 +15301,7 @@ ALTER TABLE ONLY seat_attribute_ref
 
 
 --
--- Name: seat_definition_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_definition_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY seat_definition
@@ -16340,7 +15309,7 @@ ALTER TABLE ONLY seat_definition
 
 
 --
--- Name: seat_map_class_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_map_class_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY seat_map_class
@@ -16348,7 +15317,7 @@ ALTER TABLE ONLY seat_map_class
 
 
 --
--- Name: seat_map_configuration_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_map_configuration_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY seat_map_configuration
@@ -16356,7 +15325,7 @@ ALTER TABLE ONLY seat_map_configuration
 
 
 --
--- Name: seat_map_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_map_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY seat_map
@@ -16364,7 +15333,7 @@ ALTER TABLE ONLY seat_map
 
 
 --
--- Name: seat_reconfig_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_reconfig_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY seat_reconfig_history
@@ -16372,7 +15341,7 @@ ALTER TABLE ONLY seat_reconfig_history
 
 
 --
--- Name: seat_reservation_setting_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: seat_reservation_setting_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY seat_reservation_setting
@@ -16380,7 +15349,7 @@ ALTER TABLE ONLY seat_reservation_setting
 
 
 --
--- Name: security_function_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: security_function_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY security_function
@@ -16388,7 +15357,7 @@ ALTER TABLE ONLY security_function
 
 
 --
--- Name: security_function_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: security_function_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY security_function_ref
@@ -16396,7 +15365,7 @@ ALTER TABLE ONLY security_function_ref
 
 
 --
--- Name: security_group_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: security_group_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY security_group
@@ -16404,7 +15373,7 @@ ALTER TABLE ONLY security_group
 
 
 --
--- Name: security_mapping_dimension_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: security_mapping_dimension_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY security_mapping_dimension
@@ -16412,7 +15381,7 @@ ALTER TABLE ONLY security_mapping_dimension
 
 
 --
--- Name: security_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: security_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY security_mapping
@@ -16420,15 +15389,7 @@ ALTER TABLE ONLY security_mapping
 
 
 --
--- Name: selectee_list_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY selectee_list
-    ADD CONSTRAINT selectee_list_pkey PRIMARY KEY (entry_no);
-
-
---
--- Name: sms_bulk_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: sms_bulk_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY sms_bulk
@@ -16436,7 +15397,7 @@ ALTER TABLE ONLY sms_bulk
 
 
 --
--- Name: sms_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: sms_mesgs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY sms_mesgs
@@ -16444,15 +15405,15 @@ ALTER TABLE ONLY sms_mesgs
 
 
 --
--- Name: special_service_request_inventory_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: special_service_request_inventory_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY special_service_request_inventory
-    ADD CONSTRAINT special_service_request_inventory_pkey PRIMARY KEY (flight_number, flight_date, city_pair, book_no, rqst_code, passenger_name);
+    ADD CONSTRAINT special_service_request_inventory_pkey PRIMARY KEY (flight_number, flight_date, city_pair, book_no, rqst_code, pax_name);
 
 
 --
--- Name: special_service_request_rules_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: special_service_request_rules_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY special_service_request_rules
@@ -16460,7 +15421,7 @@ ALTER TABLE ONLY special_service_request_rules
 
 
 --
--- Name: ssd_t3_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssd_t3_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY ssd_t3
@@ -16468,7 +15429,7 @@ ALTER TABLE ONLY ssd_t3
 
 
 --
--- Name: ssd_t4_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssd_t4_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY ssd_t4
@@ -16476,7 +15437,7 @@ ALTER TABLE ONLY ssd_t4
 
 
 --
--- Name: ssm_tmp_old_inventry_segment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ssm_tmp_old_inventry_segment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY ssm_tmp_old_inventry_segment
@@ -16484,7 +15445,7 @@ ALTER TABLE ONLY ssm_tmp_old_inventry_segment
 
 
 --
--- Name: system_setting_category_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: system_setting_category_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY system_setting_category_ref
@@ -16492,7 +15453,7 @@ ALTER TABLE ONLY system_setting_category_ref
 
 
 --
--- Name: system_setting_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: system_setting_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY system_setting
@@ -16500,7 +15461,7 @@ ALTER TABLE ONLY system_setting
 
 
 --
--- Name: tax_category_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tax_category_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY tax_category
@@ -16508,7 +15469,7 @@ ALTER TABLE ONLY tax_category
 
 
 --
--- Name: tax_detail_currency_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tax_detail_currency_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY tax_detail_currency
@@ -16516,7 +15477,7 @@ ALTER TABLE ONLY tax_detail_currency
 
 
 --
--- Name: tax_detail_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: tax_detail_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY tax_detail
@@ -16524,7 +15485,7 @@ ALTER TABLE ONLY tax_detail
 
 
 --
--- Name: temp_fare_route_agency_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: temp_fare_route_agency_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY temp_fare_route_agency
@@ -16532,7 +15493,7 @@ ALTER TABLE ONLY temp_fare_route_agency
 
 
 --
--- Name: template_xslt_components_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: template_xslt_components_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY template_xslt_components
@@ -16540,7 +15501,7 @@ ALTER TABLE ONLY template_xslt_components
 
 
 --
--- Name: template_xslt_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: template_xslt_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY template_xslt
@@ -16548,7 +15509,7 @@ ALTER TABLE ONLY template_xslt
 
 
 --
--- Name: ticket_history_event_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ticket_history_event_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY ticket_history_event
@@ -16556,7 +15517,7 @@ ALTER TABLE ONLY ticket_history_event
 
 
 --
--- Name: ticket_payment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ticket_payment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY ticket_payment
@@ -16564,7 +15525,7 @@ ALTER TABLE ONLY ticket_payment
 
 
 --
--- Name: ticket_segment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ticket_segment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY ticket_segment
@@ -16572,7 +15533,7 @@ ALTER TABLE ONLY ticket_segment
 
 
 --
--- Name: travel_agency_internet_special_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: travel_agency_internet_special_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY travel_agency_internet_special
@@ -16580,7 +15541,7 @@ ALTER TABLE ONLY travel_agency_internet_special
 
 
 --
--- Name: travel_agency_limit_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: travel_agency_limit_type_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY travel_agency_limit_type_ref
@@ -16588,7 +15549,7 @@ ALTER TABLE ONLY travel_agency_limit_type_ref
 
 
 --
--- Name: travel_agency_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: travel_agency_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY travel_agency
@@ -16596,7 +15557,7 @@ ALTER TABLE ONLY travel_agency
 
 
 --
--- Name: user_activity_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_activity_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY user_activity
@@ -16604,7 +15565,7 @@ ALTER TABLE ONLY user_activity
 
 
 --
--- Name: user_group_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_group_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY user_group_mapping
@@ -16612,7 +15573,7 @@ ALTER TABLE ONLY user_group_mapping
 
 
 --
--- Name: user_security_function_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_security_function_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY user_security_function_mapping
@@ -16620,7 +15581,7 @@ ALTER TABLE ONLY user_security_function_mapping
 
 
 --
--- Name: user_setting_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_setting_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY user_setting
@@ -16628,7 +15589,7 @@ ALTER TABLE ONLY user_setting
 
 
 --
--- Name: user_setting_user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_setting_user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY user_setting_user
@@ -16636,7 +15597,7 @@ ALTER TABLE ONLY user_setting_user
 
 
 --
--- Name: voucher_payment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: voucher_payment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY voucher_payment
@@ -16644,7 +15605,7 @@ ALTER TABLE ONLY voucher_payment
 
 
 --
--- Name: voucher_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: voucher_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY voucher
@@ -16652,7 +15613,7 @@ ALTER TABLE ONLY voucher
 
 
 --
--- Name: voucher_reason_class_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: voucher_reason_class_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY voucher_reason_class
@@ -16660,7 +15621,7 @@ ALTER TABLE ONLY voucher_reason_class
 
 
 --
--- Name: voucher_reason_fop_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: voucher_reason_fop_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY voucher_reason_fop
@@ -16668,7 +15629,7 @@ ALTER TABLE ONLY voucher_reason_fop
 
 
 --
--- Name: voucher_reason_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: voucher_reason_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY voucher_reason
@@ -16676,7 +15637,7 @@ ALTER TABLE ONLY voucher_reason
 
 
 --
--- Name: voucher_serial_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: voucher_serial_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY voucher_serial
@@ -16684,7 +15645,7 @@ ALTER TABLE ONLY voucher_serial
 
 
 --
--- Name: waiver_reason_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: waiver_reason_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY waiver_reason
@@ -16692,7 +15653,7 @@ ALTER TABLE ONLY waiver_reason
 
 
 --
--- Name: watch_list_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: watch_list_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY watch_list
@@ -16700,31 +15661,31 @@ ALTER TABLE ONLY watch_list
 
 
 --
--- Name: flight_segm_date_fndda; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: flight_segm_date_fndda; Type: INDEX; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE UNIQUE INDEX flight_segm_date_fndda ON flight_segm_date USING btree (flight_number, flight_date, departure_airport, arrival_airport);
 
 
 --
--- Name: ind_temp_wl_invt; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ind_temp_wl_invt; Type: INDEX; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE INDEX ind_temp_wl_invt ON ssm_tmp_wl_invt USING btree (flight_date, city_pair, selling_class);
 
 
 --
--- Name: ind_tmp_date; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ind_tmp_date; Type: INDEX; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE INDEX ind_tmp_date ON ssm_tmp_date USING btree (flight_date);
 
 
 --
--- Name: u_hac; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: u_hac; Type: INDEX; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE INDEX u_hac ON ssm_tmp_hirarchy_avl_cnts USING btree (selling_class);
+CREATE INDEX u_hac ON ssm_tmp_hirarchy_avail_counts USING btree (selling_class);
 
 
 --
@@ -16763,14 +15724,14 @@ COMMENT ON DATABASE postgres IS 'default administrative connection database';
 
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -16812,14 +15773,14 @@ COMMENT ON DATABASE template1 IS 'default template for new databases';
 
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';

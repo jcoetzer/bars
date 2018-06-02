@@ -12,7 +12,7 @@ from BarsLog import set_verbose, get_verbose, printlog
 #       bs.booking_date_time,
 #       (select b.origin_address from book as b where b.book_no = bs.booking_number) as origin_address,
 #       bs.booking_summary_type_rcd,
-#       bs.passenger_name,
+#       bs.pax_name,
 #       bs.sid_no
 # from booking_summary as bs
 # sid_no is for NoFlySelecteePassengerId (not used)
@@ -30,7 +30,7 @@ def ReadBookSummary(conn, book_no, report_code=None):
 
     if get_verbose() >= 2: print "Find book summary",
     bk_summ = \
-        "SELECT booking_number,booking_summary_type_rcd,passenger_name" \
+        "SELECT booking_number,booking_summary_type_rcd,pax_name" \
         " FROM booking_summary" \
         " WHERE 1=1"
     if book_no is not None:
@@ -50,7 +50,7 @@ def ReadBookSummary(conn, book_no, report_code=None):
     cur.execute(bk_summ)
     n = 0
     for row in cur:
-        print "Book summary %d %s : %s" % (int(row['booking_number'] or 0), row['booking_summary_type_rcd'], row['passenger_name'])
+        print "Book summary %d %s : %s" % (int(row['booking_number'] or 0), row['booking_summary_type_rcd'], row['pax_name'])
         n += 1
 
     return n

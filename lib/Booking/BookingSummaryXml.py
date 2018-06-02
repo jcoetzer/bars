@@ -46,7 +46,7 @@ def ReadBsFaresPayment(conn, book_no, currency_code):
 
     print "Fare payments for booking %d currency %s" % (book_no, currency_code)
     FaresPaymentSql = """
-select fare_no,pass_code paxcode,payment_code,fare_calc_code,round(fare_paymt_amt, 2) amount,
+select fare_no,pax_code paxcode,payment_code,fare_calc_code,round(fare_paymt_amt, 2) amount,
 round(fare_paymt_amt, 5) unrounded_amount,paid_curr_code currency_code,
 tax_code,nation_code,refundable_flag,net_fare_flag,private_fare_flag,source_ref_id
 ,round( (select max(nuc_rate) from currency_codes cc where cc.currency_code = '%s') /
@@ -56,7 +56,7 @@ tax_code,nation_code,refundable_flag,net_fare_flag,private_fare_flag,source_ref_
               hcc.valid_from_date_time and hcc.valid_to_date_time),
              (select max(nuc_rate) from currency_codes cc
                 where cc.currency_code = bfp.paid_curr_code) ), 5 ) common_currency_factor,
-(select count(book_no) from passenger where book_no = %d and pass_code <> 'INF') pax_number
+(select count(book_no) from passenger where book_no = %d and pax_code <> 'INF') pax_number
 from book_fares_paym bfp
 where book_no = %d
 and payment_code <> 'FEE'
@@ -83,7 +83,7 @@ def ReadBsPassengerFares(conn, book_no, currency_code):
     print "Passenger fares for booking %d currency %s" % (book_no, currency_code)
     PassengerFaresSql = """
                         select
-                                 bfp.pass_code                                          as passenger_description_code
+                                 bfp.pax_code                                          as passenger_description_code
                                 ,bfp.total_amount_curr                          as total_amount_currency
                                 ,round(bfp.total_amount, 2)                     as total_amount
                                 ,round(bfp.total_amount, 5)                     as unrounded_total_amount
@@ -114,17 +114,17 @@ def ReadBsPassengerFares(conn, book_no, currency_code):
                         from book_fares_pass            as bfp
                         inner join book_fares_paym      as bfpm  
                         on bfpm.book_no        = bfp.book_no
-                        and bfpm.pass_code      = bfp.pass_code
+                        and bfpm.pax_code      = bfp.pax_code
                         and bfp.book_no = %d
                         group by
-                                 bfp.pass_code
+                                 bfp.pax_code
                                 ,bfp.total_amount_curr
                                 ,bfp.total_amount
                                 ,bfp.fare_construction
                                 ,bfp.endrsmnt_rstrctns
                                 ,9
                         order by
-                                 bfp.pass_code
+                                 bfp.pax_code
 """  % (currency_code, book_no)
 
     printlog(2, "%s" % PassengerFaresSql)
@@ -151,7 +151,7 @@ def ReadBsOldFares(conn, book_no, currency_code):
             bf.et_serial_no                                         as serial_no
             ,bf.update_time    as updated_date_time
             ,bf.fare_no
-            ,bf.pass_code                                           as passenger_description_code
+            ,bf.pax_code                                           as passenger_description_code
             ,bf.start_city                                          as departure_city
             ,bf.end_city                                            as arrival_city
             ,round(bf.total_amount, 2)                      as total_amount
@@ -164,14 +164,14 @@ def ReadBsOldFares(conn, book_no, currency_code):
             ,coalesce(
                     (select max(bfp2.refundable_flag)
                     from book_fares_paym as bfp2 where book_no = bf.book_no
-                    and bfp2.fare_no = bf.fare_no and bfp2.pass_code = bf.pass_code
+                    and bfp2.fare_no = bf.fare_no and bfp2.pax_code = bf.pax_code
                     and bfp2.payment_code = bfp.payment_code
                     and bfp2.refundable_flag = 'N')
             ,'Y')                                                           as refundable_flag
             ,round(coalesce(
                     (select sum(bfp2.fare_paymt_amt)
                     from book_fares_paym as bfp2 where book_no = bf.book_no
-                    and bfp2.fare_no = bf.fare_no and bfp2.pass_code = bf.pass_code
+                    and bfp2.fare_no = bf.fare_no and bfp2.pax_code = bf.pax_code
                     and bfp2.payment_code = 'FEE')
             ,0), 2)                                                         as surcharge_amount
             ,round
@@ -195,7 +195,7 @@ def ReadBsOldFares(conn, book_no, currency_code):
             ,round(sum(bfp.fare_paymt_amt), 5)      as unrounded_fare_amount
     from hist_book_fares                    as bf
     inner join hist_book_fares_paym         as bfp on bfp.book_no   = bf.book_no
-                                                                    and bfp.pass_code       = bf.pass_code
+                                                                    and bfp.pax_code       = bf.pax_code
                                                                     and bfp.fare_no         = bf.fare_no
                                                                     and bfp.et_serial_no = bf.et_serial_no
                                                                     and bf.book_no = %d
@@ -205,7 +205,7 @@ def ReadBsOldFares(conn, book_no, currency_code):
     group by bf.et_serial_no
                     ,bf.update_time
                     ,bf.fare_no
-                    ,bf.pass_code
+                    ,bf.pax_code
                     ,bf.start_city
                     ,bf.end_city
                     ,bf.total_amount
@@ -218,7 +218,7 @@ def ReadBsOldFares(conn, book_no, currency_code):
                     ,15
                     ,16
     order by bf.et_serial_no desc
-                    ,bf.pass_code
+                    ,bf.pax_code
                     ,bf.fare_no
 """ % (currency_code, book_no)
 
@@ -243,7 +243,7 @@ def ReadBsOldPassengerFares(conn, book_no, currency_code):
     print "Old passenger fares for booking %d currency %s" % (book_no, currency_code)
     OldPassengerFaresSql = """
                         select
-                                 bfp.pass_code                                          as passenger_description_code
+                                 bfp.pax_code                                          as passenger_description_code
                                 ,bfp.total_amount_curr                          as total_amount_currency
                                 ,round(bfp.total_amount, 2)                     as total_amount
                                 ,round(bfp.total_amount, 5)                     as unrounded_total_amount
@@ -276,14 +276,14 @@ def ReadBsOldPassengerFares(conn, book_no, currency_code):
 
                         from hist_book_fares_pass               as bfp
                         inner join hist_book_fares_paym as bfpm  on bfpm.book_no        = bfp.book_no
-                                                                                                and bfpm.pass_code      = bfp.pass_code
+                                                                                                and bfpm.pax_code      = bfp.pax_code
                                                                                                 and bfpm.et_serial_no = bfp.et_serial_no
                                                                                                 and bfp.book_no = %d
 
                         group by
                                  bfp.et_serial_no
                                 ,bfp.update_time
-                                ,bfp.pass_code
+                                ,bfp.pax_code
                                 ,bfp.total_amount_curr
                                 ,bfp.total_amount
                                 ,bfp.fare_construction
@@ -291,7 +291,7 @@ def ReadBsOldPassengerFares(conn, book_no, currency_code):
                                 ,11
                         order by
                                  bfp.et_serial_no desc
-                                ,bfp.pass_code
+                                ,bfp.pax_code
 """  % (currency_code, book_no)
 
     printlog(2, "%s" % OldPassengerFaresSql)
@@ -316,7 +316,7 @@ def ReadBsOldFaresPayment(conn, book_no, currency_code):
     OldFaresPaymentSql = """
                         select
                                  fare_no
-                                ,pass_code                                      as passenger_description_code
+                                ,pax_code                                      as passenger_description_code
                                 ,payment_code
                                 ,fare_calc_code
                                 ,round(fare_paymt_amt, 2)       as amount
@@ -497,7 +497,7 @@ def ReadBsFares(conn, book_no, currency_code):
     FaresSql = """
                         select
                                  bf.fare_no
-                                ,bf.pass_code                                           as passenger_description_code
+                                ,bf.pax_code                                           as passenger_description_code
                                 ,bf.start_city                                          as departure_city
                                 ,bf.end_city                                            as arrival_city
                                 ,round(bf.total_amount, 2)                      as total_amount
@@ -510,14 +510,14 @@ def ReadBsFares(conn, book_no, currency_code):
                                 ,coalesce(
                                         (select max(bfp2.refundable_flag)
                                         from book_fares_paym as bfp2 where book_no = bf.book_no
-                                        and bfp2.fare_no = bf.fare_no and bfp2.pass_code = bf.pass_code
+                                        and bfp2.fare_no = bf.fare_no and bfp2.pax_code = bf.pax_code
                                         and bfp2.payment_code = bfp.payment_code
                                         and bfp2.refundable_flag = 'N')
                                 ,'Y')                                                           as refundable_flag
                                 ,round(coalesce(
                                         (select sum(bfp2.fare_paymt_amt)
                                         from book_fares_paym as bfp2 where book_no = bf.book_no
-                                        and bfp2.fare_no = bf.fare_no and bfp2.pass_code = bf.pass_code
+                                        and bfp2.fare_no = bf.fare_no and bfp2.pax_code = bf.pax_code
                                         and bfp2.payment_code = 'FEE')
                                 ,0), 2)                                                         as surcharge_amount
                                 ,round(
@@ -539,16 +539,16 @@ def ReadBsFares(conn, book_no, currency_code):
                                 ,round(sum(bfp.fare_paymt_amt), 5)      as unrounded_fare_amount
                         from book_fares                         as bf
                         inner join book_fares_paym      as bfp on bfp.book_no   = bf.book_no
-                                                                                        and bfp.pass_code       = bf.pass_code
+                                                                                        and bfp.pax_code       = bf.pax_code
                                                                                         and bfp.fare_no         = bf.fare_no
                                                                                         and bfp.payment_code in ('FARE', 'TAX')
                                                                                         and bf.book_no = %d
                         left join city                          as dcy on dcy.city_code = bf.start_city
                         left join city                          as acy on acy.city_code = bf.end_city
-                        group by bf.fare_no, bf.pass_code, bf.start_city, bf.end_city
+                        group by bf.fare_no, bf.pax_code, bf.start_city, bf.end_city
                                 , bf.total_amount, bf.total_amount_curr, bf.fare_stat_flag, dcy.city_name
                                 , acy.city_name, 11, 12, 13, 14
-                        order by bf.pass_code, bf.fare_no
+                        order by bf.pax_code, bf.fare_no
 """ % (currency_code, book_no)
 
     printlog(2, "%s" % FaresSql)
@@ -614,7 +614,7 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                 )
                                         from book_commission as bc
                                         inner join passenger as pax on pax.book_no = bc.book_no
-                                                and pax.pass_code = bc.pass_code
+                                                and pax.pax_code = bc.pax_code
                                                 and bc.book_no = bo.book_no)
                                 , 0), 2) as total_comm
                                 ,round(coalesce(
@@ -637,7 +637,7 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                 )
                                         from book_fares_paym as bfp
                                         inner join passenger as pax on pax.book_no = bfp.book_no
-                                                and pax.pass_code = bfp.pass_code
+                                                and pax.pax_code = bfp.pax_code
                                                 and bfp.book_no = bo.book_no)
                                 , 0), 2) as total_fare
                                 ,round(coalesce(
@@ -660,7 +660,7 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                 )
                                         from book_fares_paym as bfp
                                         inner join passenger as pax on pax.book_no = bfp.book_no
-                                                and pax.pass_code = bfp.pass_code
+                                                and pax.pax_code = bfp.pax_code
                                                 and bfp.book_no = bo.book_no)
                                         -
                                         (select sum
@@ -723,7 +723,7 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                 )
                                         from book_fares_paym as bfp
                                         inner join passenger as pax on pax.book_no = bfp.book_no
-                                                and pax.pass_code = bfp.pass_code
+                                                and pax.pax_code = bfp.pax_code
                                                 and bfp.payment_code = 'FEE'
                                                 and bfp.book_no = bo.book_no)
                                 , 0), 2) as total_insurance
@@ -743,7 +743,7 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         ,
                                                                 (select max(nuc_rate) from currency_codes as cc
                                                                 where cc.currency_code = pa.paid_curr_code)
-                                                                                                                                            and bfpm.pass_code      = bfp.pass_code
+                                                                                                                                            and bfpm.pax_code      = bfp.pax_code
                                                                                                 and bfp.book_no = %d            )
                                                 )) from payments as pa
                                         where pa.book_no = bo.book_no

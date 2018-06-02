@@ -51,7 +51,7 @@ def BookingIsPaid(conn, pbook_no, vbookstatus=None):
 
         # Sum up fares, taxes and surcharges
         vfaresum = float(0.0)
-        bk_fares="SELECT sum(fare_paymt_amt) vfaresum FROM book_fares_paym p,passenger pas WHERE p.book_no=%d AND pas.book_no=p.book_no AND pas.pass_code=p.pass_code" % pbook_no
+        bk_fares="SELECT sum(fare_paymt_amt) vfaresum FROM book_fares_paym p,passenger pas WHERE p.book_no=%d AND pas.book_no=p.book_no AND pas.pax_code=p.pax_code" % pbook_no
         printlog(bk_fares, 2)
         cur.execute(bk_fares)
         for row in cur:
