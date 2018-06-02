@@ -103,3 +103,71 @@ def get_avail_flights(conn, fdate1, fdate2, city_pair,
 
     cur.close()
     return flights
+
+
+def OldAvailSvc(conn, company_code, lboard_date, city_pair_no, depr_airport, arrv_airport):
+    AvlSql = """
+    SELECT fsd.board_date, fsd.flight_number,
+        fsd.city_pair, sc.cabin_code,
+        isg.leg_number, fsd.flight_date,
+        isg.city_pair, isg.departure_city,
+        isg.arrival_city,
+        fsd.departure_airport, fsd.arrival_airport,
+        fsd.flight_path_code, fsd.departure_time,
+        fsd.arrival_time, fsd.date_change_ind,
+        fsd.departure_terminal, fsd.arrival_terminal,
+        fsd.no_of_stops, fsd.aircraft_code,
+        isg.selling_class,
+        isg.limit_sale_lvl, isg.seat_capacity,
+        isg.overbooking_percnt, isg.nett_sngl_sold,
+        isg.nett_group_sold, isg.nett_nrev_sold,
+        isg.seat_protect_lvl, isg.display_priority,
+        fsd.flgt_sched_status, isg.segment_closed_flag,
+        fsd.flight_closed_flag, fsd.flight_brdng_flag,
+        isg.ob_profile_no, fsd.schedule_period_no
+        FROM flight_segm_date fsd, inventry_segment isg, selling_conf sc 
+        WHERE fsd.board_date = '%s' 
+        AND isg.flight_number = fsd.flight_number
+        AND isg.flight_date = fsd.flight_date
+        AND fsd.city_pair = %d
+        AND fsd.departure_airport = '%s'
+        AND fsd.arrival_airport = '%s' 
+        AND isg.selling_class = sc.selling_class 
+        AND sc.company_code = '%s'""" \
+    % (lboard_date, city_pair_no, depr_airport, arrv_airport, company_code)
+    printlog(2, "%s" % AvlSql)
+    cur = conn.cursor()
+    cur.execute(AvlSql)
+    
+    printlog(2, "Selected %d row(s)" % cur.rowcount)
+    flights = []
+    for row in cur:
+        printlog(1, "Flight %s date %s cabin %s depart %s arrive %s class %s schedule %d" \
+                 % (row[1], row[0], row[3], str(row[12])[0:5], str(row[13])[0:5], row[19], row[33]))
+        class_code          = row[19]
+        flight_number       = row[1]
+        departure_date      = row[0]
+        departure_time      = row[12]
+        arrival_time        = row[13]
+        departure_airport   = row[8]
+        arrival_airport     = row[9]
+        departure_terminal = row[15]
+        arrival_terminal = row[16]
+        aircraft_code = row[18]
+        
+        city_pair_number    = int(row[2])
+        schedule_period_no  = int(row[33])
+        fd = FlightData(class_code,
+                        flight_number, departure_date,
+                        departure_time, arrival_time,
+                        departure_airport, arrival_airport,
+                        None, None,
+                        city_pair_number,
+                        company_code,
+                        aircraft_code,
+                        schedule_period_no,
+                        None)
+        flights.append(fd)
+
+    cur.close()
+    return flights

@@ -60,16 +60,16 @@ def CheckCityPair(conn, depart_airport, arrive_airport, pair_rule_no, userName, 
         city_pair_id = row[0]
         printlog(1, "City pair %d" % city_pair_id)
 
-    if city_pair_id == 0:
-        ssmSql = \
-            "INSERT INTO city_pair(start_city, end_city, pair_indicator, pair_rule_no, user_name, user_group)" \
-            " VALUES ('%s', '%s', 'A', %d, '%s', '%s') RETURNING city_pair" \
-            % (depart_airport, arrive_airport, pair_rule_no, userName, groupName)
-        printlog(2, "%s" % ssmSql)
-        cur.execute(ssmSql)
-        for row in cur:
-            city_pair_id = row[0]
-            printlog(1, "New city pair %d" % city_pair_id)
+    #if city_pair_id == 0:
+        #ssmSql = \
+            #"INSERT INTO city_pair(start_city, end_city, pair_indicator, pair_rule_no, user_name, user_group)" \
+            #" VALUES ('%s', '%s', 'A', %d, '%s', '%s') RETURNING city_pair" \
+            #% (depart_airport, arrive_airport, pair_rule_no, userName, groupName)
+        #printlog(2, "%s" % ssmSql)
+        #cur.execute(ssmSql)
+        #for row in cur:
+            #city_pair_id = row[0]
+            #printlog(1, "New city pair %d" % city_pair_id)
 
     cur.close()
     return city_pair_id

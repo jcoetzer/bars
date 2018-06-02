@@ -17,7 +17,7 @@ from BarsLog import printlog, set_verbose
 from ReadDateTime import ReadDate
 
 from Ssm.SsmDb import GetCityPair
-from Flight.AvailDb import get_selling_conf, get_avail_flights
+from Flight.AvailDb import get_selling_conf, get_avail_flights, OldAvailSvc
 from Flight.FlightDetails import GetFlightDetails
 from Booking.FareCalcDisplay import FareCalcDisplay
 from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, AddItenary, AddPassenger, \
@@ -46,19 +46,15 @@ def usage(pn):
     print("\t%s --chk -B <BOOK>" % pn)
     sys.exit(1)
     
-    
-def ReadConfig(cfgfile):
-    """Read configuration file."""
-    
-    config = ConfigParser.ConfigParser()
-    config.readfp(open(cfgfile))
-
 
 def GetAvail(conn, dt1, dt2, cityPairNo,
              departAirport, arriveAirport,
-             selling_classs, vCompany):
+             selling_classes, vCompany):
     """Get availability information."""
-    for selling_class in selling_classs:
+    flights = OldAvailSvc(conn, vCompany, dt1, cityPairNo, departAirport, arriveAirport)
+    for flight in flights:
+        flight.display()
+    for selling_class in selling_classes:
         flights = get_avail_flights(conn, dt1, dt2, cityPairNo,
                                     departAirport, arriveAirport,
                                     selling_class[0], vCompany)
@@ -190,6 +186,7 @@ def PutPay(conn, aCurrency, aPayAmount, aPayAmount2, aBookNo, aPaxNames, aPaxCod
             return 
         elif l == 2:
             for irec in irecs:
+                pass
         elif l == 1:
             irec = irecs[0]
             irec.display()
