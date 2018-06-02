@@ -12,6 +12,7 @@ def DateRange(start_date, end_date):
 
 
 def ReadDateTime(arg):
+    """Convert date and time."""
     try:
         if arg is None:
             print "Empty date"
@@ -80,6 +81,7 @@ def ReadDateTime(arg):
 
 
 def ReadDate(arg):
+    """Convert date."""
     printlog(2, "Convert date '%s'" % (str(arg)))
     try:
         if arg is None:
@@ -146,6 +148,7 @@ def ReadDate(arg):
 
 
 def ReadTime(arg):
+    """Convert time."""
     try:
         atime = None
         printlog(2, "Convert time '%s'" % (str(arg)))
