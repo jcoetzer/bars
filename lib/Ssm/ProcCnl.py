@@ -1,5 +1,8 @@
 # @file ProcCnl.py
 #
+"""
+Process cancellation of flights.
+"""
 
 import sys
 import ply.lex as lex
@@ -30,7 +33,7 @@ def DeleteSellingClasses(conn,
     return rowcount
 
 
-def DeleteFlightDate(conn, 
+def DeleteFlightDate(conn,
                      pflight_number,
                      flight_date):
     ssmSql = "DELETE FROM flight_dates" \
@@ -45,7 +48,7 @@ def DeleteFlightDate(conn,
     return rowcount
 
 
-def DeleteInventrySegment(conn, 
+def DeleteInventrySegment(conn,
                           pflight_number,
                           flight_date):
     ssmSql = "DELETE FROM inventry_segment" \
@@ -58,13 +61,13 @@ def DeleteInventrySegment(conn,
     printlog(2, "Deleted %d row(s)" % rowcount)
     cur.close()
     return rowcount
-    
-    
-def DeleteFlightPeriod(conn, 
+
+
+def DeleteFlightPeriod(conn,
                        pflight_number,
                        pschedule_period_no):
     cur = conn.cursor()
-    
+
     dfpSql = "DELETE FROM flt_perd_seg_cls " \
              "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
     printlog(2, "%s" % dfpSql)
@@ -103,13 +106,13 @@ def DeleteFlightPeriod(conn,
     dfpSql = "DELETE FROM flight_periods " \
              "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
     printlog(2, "%s" % dfpSql)
-    cur.execute(dfpSql)    
+    cur.execute(dfpSql)
     rowcount = cur.rowcount
     printlog(2, "Deleted %d row(s)" % rowcount)
     cur.close()
     return rowcount
-    
-    
+
+
 def DeleteFlightInfo(conn,
                     flight,
                     boardDate):
@@ -119,16 +122,16 @@ def DeleteFlightInfo(conn,
             % (flight, boardDate.strftime("%Y-%m-%d"))
     printlog(2,fiSql)
     cur.execute(fiSql)
-    
+
     rowcount = cur.rowcount
     printlog(2, "Deleted %d row(s)" % rowcount)
     cur.close()
     return rowcount
-    
-    
+
+
 def DeleteFlightSegmDate(conn,
                          aflight_number,
-                         acity_pair, 
+                         acity_pair,
                          aflight_date):
 
     cur = conn.cursor()
@@ -139,19 +142,19 @@ def DeleteFlightSegmDate(conn,
         FsdSql += \
             " AND city_pair = %d" % acity_pair
     printlog(2,FsdSql)
-    cur.execute(FsdSql)    
+    cur.execute(FsdSql)
     rowcount = cur.rowcount
     printlog(2, "Deleted %d row(s)" % rowcount)
     cur.close()
     return rowcount
 
- 
-def ProcCnl(conn, 
+
+def ProcCnl(conn,
             ssm):
-    
+
     printlog(2, "Cancel flight %s" % ssm.flight_number)
-    #city_pair_id = GetCityPair(conn, 
-                               #ssm.departure_airport, 
+    #city_pair_id = GetCityPair(conn,
+                               #ssm.departure_airport,
                                #ssm.arrival_airport)
     #if city_pair_id == 0:
         #print "City pair %s and %s does not exist" % (ssm.departure_airport, ssm.arrival_airport)
@@ -171,7 +174,7 @@ def ProcCnl(conn,
             % (ssm.end_date, edate)
     else:
         pass
-        
+
     #DeleteFlightPeriod(conn, ssm.flight_number, flight_period_id)
 
     #freq = str(ssm.frequency_code)
@@ -200,7 +203,7 @@ def ProcCnl(conn,
         DeleteFlightInfo(conn, ssm.flight_number, flight_date)
         DeleteFlightSegmDate(conn, ssm.flight_number, city_pair_id, flight_date)
         DeleteInventrySegment(conn, ssm.flight_number, flight_date)
-    
-    if flight_period_id != 0:    
+
+    if flight_period_id != 0:
         DeleteFlightPeriod(conn, ssm.flight_number, flight_period_id)
 

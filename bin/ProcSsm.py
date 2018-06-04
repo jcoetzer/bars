@@ -2,6 +2,9 @@
 #
 # @file ProcSsmYacc.py
 #
+"""
+Process SSM input data.
+"""
 
 import os
 import sys
@@ -68,11 +71,11 @@ def main(argv):
     if fname is None or len(fname)==0:
         print "No input file specified"
         return 1
-      
+
     cfg = BarsConfig('%s/bars.cfg' % etcdir)
 
     # Open connection to database
-    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)  
+    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
 
     YaccFile(fname)
 

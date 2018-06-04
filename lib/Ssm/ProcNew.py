@@ -1,5 +1,8 @@
 # @file ProcNew.py
 #
+"""
+Process new flights.
+"""
 
 import sys
 import ply.lex as lex

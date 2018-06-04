@@ -12,7 +12,8 @@ from BarsLog import set_verbose, printlog
 from Ssm.SsmDb import CheckCityPair, GetCityPair
 from BarsConfig import BarsConfig
 from DbConnect import OpenDb, CloseDb
-from Flight.WriteFares import AddCityPair, AddFareSegments, AddFares
+from Flight.WriteFares import AddCityPair, AddFareSegments, AddFares, \
+    DelFareSegments
 from Flight.ReadFares import ReadCityPairs, ReadFareSegments, ReadFareCodes
 
 
@@ -45,6 +46,7 @@ def main(argv):
     etcdir = "%s/etc" % barsdir
     docity = False
     dofare = False
+    dofaredel = False
     dt1 = None
     dt2 = None
     payAmount = None
@@ -57,7 +59,8 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv,
                                    "cfhivxyVA:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
-                                   ["help", "city", "fare", "date=", "edate=", "flight=",
+                                   ["help", "city", "fare", "faredel",
+                                    "date=", "edate=", "flight=",
                                     "period=", "seats=", "days=", "class=",
                                     "locator=", "bookno=", "depart=", "arrive=",
                                     "aircraft=", "freq=", "cfgtable="
@@ -79,6 +82,8 @@ def main(argv):
             docity = True
         elif opt == "--fare":
             dofare = True
+        elif opt == "--faredel":
+            dofaredel = True
         elif opt in ("-D", "--date"):
             dt1 = ReadDate(arg)
             printlog(1, "\t start date %s" % dt1.strftime("%Y-%m-%d"))
@@ -121,6 +126,10 @@ def main(argv):
                             cfg.User, cfg.Group)
             AddFares(conn, cfg.CompanyCode, departure_airport, arrival_airport,
                      cfg.SellingClasses, cfg.User, cfg.Group)
+    elif dofaredel and departure_airport is not None \
+    and arrival_airport is not None and dt1 is not None and dt2 is not None:
+        DelFareSegments(conn, cfg.CompanyCode,
+                        departure_airport, arrival_airport, dt1, dt2)
     elif dofare:
         ReadFareCodes(conn)
         ReadFareSegments(conn)

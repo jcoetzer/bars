@@ -1,5 +1,8 @@
 # @file SsmDb.py
 #
+"""
+SSM data as stored in database.
+"""
 
 from BarsLog import printlog
 

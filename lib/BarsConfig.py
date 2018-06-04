@@ -1,7 +1,13 @@
+"""
+BARS configuration file.
+"""
+
 import ConfigParser
 
 class BarsConfig(object):
-
+    """
+    BARS configuration.
+    """
     DbName = 'barsdb'
     dbuser = 'postgres'
     dbhost = 'localhost'

@@ -1,14 +1,14 @@
-#!/usr/bin/python
-#
-# @file SsmYacc.py
-#
+"""
+Parse SSM input.
+
+@file SsmYacc.py
+"""
 
 import sys
 import ply.lex as lex
 import ply.yacc as yacc
 
 from SsmLex import tokens
-#import SsmLex
 from SsmData import SsmData, \
     set_action, \
     set_time_zone, \

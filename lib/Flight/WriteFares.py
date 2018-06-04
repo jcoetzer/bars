@@ -1,4 +1,6 @@
-
+"""
+Add and delete fare related data.
+"""
 import psycopg2
 
 from BarsLog import printlog
@@ -49,7 +51,6 @@ def AddFare(conn, company_code, fare_code, selling_class, aUser, aGroup):
     printlog(2, "Inserted %d row(s)" % cur.rowcount)
 
 
-
 def AddFares(conn, company_code, depart_airport, arrive_airport,
              selling_classes, aUser, aGroup):
     """New fares."""
@@ -60,6 +61,20 @@ def AddFares(conn, company_code, depart_airport, arrive_airport,
         AddFare(conn, company_code, fare_code, selling_classes[i],
                 aUser, aGroup)
         i += 1
+
+
+def DelFares(conn, company_code, depart_airport, arrive_airport):
+    """New fares."""
+    fare_code = 'X' + company_code + depart_airport + arrive_airport
+    DfSql = """DELETE FROM fare_codes
+    WHERE company_code='%s' AND fare_code='%s'""" \
+    % (company_code, fare_code)
+
+    printlog(2, "%s" % AfSql)
+    cur = conn.cursor()
+    cur.execute(AfSql)
+
+    printlog(2, "Deleted %d row(s)" % cur.rowcount)
 
 
 def AddFareSegment(conn, company_code, fare_code, city_pair, dt1, dt2,
@@ -91,4 +106,20 @@ def AddFareSegments(conn, company_code, depart_airport, arrive_airport,
     fare_code = 'X' + company_code + depart_airport + arrive_airport
     AddFareSegment(conn, company_code, fare_code, city_pair, dt1, dt2,
                    fare_value, aUser, aGroup)
+
+
+def DelFareSegments(conn, company_code, depart_airport, arrive_airport,
+                    dt1, dt2):
+    """New fares."""
+    fare_code = 'X' + company_code + depart_airport + arrive_airport
+    DfSql = """DELETE FROM fare_segm
+    WHERE company_code='%s' AND fare_code='%s'
+    AND valid_from_date='%s' AND valid_to_date='%s'""" \
+    % (company_code, fare_code, dt1, dt2)
+
+    printlog(2, "%s" % AfSql)
+    cur = conn.cursor()
+    cur.execute(AfSql)
+
+    printlog(2, "Deleted %d row(s)" % cur.rowcount)
 
