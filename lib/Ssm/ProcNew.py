@@ -13,6 +13,7 @@ import datetime
 
 
 def CheckAircraftConfig(conn, acft_code):
+    """Check aircraft configuration."""
     ConfigTableNo = None
     caSql = "SELECT config_table_no FROM aircraft_config WHERE aircraft_code = '%s' LIMIT 1" % acft_code
     cur = conn.cursor()
@@ -26,7 +27,7 @@ def CheckAircraftConfig(conn, acft_code):
 
 
 def FpFromSsm(conn, flightNumber, startDate, endDate, frequencyCode, userName, groupName):
-
+    """Process flight from SSM."""
     spnSql = "SELECT COALESCE(MAX(schedule_period_no),0) FROM flight_periods"
     cur = conn.cursor()
     printlog(2, "%s" % spnSql)
@@ -46,7 +47,7 @@ def FpLegsFromSsm(conn, flightNumber, schedPerdNo,
                   depAirport, depTerminal, depTime,
                   arrAirport, arrTerminal, arrTime,
                   flightPath, configNo, legNo):
-
+    """Process flight legs from SSM."""
     cur = conn.cursor()
     fplSql = "SELECT s1.nation_code, s2.nation_code " \
             "FROM state s1, city c1, airport a1, state s2, city c2, airport a2 " \
@@ -110,6 +111,7 @@ def AddFlightSegmDate(conn,
                       aleg_number,
                       asegment_number,
                       aschedule_period_no):
+    """Add flight segment dates."""
     cur = conn.cursor()
     fsdSql = "INSERT INTO flight_segm_date (" \
         "flight_number, board_date," \
@@ -191,6 +193,7 @@ def AddFlightPeriodSegment(conn,
                            aaircraft_code,
                            apost_control_flag,
                            asegment_number):
+    """Add flight period segments."""
     cur = conn.cursor()
     fplSql = \
         "INSERT INTO flight_perd_segm (" \
@@ -212,6 +215,7 @@ def AddFlightPeriodSegment(conn,
 
 def IsPeriodToBeExtended(conn, startDate, endDate, startDateMinusOne,
                          frequency_codes, flightNumber, aircraftConfig):
+    """Check flight period."""
     alteredFrequency = ""
     d = 1
     while d <= 7:
@@ -289,6 +293,7 @@ def WriteFlightInfo(conn,
                     aDescription,
                     userName,
                     groupName):
+    """Write flight information."""
     cur = conn.cursor()
     fiSql = "INSERT INTO flight_information (" \
         " flight_number, board_date," \

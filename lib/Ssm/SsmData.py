@@ -155,6 +155,10 @@ def add_equipment(atype, abook, atail, cdata, cdata2=None):
 
 
 def read_ssm_data():
+    global action, flight_number, start_date, end_date, frequency_code, \
+        frequency_codes, departure_airport, departure_time, arrival_airport, \
+        arrival_time, aircraft_code, aircraft_conf, aircraft_tail, \
+        class_codes, class_seats
     ssm_data = SsmData(action,
                        flight_number,
                        start_date,

@@ -4829,7 +4829,7 @@ CREATE TABLE fare_codes (
     byps_strt_auth_level smallint,
     byps_end_auth_level smallint,
     update_user character(5) NOT NULL,
-    group_name character(8) NOT NULL,
+    update_group character(8) NOT NULL,
     update_time timestamp WITH time zone
 );
 
@@ -5226,7 +5226,7 @@ CREATE TABLE fare_segm (
     export_timestamp timestamp WITH time zone,
     inactive_date timestamp WITH time zone,
     update_user character(8) NOT NULL,
-    group_name character(8) NOT NULL,
+    update_group character(8) NOT NULL,
     update_time timestamp WITH time zone
 );
 
@@ -7084,7 +7084,7 @@ CREATE TABLE inventry_segment (
     schedule_period_no smallint NOT NULL,
     invt_update_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
-    group_name character(8) NOT NULL,
+    update_group character(8) NOT NULL,
     update_time timestamp WITH time zone
 );
 
@@ -10350,7 +10350,7 @@ CREATE TABLE selling_conf (
     sell_cls_category character(2) NOT NULL,
     ffp_fact_mult numeric(5,2),
     update_user character(5) NOT NULL,
-    group_name character(8) NOT NULL,
+    update_group character(8) NOT NULL,
     update_time timestamp WITH time zone
 );
 

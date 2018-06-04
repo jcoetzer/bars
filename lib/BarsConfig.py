@@ -19,13 +19,13 @@ class BarsConfig(object):
     Currency = 'ZAR'
     FareCode = 'XZZOW'
     BookCategory = 'S'     # or G for groups
-    
+
     def __init__(self, cfgfile):
         """Initialize this thing."""
-    
+
         config = ConfigParser.ConfigParser()
         config.readfp(open(cfgfile))
-        
+
         self.dbname = config.get('Database', 'dbname')
         self.dbuser = config.get('Database', 'dbuser')
         self.dbhost = config.get('Database', 'dbhost')
@@ -36,12 +36,11 @@ class BarsConfig(object):
         self.OriginAddress = config.get('Airline', 'OriginAddress')
         self.OriginBranchCode = config.get('Airline', 'OriginBranchCode')
         self.AgencyCode = config.get('Airline', 'AgencyCode')
-        self.SellingClass = config.get('Airline', 'SellingClass')
+        self.SellingClasses = config.get('Airline', 'SellingClasses')
         self.PaxCode = config.get('Airline', 'PaxCode')
         self.FareCode = config.get('Airline', 'FareCode')
         self.BookCategory = config.get('Airline', 'BookCategory')
         self.User = config.get('Users', 'User')
         self.Group = config.get('Users', 'Group')
         self.Currency = config.get('Country', 'Currency')
-    
-    
+

@@ -12,7 +12,7 @@ def OpenDb(dbname, dbuser, dbhost):
             % (dbname, dbuser, dbhost)
         conn = psycopg2.connect(connstr)
     except:
-        print("Could not connect to database %s" % (dbname))
+        print("Could not connect to database: %s" % (connstr))
         sys.exit(1)
     printlog(1, "Connected to database %s" % dbname)
     return conn
