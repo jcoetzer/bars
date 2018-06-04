@@ -18,8 +18,6 @@
 %{
 #include <string.h>
 #include "UserLogSsm.h"
-#include "ssm.h"
-#include "asmssm.h"
 #include "readssm.tab.h"
 
 /* to prevent spurious output */
@@ -48,12 +46,6 @@ END_OF_LINE    ([\n]|[\r][\n])
 
 %%
 
-    /*
-     * In general, the state of the lexer is called by the name
-     * of the expected input line. If the line does not match
-     * it goes to the error state - print the line and exit
-     */
-
 BEGIN(address);
 
 {CONTROL_CHAR} {
@@ -61,7 +53,7 @@ BEGIN(address);
 }
 
 [\.] {
-    lex_userlog(3, "\nDot", NULL);
+    lex_userlog(3, "\nDot");
     return DOT;
 }
 
@@ -76,10 +68,10 @@ BEGIN(address);
     ;
 }
 
+<address>[A-Z0-9]{6,7}[\ ] {
     /*
      * Destination address
      */
-<address>[A-Z0-9]{6,7}[\ ] {
     int n = strlen(yytext);
     yytext[n-1] = 0;
     lex_userlog(3, "\nAddress 3 [%s]", yytext);
@@ -109,18 +101,19 @@ BEGIN(address);
     BEGIN(sender);
 }
 
+<sender>\.[A-Z]([A-Z0-9]{6})((\ ([0-9]{6}))*) {
     /*
      * Sender
      */
-<sender>\.[A-Z]([A-Z0-9]{6})((\ ([0-9]{6}))*) {
-    /* sender. Ignore trailing garbage */
+
+    /* Ignore trailing junk */
     lex_userlog(3, "\nSender [%s]", yytext);
     strcpy(yylval.sval, &yytext[1]);
     return SENDER;
 }
 
 <sender>[A-Z]([A-Z]{6})\ ([A-Z]{2}\/[0-9]{6})((\/([A-Z0-9])*)*)  {
-    /* sender. Ignore trailing garbage */
+    /* Ignore trailing junk */
     lex_userlog(3, "\nSender 2 [%s]", yytext);
     strcpy(yylval.sval, yytext);
     return SENDER;
@@ -139,10 +132,10 @@ BEGIN(address);
     BEGIN(ssm);
 }
 
+<ssm>{CONTROL_CHAR}?SSM {
     /*
      * File type
      */
-<ssm>{CONTROL_CHAR}?SSM {
     lex_userlog(3, "\nSSM [%s]", yytext);
     strcpy(yylval.sval, yytext);
     return MTYPE;
@@ -174,11 +167,12 @@ BEGIN(address);
     BEGIN(time_type);
 }
 
+<time_type>^LT  {
     /*
      * Time tipe : UTC or LT
+     * if not specified then UTC
      */
-<time_type>^LT  {
-    /* local or UTC times - if none then UTC */
+
     lex_userlog(3, "\nTime [%s]", yytext);
     strcpy(yylval.sval, yytext);
     return TTYPE;
@@ -192,7 +186,6 @@ BEGIN(address);
 
 <time_type>^{DATE} {
     lex_userlog(3, "\nDate [%s]", yytext);
-    /* the ref line starts in a date */
     unput_all();
 }
 
@@ -206,18 +199,21 @@ BEGIN(address);
     BEGIN(msg_ref);
 }
 
-    /*
-     * Message reference
-     */
 <msg_ref>({CONTROL_CHAR}*){ACTION_IDS}.*       {
-    /* No message reference was found, move along */
+
+    /*
+     * No message reference was found, move along
+     */
     lex_userlog(3, "\nMessage ref 1 [%s]", yytext);
     unput_all();
     BEGIN(msg_type);
 }
 
 <msg_ref>.* {
-    /* ref line - basically date, serial, E/C, part. No parsing */
+    /*
+     * Message reference
+     * Date, serial number, etc. No parsing
+     */
     lex_userlog(3, "\nMessage ref junk [%s]", yytext);
 }
 
@@ -225,10 +221,10 @@ BEGIN(address);
     BEGIN(msg_type);
 }
 
+<msg_type>({CONTROL_CHAR}*)NEW.*  {
     /*
      * Message type
      */
-<msg_type>({CONTROL_CHAR}*)NEW.*  {
     lex_userlog(3, "\nNew [%s]", yytext);
     emsgtyp = NEW;
     return NEW;
@@ -273,7 +269,7 @@ BEGIN(address);
 }
 
 <msg_type>^(([:cntrl:])?)CON.* {
-    /* change of aircraft configuration SSM */
+    /* change of aircraft configuration */
     lex_userlog(3, "\nConfigure 2 [%s]", yytext);
     emsgtyp = CON;
     return CON;
@@ -287,10 +283,6 @@ BEGIN(address);
 }
 
 <msg_type>^(([:cntrl:])?)EQT.* {
-    /*
-     * @todo change of aircraft configuration SSM to be done as CON...
-     * this is for time being
-    */
     lex_userlog(3, "\nEquipment 2 [%s]", yytext);
     strcpy(yylval.sval, yytext);
     emsgtyp = EQT;
@@ -304,7 +296,7 @@ BEGIN(address);
 }
 
 <msg_type>^(([:cntrl:])?)TIM.* {
-    /* change times in schedule SSM */
+    /* Change times in schedule */
     lex_userlog(3, "\nChange time [%s]", yytext);
     emsgtyp = TIM;
     return TIM;
@@ -320,10 +312,10 @@ BEGIN(address);
     BEGIN(flight_info);
 }
 
+<flight_info>^[A-Z]([A-Z]{1,2})([0-9]{1,4}) {
     /*
      * Flight information
      */
-<flight_info>^[A-Z]([A-Z]{1,2})([0-9]{1,4}) {
     lex_userlog(3, "\nFlight number 1 [%s]", yytext);
     strcpy(yylval.sval, yytext);
     return FLIGHT;
@@ -345,10 +337,10 @@ BEGIN(address);
     BEGIN(period_info);
 }
 
+<period_info>{DATE} {
     /*
      * Flight period information
      */
-<period_info>{DATE} {
     lex_userlog(3, "\nDate [%s]", yytext);
     strcpy(yylval.sval, yytext);
     return DATEDM;
@@ -364,23 +356,23 @@ BEGIN(address);
     switch (emsgtyp)
     {
         case FLT :
-            lex_userlog(3, "\nRead new flight", NULL);
+            lex_userlog(3, "\nRead new flight");
             BEGIN(new_flight_info);
             break;
         case TIM :
-            lex_userlog(3, "\nRead legs", NULL);
+            lex_userlog(3, "\nRead legs");
             BEGIN(leg_info);
             break;
         default :
-            lex_userlog(3, "\nRead equipment", NULL);
+            lex_userlog(3, "\nRead equipment");
             BEGIN(equip_info);
     }
 }
 
+<new_flight_info>^[A-Z]([A-Z]{1,2})([0-9]{1,4}) {
     /*
      * New flight information
      */
-<new_flight_info>^[A-Z]([A-Z]{1,2})([0-9]{1,4}) {
     lex_userlog(3, "\nNew flight number [%s]", yytext);
     strcpy(yylval.sval, yytext);
     return FLIGHT;
@@ -390,10 +382,10 @@ BEGIN(address);
     BEGIN(equip_info);
 }
 
+<equip_info>[A-Z] {
     /*
      * Equipment information
      */
-<equip_info>[A-Z] {
     lex_userlog(3, "\nService type [%s]", yytext);
     strcpy(yylval.sval, yytext);
     return STYPE;
@@ -406,7 +398,6 @@ BEGIN(address);
 }
 
 <equip_info>[A-Z]{2}\. {
-    /* same as the above LF format */
     lex_userlog(3, "\nPax book [%s]", yytext);
     strncpy(yylval.sval, yytext, 2);
     yylval.sval[2] = 0;
@@ -439,19 +430,19 @@ BEGIN(address);
     switch (emsgtyp)
     {
         case EQT :
-            lex_userlog(3, "\nRead segments", NULL);
+            lex_userlog(3, "\nRead segments");
             BEGIN(segment_info);
             break;
         default :
-            lex_userlog(3, "\nRead legs", NULL);
+            lex_userlog(3, "\nRead legs");
             BEGIN(leg_info);
     }
 }
 
+<leg_info>[A-Z]{3}[0-9]{4} {
     /*
      * Leg segment information
      */
-<leg_info>[A-Z]{3}[0-9]{4} {
     lex_userlog(3, "\nLeg station [%s]", yytext);
     strcpy(yylval.sval, yytext);
     return LEGSTN;
@@ -490,10 +481,10 @@ BEGIN(address);
     ;
 }
 
+<class_info>[0-9]{1,3}\/ {
     /*
      * Class information
      */
-<class_info>[0-9]{1,3}\/ {
     int n;
     char cval[8];
 

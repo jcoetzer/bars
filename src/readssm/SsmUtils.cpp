@@ -16,8 +16,7 @@
 
 #include "UserLogSsm.h"
 #include "SsmUtils.h"
-#include "SsmDb.h"
-#include "CheckFlight.h"
+//? #include "SsmDb.h"
 
 #define NOTUX 1
 #include "UserLogSsm.h"

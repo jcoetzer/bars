@@ -8,7 +8,7 @@
 
 #include <time.h>
 
-#include "FlightData.h"
+// #include "FlightData.h"
 
 #define    time2short(T)    (((T) / 100) * 60 + ((T) % 100))
 #define    dci(D, A)        ((A) - (D))
@@ -113,7 +113,7 @@ char * str2freq(char *days,
  * Check if frequency is a subset
  *
  * @todo figure out what this turkey does
- * 
+ *
  * @param newFrequency  new frequency code
  * @param oldFrequency  old frequency to change
  * @param[out] subset  subset indicator

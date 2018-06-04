@@ -1,3 +1,8 @@
 *.c
 *.o
 ssmread
+ssmwrite
+readssm.kdev4
+readssm.output
+readssm.tab.h
+

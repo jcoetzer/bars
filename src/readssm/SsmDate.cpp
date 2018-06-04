@@ -14,11 +14,28 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include "SsmDb.h"
+// #include "SsmDb.h"
 #include "SsmUtils.h"
 #include "SsmDate.h"
 #include "SsmDate.hpp"
 #include "UserLogSsm.h"
+
+
+/*
+ * Get day of week
+ * 1 for Monday, 7 for Sunday etc.
+ */
+int DayOfWeek(int y, int m, int d)
+{
+    static int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+    int rc;
+
+    y -= m < 3;
+    // value is 0 = Sunday, 1 = Monday, etc.
+    rc = (y + y/4 - y/100 + y/400 + t[m-1] + d) % 7;
+    if ( rc==0 ) rc = 7;
+    return rc;
+} // DayOfWeek()
 
 // Write time to log
 void TimeStamp(const char * msg)
@@ -310,7 +327,7 @@ SsmDate::SsmDate(std::string datev)
         }
         else
         {
-            fprintf(stderr, "Invalid date '%s' (%d bytes)\n", arg, strlen(arg));
+            fprintf(stderr, "Invalid date '%s' (%lu bytes)\n", arg, strlen(arg));
             throw 3;
         }
     }

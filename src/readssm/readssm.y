@@ -1,12 +1,11 @@
 %{
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 
 #include "UserLogSsm.h"
 #include "readssm.tab.h"
-
-#include "SsmData.h"
 
 #define yacc_userlog(format, ...) printf("\n" format, ## __VA_ARGS__)
 
@@ -14,6 +13,9 @@ extern int yylineno;
 extern char * yytext;
 
 extern int verbose;
+
+int yylex();
+int yyerror();
 
 %}
 
@@ -355,7 +357,7 @@ leg : LEGSTN LEGSTN FREQ
 
 leg : SEGMENT SEGMENT
 {
-    userlogv(2, "*** Leg: from %s to %s (%d)", $1, $2);
+    userlogv(2, "*** Leg: from %s to %s", $1, $2);
 #if defined(_PROCSSM) || defined(_CHECKSSM)
     add_leg($1, $2, 0);
 #endif
@@ -410,7 +412,8 @@ segment : SEGMENT COUNT SEGDATA SEGDATA SEGDATA SEGDATA
 
     strncpy(dep, $1, 3);
     strncpy(arr, &$1[3], 3);
-    userlogv(2, "*** Segment 6: depart %s arrive %s code %d data %s %s %s", dep, arr, $2, $3, $4, $5, $6);
+
+    userlogv(2, "*** Segment 6: depart %s arrive %s code %d data %s %s %s %s", dep, arr, $2, $3, $4, $5, $6);
 #if defined(_PROCSSM) || defined(_CHECKSSM)
     add_segment(dep, arr, $2, $3);
     add_segment(dep, arr, $2, $4);
@@ -426,7 +429,7 @@ segment : SEGMENT COUNT SEGDATA SEGDATA SEGDATA SEGDATA SEGDATA
 
     strncpy(dep, $1, 3);
     strncpy(arr, &$1[3], 3);
-    userlogv(2, "*** Segment 6: depart %s arrive %s code %d data %s %s %s", dep, arr, $2, $3, $4, $5, $6, $7);
+    userlogv(2, "*** Segment 6: depart %s arrive %s code %d data %s %s %s %s %s", dep, arr, $2, $3, $4, $5, $6, $7);
 #if defined(_PROCSSM) || defined(_CHECKSSM)
     add_segment(dep, arr, $2, $3);
     add_segment(dep, arr, $2, $4);
@@ -468,12 +471,12 @@ classes : SEGMENT
 
 commid : DOT COMMID NUM6
 {
-    userlogv(2, "*** Communication: %s 06d", $2, $3);
+    userlogv(2, "*** Communication: %s %06d", $2, $3);
 }
 
 %%
 
-yyerror(char *s)
+int yyerror(char *s)
 {
     fprintf(stderr, "Yacc error: %s at line %d '%s'", s, yylineno,  yytext);
 }

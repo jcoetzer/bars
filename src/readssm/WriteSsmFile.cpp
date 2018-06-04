@@ -12,12 +12,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "gitrev.h"
 #include "SsmUtils.h"
-#include "SsmData.h"
 #include "UserLogSsm.h"
-#include "CheckFlight.h"
-#include "ReadCsvData.h"
+// #include "ReadCsvData.h"
 
 #include "WriteSsm.h"
 
@@ -41,6 +38,41 @@ void show_usage(char * pname);
  * @param pname     file name
  */
 void show_version(char * pname);
+
+/*
+ * Get day of week for date in mdy formay
+ * 1 for Monday, 7 for Sunday etc.
+ */
+int DayOfWeekSt(char * adate)
+{
+    static int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+    int rc;
+    int y, m, d;
+    char * tok;
+    char sdate[32];
+
+    strcpy(sdate, adate);
+
+    /// @todo check for errors here
+    tok = strtok(sdate, "/");
+    if ( tok == NULL ) return 1;
+    m = atoi(tok);
+
+    tok = strtok(NULL, "/");
+    if ( tok == NULL ) return 1;
+    d = atoi(tok);
+
+    tok = strtok(NULL, "/");
+    if ( tok == NULL ) return 1;
+    y = atoi(tok);
+
+    y -= m < 3;
+    // value is 0 = Sunday, 1 = Monday, etc.
+    rc = (y + y/4 - y/100 + y/400 + t[m-1] + d) % 7;
+    if ( rc==0 ) rc = 7;
+
+    return rc;
+} // DayOfWeek()
 
 
 /**
@@ -353,8 +385,8 @@ int main(int argc, char **argv)
 // Display build information
 void show_version(char * pname)
 {
-    fprintf(stderr, "%s :\n", basename(pname));
-    fprintf(stderr, "\tWrite flight data (version %s) %s\n", gitrev, dtbuild);
+    fprintf(stderr, "%s V1.0.0:\n", basename(pname));
+    fprintf(stderr, "\tWrite flight data\n");
     exit(1);
 } // show_version()
 
@@ -362,7 +394,7 @@ void show_version(char * pname)
 // Display help message
 void show_usage(char * pname)
 {
-    fprintf(stderr, "Write flight data (version %s) :\n", gitrev);
+    fprintf(stderr, "Write flight data :\n");
     fprintf(stderr, "\t%s --cnl|--eqt|--new|--rpl|--tim\n", basename(pname));
     fprintf(stderr, "\t\t -F <FLIGHT> -D <DATE> -Q <FREQ>\n");
     fprintf(stderr, "\t\t [-E <DATE>] [-A <CODE>] [-I <TIME>] [-J <TIME>] [-K <CITY>] [-L <CITY>] [-G <FLIGHT>] [-T <TAIL>]\n");

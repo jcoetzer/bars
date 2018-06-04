@@ -18,7 +18,7 @@
 
 #include "WriteSsm.h"
 #include "SsmDate.hpp"
-#include "DbDate.h"
+// #include "DbDate.h"
 
 extern int verbose;
 
@@ -195,7 +195,7 @@ int MakeFlightDate(std::string datev,
         }
         else
         {
-            fprintf(stderr, "Invalid date '%s' (%d bytes)\n", arg, strlen(arg));
+            fprintf(stderr, "Invalid date '%s' (%lu bytes)\n", arg, strlen(arg));
             throw 3;
         }
         strftime(odate_iata, iata_len, "%d%b%Y", &dts);
