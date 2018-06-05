@@ -1,19 +1,23 @@
 # @file FlightDetails.py
 
 import psycopg2
-    
+
 from BarsLog import printlog
 from datetime import datetime, date
 
-def GetFlightDetails(conn, aflight_number, aboard_date, adeparture_airport, aarrival_airport):
-
+def GetFlightDetails(conn, aflight_number, aboard_date,
+                     adeparture_airport, aarrival_airport):
+    """Get flight details."""
+    printlog(1, "Get flight %s board %s depart %s arrive %s"
+             % (aflight_number, aboard_date,
+                adeparture_airport, aarrival_airport))
     fdSql = \
         "SELECT fsd.flight_number, fsd.board_date, fsd.flight_date," \
         #"(fsd.board_date + interval fsd.date_change_ind days) as arrival_date," \
     fdSql += \
         " fsd.flight_date, fsd.departure_time, fsd.arrival_time," \
-        " cp.city_pair, cp.start_city, dc.city_name," \
-        " cp.end_city, ac.city_name," \
+        " cp.city_pair, cp.departure_airport, dc.city_name," \
+        " cp.arrival_airport, ac.city_name," \
         " fsd.departure_airport, da.airport_name," \
         " fsd.arrival_airport, aa.airport_name," \
         " fsd.departure_terminal, dt.terminal_name," \
@@ -30,8 +34,8 @@ def GetFlightDetails(conn, aflight_number, aboard_date, adeparture_airport, aarr
         " LEFT JOIN terminal as at on at.airport_code = fsd.arrival_airport and at.terminal_no = fsd.arrival_terminal" \
         " LEFT JOIN airport as da on da.airport_code = fsd.departure_airport" \
         " LEFT JOIN airport as aa on aa.airport_code = fsd.arrival_airport" \
-        " LEFT JOIN city as dc on dc.city_code = cp.start_city" \
-        " LEFT JOIN city as ac on ac.city_code = cp.end_city" \
+        " LEFT JOIN city as dc on dc.city_code = cp.departure_city" \
+        " LEFT JOIN city as ac on ac.city_code = cp.arrival_airport" \
         " LEFT JOIN master_files as air on air.file_code = 'ACFT' and air.master_code = fsd.aircraft_code" \
         " LEFT JOIN state as dps on dps.state_code = dc.state_code" \
         " LEFT JOIN state as ars on ars.state_code = ac.state_code" \
@@ -44,7 +48,7 @@ def GetFlightDetails(conn, aflight_number, aboard_date, adeparture_airport, aarr
             " AND fsd.arrival_airport = '%s'" \
                 % (adeparture_airport, aarrival_airport)
     fdSql += \
-        " ORDER BY fsd.board_date, departure_time, fsd.flight_number" 
+        " ORDER BY fsd.board_date, departure_time, fsd.flight_number"
     printlog(2, "%s" % fdSql)
     cur = conn.cursor()
     cur.execute(fdSql)
@@ -56,7 +60,7 @@ def GetFlightDetails(conn, aflight_number, aboard_date, adeparture_airport, aarr
         flight_date = row[2]
         arrival_date = row[3]
         departure_time = row[4]
-        arrival_time = row[5]        
+        arrival_time = row[5]
         departure_airport = row[11]
         arrival_airport = row[13]
         distance = row[19]
@@ -67,7 +71,7 @@ def GetFlightDetails(conn, aflight_number, aboard_date, adeparture_airport, aarr
         aircraft_description = row[23]
         journey_time = datetime.combine(date.min, arrival_time) - datetime.combine(date.min, departure_time)
         print "Flight %s depart %s %s %s arrive %s %s %s (%s) aircraft %s (%s) %dkm %d stops" \
-            % (flight_number, departure_airport, flight_date, departure_time, arrival_airport, arrival_date, arrival_time, journey_time, 
+            % (flight_number, departure_airport, flight_date, departure_time, arrival_airport, arrival_date, arrival_time, journey_time,
                aircraft_description, aircraft_code,
                distance, no_of_stops)
 

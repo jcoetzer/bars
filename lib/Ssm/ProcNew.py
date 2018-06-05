@@ -76,7 +76,7 @@ def FpLegsFromSsm(conn, flightNumber, schedPerdNo,
         "departure_airport, arrival_airport, departure_time, arrival_time, " \
         "date_change_ind, config_table_no, flight_path_code, " \
         "departure_terminal, arrival_terminal, leg_number, " \
-        "user_name, user_group, update_time ) " \
+        "update_user, update_group, update_time ) " \
         "VALUES ( '%s', %d, " \
                  "'%s', '%s', '%s', '%s'," \
                  "%d, '%s', '%s'," \
@@ -126,7 +126,7 @@ def AddFlightSegmDate(conn,
         "flgt_sched_status, aircraft_code," \
         "flight_closed_flag, flight_brdng_flag," \
         "no_of_stops, leg_number," \
-        "segment_number,  schedule_period_no, user_name, user_group, update_time) " \
+        "segment_number,  schedule_period_no, update_user, update_group, update_time) " \
         "VALUES ('%s', '%s', " \
         "%d, '%s', " \
         "'%s', '%s', " \
@@ -175,7 +175,7 @@ def AddFlightPeriodLegs(conn,
         date_change_ind, config_table_no,
         flight_path_code, departure_terminal,
         arrival_terminal, leg_number,
-        user_name, user_group, update_time )
+        update_user, update_group, update_time )
     VALUES (
         '%s',%d,'%s','%s','%s','%s',%d,'%s','%s','%s','%s',%d,'SSM','SSM',NOW())""" \
     % (aflight_number, aschedule_period_no, adeparture_airport,
@@ -304,7 +304,7 @@ def WriteFlightInfo(conn,
         " seq_no, delay_code," \
         " delay_description, etd_time," \
         " eta_time, tail_number, remarks," \
-        " user_name, user_group, update_time )" \
+        " update_user, update_group, update_time )" \
         " VALUES ( '%s', '%s'," \
                   "'%s', '%s'," \
                   " %d, '%s', '%s', " \
@@ -341,7 +341,7 @@ def AddFlightPeriod(conn,
             "schedule_period_no, invt_end_date, " \
             "control_branch, invt_control_flag, wait_lst_ctrl_flag, via_cities, " \
             "flgt_sched_status, open_end_flag, scrutiny_flag, gen_flag_invt, " \
-            "user_name, user_group, update_time) " \
+            "update_user, update_group, update_time) " \
             "VALUES(" \
             "'%s', '%s', '%s', '%s', " \
             "%d, '%s'," \
@@ -377,16 +377,16 @@ def AddFlightSharedLeg(conn, flight_number, flight_date, spn,
     % (flight_number, flight_date, departure_city, arrival_city,
        flight_date, flight_number, spn,  flight_date, flight_date,
        departure_city, arrival_city, departure_time, arrival_time,
-       airport_code, airport_code, user_name)
+       airport_code, airport_code, update_user)
 
 
 def AddInventorySegment(conn, pflight_number, vflight_date,
                         tcity_pair, vselling_class,
                         vdeparture_city, varrival_city,
                         vleg_number, vsegment_number, vob_profile_no,
-                        vgroup_seat_lvl, vseat_protect_lvl, vlimit_sale_lvl,
-                        voverbooking_lvl, vposting_lvl,
-                        vsale_notify_lvl, vcancel_notify_lvl, vseat_capacity,
+                        vgroup_seat_level, vseat_protect_level, vlimit_sale_level,
+                        voverbooking_level, vposting_level,
+                        vsale_notify_level, vcancel_notify_level, vseat_capacity,
                         vsegm_closed_flag, vwl_closed_flag,
                         vwl_clr_inhbt_flag, vwl_rel_prty_flag,
                         vdisplay_priority, pschedule_period_no,
@@ -396,8 +396,8 @@ def AddInventorySegment(conn, pflight_number, vflight_date,
             "( flight_number, flight_date," \
             "city_pair, selling_class, departure_city, arrival_city," \
             "leg_number, segment_number, ob_profile_no, " \
-            "group_seat_lvl,seat_protect_lvl,limit_sale_lvl,overbooking_lvl,posting_lvl," \
-            "sale_notify_lvl,cancel_notify_lvl,seat_capacity," \
+            "group_seat_level,seat_protect_level,limit_sale_level,overbooking_level,posting_level," \
+            "sale_notify_level,cancel_notify_level,seat_capacity," \
             "overbooking_percnt," \
             "nett_sngl_sold," \
             "nett_sngl_wait," \
@@ -415,9 +415,9 @@ def AddInventorySegment(conn, pflight_number, vflight_date,
             "segm_sngl_ticktd," \
             "segm_group_ticktd," \
             "segm_nrev_ticktd," \
-            "segment_closed_flag,wl_closed_flag, wl_clr_inhibit_flag,wl_rel_prty_flag," \
+            "segment_closed_flag,wl_closed_flag, wl_clear_inhibit_flag,wl_release_party_flag," \
             "scrutiny_flag, display_priority,schedule_period_no," \
-            "invt_updt_flag, user_name, group_name, update_time )" \
+            "invt_update_flag, update_user, group_name, update_time )" \
             " VALUES ( '%s', '%s'," \
             " %d, '%s', '%s', '%s'," \
             " %d, '%s', '%s', " \
@@ -430,8 +430,8 @@ def AddInventorySegment(conn, pflight_number, vflight_date,
             % (pflight_number, vflight_date.strftime("%Y-%m-%d"),
                tcity_pair, vselling_class, vdeparture_city, varrival_city,
                vleg_number, vsegment_number, vob_profile_no,
-               vgroup_seat_lvl, vseat_protect_lvl, vlimit_sale_lvl, voverbooking_lvl, vposting_lvl,
-               vsale_notify_lvl, vcancel_notify_lvl, vseat_capacity,
+               vgroup_seat_level, vseat_protect_level, vlimit_sale_level, voverbooking_level, vposting_level,
+               vsale_notify_level, vcancel_notify_level, vseat_capacity,
                vsegm_closed_flag, vwl_closed_flag, vwl_clr_inhbt_flag, vwl_rel_prty_flag,
                vdisplay_priority, pschedule_period_no,
                pupdt_user_code, pupdt_dest_id)
@@ -523,11 +523,11 @@ def AddFlightPeriodSegmentClasses(conn, flight_number, spn, city_pair,
             fpscSql = """
             INSERT INTO flt_perd_seg_cls(
                     flight_number, schedule_period_no, city_pair, selling_class,
-                    group_seat_lvl, seat_protect_lvl, limit_sale_lvl, overbooking_lvl,
-                    posting_lvl, sale_notify_lvl, cancel_notify_lvl,
+                    group_seat_level, seat_protect_level, limit_sale_level, overbooking_level,
+                    posting_level, sale_notify_level, cancel_notify_level,
                     seat_capacity,
-                    ob_profile_no, segment_closed_flag, wl_closed_flag, wl_clr_inhibit_flag,
-                    wl_rel_prty_flag, segment_number, update_time)
+                    ob_profile_no, segment_closed_flag, wl_closed_flag, wl_clear_inhibit_flag,
+                    wl_release_party_flag, segment_number, update_time)
                 VALUES (
                     '%s', %d, %d, '%s',
                     0, 0, 0, 0,
@@ -591,7 +591,7 @@ def AddScheduleChangeAction(conn, flight_number, spn, city_pair,
             INSERT INTO schd_chng_action(
                 flight_number, schedule_period_no, city_pair, selling_class,
                 departure_airport, arrival_airport,
-                segm_update_flag, seg_cls_updt_flag,
+                segm_update_flag, seg_cls_update_flag,
                 action_date, action_type, processing_flag, update_time)
             VALUES(
                 '%s', %d, %d, '%s',

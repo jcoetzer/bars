@@ -137,8 +137,8 @@ def ReadSsmBookData(conn, flight, schedPerdNo):
         " AND REPLACE( fp.frequency_code, '7', '0' ) LIKE '%%' || WEEKDAY(fdl.flight_date)::CHAR || '%%'" \
         " AND fdl.board_date = i.flight_date" \
         " AND i.city_pair = cp.city_pair" \
-        " AND fdl.departure_airport = cp.start_city" \
-        " AND fdl.arrival_airport = cp.end_city" \
+        " AND fdl.departure_airport = cp.departure_city" \
+        " AND fdl.arrival_airport = cp.arrival_airport" \
         " AND i.book_no = b.book_no" \
         " AND b.booking_status <> 'X'" \
         " AND flgt_sched_status = 'A'" \

@@ -9,6 +9,7 @@ from BarsLog import printlog, get_verbose
 from ReadDateTime import ReadTime
 from FlightData import FlightPeriod
 
+
 def ReadFlightPeriods(conn, flightNumber, dt1, dt2):
 
     printlog(1, "Flight periods from %s to %s (flight %s)" \
@@ -35,7 +36,7 @@ def ReadFlightPeriods(conn, flightNumber, dt1, dt2):
         fn = row['flight_number']
         spn = int(row['schedule_period_no'])
         SpSql2 = \
-            "SELECT DISTINCT fps.aircraft_code aircraft, fsd.departure_airport start_city, fsd.arrival_airport end_city," \
+            "SELECT DISTINCT fps.aircraft_code aircraft, fsd.departure_airport departure_city, fsd.arrival_airport arrival_airport," \
             " departure_time, arrival_time" \
             " FROM flight_perd_segm fps, flight_segm_date fsd" \
             " WHERE fps.flight_number = '%s' AND fps.schedule_period_no = %d" \
@@ -55,8 +56,8 @@ def ReadFlightPeriods(conn, flightNumber, dt1, dt2):
                 codeshare = row3['dup_flight_number']
                 codeshares.append(codeshare)
             fp = FlightPeriod(fn, row['start_date'], row['end_date'], row['frequency_code'], spn,
-                              row2['start_city'], int(row2['departure_time']),
-                              row2['end_city'], int(row2['arrival_time']),
+                              row2['departure_city'], int(row2['departure_time']),
+                              row2['arrival_airport'], int(row2['arrival_time']),
                               row2['aircraft'], codeshares)
             fperds.append(fp)
 
@@ -108,7 +109,7 @@ def ReadFlightPeriodsLatest(conn, flightNumber, dt1, dt2):
             spn = int(row1['schedule_period_no'])
             printlog(1, "Flight %s start %s end %s frequency %s (schedule period %d)" % ( fn, row1['start_date'], end_date, row1['frequency_code'], spn), 1)
             SpSql2 = \
-                "SELECT DISTINCT fps.aircraft_code aircraft, fsd.departure_airport start_city, fsd.arrival_airport end_city," \
+                "SELECT DISTINCT fps.aircraft_code aircraft, fsd.departure_airport departure_city, fsd.arrival_airport arrival_airport," \
                 " departure_time, arrival_time" \
                 " FROM flight_perd_segm fps, flight_segm_date fsd" \
                 " WHERE fps.flight_number = '%s' AND fps.schedule_period_no = %d" \
@@ -128,8 +129,8 @@ def ReadFlightPeriodsLatest(conn, flightNumber, dt1, dt2):
                     codeshare = row3['dup_flight_number']
                     codeshares.append(codeshare)
                 fp = FlightPeriod(fn, row1['start_date'], row1['end_date'], row1['frequency_code'], spn,
-                                row2['start_city'], int(row2['departure_time']),
-                                row2['end_city'], int(row2['arrival_time']),
+                                row2['departure_city'], int(row2['departure_time']),
+                                row2['arrival_airport'], int(row2['arrival_time']),
                                 row2['aircraft'], codeshares)
                 fperds.append(fp)
 
@@ -145,8 +146,8 @@ def isMarketingOrOperational(conn, flightNumber, dt1, dt2, frequency=None):
         " FROM flight_shared_leg fsl, city_pair cp, flight_segm_date fsd" \
         " WHERE fsl.dup_flight_number = '%s'" \
         "  AND fsl.flight_date BETWEEN '%s' AND '%s'" \
-        "  AND fsl.departure_airport = cp.start_city" \
-        "  AND fsl.arrival_airport = cp.end_city" \
+        "  AND fsl.departure_airport = cp.departure_city" \
+        "  AND fsl.arrival_airport = cp.arrival_airport" \
         "  AND fsd.flight_number = fsl.dup_flight_number" \
         "  AND fsd.city_pair = cp.city_pair" \
         "  AND fsl.flight_date = fsd.flight_date" \

@@ -22,7 +22,7 @@ def FareCalcDisplay(conn,
             fs.city_pair, fs.valid_from_date,
             fs.valid_to_date, fs.fare_value,
             fc.short_description, fc.onw_return_flag,
-            fc.byps_strt_auth_lvl, fc.byps_end_auth_lvl,
+            fc.byps_strt_auth_level, fc.byps_end_auth_level,
             fc.selling_class
     FROM fare_segm fs, fare_codes fc
     WHERE fs.company_code = '%s'
@@ -47,8 +47,8 @@ def FareCalcDisplay(conn,
     AND fc.selling_class = '%s'
     AND fc.onw_return_flag = '%s'
     AND fc.fare_category = '%s'
-    AND fc.acss_strt_auth_lvl <= %d
-    AND fc.acss_end_auth_lvl >= %d
+    AND fc.acss_strt_auth_level <= %d
+    AND fc.acss_end_auth_level >= %d
     AND
     (
         (
@@ -89,8 +89,8 @@ def FareCalcDisplay(conn,
         fare_value = float(row[4])
         short_description = row[5]
         onw_return_flag = row[6]
-        byps_strt_auth_lvl = row[7]
-        byps_end_auth_lvl = row[8]
+        byps_strt_auth_level = row[7]
+        byps_end_auth_level = row[8]
         selling_class = row[9]
         printlog(2, "Fare %s from %s to %s: %f" % (fare_code, valid_from_date, valid_to_date, fare_value))
         pricing = FarePricingData(fare_code,
@@ -100,8 +100,8 @@ def FareCalcDisplay(conn,
                                   fare_value,
                                   short_description,
                                   onw_return_flag,
-                                  byps_strt_auth_lvl,
-                                  byps_end_auth_lvl,
+                                  byps_strt_auth_level,
+                                  byps_end_auth_level,
                                   selling_class
                                   )
         pricings.append(pricing)

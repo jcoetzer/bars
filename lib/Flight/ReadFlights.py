@@ -67,7 +67,7 @@ def ReadFlightInformation(conn, flight_number, flight_date):
     print "Flight information for flight %s board %s [flight_information]" \
         % (flight_number, flight_date.strftime("%Y-%m-%d"))
     RcSql = \
-        "SELECT departure_airport,arrival_airport,remarks,user_name" \
+        "SELECT departure_airport,arrival_airport,remarks,update_user" \
         " FROM flight_information" \
         " WHERE flight_number = '%s'" \
         " AND board_date = '%s'" \

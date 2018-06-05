@@ -45,7 +45,7 @@ def usage(pn):
     print("Check:")
     print("\t%s --chk -B <BOOK>" % pn)
     sys.exit(1)
-    
+
 
 def GetAvail(conn, dt1, dt2, cityPairNo,
              departAirport, arriveAirport,
@@ -97,21 +97,21 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
     """Make a booking."""
     vSeatQuantity = len(paxNames)
     if vSeatQuantity == 0:
-        print "No passenger names"
+        print("No passenger names")
         return
     if len(paxDobs) == 0:
-        print "No passenger birth dates"
+        print("No passenger birth dates")
         return
     if payAmount is None:
         payAmount = 0.0
     if sellClass is None:
         sellClass = 'Y'
     if departAirport is None or arriveAirport is None:
-        print "Flight number and date must be specified"
+        print("Flight number and date must be specified")
         return
     n, fd = ReadFlightDeparture(conn, sellClass, flightNumber, dt1)
     if n == 0:
-        print "Flight number and date not found"
+        print("Flight number and date not found")
         return
     departAirport = fd.departure_airport
     arriveAirport = fd.arrival_airport
@@ -134,7 +134,7 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
     if flightNumber2 is not None and dt is not None:
         n, fd = ReadFlightDeparture(conn, sellClass, flightNumber2, dt2)
         if n == 0:
-            print "Return flight number and date not found"
+            print("Return flight number and date not found")
             return
         departAirport = fd.departure_airport
         arriveAirport = fd.arrival_airport
@@ -149,7 +149,7 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
                 departTerm, arriveTerm,
                 cityPairNo, sellClass,
                 vUser, vGroup)
-        
+
     AddPassenger(conn, bn,
                  paxNames,
                  'ADULT', 'A',
@@ -159,12 +159,12 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
 
 
 def PutPay(conn, aCurrency, aPayAmount, aPayAmount2, aBookNo, aPaxNames, aPaxCode,
-           aDepart, aArrive,           
+           aDepart, aArrive,
            aOriginBranchCode,
            aUser, aGroup):
     """Process payment."""
     if aBookNo is None:
-        print "Book number not specified"
+        print("Book number not specified")
         return 1
     vPaymentForm = 'VI'
     vPaymentType = 'CC'
@@ -182,8 +182,8 @@ def PutPay(conn, aCurrency, aPayAmount, aPayAmount2, aBookNo, aPaxNames, aPaxCod
                             fnumber=None, start_date=None, end_date=None)
         l = len(irecs)
         if l > 2:
-            print "Found %d itenaries"
-            return 
+            print("Found %d itenaries")
+            return
         elif l == 2:
             for irec in irecs:
                 pass
@@ -203,7 +203,7 @@ def PutPay(conn, aCurrency, aPayAmount, aPayAmount2, aBookNo, aPaxNames, aPaxCod
 # TODO Cyclomatic complexity too high
 def main(argv):
     """Pythonic entry point."""
-    
+
     barsdir = os.environ['BARSDIR']
     etcdir = "%s/etc" % barsdir
 
@@ -316,11 +316,11 @@ def main(argv):
     if bn is not None:
         pnr = int2base20(bn)
         print("Booking %d PNR %s" % (bn, pnr))
-    
+
     cfg = BarsConfig('%s/bars.cfg' % etcdir)
 
     # Open connection to database
-    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)    
+    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
 
     if dochk:
         print("Check booking %d" % bn)

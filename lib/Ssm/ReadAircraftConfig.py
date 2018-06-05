@@ -12,9 +12,9 @@ def ReadAircraftConfig(conn, aircraft_code, config_table_no,
 
     print "Aircraft configuration for",
     AcSql = \
-        "SELECT gen_flag_invt,aircraft_code,limit_sale_lvl,scrutiny_flag," \
+        "SELECT gen_flag_invt,aircraft_code,limit_sale_level,scrutiny_flag," \
         "update_time,config_table_no,company_code,selling_class," \
-        "seat_capacity,user_name" \
+        "seat_capacity,update_user" \
         " FROM aircraft_config"
     if aircraft_code is not None and config_table_no is not None:
         print "aircraft code %s" % aircraft_code,
@@ -48,7 +48,7 @@ def ReadAircraftConfig(conn, aircraft_code, config_table_no,
         n += 1
         print "\tconfig table %5s aircraft code %4s capacity %3d class %s company %s inventory %s user %s update %s" \
             % (row['config_table_no'], row['aircraft_code'], row['seat_capacity'], row['selling_class'],
-               row['company_code'], row['gen_flag_invt'], row['user_name'], row['update_time'])
+               row['company_code'], row['gen_flag_invt'], row['update_user'], row['update_time'])
 
     if n == 0:
         print "\tnot found"

@@ -2,6 +2,7 @@ from FlightData import FlightData
 from BarsLog import printlog
 
 def get_selling_conf(conn, aCompanyCode):
+    printlog(1, "Selling configuration for company %s" % aCompanyCode)
     AvlSql = \
     "SELECT selling_class, cabin_code " \
     "FROM selling_conf " \
@@ -25,7 +26,7 @@ def get_selling_conf(conn, aCompanyCode):
 def get_avail_flights(conn, fdate1, fdate2, city_pair,
                       departure_airport, arrival_airport,
                       selling_class, company_code):
-    printlog(2, "Available flights depart %s arrive %s (%d) start %s end %s class %s company %s" %
+    printlog(1, "Available flights depart %s arrive %s (%d) start %s end %s class %s company %s" %
              (departure_airport, arrival_airport, city_pair,
               fdate1, fdate2,
               selling_class, company_code))
@@ -41,11 +42,11 @@ def get_avail_flights(conn, fdate1, fdate2, city_pair,
             fsd.aircraft_code,      fsd.flight_date,
             sc.cabin_code,          isg.leg_number,
             isg.city_pair,       isg.selling_class,
-            isg.limit_sale_lvl,     isg.seat_capacity,
+            isg.limit_sale_level,     isg.seat_capacity,
             isg.overbooking_percnt, isg.nett_sngl_sold,
             isg.nett_group_sold,     isg.nett_nrev_sold,
             isg.segm_sngl_sold,     isg.segm_group_sold,
-            isg.segm_nrev_sold,     isg.seat_protect_lvl,
+            isg.segm_nrev_sold,     isg.seat_protect_level,
             isg.display_priority,   fsd.flgt_sched_status,
             isg.segment_closed_flag, fsd.flight_closed_flag,
             fsd.flight_brdng_flag,   isg.ob_profile_no,
@@ -105,7 +106,10 @@ def get_avail_flights(conn, fdate1, fdate2, city_pair,
     return flights
 
 
-def OldAvailSvc(conn, company_code, lboard_date, city_pair_no, depr_airport, arrv_airport):
+def OldAvailSvc(conn, company_code, lboard_date, city_pair_no,
+                depr_airport, arrv_airport):
+    printlog(1, "Available flights depart %s arrive %s date %s"
+             % (depr_airport, arrv_airport, lboard_date))
     AvlSql = """
     SELECT fsd.board_date, fsd.flight_number,
         fsd.city_pair, sc.cabin_code,
@@ -118,27 +122,27 @@ def OldAvailSvc(conn, company_code, lboard_date, city_pair_no, depr_airport, arr
         fsd.departure_terminal, fsd.arrival_terminal,
         fsd.no_of_stops, fsd.aircraft_code,
         isg.selling_class,
-        isg.limit_sale_lvl, isg.seat_capacity,
+        isg.limit_sale_level, isg.seat_capacity,
         isg.overbooking_percnt, isg.nett_sngl_sold,
         isg.nett_group_sold, isg.nett_nrev_sold,
-        isg.seat_protect_lvl, isg.display_priority,
+        isg.seat_protect_level, isg.display_priority,
         fsd.flgt_sched_status, isg.segment_closed_flag,
         fsd.flight_closed_flag, fsd.flight_brdng_flag,
         isg.ob_profile_no, fsd.schedule_period_no
-        FROM flight_segm_date fsd, inventry_segment isg, selling_conf sc 
-        WHERE fsd.board_date = '%s' 
+        FROM flight_segm_date fsd, inventry_segment isg, selling_conf sc
+        WHERE fsd.board_date = '%s'
         AND isg.flight_number = fsd.flight_number
         AND isg.flight_date = fsd.flight_date
         AND fsd.city_pair = %d
         AND fsd.departure_airport = '%s'
-        AND fsd.arrival_airport = '%s' 
-        AND isg.selling_class = sc.selling_class 
+        AND fsd.arrival_airport = '%s'
+        AND isg.selling_class = sc.selling_class
         AND sc.company_code = '%s'""" \
     % (lboard_date, city_pair_no, depr_airport, arrv_airport, company_code)
     printlog(2, "%s" % AvlSql)
     cur = conn.cursor()
     cur.execute(AvlSql)
-    
+
     printlog(2, "Selected %d row(s)" % cur.rowcount)
     flights = []
     for row in cur:
@@ -154,7 +158,7 @@ def OldAvailSvc(conn, company_code, lboard_date, city_pair_no, depr_airport, arr
         departure_terminal = row[15]
         arrival_terminal = row[16]
         aircraft_code = row[18]
-        
+
         city_pair_number    = int(row[2])
         schedule_period_no  = int(row[33])
         fd = FlightData(class_code,

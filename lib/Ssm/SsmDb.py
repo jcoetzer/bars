@@ -34,7 +34,7 @@ def GetCityPair(conn, depart_airport, arrive_airport):
     cur = conn.cursor()
     ssmSql = \
         "SELECT city_pair FROM city_pair" \
-        " WHERE start_city='%s' AND end_city='%s'" \
+        " WHERE departure_city='%s' AND arrival_airport='%s'" \
         % (depart_airport, arrive_airport)
     printlog(2, "%s" % ssmSql)
     cur.execute(ssmSql)
@@ -53,7 +53,7 @@ def CheckCityPair(conn, depart_airport, arrive_airport, pair_rule_no, userName, 
     cur = conn.cursor()
     ssmSql = \
         "SELECT city_pair FROM city_pair" \
-        " WHERE start_city='%s' AND end_city='%s'" \
+        " WHERE departure_city='%s' AND arrival_airport='%s'" \
         % (depart_airport, arrive_airport)
     printlog(2, "%s" % ssmSql)
     cur.execute(ssmSql)
@@ -65,7 +65,7 @@ def CheckCityPair(conn, depart_airport, arrive_airport, pair_rule_no, userName, 
 
     #if city_pair_id == 0:
         #ssmSql = \
-            #"INSERT INTO city_pair(start_city, end_city, pair_indicator, pair_rule_no, user_name, user_group)" \
+            #"INSERT INTO city_pair(departure_city, arrival_airport, pair_indicator, pair_rule_no, update_user, update_group)" \
             #" VALUES ('%s', '%s', 'A', %d, '%s', '%s') RETURNING city_pair" \
             #% (depart_airport, arrive_airport, pair_rule_no, userName, groupName)
         #printlog(2, "%s" % ssmSql)

@@ -112,7 +112,7 @@ def ReadBsPassengerFares(conn, book_no, currency_code):
                                 )                                                                       as common_currency_factor
 
                         from book_fares_pass            as bfp
-                        inner join book_fares_paym      as bfpm  
+                        inner join book_fares_paym      as bfpm
                         on bfpm.book_no        = bfp.book_no
                         and bfpm.pax_code      = bfp.pax_code
                         and bfp.book_no = %d
@@ -152,8 +152,8 @@ def ReadBsOldFares(conn, book_no, currency_code):
             ,bf.update_time    as updated_date_time
             ,bf.fare_no
             ,bf.pax_code                                           as passenger_description_code
-            ,bf.start_city                                          as departure_city
-            ,bf.end_city                                            as arrival_city
+            ,bf.departure_city                                          as departure_city
+            ,bf.arrival_airport                                            as arrival_city
             ,round(bf.total_amount, 2)                      as total_amount
             ,round(bf.total_amount, 5)                      as unrounded_total_amount
             ,bf.total_amount_curr
@@ -200,14 +200,14 @@ def ReadBsOldFares(conn, book_no, currency_code):
                                                                     and bfp.et_serial_no = bf.et_serial_no
                                                                     and bf.book_no = %d
                                                                     and bfp.payment_code in ('FARE', 'TAX')
-    left join city                          as dcy on dcy.city_code = bf.start_city
-    left join city                          as acy on acy.city_code = bf.end_city
+    left join city                          as dcy on dcy.city_code = bf.departure_city
+    left join city                          as acy on acy.city_code = bf.arrival_airport
     group by bf.et_serial_no
                     ,bf.update_time
                     ,bf.fare_no
                     ,bf.pax_code
-                    ,bf.start_city
-                    ,bf.end_city
+                    ,bf.departure_city
+                    ,bf.arrival_airport
                     ,bf.total_amount
                     ,bf.total_amount_curr
                     ,bf.fare_stat_flag
@@ -498,8 +498,8 @@ def ReadBsFares(conn, book_no, currency_code):
                         select
                                  bf.fare_no
                                 ,bf.pax_code                                           as passenger_description_code
-                                ,bf.start_city                                          as departure_city
-                                ,bf.end_city                                            as arrival_city
+                                ,bf.departure_city                                          as departure_city
+                                ,bf.arrival_airport                                            as arrival_city
                                 ,round(bf.total_amount, 2)                      as total_amount
                                 ,round(bf.total_amount, 5)                      as unrounded_total_amount
                                 ,bf.total_amount_curr                           as total_amount_curr
@@ -543,9 +543,9 @@ def ReadBsFares(conn, book_no, currency_code):
                                                                                         and bfp.fare_no         = bf.fare_no
                                                                                         and bfp.payment_code in ('FARE', 'TAX')
                                                                                         and bf.book_no = %d
-                        left join city                          as dcy on dcy.city_code = bf.start_city
-                        left join city                          as acy on acy.city_code = bf.end_city
-                        group by bf.fare_no, bf.pax_code, bf.start_city, bf.end_city
+                        left join city                          as dcy on dcy.city_code = bf.departure_city
+                        left join city                          as acy on acy.city_code = bf.arrival_airport
+                        group by bf.fare_no, bf.pax_code, bf.departure_city, bf.arrival_airport
                                 , bf.total_amount, bf.total_amount_curr, bf.fare_stat_flag, dcy.city_name
                                 , acy.city_name, 11, 12, 13, 14
                         order by bf.pax_code, bf.fare_no

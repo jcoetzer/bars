@@ -129,9 +129,9 @@ def AddItenary(conn, aBookNo,
                aDepart, aArrive,
                aDepartTime, aArriveTime,
                aDepartTerm, aArriveTerm,
-               aCityPair, aSellClass, aUser, aGroup): 
+               aCityPair, aSellClass, aUser, aGroup):
     """Add entry for itenary."""
-    printlog(2, "Itenary for booking %d: flight %s date %s depart %s %s (%s) arrive %s %s (%s)" 
+    printlog(2, "Itenary for booking %d: flight %s date %s depart %s %s (%s) arrive %s %s (%s)"
              % (aBookNo, aFlightNumber, aFlightDate,
                 aDepart, aDepartTime, aDepartTerm,
                 aArrive, aArriveTime, aArriveTerm))
@@ -204,7 +204,7 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
     abfSql = """
         INSERT INTO book_fares(
             book_no, fare_no, pax_code,
-            start_city, end_city, total_amount_curr, total_amount,
+            departure_city, arrival_airport, total_amount_curr, total_amount,
             fare_construction, endrsmnt_rstrctns, fare_stat_flag,
             update_user, update_group, update_time )
         VALUES (

@@ -32,6 +32,13 @@ def NewCityPair(conn, departure_airport, arrival_airport, userName, groupName):
     return city_pair_id
 
 
+def NewFlight(conn, aAddress, aSender, aTimeMode,
+              aFlightNumber, aFlightDateStart, aFlightDateEnd,
+              aDepartCity, aDepartTime, aArriveCity, aArriveTime,
+              aAircraftCode, aFrequencyCode, aCodeshare, aTailNumber):
+    """Create new flight."""
+
+
 def usage(pname='BarsFlight.py'):
     print("Add city pair:\n\t%s --city -P <CITY> -Q<CITY>")
     print("Add fare:\n\t%s --fare -P <CITY> -Q<CITY> -R <AMOUNT> -D <DATE> -E <DATE>")
@@ -47,6 +54,7 @@ def main(argv):
     docity = False
     dofare = False
     dofaredel = False
+    donew = False
     dt1 = None
     dt2 = None
     payAmount = None
@@ -84,6 +92,8 @@ def main(argv):
             dofare = True
         elif opt == "--faredel":
             dofaredel = True
+        elif opt == "--new":
+            donew = True
         elif opt in ("-D", "--date"):
             dt1 = ReadDate(arg)
             printlog(1, "\t start date %s" % dt1.strftime("%Y-%m-%d"))
@@ -111,7 +121,9 @@ def main(argv):
     # Open connection to database
     conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
 
-    if docity and departure_airport is not None and arrival_airport is not None:
+    if donew:
+        pass
+    elif docity and departure_airport is not None and arrival_airport is not None:
         NewCityPair(conn, departure_airport, arrival_airport,
                     cfg.User, cfg.Group)
     elif docity:
@@ -134,7 +146,7 @@ def main(argv):
         ReadFareCodes(conn)
         ReadFareSegments(conn)
     else:
-        print "Huh?"
+        print("Huh?")
 
     # Commit transaction and close connection
     CloseDb(conn)

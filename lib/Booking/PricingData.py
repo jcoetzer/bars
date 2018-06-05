@@ -19,8 +19,8 @@ class FarePricingData(object):
                  fare_value,
                  short_description,
                  onw_return_ind,
-                 byps_strt_auth_lvl,
-                 byps_end_auth_lvl,
+                 byps_strt_auth_level,
+                 byps_end_auth_level,
                  selling_class):
         self.fare_code =            fare_code,           
         self.city_pair =            city_pair
@@ -29,8 +29,8 @@ class FarePricingData(object):
         self.fare_value =           fare_value
         self.short_description =    short_description
         self.onw_return_ind =       onw_return_ind
-        self.byps_strt_auth_lvl =   byps_strt_auth_lvl
-        self.byps_end_auth_lvl =    byps_end_auth_lvl
+        self.byps_strt_auth_level =   byps_strt_auth_level
+        self.byps_end_auth_level =    byps_end_auth_level
         self.selling_class =        selling_class
         
     def display(self):

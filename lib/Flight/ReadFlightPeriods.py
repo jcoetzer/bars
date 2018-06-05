@@ -21,7 +21,7 @@ def ReadFlightPeriodsGui(conn, flight_number, schedule_period_no):
         " WHERE flight_number = '%s' AND flgt_sched_status NOT IN ('A','S','T') AND schedule_period_no = %d GROUP BY 3" \
         " UNION SELECT 3 AS CONST, COUNT(*) AS c, chng_category FROM test_periods "\
         "  WHERE flight_number = '%s' AND schedule_period_no = %d AND Authority_Level > 9999 GROUP BY 3" \
-        " UNION SELECT 4 AS CONST, COUNT(*) AS c, user_name FROM test_periods " \
+        " UNION SELECT 4 AS CONST, COUNT(*) AS c, update_user FROM test_periods " \
         "  WHERE flight_number = '%s' AND schedule_period_no = %d AND Scrutiny_Flg = 'Y' GROUP BY 3" \
         " UNION SELECT 5 AS CONST, COUNT(*) AS c, chng_category FROM test_periods " \
         "  WHERE flight_number = '%s' AND schedule_period_no = %d GROUP BY 3 ORDER BY 1" \
@@ -47,7 +47,7 @@ def ReadFlightPeriods(conn, flight_number, schedule_period_no=None):
     print "Flight periods for flight %s [flight_periods]" % flight_number,
     AdSql= \
 	    "SELECT flight_number,start_date,end_date,frequency_code,schedule_period_no,invt_end_date,control_branch,invt_control_flag," \
-	    " wait_lst_ctrl_flag,via_cities,flgt_sched_status,open_end_flag,scrutiny_flag,gen_flag_invt,user_name,user_group," \
+	    " wait_lst_ctrl_flag,via_cities,flgt_sched_status,open_end_flag,scrutiny_flag,gen_flag_invt,update_user,update_group," \
             " update_time" \
 	    " FROM flight_periods WHERE flight_number = '%s'" % flight_number
     if schedule_period_no is not None:
@@ -66,7 +66,7 @@ def ReadFlightPeriods(conn, flight_number, schedule_period_no=None):
         print "\tflight %6s start %10s end %10s sched %5d via %7s wait %4s sched %4s flag %4s end %10s user %s update %s" \
             % (row['flight_number'], row['start_date'], row['end_date'], int(row['schedule_period_no']), row['via_cities'], \
                row['wait_lst_ctrl_flag'], \
-               row['flgt_sched_status'], row['gen_flag_invt'], row['invt_end_date'], row['user_name'], row['update_time'])
+               row['flgt_sched_status'], row['gen_flag_invt'], row['invt_end_date'], row['update_user'], row['update_time'])
     if n == 0:
         print "\tnot found"
         
@@ -89,7 +89,7 @@ def ReadFlightPeriodsDate(conn, flight_number, dts):
         "SELECT flight_number,start_date,end_date,frequency_code," \
         "schedule_period_no,invt_end_date,control_branch,invt_control_flag," \
         "wait_lst_ctrl_flag,via_cities,flgt_sched_status,open_end_flag," \
-        "scrutiny_flag,gen_flag_invt,user_name,user_group," \
+        "scrutiny_flag,gen_flag_invt,update_user,update_group," \
         "update_time" \
         " FROM flight_periods" \
         " WHERE flight_number = '%s' AND start_date<='%s' AND end_date>='%s'" \
@@ -110,7 +110,7 @@ def ReadFlightPeriodsDate(conn, flight_number, dts):
             (row['flight_number'], row['start_date'], row['end_date'],
              rval, row['frequency_code'], row['via_cities'],
              row['wait_lst_ctrl_flag'], row['flgt_sched_status'],
-             row['gen_flag_invt'], row['invt_end_date'], row['user_name'], row['update_time'])
+             row['gen_flag_invt'], row['invt_end_date'], row['update_user'], row['update_time'])
     if n == 0:
         print "\tnot found"
         
@@ -124,8 +124,8 @@ def ReadTestPeriods(conn, flight_number, schedule_period_no=None, dts=None):
 
     print "<TEST> Periods for flight %s [test_periods]" % flight_number,
     AdSql = \
-        "SELECT flgt_sched_status,chng_category,user_name," \
-        "chng_category,schedule_period_no,user_name,update_time" \
+        "SELECT flgt_sched_status,chng_category,update_user," \
+        "chng_category,schedule_period_no,update_user,update_time" \
         " FROM test_periods" \
         " WHERE flight_number = '%s'" % flight_number
     if dts is not None:
@@ -148,7 +148,7 @@ def ReadTestPeriods(conn, flight_number, schedule_period_no=None, dts=None):
         n += 1
         print "\tstatus %s change %s user %s sched %d user %s update %s" \
             % (row['flgt_sched_status'], row['chng_category'],
-               row['user_name'], int(row['schedule_period_no']), row['user_name'], row['update_time'])
+               row['update_user'], int(row['schedule_period_no']), row['update_user'], row['update_time'])
     if n == 0:
         print "\tnot found"
         
@@ -161,7 +161,7 @@ def ReadTestInventrySegm(conn, flight_number, schedule_period_no=None,
     print "<TEST> Inventory segment for flight %s [test_inventry_segm]" % flight_number,
     AdSql = \
         "SELECT flight_date,city_pair,selling_class,departure_city," \
-        "arrival_city,leg_number,segment_number,seat_capacity,user_name,update_time" \
+        "arrival_city,leg_number,segment_number,seat_capacity,update_user,update_time" \
         " FROM test_inventry_segm" \
         " WHERE flight_number = '%s'" \
         % flight_number
@@ -184,7 +184,7 @@ def ReadTestInventrySegm(conn, flight_number, schedule_period_no=None,
         print "\tclass %s city pair %s date %s depart %s arrive %s leg %s segment %s capacity %s user %s update %s" \
             % (row['selling_class'], row['city_pair'], row['flight_date'], row['departure_city'], \
                row['arrival_city'], \
-               row['leg_number'], row['segment_number'], row['seat_capacity'], row['user_name'], row['update_time'])
+               row['leg_number'], row['segment_number'], row['seat_capacity'], row['update_user'], row['update_time'])
     if n == 0:
         print "\tnot found"
         

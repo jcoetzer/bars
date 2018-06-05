@@ -115,17 +115,17 @@ insert into airport values('ZEC', 'FASC', 'Secunda Airport', 'Secunda', 'ZA', 'U
 
 insert into city select city_code, city_name, 'ZA', 'A', 'N', 'SSM', 'BARS', NOW() from airport;
 
-insert into city_pair(start_city,end_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
+insert into city_pair(departure_city,arrival_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
  values('CPT', 'JNB', 'A', 1500, '20kg', 1, '', 'SSM', 'BARS', NOW());
-insert into city_pair(start_city,end_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
+insert into city_pair(departure_city,arrival_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
  values('JNB', 'CPT', 'A', 1500, '20kg', 1, '', 'SSM', 'BARS', NOW());
-insert into city_pair(start_city,end_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
+insert into city_pair(departure_city,arrival_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
  values('JNB', 'DUR', 'A', 600 , '20kg', 1, '', 'SSM', 'BARS', NOW());
-insert into city_pair(start_city,end_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
+insert into city_pair(departure_city,arrival_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
  values('DUR', 'JNB', 'A', 600 , '20kg', 1, '', 'SSM', 'BARS', NOW());
-insert into city_pair(start_city,end_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
+insert into city_pair(departure_city,arrival_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
  values('CPT', 'DUR', 'A', 1250, '20kg', 1, '', 'SSM', 'BARS', NOW());
-insert into city_pair(start_city,end_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
+insert into city_pair(departure_city,arrival_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
  values('DUR', 'CPT', 'A', 1250, '20kg', 1, '', 'SSM', 'BARS', NOW());
 
 -- insert into fare_segm values('ZZ','XZZOW',1,'2018-01-01','2018-12-31','2017-12-01',NULL,3000.0,'BASR','SSM',NOW());
@@ -160,8 +160,8 @@ insert into city_pair(start_city,end_city,pair_indicator,distance,baggage_alownc
 -- insert into fare_codes(company_code,fare_code,short_description,description,selling_class,fare_category,onw_return_ind,update_user,update_group,update_time) values('ZZ','XZZOW','Fare','Fare stuff','K','ZZOW','R','BARS','SSM',NOW());
 -- insert into fare_codes(company_code,fare_code,short_description,description,selling_class,fare_category,onw_return_ind,update_user,update_group,update_time) values('ZZ','XZZOW','Fare','Fare stuff','J','ZZOW','R','BARS','SSM',NOW());
 -- insert into fare_codes(company_code,fare_code,short_description,description,selling_class,fare_category,onw_return_ind,update_user,update_group,update_time) values('ZZ','XZZOW','Fare','Fare stuff','O','ZZOW','R','BARS','SSM',NOW());
--- update fare_codes set acss_strt_auth_lvl=100;
--- update fare_codes set acss_end_auth_lvl=100;
+-- update fare_codes set acss_strt_auth_level=100;
+-- update fare_codes set acss_end_auth_level=100;
 
 insert into service_requests values('ZZ','CKIN',
 'Passenger checkin details',

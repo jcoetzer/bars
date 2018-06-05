@@ -7,13 +7,13 @@ from BarsLog import printlog
 def ReadCityPairs(conn, departure_airport=None, arrival_airport=None):
     """Read city pairs."""
     RcpSql = """
-        SELECT city_pair, start_city, end_city, pair_indicator, distance,
+        SELECT city_pair, departure_city, arrival_airport, pair_indicator, distance,
         baggage_alownce, pair_rule_no, remarks
     FROM city_pair"""
     if departure_airport is not None and arrival_airport is not None:
         RcpSql += """
-            WHERE start_city = '%s'
-            AND end_city = '%s'""" \
+            WHERE departure_city = '%s'
+            AND arrival_airport = '%s'""" \
             % (departure_airport, arrival_airport)
 
     printlog(2, "%s" % RcpSql)
@@ -32,6 +32,7 @@ def ReadCityPairs(conn, departure_airport=None, arrival_airport=None):
 
 def ReadFareSegments(conn):
     """Read fare segments."""
+    printlog(1, "Fare segments:")
     RfSql = """
     SELECT company_code, fare_code, city_pair, valid_from_date, valid_to_date,
         fare_value, active_flag
@@ -53,6 +54,8 @@ def ReadFareSegments(conn):
 
 def ReadFareCodes(conn):
     """Read fare codes."""
+    """Read fare segments."""
+    printlog(1, "Fare codes:")
     RfSql = """
         SELECT
         company_code, fare_code, short_description, description,
