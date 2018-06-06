@@ -35,48 +35,48 @@ from BarsConfig import BarsConfig
 def usage(pname="BookInfo.py"):
 
     print_banner()
-    #print "Booking information:"
-    #print "\t%s [-v|-V] [-n|-t] -A <ORIGIN> -X <EXTLOC> -L <LOCATOR>" % pname
-    print "Booking payment check:"
-    print "\t%s [-v|-V] -p -B <BOOKNO>" % pname
-    print "Booking reminders :"
-    print "\t%s [-v|-V] -r -B <BOOKNO>" % pname
-    print "Booking requests:"
-    print "\t%s [-v|-V] --ssr -B <BOOKNO> -D <DATE>" % pname
-    print "Check booking cross index:"
-    print "\t%s [-v|-V] -n -B <BOOKNO> -X <EXTLOC>" % pname
-    print "\t%s [-v|-V] -n -A <ORIGIN> -B <BOOKNO> -X <EXTLOC>" % pname
-    print "Check booking cross index:"
-    print "\t%s [-v|-V] -t -B <BOOKNO> -X <EXTLOC>" % pname
-    print "\t%s [-v|-V] -t -A <ORIGIN> -B <BOOKNO> -X <EXTLOC>" % pname
-    print "Booking payment data :"
-    print "\t%s [-v|-V] --pay -B <BOOKNO>" % pname
-    print "\t%s [-v|-V] --pay -L <LOCATOR>" % pname
-    print "Booking TTY data :"
-    print "\t%s [-v|-V] --tty -B <BOOKNO>" % pname
-    print "\t%s [-v|-V] --tty -L <LOCATOR>" % pname
-    print "Booking seating data :"
-    print "\t%s [-v|-V] --seat -B <BOOKNO>" % pname
-    print "\t%s [-v|-V] --seat -L <LOCATOR>" % pname
-    print "Booking itenary data :"
-    print "\t%s [-v|-V] --itenary -B <BOOKNO>" % pname
-    print "\t%s [-v|-V] --itenary -L <LOCATOR>" % pname
-    print "Booking data :"
-    print "\t%s [-v|-V] --book -B <BOOKNO>" % pname
-    print "\t%s [-v|-V] --book -L <LOCATOR>" % pname
-    print "Booking summary XML data :"
-    # print "\t%s [-v|-V] --bs -B <BOOKNO> [-U <CURR>] [-G <AGENCY>] [-K <PAY>]" % pname
-    print "\t%s [-v|-V] --bs -B <BOOKNO> [-G <AGENCY>] [-K <PAY>]" % pname
-    print "\t%s [-v|-V] -T <TID>" % pname
-    print "where"
-    print "\t-A <ORIGIN>\t Origin address"
-    print "\t-B <BOOKNO>\t Booking number"
-    print "\t-K <PAY>\t Payment form e.g. 'VI'"
-    print "\t-G <AGENCY>\t Agency code"
-    print "\t-L <LOCATOR>\t Locator"
-    print "\t-T <TID>\t Transaction ID"
-    print "\t-X <EXTLOC>\t External locator"
-    # print "\t-U <CURR>\t Currency code : ZAR (Rand), VCM (Voyager) or DCM (Diners)"
+    # print("Booking information:")
+    # print("\t%s [-v|-V] [-n|-t] -A <ORIGIN> -X <EXTLOC> -L <LOCATOR>"
+    #       % pname)
+    print("Booking payment check:")
+    print("\t%s [-v|-V] -p -B <BOOKNO>" % pname)
+    print("Booking reminders :")
+    print("\t%s [-v|-V] -r -B <BOOKNO>" % pname)
+    print("Booking requests:")
+    print("\t%s [-v|-V] --ssr -B <BOOKNO> -D <DATE>" % pname)
+    print("Check booking cross index:")
+    print("\t%s [-v|-V] -n -B <BOOKNO> -X <EXTLOC>" % pname)
+    print("\t%s [-v|-V] -n -A <ORIGIN> -B <BOOKNO> -X <EXTLOC>" % pname)
+    print("Check booking cross index:")
+    print("\t%s [-v|-V] -t -B <BOOKNO> -X <EXTLOC>" % pname)
+    print("\t%s [-v|-V] -t -A <ORIGIN> -B <BOOKNO> -X <EXTLOC>" % pname)
+    print("Booking payment data :")
+    print("\t%s [-v|-V] --pay -B <BOOKNO>" % pname)
+    print("\t%s [-v|-V] --pay -L <LOCATOR>" % pname)
+    print("Booking TTY data :")
+    print("\t%s [-v|-V] --tty -B <BOOKNO>" % pname)
+    print("\t%s [-v|-V] --tty -L <LOCATOR>" % pname)
+    print("Booking seating data :")
+    print("\t%s [-v|-V] --seat -B <BOOKNO>" % pname)
+    print("\t%s [-v|-V] --seat -L <LOCATOR>" % pname)
+    print("Booking itenary data :")
+    print("\t%s [-v|-V] --itenary -B <BOOKNO>" % pname)
+    print("\t%s [-v|-V] --itenary -L <LOCATOR>" % pname)
+    print("Booking data :")
+    print("\t%s [-v|-V] --book -B <BOOKNO>" % pname)
+    print("\t%s [-v|-V] --book -L <LOCATOR>" % pname)
+    print("Booking summary XML data :")
+    print("\t%s [-v|-V] --bs -B <BOOKNO> [-G <AGENCY>] [-K <PAY>]" % pname)
+    print("\t%s [-v|-V] -T <TID>" % pname)
+    print("where")
+    print("\t-A <ORIGIN>\t Origin address")
+    print("\t-B <BOOKNO>\t Booking number")
+    print("\t-K <PAY>\t Payment form e.g. 'VI'")
+    print("\t-G <AGENCY>\t Agency code")
+    print("\t-L <LOCATOR>\t Locator")
+    print("\t-T <TID>\t Transaction ID")
+    print("\t-X <EXTLOC>\t External locator")
+    # print("\t-U <CURR>\t Currency code : e.g. ZAR")
     sys.exit(1)
 
 
@@ -120,7 +120,8 @@ def main(argv):
 
     try:
         opts, args = getopt.getopt(argv,
-                                   "1234ghlnprtvVA:B:C:D:E:F:G:I:J:K:L:N:P:T:U:X:",
+                                   "1234ghlnprtvV"
+                                   "A:B:C:D:E:F:G:I:J:K:L:N:P:T:U:X:",
                                    ["help", "ssr", "tty"
                                     "book", "pay", "seat", "itenary", "bs",
                                     "origin=", "bookno=", "end=",
@@ -129,17 +130,22 @@ def main(argv):
                                     "dest=", "field=", "locator=", "count=",
                                     "depart=", "delim=", "agency"])
     except getopt.GetoptError:
-        print "Error in options"
+        print("Error in options")
         # usage()
         sys.exit(1)
 
     barsdir = os.environ['BARSDIR']
     etcdir = "%s/etc" % barsdir
     lstfiles = {}
-    lstfiles['pay'] = ['%s/pay.book_no.lst' % etcdir, '%s/pay.locator.lst' % etcdir]
-    lstfiles['tty'] = ['%s/tty.book_no.lst' % etcdir, '%s/tty.book_no.lst' % etcdir]
-    lstfiles['book'] = ['%s/book.book_no.lst' % etcdir, '%s/book.booking_no.lst' % etcdir, '%s/book.book_no.lst' % etcdir]
-    lstfiles['seat'] = ['%s/seat.book_no.lst' % etcdir, '%s/seat.booking_no.lst' % etcdir]
+    lstfiles['pay'] = ['%s/pay.book_no.lst' % etcdir,
+                       '%s/pay.locator.lst' % etcdir]
+    lstfiles['tty'] = ['%s/tty.book_no.lst' % etcdir,
+                       '%s/tty.book_no.lst' % etcdir]
+    lstfiles['book'] = ['%s/book.book_no.lst' % etcdir,
+                        '%s/book.booking_no.lst' % etcdir,
+                        '%s/book.book_no.lst' % etcdir]
+    lstfiles['seat'] = ['%s/seat.book_no.lst' % etcdir,
+                        '%s/seat.booking_no.lst' % etcdir]
     lstfiles['itenary'] = ['%s/itenary.book_no.lst' % etcdir]
 
     for opt, arg in opts:
@@ -236,12 +242,12 @@ def main(argv):
         elif opt == "--tty":
             showTty = True
         else:
-            print "Unknown option %s" % opt
-    
+            print("Unknown option %s" % opt)
+
     cfg = BarsConfig('%s/bars.cfg' % etcdir)
 
     # Open connection to database
-    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)  
+    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
 
     if locator is not None:
         printlog(2, "Read locator %s" % locator)
@@ -273,24 +279,29 @@ def main(argv):
         for irec in irecs:
             irec.display()
             n, departure_airport, arrival_airport, city_pair = \
-                    ReadDeparture(conn, irec.flight_number, dt1)
+                ReadDeparture(conn, irec.flight_number, dt1)
             if n == 0:
-                print "Could not find flight %s on %s" % (irec.flight_number, dt1.strftime("%Y-%m-%d"))
+                print("Could not find flight %s on %s"
+                      % (irec.flight_number, dt1.strftime("%Y-%m-%d")))
                 return 1
-            ReadRequestsPnl(conn, bookno, cfg.CompanyCode, departure_airport, dt1, PassengerName)
-    elif bci_new and origin_address is not None and ext_book_numb is not None and locator is not None:
+            ReadRequestsPnl(conn, bookno, cfg.CompanyCode, departure_airport,
+                            dt1, PassengerName)
+    elif bci_new and origin_address is not None and ext_book_numb is not None \
+            and locator is not None:
         check_bci_new(conn, origin_address, ext_book_numb, locator, bci_msk)
-    elif bci_trl and origin_address is not None and ext_book_numb is not None and locator is not None:
+    elif bci_trl and origin_address is not None and ext_book_numb is not None \
+            and locator is not None:
         check_bci_trl(conn, origin_address, ext_book_numb, locator)
-    elif origin_address is not None and ext_book_numb is not None and locator is not None:
+    elif origin_address is not None and ext_book_numb is not None \
+            and locator is not None:
         check_bci(conn, origin_address, ext_book_numb, locator, bci_msk)
     elif chk_paid and bookno is not None:
         ReadBooking(conn, bookno)
         rv = BookingIsPaid(conn, bookno)
         if rv:
-            print "Booking %d is paid up" % bookno
+            print("Booking %d is paid up" % bookno)
         else:
-            print "Booking %d is not paid up" % bookno
+            print("Booking %d is not paid up" % bookno)
     elif chk_rem and bookno is not None:
         ReadBookSummary(conn, bookno, summ_code)
         ReadBookSummaryHistory(conn, bookno, hist_code)
@@ -307,7 +318,7 @@ def main(argv):
     elif bookno is not None and locator is not None:
         ReadBookingData(conn, lstfiles['pay'], bookno, locator)
     else:
-        print "Nothing to do!"
+        print("Nothing to do!")
 
     # Commit transaction and close connection
     CloseDb(conn)

@@ -7,7 +7,7 @@ from BarsLog import printlog
 
 
 def DateRange(start_date, end_date):
-    for n in range(int ((end_date - start_date).days) + 1):
+    for n in range(int((end_date - start_date).days) + 1):
         yield start_date + timedelta(n)
 
 
@@ -15,7 +15,7 @@ def ReadDateTime(arg):
     """Convert date and time."""
     try:
         if arg is None:
-            print "Empty date"
+            print("Empty date")
             return ''
         elif arg.lower() == 'yesterday':
             return datetime.today() - timedelta(1)
@@ -38,7 +38,7 @@ def ReadDateTime(arg):
             elif arg[4] == '-' and arg[7] == '-':
                 return datetime.strptime(arg, "%Y-%m-%d")
             else:
-                print "Invalid 10 character date '%s'" % arg
+                print("Invalid 10 character date '%s'" % arg)
                 sys.exit(1)
         elif len(arg) == 8:
             # 07/20/17
@@ -50,7 +50,7 @@ def ReadDateTime(arg):
             elif arg[2] == '-' and arg[5] == '-':
                 return datetime.strptime(arg, "%y-%m-%d")
             else:
-                print "Invalid 8 character date '%s'" % arg
+                print("Invalid 8 character date '%s'" % arg)
                 sys.exit(1)
         elif len(arg) == 9:
             if arg[2] == '/' and arg[4] == '/':
@@ -72,11 +72,11 @@ def ReadDateTime(arg):
         elif len(arg) == 19:
             return datetime.strptime(arg, "%Y-%m-%d %H:%M:%S")
         else:
-            #return datetime.strptime(arg, "%Y-%m-%d")
-            print "Invalid date '%s' (%d bytes)" % (arg, len(arg))
+            print("Invalid date '%s' (%d bytes)" % (arg, len(arg)))
             sys.exit(1)
     except e:
-        print "Could not convert datetime '%s' (%d bytes): %s" % (arg, len(arg), str(e))
+        print("Could not convert datetime '%s' (%d bytes): %s"
+              % (arg, len(arg), str(e)))
         sys.exit(1)
 
 
@@ -85,7 +85,7 @@ def ReadDate(arg):
     printlog(2, "Convert date '%s'" % (str(arg)))
     try:
         if arg is None:
-            print "Empty date"
+            print("Empty date")
             return ''
         elif arg.lower() == 'yesterday':
             return datetime.today() - timedelta(1)
@@ -110,7 +110,7 @@ def ReadDate(arg):
             elif arg[2] == '-' and arg[5] == '-':
                 return datetime.strptime(arg, "%y-%m-%d").date()
             else:
-                print "Invalid 8 character date '%s'" % arg
+                print("Invalid 8 character date '%s'" % arg)
                 sys.exit(1)
         elif len(arg) == 9:
             if arg[2] == '/' and arg[4] == '/':
@@ -127,7 +127,7 @@ def ReadDate(arg):
             elif arg[4] == '-' and arg[7] == '-':
                 return datetime.strptime(arg, "%Y-%m-%d").date()
             else:
-                print "Invalid 10 character date '%s'" % arg
+                print("Invalid 10 character date '%s'" % arg)
                 sys.exit(1)
         # 2017-09-14 10:29
         elif len(arg) == 16:
@@ -139,11 +139,10 @@ def ReadDate(arg):
         elif len(arg) == 19:
             return datetime.strptime(arg, "%Y-%m-%d %H:%M:%S").date()
         else:
-            #return datetime.strptime(arg, "%Y-%m-%d")
-            print "Invalid date '%s' (%d bytes)" % (arg, len(arg))
+            print("Invalid date '%s' (%d bytes)" % (arg, len(arg)))
             sys.exit(1)
     except:
-        print "Could not convert date '%s' (%d bytes)" % (arg, len(arg))
+        print("Could not convert date '%s' (%d bytes)" % (arg, len(arg)))
         sys.exit(1)
 
 
@@ -156,10 +155,9 @@ def ReadTime(arg):
         if type(arg) is str:
             atime = arg[0:5]
         else:
-            atime = "%02d:%02d" % (int(arg/100), int(arg%100))
+            atime = "%02d:%02d" % (int(arg/100), int(arg % 100))
         printlog(2, "Time is %s" % atime)
         return time.strptime(atime, "%H:%M")
     except:
-        print "Could not convert time %s (%s)" % (arg, atime)
+        print("Could not convert time %s (%s)" % (arg, atime))
         sys.exit(1)
-

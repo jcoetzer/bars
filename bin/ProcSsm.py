@@ -36,16 +36,15 @@ def ProcData(conn, ssm, userName, groupName):
     elif ssm.action == 'CNL':
         rv = ProcCnl(conn, ssm)
     else:
-        print "Unsupported action %s" % ssm.action
+        print("Unsupported action %s" % ssm.action)
         return -1
 
     return rv
 
 
 def usage():
-    print "Help!"
+    print("Help!")
     sys.exit(1)
-
 
 
 def main(argv):
@@ -68,8 +67,8 @@ def main(argv):
         else:
             fname = str(opt)
 
-    if fname is None or len(fname)==0:
-        print "No input file specified"
+    if fname is None or len(fname) == 0:
+        print("No input file specified")
         return 1
 
     cfg = BarsConfig('%s/bars.cfg' % etcdir)
@@ -95,5 +94,3 @@ def main(argv):
 if __name__ == "__main__":
     rv = main(sys.argv[1:])
     sys.exit(rv)
-
-

@@ -16,16 +16,16 @@ def ReadBsRetailer(conn, elBookingNumber, epcAgencyCode, v_agencyPayForm):
     print "Retailer for booking %d agency '%s' payment '%s'" \
         % (elBookingNumber, epcAgencyCode, v_agencyPayForm)
     BsRetailerSql = """
-        select CASE WHEN COUNT(*) > 0 THEN MAX(b.book_no) ELSE 0 END as bn
-            from  book as b
-            where b.book_no = %d
-            and  (b.agency_code = '%s' or
-                 (b.agency_code is null and b.book_no in
-                             (select p.book_no
-                              from   payments p
-                              where  p.payment_type = 'TP'
-                              and    p.payment_form = '%s'
-                              and    p.book_no = b.book_no)))
+        SELECT CASE WHEN COUNT(*) > 0 THEN MAX(b.book_no) ELSE 0 END AS bn
+            FROM  book AS b
+            WHERE b.book_no = %d
+            AND  (b.agency_code = '%s' or
+                 (b.agency_code IS NULL AND b.book_no IN
+                             (SELECT p.book_no
+                              FROM   payments p
+                              WHERE  p.payment_type = 'TP'
+                              AND    p.payment_form = '%s'
+                              AND    p.book_no = b.book_no)))
     """ % (elBookingNumber, epcAgencyCode, v_agencyPayForm)
 
     printlog(2, "%s" % BsRetailerSql)
@@ -46,20 +46,20 @@ def ReadBsFaresPayment(conn, book_no, currency_code):
 
     print "Fare payments for booking %d currency %s" % (book_no, currency_code)
     FaresPaymentSql = """
-select fare_no,pax_code paxcode,payment_code,fare_calc_code,round(fare_paymt_amt, 2) amount,
+SELECT fare_no,pax_code paxcode,payment_code,fare_calc_code,round(fare_paymt_amt, 2) amount,
 round(fare_paymt_amt, 5) unrounded_amount,paid_curr_code currency_code,
 tax_code,nation_code,refundable_flag,net_fare_flag,private_fare_flag,source_ref_id
-,round( (select max(nuc_rate) from currency_codes cc where cc.currency_code = '%s') /
-        coalesce( (select max(nuc_rate) from hist_currency_codes hcc
-              where hcc.currency_code = bfp.paid_curr_code
-              and bfp.update_time between
-              hcc.valid_from_date_time and hcc.valid_to_date_time),
-             (select max(nuc_rate) from currency_codes cc
-                where cc.currency_code = bfp.paid_curr_code) ), 5 ) common_currency_factor,
-(select count(book_no) from passenger where book_no = %d and pax_code <> 'INF') pax_number
-from book_fares_paym bfp
-where book_no = %d
-and payment_code <> 'FEE'
+,round( (SELECT max(nuc_rate) FROM currency_codes cc WHERE cc.currency_code = '%s') /
+        coalesce( (SELECT max(nuc_rate) FROM hist_currency_codes hcc
+              WHERE hcc.currency_code = bfp.paid_curr_code
+              AND bfp.update_time between
+              hcc.valid_from_date_time AND hcc.valid_to_date_time),
+             (SELECT max(nuc_rate) FROM currency_codes cc
+                WHERE cc.currency_code = bfp.paid_curr_code) ), 5 ) common_currency_factor,
+(SELECT count(book_no) FROM passenger WHERE book_no = %d AND pax_code <> 'INF') pax_number
+FROM book_fares_paym bfp
+WHERE book_no = %d
+AND payment_code <> 'FEE'
 """ % (currency_code, book_no, book_no)
 
     printlog(2, "%s" % FaresPaymentSql)
@@ -82,49 +82,41 @@ def ReadBsPassengerFares(conn, book_no, currency_code):
 
     print "Passenger fares for booking %d currency %s" % (book_no, currency_code)
     PassengerFaresSql = """
-                        select
-                                 bfp.pax_code                                          as passenger_description_code
-                                ,bfp.total_amount_curr                          as total_amount_currency
-                                ,round(bfp.total_amount, 2)                     as total_amount
-                                ,round(bfp.total_amount, 5)                     as unrounded_total_amount
-                                ,bfp.fare_construction
-                                ,bfp.endrsmnt_rstrctns                          as endorsement_restriction
-                                ,round(sum(bfpm.fare_paymt_amt), 2)     as fare_amount
-                                ,round(sum(bfpm.fare_paymt_amt), 5)     as unrounded_fare_amount
-
-                                ,round
-                                (
-                                        (select max(nuc_rate) from currency_codes as cc
-                                        where cc.currency_code = '%s')
+                        SELECT bfp.pax_code AS passenger_description_code,
+                                bfp.total_amount_curr AS total_amount_currency,
+                                round(bfp.total_amount, 2) AS total_amount,
+                                round(bfp.total_amount, 5) AS unrounded_total_amount,
+                                bfp.fare_construction,
+                                bfp.endrsmnt_rstrctns AS endorsement_restriction,
+                                round(sum(bfpm.fare_paymt_amt), 2) AS fare_amount,
+                                round(sum(bfpm.fare_paymt_amt), 5) AS unrounded_fare_amount,
+                                round(
+                                        (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                        WHERE cc.currency_code = '%s')
                                         /
                                         coalesce
                                         (
-                                                (select max(nuc_rate) from hist_currency_codes as hcc
-                                                where hcc.currency_code = bfp.total_amount_curr
-                                                and bfp.update_time between
-                                                hcc.valid_from_date_time and hcc.valid_to_date_time)
-                                        ,
-                                                (select max(nuc_rate) from currency_codes as cc
-                                                where cc.currency_code = bfp.total_amount_curr)
-                                        )
+                                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                                                WHERE hcc.currency_code = bfp.total_amount_curr
+                                                AND bfp.update_time between
+                                                hcc.valid_from_date_time AND hcc.valid_to_date_time),
+                                                (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                WHERE cc.currency_code = bfp.total_amount_curr)
+                                        ), 5
+                                ) AS common_currency_factor
 
-                                        , 5
-                                )                                                                       as common_currency_factor
-
-                        from book_fares_pass            as bfp
-                        inner join book_fares_paym      as bfpm
-                        on bfpm.book_no        = bfp.book_no
-                        and bfpm.pax_code      = bfp.pax_code
-                        and bfp.book_no = %d
-                        group by
-                                 bfp.pax_code
-                                ,bfp.total_amount_curr
-                                ,bfp.total_amount
-                                ,bfp.fare_construction
-                                ,bfp.endrsmnt_rstrctns
-                                ,9
-                        order by
-                                 bfp.pax_code
+                        FROM book_fares_pass AS bfp
+                        INNER JOIN book_fares_paym AS bfpm
+                        ON bfpm.book_no = bfp.book_no
+                        AND bfpm.pax_code = bfp.pax_code
+                        AND bfp.book_no = %d
+                        GROUP BY bfp.pax_code,
+                            bfp.total_amount_curr,
+                            bfp.total_amount,
+                            bfp.fare_construction,
+                            bfp.endrsmnt_rstrctns,
+                            9
+                        ORDER BY bfp.pax_code
 """  % (currency_code, book_no)
 
     printlog(2, "%s" % PassengerFaresSql)
@@ -147,61 +139,60 @@ def ReadBsOldFares(conn, book_no, currency_code):
 
     print "Old fares for booking %d currency %s" % (book_no, currency_code)
     OldFaresSql = """
-    select
-            bf.et_serial_no                                         as serial_no
-            ,bf.update_time    as updated_date_time
+    SELECT
+            bf.et_serial_no AS serial_no
+            ,bf.update_time AS updated_date_time
             ,bf.fare_no
-            ,bf.pax_code                                           as passenger_description_code
-            ,bf.departure_city                                          as departure_city
-            ,bf.arrival_airport                                            as arrival_city
-            ,round(bf.total_amount, 2)                      as total_amount
-            ,round(bf.total_amount, 5)                      as unrounded_total_amount
+            ,bf.pax_code AS passenger_description_code
+            ,bf.departure_city AS departure_city
+            ,bf.arrival_airport AS arrival_city
+            ,round(bf.total_amount, 2) AS total_amount
+            ,round(bf.total_amount, 5) AS unrounded_total_amount
             ,bf.total_amount_curr
-            ,bf.fare_stat_flag                                       as fare_status
-            ,dcy.city_name                                          as departure_city_name
-            ,acy.city_name                                          as arrival_city_name
-            ,'0'                                                            as source_reference_id
+            ,bf.fare_stat_flag AS fare_status
+            ,dcy.city_name AS departure_city_name
+            ,acy.city_name AS arrival_city_name
+            ,'0' AS source_reference_id
             ,coalesce(
-                    (select max(bfp2.refundable_flag)
-                    from book_fares_paym as bfp2 where book_no = bf.book_no
-                    and bfp2.fare_no = bf.fare_no and bfp2.pax_code = bf.pax_code
-                    and bfp2.payment_code = bfp.payment_code
-                    and bfp2.refundable_flag = 'N')
-            ,'Y')                                                           as refundable_flag
+                    (SELECT max(bfp2.refundable_flag)
+                    FROM book_fares_paym AS bfp2 WHERE book_no = bf.book_no
+                    AND bfp2.fare_no = bf.fare_no AND bfp2.pax_code = bf.pax_code
+                    AND bfp2.payment_code = bfp.payment_code
+                    AND bfp2.refundable_flag = 'N')
+            ,'Y') AS refundable_flag
             ,round(coalesce(
-                    (select sum(bfp2.fare_paymt_amt)
-                    from book_fares_paym as bfp2 where book_no = bf.book_no
-                    and bfp2.fare_no = bf.fare_no and bfp2.pax_code = bf.pax_code
-                    and bfp2.payment_code = 'FEE')
-            ,0), 2)                                                         as surcharge_amount
-            ,round
-            (
-                    (select max(nuc_rate) from currency_codes as cc
-                    where cc.currency_code = '%s')
+                    (SELECT sum(bfp2.fare_paymt_amt)
+                    FROM book_fares_paym AS bfp2 WHERE book_no = bf.book_no
+                    AND bfp2.fare_no = bf.fare_no AND bfp2.pax_code = bf.pax_code
+                    AND bfp2.payment_code = 'FEE')
+            ,0), 2)                                                         AS surcharge_amount
+            ,round(
+                    (SELECT max(nuc_rate) FROM currency_codes AS cc
+                    WHERE cc.currency_code = '%s')
                     /
                     coalesce
                     (
-                            (select max(nuc_rate) from hist_currency_codes as hcc
-                            where hcc.currency_code = bf.total_amount_curr
-                            and bf.update_time between
-                            hcc.valid_from_date_time and hcc.valid_to_date_time)
+                            (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                            WHERE hcc.currency_code = bf.total_amount_curr
+                            AND bf.update_time between
+                            hcc.valid_from_date_time AND hcc.valid_to_date_time)
                     ,
-                            (select max(nuc_rate) from currency_codes as cc
-                            where cc.currency_code = bf.total_amount_curr)
+                            (SELECT max(nuc_rate) FROM currency_codes AS cc
+                            WHERE cc.currency_code = bf.total_amount_curr)
                     )
                     , 5
-            )                                                                       as common_currency_factor
-            ,round(sum(bfp.fare_paymt_amt), 2)      as fare_amount
-            ,round(sum(bfp.fare_paymt_amt), 5)      as unrounded_fare_amount
-    from hist_book_fares                    as bf
-    inner join hist_book_fares_paym         as bfp on bfp.book_no   = bf.book_no
-                                                                    and bfp.pax_code       = bf.pax_code
-                                                                    and bfp.fare_no         = bf.fare_no
-                                                                    and bfp.et_serial_no = bf.et_serial_no
-                                                                    and bf.book_no = %d
-                                                                    and bfp.payment_code in ('FARE', 'TAX')
-    left join city                          as dcy on dcy.city_code = bf.departure_city
-    left join city                          as acy on acy.city_code = bf.arrival_airport
+            )                                                                       AS common_currency_factor
+            ,round(sum(bfp.fare_paymt_amt), 2)      AS fare_amount
+            ,round(sum(bfp.fare_paymt_amt), 5)      AS unrounded_fare_amount
+    FROM hist_book_fares                    AS bf
+    inner join hist_book_fares_paym         AS bfp on bfp.book_no   = bf.book_no
+                                                                    AND bfp.pax_code       = bf.pax_code
+                                                                    AND bfp.fare_no         = bf.fare_no
+                                                                    AND bfp.et_serial_no = bf.et_serial_no
+                                                                    AND bf.book_no = %d
+                                                                    AND bfp.payment_code IN ('FARE', 'TAX')
+    left join city                          AS dcy on dcy.city_code = bf.departure_city
+    left join city                          AS acy on acy.city_code = bf.arrival_airport
     group by bf.et_serial_no
                     ,bf.update_time
                     ,bf.fare_no
@@ -242,44 +233,43 @@ def ReadBsOldPassengerFares(conn, book_no, currency_code):
 
     print "Old passenger fares for booking %d currency %s" % (book_no, currency_code)
     OldPassengerFaresSql = """
-                        select
-                                 bfp.pax_code                                          as passenger_description_code
-                                ,bfp.total_amount_curr                          as total_amount_currency
-                                ,round(bfp.total_amount, 2)                     as total_amount
-                                ,round(bfp.total_amount, 5)                     as unrounded_total_amount
+                        SELECT
+                                 bfp.pax_code                                          AS passenger_description_code
+                                ,bfp.total_amount_curr                          AS total_amount_currency
+                                ,round(bfp.total_amount, 2)                     AS total_amount
+                                ,round(bfp.total_amount, 5)                     AS unrounded_total_amount
                                 ,bfp.fare_construction
-                                ,bfp.endrsmnt_rstrctns                          as endorsement_restriction
-                                ,round(sum(bfpm.fare_paymt_amt), 2)     as fare_amount
-                                ,round(sum(bfpm.fare_paymt_amt), 5)     as unrounded_fare_amount
-                                ,bfp.update_time as updated_date_time
-                                ,bfp.et_serial_no                                        as serial_no
+                                ,bfp.endrsmnt_rstrctns                          AS endorsement_restriction
+                                ,round(sum(bfpm.fare_paymt_amt), 2)     AS fare_amount
+                                ,round(sum(bfpm.fare_paymt_amt), 5)     AS unrounded_fare_amount
+                                ,bfp.update_time AS updated_date_time
+                                ,bfp.et_serial_no                                        AS serial_no
 
                                 ,round
                                 (
-                                        (select max(nuc_rate) from currency_codes as cc
-                                        where cc.currency_code = '%s')
+                                        (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                        WHERE cc.currency_code = '%s')
                                         /
                                         coalesce
                                         (
-                                                (select max(nuc_rate) from hist_currency_codes as hcc
-                                                where hcc.currency_code = bfp.total_amount_curr
-                                                and bfp.update_time between
-                                                hcc.valid_from_date_time and hcc.valid_to_date_time)
+                                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                                                WHERE hcc.currency_code = bfp.total_amount_curr
+                                                AND bfp.update_time between
+                                                hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                         ,
-                                                (select max(nuc_rate) from currency_codes as cc
-                                                where cc.currency_code = bfp.total_amount_curr)
+                                                (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                WHERE cc.currency_code = bfp.total_amount_curr)
                                         )
 
                                         , 5
-                                )                                                                       as common_currency_factor
+                                )                                                                       AS common_currency_factor
 
 
-                        from hist_book_fares_pass               as bfp
-                        inner join hist_book_fares_paym as bfpm  on bfpm.book_no        = bfp.book_no
-                                                                                                and bfpm.pax_code      = bfp.pax_code
-                                                                                                and bfpm.et_serial_no = bfp.et_serial_no
-                                                                                                and bfp.book_no = %d
-
+                        FROM hist_book_fares_pass               AS bfp
+                        inner join hist_book_fares_paym AS bfpm  on bfpm.book_no        = bfp.book_no
+                                                                                                AND bfpm.pax_code      = bfp.pax_code
+                                                                                                AND bfpm.et_serial_no = bfp.et_serial_no
+                                                                                                AND bfp.book_no = %d
                         group by
                                  bfp.et_serial_no
                                 ,bfp.update_time
@@ -314,41 +304,39 @@ def ReadBsOldFaresPayment(conn, book_no, currency_code):
 
     print "Old fares payment for booking %d currency %s" % (book_no, currency_code)
     OldFaresPaymentSql = """
-                        select
-                                 fare_no
-                                ,pax_code                                      as passenger_description_code
-                                ,payment_code
-                                ,fare_calc_code
-                                ,round(fare_paymt_amt, 2)       as amount
-                                ,round(fare_paymt_amt, 5)       as unrounded_amount
-                                ,paid_curr_code                         as currency_code
-                                ,tax_code
-                                ,nation_code
-                                ,refundable_flag
-                                ,net_fare_flag
-                                ,private_fare_flag
-                                ,source_ref_id
-                                ,update_time as updated_date_time
-                                ,et_serial_no                                    as serial_no
-                                ,round
-                                (
-                                        (select max(nuc_rate) from currency_codes as cc
-                                        where cc.currency_code = '%s')
+                        SELECT
+                                 fare_no,
+                                 pax_code AS passenger_description_code,
+                                payment_code,
+                                fare_calc_code,
+                                fare_paymt_amt AS amount,
+                                paid_curr_code AS currency_code,
+                                tax_code,
+                                nation_code,
+                                refundable_flag
+                                net_fare_flag,
+                                private_fare_flag,
+                                source_ref_id,
+                                update_time AS updated_date_time,
+                                et_serial_no AS serial_no,
+                                ROUND(
+                                        (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                        WHERE cc.currency_code = '%s')
                                         /
                                         coalesce
                                         (
-                                                (select max(nuc_rate) from hist_currency_codes as hcc
-                                                where hcc.currency_code = bfp.paid_curr_code
-                                                and bfp.update_time between
-                                                hcc.valid_from_date_time and hcc.valid_to_date_time)
+                                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                                                WHERE hcc.currency_code = bfp.paid_curr_code
+                                                AND bfp.update_time BETWEEN
+                                                hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                         ,
-                                                (select max(nuc_rate) from currency_codes as cc
-                                                where cc.currency_code = bfp.paid_curr_code)
+                                                (SELECT MAX(nuc_rate) FROM currency_codes AS cc
+                                                WHERE cc.currency_code = bfp.paid_curr_code)
                                         )
                                         , 5
-                                ) as common_currency_factor
-                        from hist_book_fares_paym as bfp
-                        where book_no = %d and payment_code <> 'FEE'
+                                ) AS common_currency_factor
+                        FROM hist_book_fares_paym AS bfp
+                        WHERE book_no = %d AND payment_code <> 'FEE'
 """  % (currency_code, book_no)
 
     printlog(2, "%s" % OldFaresPaymentSql)
@@ -369,31 +357,31 @@ def ReadBsOldFaresPayment(conn, book_no, currency_code):
 
 def ReadBsStopOvers(conn, flight_number, board_date, departure_airport, arrival_airport):
     StopOversSql = """
-                        SELECT fsd.arrival_airport as stop_over_point,
-                (select case when f1.departure_time > fsd.arrival_time
-                                                                then f1.departure_time - fsd.arrival_time
-                                else f1.departure_time - fsd.arrival_time + 1440 end
-                        from flight_segm_date as f1
-                        where f1.flight_number = fsd.flight_number
-                          and fsd.board_date = f1.board_date
-                          and f1.leg_number > 0
-                          and f1.departure_airport = fsd.arrival_airport) as stop_over_time
+                        SELECT fsd.arrival_airport AS stop_over_point,
+                (SELECT CASE WHEN f1.departure_time > fsd.arrival_time
+                                                                THEN f1.departure_time - fsd.arrival_time
+                                ELSE f1.departure_time - fsd.arrival_time + 1440 end
+                        FROM flight_segm_date AS f1
+                        WHERE f1.flight_number = fsd.flight_number
+                          AND fsd.board_date = f1.board_date
+                          AND f1.leg_number > 0
+                          AND f1.departure_airport = fsd.arrival_airport) AS stop_over_time
            FROM flight_segm_date AS fsd
            WHERE fsd.flight_number= '%s'
                         AND to_char(fsd.board_date, '%%d%%b%%iY') = '%s'
-                        and fsd.leg_number between (select f1.leg_number
-                from flight_segm_date as f1
-                where f1.flight_number = fsd.flight_number
-                 and f1.board_date = fsd.board_date
-                 and f1.leg_number > 0
-                 and f1.departure_airport = '%s' )
-                        and (select f1.leg_number
-                from flight_segm_date as f1
-                where f1.flight_number = fsd.flight_number
-                 and f1.board_date = fsd.board_date
-                 and f1.leg_number > 0
-                 and f1.arrival_airport = '%s' )
-                        and fsd.arrival_airport <> '%s'
+                        AND fsd.leg_number between (SELECT f1.leg_number
+                FROM flight_segm_date AS f1
+                WHERE f1.flight_number = fsd.flight_number
+                 AND f1.board_date = fsd.board_date
+                 AND f1.leg_number > 0
+                 AND f1.departure_airport = '%s' )
+                        AND (SELECT f1.leg_number
+                FROM flight_segm_date AS f1
+                WHERE f1.flight_number = fsd.flight_number
+                 AND f1.board_date = fsd.board_date
+                 AND f1.leg_number > 0
+                 AND f1.arrival_airport = '%s' )
+                        AND fsd.arrival_airport <> '%s'
 """ % (flight_number, board_date, departure_airport, departure_airport, arrival_airport)
 
     printlog(2, "%s" % StopOversSql)
@@ -416,59 +404,59 @@ def ReadBsItinerary(conn, book_no):
     print "Itenary for booking %d" % (book_no)
     ItinerarySql = """SELECT
                                 itn.route_no,
-                                (select flight_number from flight_shared_leg where dup_flight_number = itn.flight_number and flight_date = itn.flight_date) as codeshareflightnumber
-                                ,itn.flight_number as flight_number
+                                (SELECT flight_number FROM flight_shared_leg WHERE dup_flight_number = itn.flight_number AND flight_date = itn.flight_date) AS codeshareflightnumber
+                                ,itn.flight_number AS flight_number
                                 ,itn.selling_class
-                                ,itn.flight_date as flight_date
+                                ,itn.flight_date AS flight_date
                                 ,itn.departure_city
                                 ,itn.arrival_city
-                                ,substr(itn.reserve_status, 1, 2)       as reserve_status
+                                ,substr(itn.reserve_status, 1, 2)       AS reserve_status
                                 ,itn.fare_nos
                                 ,departure_time
                                  ,arrival_time
                                 ,ac.seat_rqst_type
                                 ,itn.book_no
-                                ,itn.alt_itenary_no     as alt_itinerary_no
-                                ,itn.itenary_no         as itinerary_no
-                                ,itn.departure_airport       as departure_airport
-                                ,itn.arrival_airport       as arrival_airport
-                                ,dap.airport_name       as departure_airport_name
-                                ,dcy.city_name          as departure_city_name
-                                ,aap.airport_name       as arrival_airport_name
-                                ,acy.city_name          as arrival_city_name
+                                ,itn.alt_itenary_no     AS alt_itinerary_no
+                                ,itn.itenary_no         AS itinerary_no
+                                ,itn.departure_airport       AS departure_airport
+                                ,itn.arrival_airport       AS arrival_airport
+                                ,dap.airport_name       AS departure_airport_name
+                                ,dcy.city_name          AS departure_city_name
+                                ,aap.airport_name       AS arrival_airport_name
+                                ,acy.city_name          AS arrival_city_name
                                 ,itn.itenary_stat_flag
                                 ,itn.request_nos
-                                ,itn.date_change_ind    as date_change_ind
+                                ,itn.date_change_ind    AS date_change_ind
                                 ,case when
                                          (
-                                                select  coalesce(count(fsl.dup_flight_number),0)
-                                                from    flight_shared_leg as fsl
-                                                where   fsl.flight_number   = itn.flight_number
-                                                        and fsl.flight_date = itn.flight_date
+                                                SELECT  coalesce(count(fsl.dup_flight_number),0)
+                                                FROM    flight_shared_leg AS fsl
+                                                WHERE   fsl.flight_number   = itn.flight_number
+                                                        AND fsl.flight_date = itn.flight_date
                                      ) = 0
                                  then itn.flight_number
                                  else
                                      (
-                                                select  min(fsl.dup_flight_number)
-                                                from    flight_shared_leg as fsl
-                                                where   fsl.flight_number   = itn.flight_number
-                                                        and fsl.flight_date = itn.flight_date
-                                                                and fsl.leg_number      = 1
+                                                SELECT  min(fsl.dup_flight_number)
+                                                FROM    flight_shared_leg AS fsl
+                                                WHERE   fsl.flight_number   = itn.flight_number
+                                                        AND fsl.flight_date = itn.flight_date
+                                                                AND fsl.leg_number      = 1
                                      )
                              end
-                                        as marketing_flight_number
-                        from  itenary            as itn
-                        left join action_codes  as ac   on action_code  = substr(itn.reserve_status, 1, 2)
-                             and ac.company_code = (select company_code from system_param)
-                        left join airport       as dap on dap.airport_code      = itn.departure_airport
-                        left join city          as dcy on dcy.city_code         = itn.departure_city
-                        left join airport       as aap on aap.airport_code      = itn.arrival_airport
-                        left join city          as acy on acy.city_code         = itn.arrival_city
-                        where itn.book_no = %d
-                          and itn.itenary_stat_flag <> 'X'
-                          and (itn.flight_number like '%%OPEN' or (
+                                        AS marketing_flight_number
+                        FROM  itenary            AS itn
+                        left join action_codes  AS ac   on action_code  = substr(itn.reserve_status, 1, 2)
+                             AND ac.company_code = (SELECT company_code FROM system_param)
+                        left join airport       AS dap on dap.airport_code      = itn.departure_airport
+                        left join city          AS dcy on dcy.city_code         = itn.departure_city
+                        left join airport       AS aap on aap.airport_code      = itn.arrival_airport
+                        left join city          AS acy on acy.city_code         = itn.arrival_city
+                        WHERE itn.book_no = %d
+                          AND itn.itenary_stat_flag <> 'X'
+                          AND (itn.flight_number like '%%OPEN' or (
                              itn.itenary_type = 'R'
-                             and ac.action_code is not null)
+                             AND ac.action_code is not null)
                           )
                         order by        itn.flight_date,
                                                 itn.departure_time
@@ -495,56 +483,56 @@ def ReadBsFares(conn, book_no, currency_code):
 
     print "Fares for booking %d currency %s" % (book_no, currency_code)
     FaresSql = """
-                        select
+                        SELECT
                                  bf.fare_no
-                                ,bf.pax_code                                           as passenger_description_code
-                                ,bf.departure_city                                          as departure_city
-                                ,bf.arrival_airport                                            as arrival_city
-                                ,round(bf.total_amount, 2)                      as total_amount
-                                ,round(bf.total_amount, 5)                      as unrounded_total_amount
-                                ,bf.total_amount_curr                           as total_amount_curr
-                                ,bf.fare_stat_flag                                       as fare_status
-                                ,dcy.city_name                                          as departure_city_name
-                                ,acy.city_name                                          as arrival_city_name
-                                ,'0'                                                            as source_reference_id
+                                ,bf.pax_code                                           AS passenger_description_code
+                                ,bf.departure_city                                          AS departure_city
+                                ,bf.arrival_airport                                            AS arrival_city
+                                ,round(bf.total_amount, 2)                      AS total_amount
+                                ,round(bf.total_amount, 5)                      AS unrounded_total_amount
+                                ,bf.total_amount_curr                           AS total_amount_curr
+                                ,bf.fare_stat_flag                                       AS fare_status
+                                ,dcy.city_name                                          AS departure_city_name
+                                ,acy.city_name                                          AS arrival_city_name
+                                ,'0'                                                            AS source_reference_id
                                 ,coalesce(
-                                        (select max(bfp2.refundable_flag)
-                                        from book_fares_paym as bfp2 where book_no = bf.book_no
-                                        and bfp2.fare_no = bf.fare_no and bfp2.pax_code = bf.pax_code
-                                        and bfp2.payment_code = bfp.payment_code
-                                        and bfp2.refundable_flag = 'N')
-                                ,'Y')                                                           as refundable_flag
+                                        (SELECT max(bfp2.refundable_flag)
+                                        FROM book_fares_paym AS bfp2 WHERE book_no = bf.book_no
+                                        AND bfp2.fare_no = bf.fare_no AND bfp2.pax_code = bf.pax_code
+                                        AND bfp2.payment_code = bfp.payment_code
+                                        AND bfp2.refundable_flag = 'N')
+                                ,'Y')                                                           AS refundable_flag
                                 ,round(coalesce(
-                                        (select sum(bfp2.fare_paymt_amt)
-                                        from book_fares_paym as bfp2 where book_no = bf.book_no
-                                        and bfp2.fare_no = bf.fare_no and bfp2.pax_code = bf.pax_code
-                                        and bfp2.payment_code = 'FEE')
-                                ,0), 2)                                                         as surcharge_amount
+                                        (SELECT sum(bfp2.fare_paymt_amt)
+                                        FROM book_fares_paym AS bfp2 WHERE book_no = bf.book_no
+                                        AND bfp2.fare_no = bf.fare_no AND bfp2.pax_code = bf.pax_code
+                                        AND bfp2.payment_code = 'FEE')
+                                ,0), 2)                                                         AS surcharge_amount
                                 ,round(
-                                        (select max(nuc_rate) from currency_codes as cc
-                                        where cc.currency_code = '%s')
+                                        (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                        WHERE cc.currency_code = '%s')
                                         /
                                         coalesce
                                         (
-                                                (select max(nuc_rate) from hist_currency_codes as hcc
-                                                where hcc.currency_code = bf.total_amount_curr
-                                                and bf.update_time between
-                                                hcc.valid_from_date_time and hcc.valid_to_date_time)
+                                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                                                WHERE hcc.currency_code = bf.total_amount_curr
+                                                AND bf.update_time between
+                                                hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                         ,
-                                                (select max(nuc_rate) from currency_codes as cc
-                                                where cc.currency_code = bf.total_amount_curr)
+                                                (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                WHERE cc.currency_code = bf.total_amount_curr)
                                         )
-                                , 5)                                                            as common_currency_factor
-                                ,round(sum(bfp.fare_paymt_amt), 2)      as fare_amount
-                                ,round(sum(bfp.fare_paymt_amt), 5)      as unrounded_fare_amount
-                        from book_fares                         as bf
-                        inner join book_fares_paym      as bfp on bfp.book_no   = bf.book_no
-                                                                                        and bfp.pax_code       = bf.pax_code
-                                                                                        and bfp.fare_no         = bf.fare_no
-                                                                                        and bfp.payment_code in ('FARE', 'TAX')
-                                                                                        and bf.book_no = %d
-                        left join city                          as dcy on dcy.city_code = bf.departure_city
-                        left join city                          as acy on acy.city_code = bf.arrival_airport
+                                , 5)                                                            AS common_currency_factor
+                                ,round(sum(bfp.fare_paymt_amt), 2)      AS fare_amount
+                                ,round(sum(bfp.fare_paymt_amt), 5)      AS unrounded_fare_amount
+                        FROM book_fares                         AS bf
+                        inner join book_fares_paym      AS bfp on bfp.book_no   = bf.book_no
+                                                                                        AND bfp.pax_code       = bf.pax_code
+                                                                                        AND bfp.fare_no         = bf.fare_no
+                                                                                        AND bfp.payment_code IN ('FARE', 'TAX')
+                                                                                        AND bf.book_no = %d
+                        left join city                          AS dcy on dcy.city_code = bf.departure_city
+                        left join city                          AS acy on acy.city_code = bf.arrival_airport
                         group by bf.fare_no, bf.pax_code, bf.departure_city, bf.arrival_airport
                                 , bf.total_amount, bf.total_amount_curr, bf.fare_stat_flag, dcy.city_name
                                 , acy.city_name, 11, 12, 13, 14
@@ -571,185 +559,185 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
 
     print "Booking summary for booking %d currency %s" % (book_no, currency_code)
     SummarySql = """
-                        select
+                        SELECT
                                 round(coalesce(
-                                        (select sum
+                                        (SELECT sum
                                                 (
                                                         pa1.payment_amount *
-                                                        (select max(nuc_rate) from currency_codes as cc
-                                                        where cc.currency_code = '%s')
+                                                        (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                        WHERE cc.currency_code = '%s')
                                                         /
                                                         coalesce
                                                         (
-                                                                (select max(nuc_rate) from hist_currency_codes as hcc
-                                                                where hcc.currency_code = pa1.paid_curr_code
-                                                                and pa1.crea_date_time) between
-                                                                hcc.valid_from_date_time and hcc.valid_to_date_time)
+                                                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                                                                WHERE hcc.currency_code = pa1.paid_curr_code
+                                                                AND pa1.crea_date_time) between
+                                                                hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
-                                                                (select max(nuc_rate) from currency_codes as cc
-                                                                where cc.currency_code = pa1.paid_curr_code)
+                                                                (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                                WHERE cc.currency_code = pa1.paid_curr_code)
                                                         )
-                                                ) from payments pa1
-                                        where pa1.book_no = bo.book_no and pa1.paid_flag = 'Y'
-                                        and  pa1.payment_type not in ('%s', '%s', '%s'))
-                                , 0), 2) as total_payment
+                                                ) FROM payments pa1
+                                        WHERE pa1.book_no = bo.book_no AND pa1.paid_flag = 'Y'
+                                        AND  pa1.payment_type not IN ('%s', '%s', '%s'))
+                                , 0), 2) AS total_payment
                                 ,round(coalesce(
-                                        (select sum
+                                        (SELECT sum
                                                 (
                                                         bc.comm_amount *
-                                                        (select max(nuc_rate) from currency_codes as cc
-                                                        where cc.currency_code = '%s')
+                                                        (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                        WHERE cc.currency_code = '%s')
                                                         /
                                                         coalesce
                                                         (
-                                                                (select max(nuc_rate) from hist_currency_codes as hcc
-                                                                where hcc.currency_code = bc.comm_amount_curr
-                                                                and bc.update_time between
-                                                                hcc.valid_from_date_time and hcc.valid_to_date_time)
+                                                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                                                                WHERE hcc.currency_code = bc.comm_amount_curr
+                                                                AND bc.update_time between
+                                                                hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
-                                                                (select max(nuc_rate) from currency_codes as cc
-                                                                where cc.currency_code = bc.comm_amount_curr)
+                                                                (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                                WHERE cc.currency_code = bc.comm_amount_curr)
                                                         )
 
                                                 )
-                                        from book_commission as bc
-                                        inner join passenger as pax on pax.book_no = bc.book_no
-                                                and pax.pax_code = bc.pax_code
-                                                and bc.book_no = bo.book_no)
-                                , 0), 2) as total_comm
+                                        FROM book_commission AS bc
+                                        inner join passenger AS pax on pax.book_no = bc.book_no
+                                                AND pax.pax_code = bc.pax_code
+                                                AND bc.book_no = bo.book_no)
+                                , 0), 2) AS total_comm
                                 ,round(coalesce(
-                                        (select sum
+                                        (SELECT sum
                                                 (
                                                         bfp.fare_paymt_amt *
-                                                        (select max(nuc_rate) from currency_codes as cc
-                                                        where cc.currency_code = '%s')
+                                                        (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                        WHERE cc.currency_code = '%s')
                                                         /
                                                         coalesce
                                                         (
-                                                                (select max(nuc_rate) from hist_currency_codes as hcc
-                                                                where hcc.currency_code = bfp.paid_curr_code
-                                                                and bfp.update_time between
-                                                                hcc.valid_from_date_time and hcc.valid_to_date_time)
+                                                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                                                                WHERE hcc.currency_code = bfp.paid_curr_code
+                                                                AND bfp.update_time between
+                                                                hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
-                                                                (select max(nuc_rate) from currency_codes as cc
-                                                                where cc.currency_code = bfp.paid_curr_code)
+                                                                (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                                WHERE cc.currency_code = bfp.paid_curr_code)
                                                         )
                                                 )
-                                        from book_fares_paym as bfp
-                                        inner join passenger as pax on pax.book_no = bfp.book_no
-                                                and pax.pax_code = bfp.pax_code
-                                                and bfp.book_no = bo.book_no)
-                                , 0), 2) as total_fare
+                                        FROM book_fares_paym AS bfp
+                                        inner join passenger AS pax on pax.book_no = bfp.book_no
+                                                AND pax.pax_code = bfp.pax_code
+                                                AND bfp.book_no = bo.book_no)
+                                , 0), 2) AS total_fare
                                 ,round(coalesce(
-                                        (select sum
+                                        (SELECT sum
                                                 (
                                                         bfp.fare_paymt_amt *
-                                                        (select max(nuc_rate) from currency_codes as cc
-                                                        where cc.currency_code = '%s')
+                                                        (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                        WHERE cc.currency_code = '%s')
                                                         /
                                                         coalesce
                                                         (
-                                                                (select max(nuc_rate) from hist_currency_codes as hcc
-                                                                where hcc.currency_code = bfp.paid_curr_code
-                                                                and bfp.update_time between
-                                                                hcc.valid_from_date_time and hcc.valid_to_date_time)
+                                                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                                                                WHERE hcc.currency_code = bfp.paid_curr_code
+                                                                AND bfp.update_time between
+                                                                hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
-                                                                (select max(nuc_rate) from currency_codes as cc
-                                                                where cc.currency_code = bfp.paid_curr_code)
+                                                                (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                                WHERE cc.currency_code = bfp.paid_curr_code)
                                                         )
                                                 )
-                                        from book_fares_paym as bfp
-                                        inner join passenger as pax on pax.book_no = bfp.book_no
-                                                and pax.pax_code = bfp.pax_code
-                                                and bfp.book_no = bo.book_no)
+                                        FROM book_fares_paym AS bfp
+                                        inner join passenger AS pax on pax.book_no = bfp.book_no
+                                                AND pax.pax_code = bfp.pax_code
+                                                AND bfp.book_no = bo.book_no)
                                         -
-                                        (select sum
+                                        (SELECT sum
                                                 (
                                                         pa1.payment_amount *
-                                                        (select max(nuc_rate) from currency_codes as cc
-                                                        where cc.currency_code = '%s')
+                                                        (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                        WHERE cc.currency_code = '%s')
                                                         /
                                                         coalesce
                                                         (
-                                                                (select max(nuc_rate) from hist_currency_codes as hcc
-                                                                where hcc.currency_code = pa1.paid_curr_code
-                                                                and pa1.crea_date_time between
-                                                                hcc.valid_from_date_time and hcc.valid_to_date_time)
+                                                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                                                                WHERE hcc.currency_code = pa1.paid_curr_code
+                                                                AND pa1.crea_date_time between
+                                                                hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
-                                                                (select max(nuc_rate) from currency_codes as cc
-                                                                where cc.currency_code = pa1.paid_curr_code)
+                                                                (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                                WHERE cc.currency_code = pa1.paid_curr_code)
                                                         )
-                                                ) from payments pa1
-                                        where pa1.book_no = bo.book_no and pa1.paid_flag = 'Y'
-                                        and  pa1.payment_type not in ('%s', '%s', '%s'))
+                                                ) FROM payments pa1
+                                        WHERE pa1.book_no = bo.book_no AND pa1.paid_flag = 'Y'
+                                        AND  pa1.payment_type not IN ('%s', '%s', '%s'))
                                         -
-                                        (select (sum
+                                        (SELECT (sum
                                                 (
                                                         pa.payment_amount *
-                                                        (select max(nuc_rate) from currency_codes as cc
-                                                        where cc.currency_code = '%s')
+                                                        (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                        WHERE cc.currency_code = '%s')
                                                         /
                                                         coalesce
                                                         (
-                                                                (select max(nuc_rate) from hist_currency_codes as hcc
-                                                                where hcc.currency_code = pa.paid_curr_code
-                                                                and pa.crea_date_time between
-                                                                hcc.valid_from_date_time and hcc.valid_to_date_time)
+                                                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                                                                WHERE hcc.currency_code = pa.paid_curr_code
+                                                                AND pa.crea_date_time between
+                                                                hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
-                                                                (select max(nuc_rate) from currency_codes as cc
-                                                                where cc.currency_code = pa.paid_curr_code)
+                                                                (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                                WHERE cc.currency_code = pa.paid_curr_code)
                                                         )
-                                                )) from payments as pa
-                                        where pa.book_no = bo.book_no
-                                        and pa.payment_type in ('%s', '%s', '%s'))
-                                , 0), 2) as total_outstanding
+                                                )) FROM payments AS pa
+                                        WHERE pa.book_no = bo.book_no
+                                        AND pa.payment_type IN ('%s', '%s', '%s'))
+                                , 0), 2) AS total_outstanding
                                 ,round(coalesce(
-                                        (select sum
+                                        (SELECT sum
                                                 (
                                                         bfp.fare_paymt_amt *
-                                                        (select max(nuc_rate) from currency_codes as cc
-                                                        where cc.currency_code = '%s')
+                                                        (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                        WHERE cc.currency_code = '%s')
                                                         /
                                                         coalesce
                                                         (
-                                                                (select max(nuc_rate) from hist_currency_codes as hcc
-                                                                where hcc.currency_code = bfp.paid_curr_code
-                                                                and bfp.update_time between
-                                                                hcc.valid_from_date_time and hcc.valid_to_date_time)
+                                                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                                                                WHERE hcc.currency_code = bfp.paid_curr_code
+                                                                AND bfp.update_time between
+                                                                hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
-                                                                (select max(nuc_rate) from currency_codes as cc
-                                                                where cc.currency_code = bfp.paid_curr_code)
+                                                                (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                                WHERE cc.currency_code = bfp.paid_curr_code)
                                                         )
                                                 )
-                                        from book_fares_paym as bfp
-                                        inner join passenger as pax on pax.book_no = bfp.book_no
-                                                and pax.pax_code = bfp.pax_code
-                                                and bfp.payment_code = 'FEE'
-                                                and bfp.book_no = bo.book_no)
-                                , 0), 2) as total_insurance
+                                        FROM book_fares_paym AS bfp
+                                        inner join passenger AS pax on pax.book_no = bfp.book_no
+                                                AND pax.pax_code = bfp.pax_code
+                                                AND bfp.payment_code = 'FEE'
+                                                AND bfp.book_no = bo.book_no)
+                                , 0), 2) AS total_insurance
                                 ,round(coalesce(
-                                        (select -1 * (sum
+                                        (SELECT -1 * (sum
                                                 (
                                                         pa.payment_amount *
-                                                        (select max(nuc_rate) from currency_codes as cc
-                                                        where cc.currency_code = '%s')
+                                                        (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                        WHERE cc.currency_code = '%s')
                                                         /
                                                         coalesce
                                                         (
-                                                                (select max(nuc_rate) from hist_currency_codes as hcc
-                                                                where hcc.currency_code = pa.paid_curr_code
-                                                                and pa.crea_date_time between
-                                                                hcc.valid_from_date_time and hcc.valid_to_date_time)
+                                                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                                                                WHERE hcc.currency_code = pa.paid_curr_code
+                                                                AND pa.crea_date_time between
+                                                                hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
-                                                                (select max(nuc_rate) from currency_codes as cc
-                                                                where cc.currency_code = pa.paid_curr_code)
-                                                                                                                                            and bfpm.pax_code      = bfp.pax_code
-                                                                                                and bfp.book_no = %d            )
-                                                )) from payments as pa
-                                        where pa.book_no = bo.book_no
-                                        and pa.payment_type in ('%s', '%s', '%s'))
-                                , 0), 2) as total_fee
-                        from book as bo where bo.book_no = %s
+                                                                (SELECT max(nuc_rate) FROM currency_codes AS cc
+                                                                WHERE cc.currency_code = pa.paid_curr_code)
+                                                                                                                                            AND bfpm.pax_code      = bfp.pax_code
+                                                                                                AND bfp.book_no = %d            )
+                                                )) FROM payments AS pa
+                                        WHERE pa.book_no = bo.book_no
+                                        AND pa.payment_type IN ('%s', '%s', '%s'))
+                                , 0), 2) AS total_fee
+                        FROM book AS bo WHERE bo.book_no = %s
 """ % (currency_code,
        PaymentTypeFee, PaymentTypeFeeTax, PaymentTypeFeeWaive,
        currency_code,

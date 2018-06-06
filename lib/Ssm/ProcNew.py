@@ -8,7 +8,8 @@ import sys
 import ply.lex as lex
 import ply.yacc as yacc
 
-from SsmData import SsmData, read_ssm_data
+from ScheduleData import SsmData
+from SsmData import read_ssm_data
 from SsmDb import GetConfigTableNo, CheckCityPair
 from BarsLog import printlog, set_verbose
 from ReadDateTime import ReadDate, DateRange
@@ -69,7 +70,7 @@ def FpLegsFromSsm(conn, flightNumber, schedPerdNo,
     for row in cur:
         depNation = row[0]
         arrNation = row[1]
-        print "From %s [%s] to %s [%s]" % (depAirport, row[0], arrAirport)
+        print("From %s [%s] to %s [%s]" % (depAirport, row[0], arrAirport))
 
     fplSql = "INSERT INTO flight_perd_legs ( " \
         "flight_number, schedule_period_no, " \

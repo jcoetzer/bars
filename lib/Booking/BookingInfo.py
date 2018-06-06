@@ -204,7 +204,7 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
     abfSql = """
         INSERT INTO book_fares(
             book_no, fare_no, pax_code,
-            departure_city, arrival_airport, total_amount_curr, total_amount,
+            departure_airport, arrival_airport, total_amount_curr, total_amount,
             fare_construction, endrsmnt_rstrctns, fare_stat_flag,
             update_user, update_group, update_time )
         VALUES (

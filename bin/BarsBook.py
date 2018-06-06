@@ -20,7 +20,8 @@ from Ssm.SsmDb import GetCityPair
 from Flight.AvailDb import get_selling_conf, get_avail_flights, OldAvailSvc
 from Flight.FlightDetails import GetFlightDetails
 from Booking.FareCalcDisplay import FareCalcDisplay
-from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, AddItenary, AddPassenger, \
+from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, \
+     AddItenary, AddPassenger, \
      AddBookFares, AddBookFareSegments, AddBookFarePassengers, \
      AddBookFaresPayments, AddBookRequest, AddPayment, \
      GetPreBookingInfo, AddBookTimeLimit
@@ -35,11 +36,14 @@ def usage(pn):
     print("Availability:")
     print("\t%s --avail -P <CITY> -Q <CITY> -D <DATE> [-E <DATE>]" % pn)
     print("Pricing:")
-    print("\t%s --price -C <CLASS> -P <CITY> -Q <CITY> -D <DATE> [-E <DATE>]" % pn)
+    print("\t%s --price -C <CLASS> -P <CITY> -Q <CITY> -D <DATE> [-E <DATE>]"
+          % pn)
     print("Detail:")
-    print("\t%s --detail -F <FLIGHT> -P <CITY> -Q <CITY> -D <DATE> [-E <DATE>]" % pn)
+    print("\t%s --detail -F <FLIGHT> -P <CITY> -Q <CITY> -D <DATE> [-E <DATE>]"
+          % pn)
     print("Book:")
-    print("\t%s --book -N <PAX> -F <FLIGHT> -N <NAME> -M <MISC> -D <DATE> [-E <DATE>]" % pn)
+    print("\t%s --book -N <PAX> -F <FLIGHT> -N <NAME> -M <MISC> -D <DATE>"
+          " [-E <DATE>]" % pn)
     print("Check:")
     print("\t%s --pay -B <BOOK> -A <AMOUNT> -N <NAME>" % pn)
     print("Check:")
@@ -51,7 +55,8 @@ def GetAvail(conn, dt1, dt2, cityPairNo,
              departAirport, arriveAirport,
              selling_classes, vCompany):
     """Get availability information."""
-    flights = OldAvailSvc(conn, vCompany, dt1, cityPairNo, departAirport, arriveAirport)
+    flights = OldAvailSvc(conn, vCompany, dt1, cityPairNo,
+                          departAirport, arriveAirport)
     for flight in flights:
         flight.display()
     for selling_class in selling_classes:
@@ -89,8 +94,10 @@ def GetPrice(conn,
 def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
             vOriginBranchCode, vAgencyCode,
             paxNames, paxDobs,
+            payAmount,
             flightNumber, dt1,
             flightNumber2, dt2,
+            departAirport, arriveAirport,
             sellClass,
             aTimeLimit,
             vUser, vGroup):
@@ -131,7 +138,7 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
                departTerm, arriveTerm,
                cityPairNo, sellClass,
                vUser, vGroup)
-    if flightNumber2 is not None and dt is not None:
+    if flightNumber2 is not None and dt2 is not None:
         n, fd = ReadFlightDeparture(conn, sellClass, flightNumber2, dt2)
         if n == 0:
             print("Return flight number and date not found")
@@ -144,11 +151,11 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
         departTime = fd.departure_time
         arriveTime = fd.arrival_time
         AddItenary(conn, bn, flightNumber2, dt2,
-                departAirport, arriveAirport,
-                departTime, arriveTime,
-                departTerm, arriveTerm,
-                cityPairNo, sellClass,
-                vUser, vGroup)
+                   departAirport, arriveAirport,
+                   departTime, arriveTime,
+                   departTerm, arriveTerm,
+                   cityPairNo, sellClass,
+                   vUser, vGroup)
 
     AddPassenger(conn, bn,
                  paxNames,
@@ -158,7 +165,9 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
     AddBookTimeLimit(conn, bn, vAgencyCode, vUser, vGroup)
 
 
-def PutPay(conn, aCurrency, aPayAmount, aPayAmount2, aBookNo, aPaxNames, aPaxCode,
+def PutPay(conn, aCurrency, aPayAmount, aPayAmount2,
+           aBookNo,
+           aPaxNames, aPaxCode,
            aDepart, aArrive,
            aOriginBranchCode,
            aUser, aGroup):
@@ -178,22 +187,23 @@ def PutPay(conn, aCurrency, aPayAmount, aPayAmount2, aBookNo, aPaxNames, aPaxCod
                aOriginBranchCode, vRemark,
                aUser, aGroup)
     if aDepart is None or aArrive is None:
-        irecs = ReadItenary(conn, None, bookno, None,
+        irecs = ReadItenary(conn, None, aBookNo, None,
                             fnumber=None, start_date=None, end_date=None)
-        l = len(irecs)
-        if l > 2:
+        li = len(irecs)
+        if li > 2:
             print("Found %d itenaries")
             return
-        elif l == 2:
+        elif li == 2:
             for irec in irecs:
                 pass
-        elif l == 1:
+        elif li == 1:
             irec = irecs[0]
             irec.display()
             n, departure_airport, arrival_airport, city_pair = \
-                    ReadDeparture(conn, irec.flight_number, dt1)
-            AddBookFares(conn, aBookNo, vFareNo, aPaxCode, departure_airport, arrival_airport,
-                        aCurrency, aPayAmount, aUser, aGroup)
+                ReadDeparture(conn, irec.flight_number, dt1=None)
+            AddBookFares(conn, aBookNo, vFareNo, aPaxCode,
+                         departure_airport, arrival_airport,
+                         aCurrency, aPayAmount, aUser, aGroup)
     else:
         AddBookFares(conn, aBookNo, vFareNo, aPaxCode, aDepart, aArrive,
                      aCurrency, aPayAmount, aUser, aGroup)
@@ -371,6 +381,7 @@ def main(argv):
                 paxNames, paxDobs,
                 payAmount,
                 flightNumber, dt1,
+                None, None,
                 departAirport, arriveAirport,
                 departTime, arriveTime,
                 departTerm, arriveTerm,
@@ -378,7 +389,8 @@ def main(argv):
                 vTimeLimit,
                 cfg.User, cfg.Group)
     elif dopay:
-        PutPay(conn, cfg.Currency, payAmount, payAmount2, bn, paxNames, cfg.PaxCode,
+        PutPay(conn, cfg.Currency, payAmount, payAmount2,
+               bn, paxNames, cfg.PaxCode,
                departAirport, arriveAirport,
                cfg.OriginBranchCode,
                cfg.User, cfg.Group)

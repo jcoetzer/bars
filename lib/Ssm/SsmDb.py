@@ -15,7 +15,8 @@ def GetConfigTableNo(conn, aAircraftCode):
     ssmSql = \
         "SELECT config_table_no,selling_class,seat_capacity " \
         "FROM aircraft_config " \
-        "WHERE aircraft_code = '%s' ORDER BY seat_capacity DESC" % aAircraftCode
+        "WHERE aircraft_code = '%s' ORDER BY seat_capacity DESC" \
+        % aAircraftCode
     printlog(2, "%s" % ssmSql)
     cur.execute(ssmSql)
 
@@ -34,7 +35,7 @@ def GetCityPair(conn, depart_airport, arrive_airport):
     cur = conn.cursor()
     ssmSql = \
         "SELECT city_pair FROM city_pair" \
-        " WHERE departure_city='%s' AND arrival_airport='%s'" \
+        " WHERE departure_airport='%s' AND arrival_airport='%s'" \
         % (depart_airport, arrive_airport)
     printlog(2, "%s" % ssmSql)
     cur.execute(ssmSql)
@@ -48,12 +49,13 @@ def GetCityPair(conn, depart_airport, arrive_airport):
     return int(city_pair_id)
 
 
-def CheckCityPair(conn, depart_airport, arrive_airport, pair_rule_no, userName, groupName):
+def CheckCityPair(conn, depart_airport, arrive_airport, pair_rule_no,
+                  userName, groupName):
     """Read city pair number."""
     cur = conn.cursor()
     ssmSql = \
         "SELECT city_pair FROM city_pair" \
-        " WHERE departure_city='%s' AND arrival_airport='%s'" \
+        " WHERE departure_airport='%s' AND arrival_airport='%s'" \
         % (depart_airport, arrive_airport)
     printlog(2, "%s" % ssmSql)
     cur.execute(ssmSql)
@@ -62,17 +64,6 @@ def CheckCityPair(conn, depart_airport, arrive_airport, pair_rule_no, userName, 
     for row in cur:
         city_pair_id = row[0]
         printlog(1, "City pair %d" % city_pair_id)
-
-    #if city_pair_id == 0:
-        #ssmSql = \
-            #"INSERT INTO city_pair(departure_city, arrival_airport, pair_indicator, pair_rule_no, update_user, update_group)" \
-            #" VALUES ('%s', '%s', 'A', %d, '%s', '%s') RETURNING city_pair" \
-            #% (depart_airport, arrive_airport, pair_rule_no, userName, groupName)
-        #printlog(2, "%s" % ssmSql)
-        #cur.execute(ssmSql)
-        #for row in cur:
-            #city_pair_id = row[0]
-            #printlog(1, "New city pair %d" % city_pair_id)
 
     cur.close()
     return city_pair_id
@@ -84,7 +75,8 @@ def CheckFlightPeriod(conn, ssm):
              " FROM flight_periods" \
              " WHERE flight_number='%s'" \
              " AND (start_date>='%s' OR end_date<='%s')" \
-             % (ssm.flight_number, ssm.start_date.strftime("%Y-%m-%d"), ssm.end_date.strftime("%Y-%m-%d"))
+             % (ssm.flight_number, ssm.start_date.strftime("%Y-%m-%d"),
+                ssm.end_date.strftime("%Y-%m-%d"))
     printlog(2, "%s" % ssmSql)
     cur = conn.cursor()
     cur.execute(ssmSql)
@@ -96,7 +88,8 @@ def CheckFlightPeriod(conn, ssm):
         sdate = row[0]
         edate = row[1]
         flight_period_id = row[2]
-        printlog(1, "Start %s end %s schedule period %d" % (sdate, edate, flight_period_id))
+        printlog(1, "Start %s end %s schedule period %d"
+                 % (sdate, edate, flight_period_id))
 
     cur.close()
     return flight_period_id, sdate, edate

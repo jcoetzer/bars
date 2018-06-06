@@ -74,33 +74,33 @@ from DbConnect import OpenDb, CloseDb
 
 def read_flight_stuff(conn, flight_number, dt1, selling_cls, seat_number):
 
-    print "__________________________________"
-    print "Flight %s board %s stuff" % (flight_number, dt1.strftime("%Y-%m-%d"))
+    print("__________________________________")
+    print("Flight %s board %s stuff" % (flight_number, dt1.strftime("%Y-%m-%d")))
     CheckFlight(conn, flight_number, dt1)
-    print "_____________________________"
+    print("_____________________________")
     flight_date_leg_ids = ReadFlightDateLegs(conn, flight_number, dt1)
-    print "____________________"
+    print("____________________")
     aircraft_codes, config_table_nos = ReadFlightSharedLeg(conn, flight_number, dt1)
     for fdlid in flight_date_leg_ids:
-        print "____________________"
-        print "Flight date leg ID %d" % fdlid
+        print("____________________")
+        print("Flight date leg ID %d" % fdlid)
         ReadAsrReconcileHistory(conn, fdlid)
         smid = ReadFlightSeatMap(conn, fdlid)
         ReadFLightSeatMapId(conn, smid)
         ReadSeatMapConfiguration(conn, fdlid, None)
     if seat_number is not None:
-        print "____________________"
+        print("____________________")
         ReadSeatReservation(conn, flight_number, dt1, seat_number)
     i = 0
     for aircraft_code in aircraft_codes:
-        print "____________________"
+        print("____________________")
         ReadAircraftConfig(conn, aircraft_code, config_table_nos[i], None)
         i += 1
-    print "____________________"
+    print("____________________")
     schedule_period_nos = ReadFlightPeriodsDate(conn, flight_number, dt1)
     for schedule_period_no in schedule_period_nos:
-        print "_______________________"
-        print "Schedule period no %d" % schedule_period_no
+        print("_______________________")
+        print("Schedule period no %d" % schedule_period_no)
         ReadFlightPerdLegs(conn, flight_number, schedule_period_no)
         ReadFlightPerdSegm(conn, flight_number, schedule_period_no)
         ReadFlightPerdCls(conn, flight_number, schedule_period_no, selling_cls)
@@ -113,7 +113,7 @@ def read_flight_stuff(conn, flight_number, dt1, selling_cls, seat_number):
         ReadtestPeriodLegs(conn, flight_number, schedule_period_no)
         ReadTestPeriods(conn, flight_number, schedule_period_no, dt1)
         ReadTestInventrySegm(conn, flight_number, schedule_period_no, selling_cls)
-    print "____________________"
+    print("____________________")
     ReadFlightInformation(conn, flight_number, dt1)
     ReadSegmentStatus(conn, flight_number, dt1)
     #ReadFlightDateLeg(conn, flight_number, dt1)
@@ -121,9 +121,9 @@ def read_flight_stuff(conn, flight_number, dt1, selling_cls, seat_number):
 
 #def read_flight_bookings(conn, book_no, seat_number):
 
-    #print "_____________________________"
-    #print "Flight bookings for book %8d seat %3s" % (book_no, seat_number)
-    #print "_____________________________"
+    #print("_____________________________"
+    #print("Flight bookings for book %8d seat %3s" % (book_no, seat_number)
+    #print("_____________________________"
     #n = ReadSeatDefinition(conn, seat_number)
     #if n < 0:
         #return n
@@ -132,7 +132,7 @@ def read_flight_stuff(conn, flight_number, dt1, selling_cls, seat_number):
     #n = 0
     #for flight_number in flight_numbers:
         #dt1 = flight_dates[n]
-        #print "Flight %s date %s class %s reserve %s" \
+        #print("Flight %s date %s class %s reserve %s" \
             #% (flight_number, dt1.strftime("%Y-%m-%d"), selling_classes[n],
                #flight_reserves[n])
         #CheckSeatReservation(conn, flight_number, dt1, None, seat_number,
@@ -159,17 +159,17 @@ def read_flight_stuff(conn, flight_number, dt1, selling_cls, seat_number):
     #ReadCodeShare(conn, flights[0])
 
 
-def read_flight_data(flight_number, dt1, company_code='ZZ'):
+def read_flight_data(conn, flight_number, dt1, company_code='ZZ'):
 
     n, origin_airport, destination_airport, departure_time = \
         ReadFlightDateLegInfo(conn, flight_number, dt1)
     if n == 0:
-        print "Flight %s date %s not found" \
-            % (flight_number, dt1.strftime("%Y-%m-%d"))
+        print("Flight %s date %s not found" \
+              % (flight_number, dt1.strftime("%Y-%m-%d")))
         sys.exit(1)
     flight = FlightData('Y', flight_number, dt1, departure_time, 0,
                         origin_airport, destination_airport,
-                        0, company_code, aircraft_code)
+                        0, company_code, aircraft_code=None)
     return flight
 
 
@@ -180,93 +180,92 @@ def daterange(start_date, end_date):
 
 def usage(pname='FlightInfo.py'):
     #print_banner()
-    print "Flights for a booking :"
-    print "\t %s -B <BOOKNO>" % pname
-    print "\t %s -L <LOCATOR>" % pname
-    print "Flight details for a date:"
-    print "\t %s [-F <FLIGHT>] -D <DATE>" % pname
-    print "\t %s -y [-F <FLIGHT>] -D <DATE>" % pname
-    print "Codeshares :"
-    print "\t %s -y --code -D <DATE> [-E <DATE>] [-F <FLIGHT>] [-P <DEPART> -Q <ARRIVE>]" \
-        % pname
-    print "Class map :"
-    print "\t %s --class -F <FLIGHT> -D <DATE>" % pname
-    print "Seat map description :"
-    print "\t %s --desc [-F <FLIGHT>] -D <DATE>" % pname
-    print "Check release of seat reservations :"
-    print "\t %s --rel -F <FLIGHT> -D <DATE> -S <SEAT>" % pname
-    print "Release seat reservations :"
-    print "\t %s [-i] --rel -F <FLIGHT> -D <DATE> -S <SEAT>" % pname
-    print "Seat reservations for a booking :"
-    print "\t %s --res -L <LOCATOR>" % pname
-    print "\t %s --res -B <BOOKNO>" % pname
-    print "Seat reservations for a flight :"
-    print "\t %s --res -F <FLIGHT> -D <DATE>" % pname
-    print "Passenger contacts for a flight :"
-    print "\t %s [-f] --contact -F <FLIGHT> -D <DATE>" % pname
-    print "Seat availability for a flight :"
-    print "\t %s --seat -F <FLIGHT> -D <DATE>" % pname
-    print "Seat bookings for a flight :"
-    print "\t %s --book -F <FLIGHT> -D <DATE>" % pname
-    print "Test periods :"
-    print "\t %s --test -F <FLIGHT>" % pname
-    print "Fare routes :"
-    print "\t %s --fare -F <FLIGHT>" % pname
-    print "Check PNL files for flight :"
-    print "\t %s --pnl <FLIGHT> -D <DATE>" % pname
-    print "Check reserved seats for flight :"
-    print "\t %s -F <FLIGHT> -D <DATE> -S <SEAT>" % pname
-    print "Flight periods :"
-    print "\t %s -F <FLIGHT>" % pname
-    print "\t %s -F <FLIGHT> -D <DATE> -N <COUNT>" % pname
-    print "Flight periods as used by MARS GUI :"
-    print "\t %s -F <FLIGHT> -R <PERD>" % pname
-    print "Flight periods as used by ASM/SSM processing :"
-    print "\t %s --ssm -F <FLIGHT> -K <FREQ> -R <PERD>" % pname
-    print "\t %s --tim -F <FLIGHT> -D <DATE> -E <DATE> [-K <FREQ>]" % pname
-    print "Data for a flight as used by ASM/SSM processing :"
-    print "\t %s --ssmdata -F <FLIGHT> -D <DATE> [-E <DATE>]" % pname
-    print "\t %s --ssmbook -F <FLIGHT> -D <DATE> -R <PERD>" % pname
-    print "End transaction check of reserved seats for flight :"
-    print "\t %s --et -B <BOOKNO> -F <FLIGHT> -D <DATE> -S <SEAT>" % pname
-    print "\t %s --et -L <LOCATOR> -F <FLIGHT> -D <DATE> -S <SEAT>" % pname
-    print "Check flight availability :"
-    print "\t %s --avail -D <DATE> [-E <DATE>]" % pname
-    print "Check flight reconcile :"
-    print "\t %s --recon -D <DATE> [-E <DATE>]" % pname
-    print "Configuration for aircraft code :"
-    print "\t %s -A <AIRCRAFT> [-C <CLASS>] [-N <COUNT>]" % pname
-    print "Configuration for config table :"
-    print "\t %s -T <CFG> [-C <CLASS>] [-N <COUNT>]" % pname
-    print "Run flight reconcile :"
-    print "\t %s --recon -D <DATE> -N <COUNT>" % pname
-    print "\t %s --recon -F <FLIGHT> -D <DATE>" % pname
-    print "Configuration table for aircraft code :"
-    print "\t %s --cfg -A <AIRCRAFT>" % pname
-    print "Check flight times"
-    print "\t %s --time -F <FLIGHT> -D <DATE>" % pname
-    print "Check flight bookings"
-    print "\t %s --time -x -F <FLIGHT> -D <DATE>" % pname
-    print "\nParameters:"
-    print "\t -A <AIRCRAFT>\t aircraft code"
-    print "\t -B <BOOKNO>\t booking number"
-    print "\t -C <CLASS>\t selling class"
-    print "\t -D <DATE>\t board date"
-    print "\t -E <DATE>\t end date"
-    print "\t -F <FLIGHT>\t flight number"
-    print "\t -I <LEG>\t flight leg ID"
-    print "\t -K <FREQ>\t flight frequency days (1=Monday) e.g. 1-2-4-6-"
-    print "\t -L <LOCATOR>\t locator, e.g. PNRWYY"
-    print "\t -M <MAP>\t seat map ID"
-    print "\t -N <COUNT>\t number of seats or days"
-    print "\t -P <CITY>\t departure airport"
-    print "\t -Q <CITY>\t arrival airport"
-    print "\t -R <PERD>\t schedule period number"
-    print "\t -S <SEAT>\t seat numbers as comma seperated list"
-    print "\t -T <CFG>\t configuration table number"
-    print "\t -X <TIME>\t departure time"
-    print "\t -Y <TIME>\t arrival time"
-    #print "\t "
+    print("Flights for a booking :")
+    print("\t %s -B <BOOKNO>" % pname)
+    print("\t %s -L <LOCATOR>" % pname)
+    print("Flight details for a date:")
+    print("\t %s [-F <FLIGHT>] -D <DATE>" % pname)
+    print("\t %s -y [-F <FLIGHT>] -D <DATE>" % pname)
+    print("Codeshares :")
+    print("\t %s -y --code -D <DATE> [-E <DATE>] [-F <FLIGHT>] [-P <DEPART> -Q <ARRIVE>]"
+          % pname)
+    print("Class map :")
+    print("\t %s --class -F <FLIGHT> -D <DATE>" % pname)
+    print("Seat map description :")
+    print("\t %s --desc [-F <FLIGHT>] -D <DATE>" % pname)
+    print("Check release of seat reservations :")
+    print("\t %s --rel -F <FLIGHT> -D <DATE> -S <SEAT>" % pname)
+    print("Release seat reservations :")
+    print("\t %s [-i] --rel -F <FLIGHT> -D <DATE> -S <SEAT>" % pname)
+    print("Seat reservations for a booking :")
+    print("\t %s --res -L <LOCATOR>" % pname)
+    print("\t %s --res -B <BOOKNO>" % pname)
+    print("Seat reservations for a flight :")
+    print("\t %s --res -F <FLIGHT> -D <DATE>" % pname)
+    print("Passenger contacts for a flight :")
+    print("\t %s [-f] --contact -F <FLIGHT> -D <DATE>" % pname)
+    print("Seat availability for a flight :")
+    print("\t %s --seat -F <FLIGHT> -D <DATE>" % pname)
+    print("Seat bookings for a flight :")
+    print("\t %s --book -F <FLIGHT> -D <DATE>" % pname)
+    print("Test periods :")
+    print("\t %s --test -F <FLIGHT>" % pname)
+    print("Fare routes :")
+    print("\t %s --fare -F <FLIGHT>" % pname)
+    print("Check PNL files for flight :")
+    print("\t %s --pnl <FLIGHT> -D <DATE>" % pname)
+    print("Check reserved seats for flight :")
+    print("\t %s -F <FLIGHT> -D <DATE> -S <SEAT>" % pname)
+    print("Flight periods :")
+    print("\t %s -F <FLIGHT>" % pname)
+    print("\t %s -F <FLIGHT> -D <DATE> -N <COUNT>" % pname)
+    print("Flight periods as used by MARS GUI :")
+    print("\t %s -F <FLIGHT> -R <PERD>" % pname)
+    print("Flight periods as used by ASM/SSM processing :")
+    print("\t %s --ssm -F <FLIGHT> -K <FREQ> -R <PERD>" % pname)
+    print("\t %s --tim -F <FLIGHT> -D <DATE> -E <DATE> [-K <FREQ>]" % pname)
+    print("Data for a flight as used by ASM/SSM processing :")
+    print("\t %s --ssmdata -F <FLIGHT> -D <DATE> [-E <DATE>]" % pname)
+    print("\t %s --ssmbook -F <FLIGHT> -D <DATE> -R <PERD>" % pname)
+    print("End transaction check of reserved seats for flight :")
+    print("\t %s --et -B <BOOKNO> -F <FLIGHT> -D <DATE> -S <SEAT>" % pname)
+    print("\t %s --et -L <LOCATOR> -F <FLIGHT> -D <DATE> -S <SEAT>" % pname)
+    print("Check flight availability :")
+    print("\t %s --avail -D <DATE> [-E <DATE>]" % pname)
+    print("Check flight reconcile :")
+    print("\t %s --recon -D <DATE> [-E <DATE>]" % pname)
+    print("Configuration for aircraft code :")
+    print("\t %s -A <AIRCRAFT> [-C <CLASS>] [-N <COUNT>]" % pname)
+    print("Configuration for config table :")
+    print("\t %s -T <CFG> [-C <CLASS>] [-N <COUNT>]" % pname)
+    print("Run flight reconcile :")
+    print("\t %s --recon -D <DATE> -N <COUNT>" % pname)
+    print("\t %s --recon -F <FLIGHT> -D <DATE>" % pname)
+    print("Configuration table for aircraft code :")
+    print("\t %s --cfg -A <AIRCRAFT>" % pname)
+    print("Check flight times")
+    print("\t %s --time -F <FLIGHT> -D <DATE>" % pname)
+    print("Check flight bookings")
+    print("\t %s --time -x -F <FLIGHT> -D <DATE>" % pname)
+    print("\nParameters:")
+    print("\t -A <AIRCRAFT>\t aircraft code")
+    print("\t -B <BOOKNO>\t booking number")
+    print("\t -C <CLASS>\t selling class")
+    print("\t -D <DATE>\t board date")
+    print("\t -E <DATE>\t end date")
+    print("\t -F <FLIGHT>\t flight number")
+    print("\t -I <LEG>\t flight leg ID")
+    print("\t -K <FREQ>\t flight frequency days (1=Monday) e.g. 1-2-4-6-")
+    print("\t -L <LOCATOR>\t locator, e.g. PNRWYY")
+    print("\t -M <MAP>\t seat map ID")
+    print("\t -N <COUNT>\t number of seats or days")
+    print("\t -P <CITY>\t departure airport")
+    print("\t -Q <CITY>\t arrival airport")
+    print("\t -R <PERD>\t schedule period number")
+    print("\t -S <SEAT>\t seat numbers as comma seperated list")
+    print("\t -T <CFG>\t configuration table number")
+    print("\t -X <TIME>\t departure time")
+    print("\t -Y <TIME>\t arrival time")
     sys.exit(1)
 
 
@@ -334,18 +333,21 @@ def main(argv):
 
     try:
         opts, args = getopt.getopt(argv,
-                                   "cfhivxyVA:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
-                                   ["help","date=","edate=","flight=",
-                                    "period=","seats=","days=","class=",
-                                    "locator=","bookno=","depart=","arrive=",
-                                    "aircraft=","freq=","cfgtable=",
-                                    "et",'fare','desc',
-                                    'res','seat','book','rel',
-                                    'test','pax','smid','recon',
-                                    'code','ssm','tim', 'cfg','contact','ssmdata','pnl',
-                                    'ssmbook','avail','time','csv','perd'])
+                                   "cfhivxyV"
+                                   "A:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
+                                   ["help", "date=", "edate=", "flight=",
+                                    "period=", "seats=", "days=", "class=",
+                                    "locator=", "bookno=",
+                                    "depart=", "arrive=",
+                                    "aircraft=", "freq=", "cfgtable=",
+                                    "et", 'fare', 'desc',
+                                    'res', 'seat', 'book', 'rel',
+                                    'test', 'pax', 'smid', 'recon',
+                                    'code', 'ssm', 'tim',  'cfg', 'contact',
+                                    'ssmdata', 'pnl',
+                                    'ssmbook', 'avail', 'time', 'csv', 'perd'])
     except getopt.GetoptError:
-        print "Error in options"
+        print("Error in options")
         #usage()
         sys.exit(1)
 
@@ -465,7 +467,7 @@ def main(argv):
             # Debug output
             set_verbose(2)
         else:
-            print "Unknown option %s" % opt
+            print("Unknown option %s" % opt)
             return 1
 
     for arg in args:
@@ -474,30 +476,30 @@ def main(argv):
     # Check for invalid combined options
     if list_flights:
         if desc_map:
-           print "Cannot combine list flight with other options"
+           print("Cannot combine list flight with other options")
            return 1
         elif book_no is not None or locator is not None:
-           print "Cannot list flights for a booking"
+           print("Cannot list flights for a booking")
            return 1
     elif desc_map:
         if list_flights or csflag:
-           print "Cannot combine map description with other options"
+           print("Cannot combine map description with other options")
            return 1
         elif book_no is not None or locator is not None:
-           print "Cannot list map description for a booking"
+           print("Cannot list map description for a booking")
            return 1
     elif csflag:
         if desc_map:
-           print "Cannot combine code share with other options"
+           print("Cannot combine code share with other options")
            return 1
         elif book_no is not None or locator is not None:
-           print "Cannot list code shares for a booking"
+           print("Cannot list code shares for a booking")
            return 1
-      
+
     cfg = BarsConfig('%s/bars.cfg' % etcdir)
 
     # Open connection to database
-    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)  
+    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
 
     reconcile_window = 0 # int(ReadSystemSettingInfo(conn, "RECONCILE_WINDOW"))
 
@@ -520,9 +522,13 @@ def main(argv):
     elif flight_number is None:
         if list_flights and dt1 is not None:
             if dt2 is not None:
-                printlog(2, "List flights from %s to %s" % (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d")))
+                printlog(2, "List flights from %s to %s"
+                         % (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d")))
                 for single_date in daterange(dt1, dt2):
-                    flights = ReadFlightsDate(conn, single_date, recCount, departure_airport, arrival_airport, code_share=csflag)
+                    flights = ReadFlightsDate(conn, single_date, recCount,
+                                              departure_airport,
+                                              arrival_airport,
+                                              code_share=csflag)
                     for flight in flights:
                         SetCodeShare(conn, flight)
                         if list_csv: flight.displaycsv()
@@ -530,13 +536,15 @@ def main(argv):
                     #print
             else:
                 printlog(2, "List flights for %s" % dt1.strftime("%Y-%m-%d"))
-                flights = ReadFlightsDate(conn, dt1, recCount, departure_airport, arrival_airport, code_share=csflag)
+                flights = ReadFlightsDate(conn, dt1, recCount,
+                                          departure_airport, arrival_airport,
+                                          code_share=csflag)
                 for flight in flights:
                     SetCodeShare(conn, flight)
                     if list_csv: flight.displaycsv()
                     else: flight.display()
-        #elif chk_avail and dt1 is not None and departure_airport is not None and arrival_airport is not None:
-            #CheckAvailability(conn, dt1, departure_airport, arrival_airport, company_code)
+        # elif chk_avail and dt1 is not None and departure_airport is not None and arrival_airport is not None:
+            # CheckAvailability(conn, dt1, departure_airport, arrival_airport, company_code)
         elif flt_recon and recCount and dt1 is not None:
             FlightReconcile(conn, dt1, recCount)
             return
@@ -545,7 +553,7 @@ def main(argv):
         elif reserve_seat and (book_no is not None or locator is not None):
             if book_no is None:
                 if locator is None:
-                    print "No book number or locator"
+                    print("No book number or locator")
                     conn.close()
                     return 1
                 book_no = ReadLocator(conn, locator)
@@ -560,53 +568,56 @@ def main(argv):
                                       arrival_airport, code_share=csflag)
             for flight in flights:
                 ReadFlightDateClassSeatMaps(conn, flight)
-        #elif csflag and dt1 is not None:
-            #if dt2 is not None:
-                #for single_date in daterange(dt1, dt2):
+        # elif csflag and dt1 is not None:
+            # if dt2 is not None:
+                # for single_date in daterange(dt1, dt2):
                     ##flights = ReadFlightsDateLeg(conn, single_date, recCount,
                                                  ##departure_airport, arrival_airport)
-                    #flights = ReadFlightsDate(conn, single_date, recCount,
-                                              #departure_airport, arrival_airport, code_share=csflag)
-                    #for flight in flights:
-                        #ReadCodeShare(conn, flight)
-                    #print
-            #else:
-                #flights = ReadFlightsDate(conn, dt1, recCount, departure_airport,
-                                          #arrival_airport, code_share=csflag)
-                #for flight in flights:
-                    #ReadCodeShare(conn, flight)
-        #elif seatmapid_read:
-            #for seat_number in seat_numbers:
-                #print "________________________"
-                #ReadSeatMapId(conn, seat_number)
+                    # flights = ReadFlightsDate(conn, single_date, recCount,
+                                              # departure_airport, arrival_airport, code_share=csflag)
+                    # for flight in flights:
+                        # ReadCodeShare(conn, flight)
+                    # print
+            # else:
+                # flights = ReadFlightsDate(conn, dt1, recCount, departure_airport,
+                                          # arrival_airport, code_share=csflag)
+                # for flight in flights:
+                    # ReadCodeShare(conn, flight)
+        # elif seatmapid_read:
+            # for seat_number in seat_numbers:
+                # print("________________________"
+                # ReadSeatMapId(conn, seat_number)
         elif book_no is not None:
             for seat_number in seat_numbers:
-                print "________________________"
+                print("________________________")
                 read_flight_bookings(conn, book_no, seat_number)
         elif locator is not None:
             book_no = ReadLocator(conn, locator)
             for seat_number in seat_numbers:
-                print "________________________"
+                print("________________________")
                 read_flight_bookings(conn, book_no, seaReadFlightPaxReadFlightPaxt_number)
         elif dt1 is not None and recCount != 0:
             ReadFlightSegmDates(conn, dt1, recCount, reconcile_window)
         elif dt1 is not None and dt2 is not None:
-            print "Flights from %s to %s" % (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d"))
+            print("Flights from %s to %s"
+                  % (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d")))
             for single_date in daterange(dt1, dt2):
-                flights = ReadFlightsDate(conn, single_date, recCount, departure_airport,
-                                          arrival_airport, code_share=csflag)
+                flights = ReadFlightsDate(conn, single_date, recCount,
+                                          departure_airport, arrival_airport,
+                                          code_share=csflag)
                 for flight in flights:
                     if list_csv: flight.displaycsv()
                     else: flight.display()
-                #print
         elif dt1 is not None:
             flights = ReadFlightsDate(conn, dt1, recCount, departure_airport,
                                       arrival_airport, code_share=csflag)
             for flight in flights:
-                if list_csv: flight.displaycsv()
-                else: flight.display()
+                if list_csv:
+                    flight.displaycsv()
+                else:
+                    flight.display()
         else:
-            print "No flight number"
+            print("No flight number")
 
     elif not asm_ssm and aircraft_code is not None:
         ReadAircraftConfig(conn, aircraft_code, None, selling_cls, recCount)
@@ -617,36 +628,44 @@ def main(argv):
             ReadFlightPax(conn, flight_number, dt1)
             return 0
         elif not fare_route and dt1 is not None and dt2 is not None:
-            printlog(2, "Read flight %s from %s to %s" % (flight_number, dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d")))
+            printlog(2, "Read flight %s from %s to %s"
+                     % (flight_number, dt1.strftime("%Y-%m-%d"),
+                        dt2.strftime("%Y-%m-%d")))
             n = 0
             for single_date in daterange(dt1, dt2):
-                n, departure_airport, arrival_airport, city_pair = ReadDeparture(conn, flight_number, single_date)
+                n, departure_airport, arrival_airport, city_pair = \
+                    ReadDeparture(conn, flight_number, single_date)
                 if n == 1:
                     break
             if n != 1:
-                print "Could not read departures and arrivals for flight %s board %s" \
-                    % (flight_number, dt1.strftime("%Y-%m-%d"))
+                print("Could not read departures and arrivals" \
+                      " for flight %s board %s" \
+                      % (flight_number, dt1.strftime("%Y-%m-%d")))
                 if not force_query:
                     conn.close()
                     return 1
         elif not fare_route and dt1 is not None:
-            n, departure_airport, arrival_airport, city_pair = ReadDeparture(conn, flight_number, dt1)
+            n, departure_airport, arrival_airport, city_pair = \
+                ReadDeparture(conn, flight_number, dt1)
             if n != 1:
-                print "Could not read departures and arrivals for flight %s board %s" \
-                    % (flight_number, dt1.strftime("%Y-%m-%d"))
+                print("Could not read departures and arrivals" \
+                      " for flight %s board %s" \
+                      % (flight_number, dt1.strftime("%Y-%m-%d")))
                 if not force_query:
                     conn.close()
                     return 1
         if city_pair == 0:
             printlog(1, "City pair not found", 1)
-        printlog(1, "Depart %s arrive %s city pair %d" % (departure_airport, arrival_airport, int(city_pair)))
+        printlog(1, "Depart %s arrive %s city pair %d"
+                 % (departure_airport, arrival_airport, int(city_pair)))
 
         if chk_ftimes and dt1 is not None and dt2 is None:
             flight = FlightData('Y', flight_number, dt1,
                                 departure_time, arrival_time,
-                                departure_airport, arrival_airport, 0, company_code,
-                                aircraft_code)
-            schedule_period_no, start_date, end_date = ReadFlightTimes(conn, flight)
+                                departure_airport, arrival_airport, 0,
+                                company_code, aircraft_code)
+            schedule_period_no, start_date, end_date = \
+                ReadFlightTimes(conn, flight)
             ReadFlightPerdLegsTimes(conn, flight, schedule_period_no)
             ReadFlightSegmDateTimes(conn, flight, schedule_period_no)
             flight_dates = ReadFlightSegmDates(conn, flight, schedule_period_no)
@@ -654,9 +673,9 @@ def main(argv):
             ReadFlightSharedLegTimes(conn, flight, flight_dates)
         elif pnl_file and dt1 is not None:
             pax_names = []
-            print "Read PNL files:"
+            print("Read PNL files:")
             for filename in files:
-                print "Read PNL file %s" % filename
+                print("Read PNL file %s" % filename)
                 with open(filename) as f:
                     lines = f.readlines()
                 for line in lines:
@@ -667,31 +686,33 @@ def main(argv):
                     printlog(1, "%s" % pax_name, 1)
                     pax_names.append(pax_name)
             n_pax_names = len(pax_names)
-            print "Found %d passenger records in files" % n_pax_names
+            print("Found %d passenger records in files" % n_pax_names)
             flight = FlightData('Y', flight_number, dt1,
                                 departure_time, arrival_time,
-                                departure_airport, arrival_airport, 0, company_code,
-                                aircraft_code)
+                                departure_airport, arrival_airport, 0,
+                                company_code, aircraft_code)
             pax_books = ReadFlightPaxNames(conn, flight)
             n_pax_books = len(pax_books)
-            print "Found %d passenger bookings in database" % n_pax_books
+            print("Found %d passenger bookings in database" % n_pax_books)
             if n_pax_books <= n_pax_names:
                 n = 0
                 for pax_name in pax_names:
                     if pax_name in pax_books:
-                        print "Found pax %s in bookings" % pax_name
+                        print("Found pax %s in bookings" % pax_name)
                         n += 1
                     else:
-                        print "Pax %s not found in bookings" % pax_name
+                        print("Pax %s not found in bookings" % pax_name)
             else:
                 n = 0
                 for pax_book in pax_books:
                     if pax_name in pax_names:
-                        print "Found pax %s (%d) in files" % (pax_book, pax_books[pax_book])
+                        print("Found pax %s (%d) in files"
+                              % (pax_book, pax_books[pax_book]))
                         n += 1
                     else:
-                        print "Pax %s (%d) not found in files" % (pax_book, pax_books[pax_book])
-            print "Matched %d records" % n
+                        print("Pax %s (%d) not found in files"
+                              % (pax_book, pax_books[pax_book]))
+            print("Matched %d records" % n)
         elif ssm_tim and dt1 is not None and dt2 is not None:
             flight = FlightData('Y', flight_number, dt1,
                                 departure_time, arrival_time,
@@ -733,16 +754,16 @@ def main(argv):
             #flights = ReadFlight(conn, flight_number, dt1)
             n = len(flights)
             if n == 0:
-                print "Flight %s date %s not found" % (flight_number, dt1)
+                print("Flight %s date %s not found" % (flight_number, dt1))
             else:
                 for flight in flights:
                     if list_csv: flight.displaycsv()
                     else: flight.display()
-            #print "Found %d flights" % n
+            # print("Found %d flights" % n)
         elif fare_route and dt1 is not None:
             n, fare_route_ids = ReadFareRouteIds(conn, flight_number)
             for fare_route_id in fare_route_ids:
-                #print "Fare route ID %s date %s" % fare_route_id
+                # print("Fare route ID %s date %s" % fare_route_id)
                 ReadFareRoutesDate(conn, dt1, fare_route_id)
                 ReadFareRouteBranches(conn, fare_route_id)
                 ReadFareRouteCompanies(conn, fare_route_id)
@@ -755,18 +776,18 @@ def main(argv):
                     ReadFareAgencies(conn, fare_id)
         elif release_seat and dt1 is not None:
             if len(seat_numbers) == 0:
-                print "No seat numbers supplied for seat release"
+                print("No seat numbers supplied for seat release")
                 conn.close()
                 return 1
             if book_no is None:
                 if locator is None:
-                    print "No book number or locator"
+                    print("No book number or locator")
                     return 1
                 book_no = ReadLocator(conn, locator)
             n, origin_airport, destination_airport, departure_time = \
                 ReadFlightDateLegInfo(conn, flight_number, dt1)
             if n == 0:
-                print "Flight not found"
+                print("Flight not found")
                 conn.close()
                 return 1
             flight = FlightData('Y', flight_number, dt1,
@@ -778,17 +799,17 @@ def main(argv):
                                destination_airport)
         elif reserve_seat and dt1 is not None:
             if len(seat_numbers) == 0:
-                print "No seat numbers supplied for seat reserve"
+                print("No seat numbers supplied for seat reserve")
                 conn.close()
                 return 1
             n, origin_airport, destination_airport, departure_time = \
                 ReadFlightDateLegInfo(conn, flight_number, dt1)
             if n == 0:
-                print "Flight not found"
+                print("Flight not found")
                 return 1
             if book_no is None:
                 if locator is None:
-                    print "No book number or locator"
+                    print("No book number or locator")
                     conn.close()
                     return 1
             flight = FlightData('Y', flight_number, dt1,
@@ -800,7 +821,7 @@ def main(argv):
             n, origin_airport, destination_airport, departure_time = \
                 ReadFlightDateLegInfo(conn, flight_number, dt1)
             if n == 0:
-                print "Flight not found"
+                print("Flight not found")
                 conn.close()
                 return 1
             flight = FlightData('Y', flight_number, dt1,
@@ -810,18 +831,18 @@ def main(argv):
             ReadFlightDateAllSeats(conn, flight)
         elif et_asr and dt1 is not None:
             if len(seat_numbers) == 0:
-                print "No seat numbers supplied for seat end transaction check"
+                print("No seat numbers supplied for seat end transaction check")
                 conn.close()
                 return 1
             if book_no is None:
                 if locator is None:
-                    print "No book number or locator"
+                    print("No book number or locator")
                     conn.close()
                     return 1
                 book_no = ReadLocator(conn, locator)
-            flight = read_flight_data(flight_number, dt1)
+            flight = read_flight_data(conn, flight_number, dt1)
             for seat_number in seat_numbers:
-                print "________________________"
+                print("________________________")
                 CheckSeatReservationEtAsr(conn, flight, seat_number, book_no)
         elif seat_book and dt1 is not None:
             ShowFlightSeats(conn, flight_number, dt1)
@@ -829,7 +850,7 @@ def main(argv):
             n, origin_airport, destination_airport, departure_time = \
                 ReadFlightDateLegInfo(conn, flight_number, dt1)
             if n == 0:
-                print "Flight not found"
+                print("Flight not found")
                 conn.close()
                 return 1
             flight = FlightData('Y', flight_number, dt1,
@@ -841,11 +862,11 @@ def main(argv):
             if book_no is None and len(seat_numbers) == 0:
                 ReadReleaseSeats(conn, flight)
             elif book_no is None:
-                print "No book number or locator supplied for seat release"
+                print("No book number or locator supplied for seat release")
                 conn.close()
                 return 1
             elif len(seat_numbers) == 0:
-                print "No seat numbers supplied for seat release"
+                print("No seat numbers supplied for seat release")
                 conn.close()
                 return 1
             else:
@@ -894,15 +915,15 @@ def main(argv):
             ReadTestPeriods(conn, flight_number)
         elif asm_ssm:
             if aircraft_code is None:
-                print "No value for aircraft code"
+                print("No value for aircraft code")
                 conn.close()
                 return 1
             if dt1 is None or dt2 is None:
-                print "No value for start and/or end dates"
+                print("No value for start and/or end dates")
                 conn.close()
                 return 1
             if frequency_code is None:
-                print "No value for frequency code"
+                print("No value for frequency code")
                 conn.close()
                 return 1
             ConfigTableNo, NoOfSeats = ReadConfigNumberOfSeats(conn,

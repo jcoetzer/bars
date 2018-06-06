@@ -25,6 +25,9 @@ class BarsConfig(object):
     Currency = 'ZAR'
     FareCode = 'XZZOW'
     BookCategory = 'S'     # or G for groups
+    Address = 'SWIZZ1G'
+    Sender = 'JNB0AZZ'
+    TimeMode = 'LT'
 
     def __init__(self, cfgfile):
         """Initialize this thing."""
@@ -49,4 +52,7 @@ class BarsConfig(object):
         self.User = config.get('Users', 'User')
         self.Group = config.get('Users', 'Group')
         self.Currency = config.get('Country', 'Currency')
+
+        self.Address = config.get('Tty', 'Sender')
+        self.Sender = config.get('Tty', 'Sender')
 

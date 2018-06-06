@@ -8,16 +8,17 @@ import sys
 import getopt
 
 import psycopg2
-    
+
 from BarsLog import printlog, set_verbose
 from ReadDateTime import ReadDate, DateRange
-    
+
 from SsmDb import GetCityPair
 from FlightDetails import GetFlightDetails
 from DbConnect import OpenDb, CloseDb
 
+
 def usage():
-    print "Help!"
+    print("Help!")
     sys.exit(1)
 
 
@@ -31,16 +32,16 @@ def main(argv):
 
     if len(argv) < 1:
         usage()
-        
+
     opts, args = getopt.getopt(argv,
-                                "cfhivyVA:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
-                                ["help","date=","edate=","flight="])
+                               "cfhivyVA:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
+                               ["help", "date=", "edate=", "flight="])
 
     dt1 = None
     dt2 = None
     arrive_airport = None
     depart_airport = None
-    
+
     for opt, arg in opts:
         if opt == '-h' or opt == '--help':
             usage()
@@ -48,13 +49,13 @@ def main(argv):
             set_verbose(1)
         elif opt == '-V':
             set_verbose(2)
-        #elif opt in ("-C", "--class"):
-            #selling_cls = str(arg).upper()
+        # elif opt in ("-C", "--class"):
+            # selling_cls = str(arg).upper()
         elif opt in ("-D", "--date"):
             dt1 = ReadDate(arg)
             printlog(1, "\t flight date %s" % dt1.strftime("%Y-%m-%d"))
-        #elif opt in ("-E", "--edate"):
-            #dt2 = ReadDate(arg)
+        # elif opt in ("-E", "--edate"):
+            # dt2 = ReadDate(arg)
         elif opt in ("-F", "--flight"):
             if ',' in arg:
                 fndata = arg.split('/')
@@ -63,33 +64,33 @@ def main(argv):
             else:
                 flight_number = arg
             printlog(2, "Flight number set to %s" % flight_number)
-        #elif opt in ("-P", "--depart"):
-            #depart_airport = str(arg).upper()
-            #printlog(1, "\t depart %s" % depart_airport)
-        #elif opt in ("-Q", "--arrive"):
-            #arrive_airport = str(arg).upper()
-            #printlog(1, "\t arrive %s" % arrive_airport)
+        # elif opt in ("-P", "--depart"):
+            # depart_airport = str(arg).upper()
+            # printlog(1, "\t depart %s" % depart_airport)
+        # elif opt in ("-Q", "--arrive"):
+            # arrive_airport = str(arg).upper()
+            # printlog(1, "\t arrive %s" % arrive_airport)
         else:
             pass
-        
+
     if dt1 is None:
-        print "No departure date specified"
+        print("No departure date specified")
         return 1
-    
+
     if dt2 is None:
         dt2 = dt1
-    
+
     cfg = BarsConfig('%s/bars.cfg' % etcdir)
 
     # Open connection to database
-    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)  
-    
+    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
+
     GetFlightDetails(conn, flight_number, dt1, depart_airport, arrive_airport)
-    
+
     conn.commit()
     conn.close()
     printlog(1, "Disconnected")
-    
+
     return 0
 
 
@@ -97,4 +98,3 @@ def main(argv):
 if __name__ == "__main__":
     rv = main(sys.argv[1:])
     sys.exit(rv)
-    

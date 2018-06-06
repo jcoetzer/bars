@@ -5,6 +5,7 @@ import psycopg2
 from BarsLog import printlog
 from PricingData import PricingData, FarePricingData
 
+
 def FareCalcDisplay(conn,
                     acompany_code,
                     acity_pair,
@@ -15,9 +16,8 @@ def FareCalcDisplay(conn,
                     afare_category,
                     aauthority_level,
                     aTargetDate):
-
-    fcdSql = \
-    """
+    """Fare calculation."""
+    fcdSql = """
     SELECT fs.fare_code,
             fs.city_pair, fs.valid_from_date,
             fs.valid_to_date, fs.fare_value,
@@ -83,7 +83,7 @@ def FareCalcDisplay(conn,
     printlog(2, "Selected %d row(s)" % cur.rowcount)
     for row in cur:
         fare_code = str(row[0])
-        city_pair =  row[1]
+        city_pair = row[1]
         valid_from_date = row[2]
         valid_to_date = row[3]
         fare_value = float(row[4])
@@ -92,7 +92,8 @@ def FareCalcDisplay(conn,
         byps_strt_auth_level = row[7]
         byps_end_auth_level = row[8]
         selling_class = row[9]
-        printlog(2, "Fare %s from %s to %s: %f" % (fare_code, valid_from_date, valid_to_date, fare_value))
+        printlog(2, "Fare %s from %s to %s: %f"
+                 % (fare_code, valid_from_date, valid_to_date, fare_value))
         pricing = FarePricingData(fare_code,
                                   city_pair,
                                   valid_from_date,

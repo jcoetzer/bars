@@ -21,6 +21,7 @@ from ReadSsmData import ReadSsmFlightData, ReadSsmBookData, ReadSsmTim
 from BarsConfig import BarsConfig
 from DbConnect import OpenDb, CloseDb
 
+
 def check_ssm_file(procssm, fname):
     dtm = os.path.getmtime(fname)
     dts = datetime.datetime.fromtimestamp(dtm).strftime('%Y-%m-%d %H:%M:%S')
@@ -42,14 +43,14 @@ def check_ssm_file(procssm, fname):
         pass
     printlog(1, "%s" % tmp)
     if "FAIL" in tmp:
-        print "[FAIL] %s %s" % (fname, dts)
+        print("[FAIL] %s %s" % (fname, dts))
         if get_verbose() == 0:
             tlines = tmp.split("\n")
             for tline in tlines:
                 if "FAIL" in tline:
-                    print "%s" % tline
+                    print("%s" % tline)
                 elif "PASS" in tline:
-                    print "%s" % tline
+                    print("%s" % tline)
                 else:
                     pass
         print
@@ -58,9 +59,9 @@ def check_ssm_file(procssm, fname):
         tlines = tmp.split("\n")
         for tline in tlines:
             if "PASS" in tline:
-                print "%s" % tline
+                print("%s" % tline)
     else:
-        print "[ OK ] %s %s" % (fname, dts)
+        print("[ OK ] %s %s" % (fname, dts))
     print
     return 0
 
@@ -71,7 +72,6 @@ def check_ssm_files(ssmdir, procssm):
     fnames = []
     nerr = 0
     for f in os.listdir(ssmdir):
-        #print "\t%s " % f,
         n = f.find("emailed")
         if n == -1:
             fname = "%s/%s" % (ssmdir, f)
@@ -105,7 +105,7 @@ def check_ssm_files(ssmdir, procssm):
         if rv > 0:
             nerr += 1
         elif rv < 0:
-            print "\nInterrupted"
+            print("\nInterrupted")
             return -1
         else:
             pass
@@ -118,8 +118,6 @@ def read_ssm_file(procssm, fname):
     printlog(1, "Read %s %s" % (fname, dt))
     procf = "%s -X %s" % (procssm, fname)
     printlog(1, "%s" % procf)
-    #proc = subprocess.Popen(procf, stdout=subprocess.PIPE)
-    #tmp = proc.stdout.read()
     tmp = os.popen(procf).read()
     ssm_lines = tmp.split('\n')
     tzone = ''
@@ -147,7 +145,8 @@ def read_ssm_file(procssm, fname):
             date_data = ssm_datas[1].split(" ")
             dt1 = ReadDate(date_data[0])
             dt2 = ReadDate(date_data[1])
-            printlog(1, "From %s to %s" % (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d")))
+            printlog(1, "From %s to %s"
+                     % (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d")))
         elif ssmi == "L":
             legs = ssm_datas[1].split(" ")
             depart = legs[0]
@@ -157,13 +156,14 @@ def read_ssm_file(procssm, fname):
             if tzone == 'UTC':
                 tdep += 200
                 tarr += 200
-            printlog(1, "Depart %s %04d arrive %s %d" % (depart, tdep, arrive, tarr))
+            printlog(1, "Depart %s %04d arrive %s %d"
+                     % (depart, tdep, arrive, tarr))
         elif ssmi == "T":
             configs = ssm_datas[1].split(" ")
             aircraft_code = configs[0]
             printlog(1, "Aircraft code %s" % aircraft_code)
         elif ssmi == "C":
-            #cabins = ssm_datas[1].split(" ")
+            # cabins = ssm_datas[1].split(" ")
             cabins = ssm_datas[1]
             cabin_class = cabins[0]
             cabin_seats = int(cabins[1:])
@@ -173,25 +173,24 @@ def read_ssm_file(procssm, fname):
             printlog(1, "Codeshare %s" % codeshare)
         else:
             pass
-    #print "%s" % tmp
 
 
 def daterange(start_date, end_date):
-    for n in range(int ((end_date - start_date).days) + 1):
+    for n in range(int((end_date - start_date).days) + 1):
         yield start_date + timedelta(n)
 
 
 def usage(pname='FlightInfo.py'):
-    print "Data for a flight as used by SSM processing :"
-    print "\t %s --ssmdata -F <FLIGHT> -D <DATE> [-E <DATE>]" % pname
-    print "\t %s --ssmbook -F <FLIGHT> -D <DATE> -R <PERD>" % pname
-    print "Read success SSM files:"
-    print "\t %s --success [-T <DIR>]" % pname
-    print "Read error SSM files:"
-    print "\t %s --error [-T <DIR>]" % pname
-    print "\nParameters:"
-    print "\t -P <CITY>\t departure airport"
-    print "\t -Q <CITY>\t arrival airport"
+    print("Data for a flight as used by SSM processing :")
+    print("\t %s --ssmdata -F <FLIGHT> -D <DATE> [-E <DATE>]" % pname)
+    print("\t %s --ssmbook -F <FLIGHT> -D <DATE> -R <PERD>" % pname)
+    print("Read success SSM files:")
+    print("\t %s --success [-T <DIR>]" % pname)
+    print("Read error SSM files:")
+    print("\t %s --error [-T <DIR>]" % pname)
+    print("\nParameters:")
+    print("\t -P <CITY>\t departure airport")
+    print("\t -Q <CITY>\t arrival airport")
 
 
 def main(argv):
@@ -205,7 +204,6 @@ def main(argv):
     ssm_data = False
     ssm_book = False
     ssm_tim = False
-    #pdb.set_trace()
     ssmdir = None
     ssmfile = None
     departure_time = "11:00"
@@ -219,16 +217,18 @@ def main(argv):
 
     try:
         opts, args = getopt.getopt(argv,
-                                   "cfhivyVA:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
-                                   ["help","date=","edate=","flight=",
-                                    "period=","seats=","days=","class=",
-                                    "locator=","bookno=","depart=","arrive=",
-                                    "aircraft=","freq=","cfgtable=",
-                                    'msg','ssm','tim', 'error', 'success', 'cfg','contact','ssmdata',
+                                   "cfhivyV"
+                                   "A:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
+                                   ["help", "date=", "edate=", "flight=",
+                                    "period=", "seats=", "days=", "class=",
+                                    "locator=", "bookno=",
+                                    "depart=", "arrive=",
+                                    "aircraft=", "freq=", "cfgtable=",
+                                    'msg', 'ssm', 'tim', 'error', 'success',
+                                    'cfg', 'contact', 'ssmdata',
                                     'ssmbook'])
     except getopt.GetoptError:
-        print "Error in options"
-        #usage()
+        print("Error in options")
         sys.exit(1)
 
     for opt, arg in opts:
@@ -243,7 +243,7 @@ def main(argv):
         elif opt == '--ssmbook':
             ssm_book = True
         elif opt == '-A':
-            aircraft_code =  str(arg)
+            aircraft_code = str(arg)
         elif opt in ("-D", "--date"):
             dt1 = ReadDate(arg)
             printlog(1, "\t flight date %s" % dt1.strftime("%Y-%m-%d"))
@@ -278,15 +278,15 @@ def main(argv):
         elif opt == '-Y':
             arrival_time = str(arg)
         else:
-            print "Unknown option %s" % opt
+            print("Unknown option %s" % opt)
             return 1
 
     procssm = "%s/support/bin/procssm" % os.environ['BARSDIR']
-      
+
     cfg = BarsConfig('%s/bars.cfg' % etcdir)
 
     # Open connection to database
-    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)  
+    conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
 
     if ssmfile is not None:
         check_ssm_file(procssm, ssmfile)
@@ -300,7 +300,8 @@ def main(argv):
                                 0, company_code, aircraft_code)
             n = ReadSsmTim(conn, flight, dt1, dt2, frequency_code)
             if n == 0:
-                CheckSsmTim(conn, flight, sdate, edate, frequency_code, aircraft_code)
+                CheckSsmTim(conn, flight, dt1, dt2, frequency_code,
+                            aircraft_code)
         elif ssm_data and dt1 is not None:
             flight = FlightData(cfg.SellingClass, flight_number, dt1,
                                 departure_time, arrival_time,
@@ -315,27 +316,29 @@ def main(argv):
             ReadSsmBookData(conn, flight, schedule_period_no)
         elif asm_ssm:
             if aircraft_code is None:
-                print "No value for aircraft code"
+                print("No value for aircraft code")
                 conn.close()
                 return 1
             if dt1 is None or dt2 is None:
-                print "No value for start and/or end dates"
+                print("No value for start and/or end dates")
                 conn.close()
                 return 1
             if frequency_code is None:
-                print "No value for frequency code"
+                print("No value for frequency code")
                 conn.close()
                 return 1
             ConfigTableNo, NoOfSeats = ReadConfigNumberOfSeats(conn,
                                                                aircraft_code)
             viaCities = "%3s#%3s" % (departure_airport, arrival_airport)
             ReadSchedPeriod(conn, dt1, dt2, frequency_code,
-                            flight_number, frequency_code, viaCities, ConfigTableNo)
+                            flight_number, frequency_code, viaCities,
+                            ConfigTableNo)
             n = GetFlightDataSsm(conn, flight_number, dt1, dt2, frequency_code)
             if n == 0:
-                CheckSsmTim(conn, flight, dt1, dt2, frequency_code, aircraft_code)
+                CheckSsmTim(conn, flight, dt1, dt2, frequency_code,
+                            aircraft_code)
         else:
-            print "Say again?"
+            print("Say again?")
 
     # Commit transaction and close connection
     conn.commit()
