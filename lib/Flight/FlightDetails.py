@@ -70,8 +70,8 @@ def GetFlightDetails(conn, aflight_number, aboard_date,
         aircraft_code = row[22]
         aircraft_description = row[23]
         journey_time = datetime.combine(date.min, arrival_time) - datetime.combine(date.min, departure_time)
-        print "Flight %s depart %s %s %s arrive %s %s %s (%s) aircraft %s (%s) %dkm %d stops" \
+        print("Flight %s depart %s %s %s arrive %s %s %s (%s) aircraft %s (%s) %dkm %d stops" \
             % (flight_number, departure_airport, flight_date, departure_time, arrival_airport, arrival_date, arrival_time, journey_time,
                aircraft_description, aircraft_code,
-               distance, no_of_stops)
+               distance, no_of_stops))
 

@@ -1,55 +1,106 @@
 # @file ReadAircraftConfig.py
 
-
 import sys
 import psycopg2
 from BarsLog import set_verbose, get_verbose, printlog
 from ReadDateTime import ReadDate
 
-# Read table aircraft_config
-def ReadAircraftConfig(conn, aircraft_code, config_table_no,
-                       selling_class, seat_capacity=0):
 
-    print "Aircraft configuration for",
+def ReadAircraftConfig(conn, aircraft_code, config_table,
+                       selling_class, seat_capacity=0):
+    """Read table aircraft_config."""
+    print("Aircraft configuration for", end=' ')
     AcSql = \
         "SELECT gen_flag_invt,aircraft_code,limit_sale_level,scrutiny_flag," \
-        "update_time,config_table_no,company_code,selling_class," \
+        "update_time,config_table,company_code,selling_class," \
         "seat_capacity,update_user" \
         " FROM aircraft_config"
-    if aircraft_code is not None and config_table_no is not None:
-        print "aircraft code %s" % aircraft_code,
-        print "config table %s" % config_table_no,
+    if aircraft_code is not None and config_table is not None:
+        print("aircraft code %s" % aircraft_code, end=' ')
+        print("config table %s" % config_table, end=' ')
         AcSql += \
-            " WHERE aircraft_code='%s' AND config_table_no='%s'" \
-                % (aircraft_code, config_table_no)
+            " WHERE aircraft_code='%s' AND config_table='%s'" \
+                % (aircraft_code, config_table)
     elif aircraft_code is not None:
-        print "aircraft code %s" % aircraft_code,
+        print("aircraft code %s" % aircraft_code, end=' ')
         AcSql += \
             " WHERE aircraft_code='%s'" % aircraft_code
-    elif config_table_no is not None:
-        print "config table %s" % config_table_no,
+    elif config_table is not None:
+        print("config table %s" % config_table, end=' ')
         AcSql += \
-            " WHERE config_table_no='%s'" % config_table_no
+            " WHERE config_table='%s'" % config_table
     if selling_class is not None:
-        print "class %s" % selling_class,
+        print("class %s" % selling_class, end=' ')
         AcSql += \
             " AND selling_class='%s'" % selling_class
     if seat_capacity > 0:
-        print "seat capacity %d" % seat_capacity,
+        print("seat capacity %d" % seat_capacity, end=' ')
         AcSql += \
             " AND seat_capacity=%d" % seat_capacity
-    print "[aircraft_config]"
-    printlog(AcSql, 1)
+    print("[aircraft_config]")
+    printlog(2, AcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AcSql)
     n = 0
     for row in cur:
         n += 1
-        print "\tconfig table %5s aircraft code %4s capacity %3d class %s company %s inventory %s user %s update %s" \
-            % (row['config_table_no'], row['aircraft_code'], row['seat_capacity'], row['selling_class'],
-               row['company_code'], row['gen_flag_invt'], row['update_user'], row['update_time'])
+        print("\tconfig table %5s aircraft code %4s capacity %3d class %s company %s inventory %s user %s update %s" \
+            % (row['config_table'], row['aircraft_code'], row['seat_capacity'], row['selling_class'],
+               row['company_code'], row['gen_flag_invt'], row['update_user'], row['update_time']))
 
     if n == 0:
-        print "\tnot found"
+        print("\tnot found")
+    cur.close()
 
+
+def WriteEquipmentConfig(conn, companyCode, aircraftCode, configTable,
+                         tailNumber, cabinClasses, seatCapacities,
+                         updateUser, updateGroup):
+    """Write equipment configuration)."""
+    cur = conn.cursor()
+    n = 0
+    for cabinClass in cabinClasses:
+        WecSql = """
+            INSERT INTO equipment_config (
+                company_code, aircraft_code, config_table, tail_number,
+                cabin_code, seat_capacity,
+                update_user, update_group, update_time )
+            VALUES (
+                '%s', '%s', '%s', '%s',
+                '%s', '%s',
+                '%s', '%s', NOW() )""" \
+            % (companyCode, aircraftCode, configTable, tailNumber, cabinClass,
+               seatCapacities[n],  updateUser, updateGroup)
+        printlog(2, WecSql)
+        cur.execute(WecSql)
+        n += 1
+    cur.close()
+
+
+def ReadEquipmentConfig(conn, tailNumber):
+    """Read equipment configuration)."""
+    RacSql = """
+        SELECT company_code, aircraft_code, config_table, tail_number,
+            cabin_code, seat_capacity
+        FROM equipment_config
+        WHERE tail_number = '%s'""" % tailNumber
+    printlog(2, WecSql)
+    cur.execute(WecSql)
+
+    if cur.rowcount == 0:
+        return None
+
+    cabinClasses = []
+    seatCapacities = []
+    for row in cur:
+        companyCode = row[0]
+        aircraftCode = row[1]
+        configTable = row[2]
+        tailNumber = row[3]
+        cabinClasses.append(row[4])
+        seatCapacities.append(row[5])
+
+    eqt = AircraftData(companyCode, aircraftCode, configTable,
+                       tailNumber, cabinClasses, seatCapacities)
+    return eqt

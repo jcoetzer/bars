@@ -12,8 +12,8 @@ from ReadDateTime import ReadDate
 
 def ReadSegmentStatus(conn, flight_number, flight_date):
 
-    print "Segment status for flight %s board date %s [segment_status]" \
-        % (flight_number, flight_date.strftime("%Y-%m-%d"))
+    print("Segment status for flight %s board date %s [segment_status]"
+        % (flight_number, flight_date.strftime("%Y-%m-%d")))
     RcSql = \
         "SELECT city_pair,selling_class,status_type,segm_status_code,leg_status_code,processing_flag" \
         " FROM segment_status" \
@@ -24,8 +24,8 @@ def ReadSegmentStatus(conn, flight_number, flight_date):
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     for row in cur:
-        print "\tcity pair %3d class %s status type %s status code %s processed %s" \
-            % (row['city_pair'], row['selling_class'], row['status_type'], row['segm_status_code'], row['processing_flag'])
+        print("\tcity pair %3d class %s status type %s status code %s processed %s" \
+            % (row['city_pair'], row['selling_class'], row['status_type'], row['segm_status_code'], row['processing_flag']))
 
 
 def ReadFlightPax(conn, aFlightNumber, aFlightDate):

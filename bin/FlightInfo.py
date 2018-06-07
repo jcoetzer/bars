@@ -317,7 +317,7 @@ def main(argv):
     departure_airport = None
     arrival_airport = None
     aircraft_code = None
-    config_table_no = None
+    config_table = None
     locator = None
     book_no = None
     frequency_code = None
@@ -458,7 +458,7 @@ def main(argv):
         elif opt in ("-S", "--seats"):
             seat_numbers = str(arg).upper().split(',')
         elif opt in ("-T", "--cfgtable"):
-            config_table_no = str(arg).upper()
+            config_table = str(arg).upper()
         elif opt == "-X":
             departure_time = int(arg)
         elif opt == "-Y":
@@ -507,8 +507,8 @@ def main(argv):
     if cfg_table and aircraft_code is not None:
         printlog(2, "Get config table for aircraft code %s" % aircraft_code)
         GetConfigTableNo(conn, aircraft_code)
-    elif config_table_no is not None:
-        ReadAircraftConfig(conn, None, config_table_no, selling_cls, recCount)
+    elif config_table is not None:
+        ReadAircraftConfig(conn, None, config_table, selling_cls, recCount)
     elif chk_perd and dt1 is not None and dt2 is not None:
         fperds = ReadFlightPeriods(conn, flight_number, dt1, dt2)
         for fperd in fperds:

@@ -12,7 +12,7 @@ from FlightData import FlightPeriod
 
 def ReadFlightPeriods(conn, flightNumber, dt1, dt2):
 
-    printlog(1, "Flight periods from %s to %s (flight %s)" \
+    printlog(1, "Flight periods from %s to %s (flight %s)"
         % (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d"), str(flightNumber or 'all')), 1)
     fperds = []
     startDate = dt1.strftime("%m/%d/%Y")
@@ -165,15 +165,17 @@ def isMarketingOrOperational(conn, flightNumber, dt1, dt2, frequency=None):
     for row in cur:
         marketingInFlightSharedLeg = int(row['mif'])
 
-    print "Found %d marketing flights for flight %s from %s to %s" \
-        % (marketingInFlightSharedLeg, flightNumber, startDate, endDate)
+    printlog(1, "Found %d marketing flights for flight %s from %s to %s" \
+             % (marketingInFlightSharedLeg, flightNumber, startDate, endDate))
 
 
-def ReadConfigNumberOfSeats(conn, AircraftCode, haveClassCode=1, yClassCode='C', ClassCode='Y'):
+def ReadConfigNumberOfSeats(conn, AircraftCode, haveClassCode=1,
+                            yClassCode='C', ClassCode='Y'):
 
-    print "Read configuration for aircraft code %s [aircraft_config]" % AircraftCode
+    printlog(1, "Read configuration for aircraft code %s [aircraft_config]"
+             % AircraftCode)
     #SpSql = \
-        #"SELECT first 1 config_table_no, seat_capacity"
+        #"SELECT first 1 config_table, seat_capacity"
         #"  FROM aircraft_config"
         #"  WHERE aircraft_code = '%s'"
         #"  AND seat_capacity ="
@@ -182,7 +184,7 @@ def ReadConfigNumberOfSeats(conn, AircraftCode, haveClassCode=1, yClassCode='C',
         #"           WHERE aircraft_code = '%s'"
         #"             AND selling_class = DECODE ( '%s', 0, '%s', '%s' ))"
     SpSql = \
-        "SELECT config_table_no, seat_capacity" \
+        "SELECT config_table, seat_capacity" \
         "  FROM aircraft_config" \
         "  WHERE aircraft_code = '%s'" \
         "  AND seat_capacity =" \
@@ -198,13 +200,14 @@ def ReadConfigNumberOfSeats(conn, AircraftCode, haveClassCode=1, yClassCode='C',
     NoOfSeats = 0
     n = 0
     for row in cur:
-        ConfigTableNo = str(row['config_table_no'])
+        ConfigTableNo = str(row['config_table'])
         NoOfSeats =  int(row['seat_capacity'] or 0)
-        print "\t config table number %s seats %d" % (ConfigTableNo, NoOfSeats)
+        printlog(1, "\t config table number %s seats %d"
+                 % (ConfigTableNo, NoOfSeats))
         n += 1
 
     if n == 0:
-        print "\t not found"
+        printlog(1, "\t not found")
 
     return ConfigTableNo, NoOfSeats
 
@@ -214,9 +217,9 @@ def CheckSchedPeriod(conn, dt1, dt2, alteredFrequency,
 
     startDate = dt1.strftime("%m/%d/%Y")
     endDate = dt2.strftime("%m/%d/%Y")
-    print "Check schedule period from %s to %s freq %s (%s) flight %s via %s aircraft %s [flight_periods]" \
-        % (startDate, endDate, alteredFrequency, freqCode, flightNumber, \
-           newViacities, aircraftConfig)
+    printlog(1, "Check schedule period from %s to %s freq %s (%s) flight %s via %s aircraft %s [flight_periods]"
+        % (startDate, endDate, alteredFrequency, freqCode, flightNumber,
+           newViacities, aircraftConfig))
 
     SpSql = \
         "SELECT fp.frequency_code fc, fp.schedule_period_no spn," \
@@ -232,8 +235,8 @@ def CheckSchedPeriod(conn, dt1, dt2, alteredFrequency,
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(SpSql)
     for row in cur:
-        print "Freq %s period %3s status %s start %s end %s" \
-            % (row['fc'], row['spn'], row['fss'], row['fps'], row['fpe'])
+        printlog(1, "Freq %s period %3s status %s start %s end %s"
+            % (row['fc'], row['spn'], row['fss'], row['fps'], row['fpe']))
 
 
 def ReadSchedPeriod(conn, dt1, dt2, alteredFrequency,
@@ -241,9 +244,9 @@ def ReadSchedPeriod(conn, dt1, dt2, alteredFrequency,
 
     startDate = dt1.strftime("%m/%d/%Y")
     endDate = dt2.strftime("%m/%d/%Y")
-    print "Read schedule period from %s to %s freq %s (alter %s) flight %s via %s aircraft %s [flight_periods, flight_segm_date, flight_perd_legs]" \
-        % (startDate, endDate, freqCode, alteredFrequency, flightNumber, \
-           newViacities, aircraftConfig)
+    printlog(1, "Read schedule period from %s to %s freq %s (alter %s) flight %s via %s aircraft %s [flight_periods, flight_segm_date, flight_perd_legs]" \
+        % (startDate, endDate, freqCode, alteredFrequency, flightNumber,
+           newViacities, aircraftConfig))
     SpSql = \
          "SELECT FIRST 1 fsd.schedule_period_no spn" \
          " FROM flight_periods fp, flight_segm_date fsd, flight_perd_legs fpl" \
@@ -253,7 +256,7 @@ def ReadSchedPeriod(conn, dt1, dt2, alteredFrequency,
          "   fsd.flight_date, fsd.flgt_sched_status," \
          "   fsd.schedule_period_no, fp.via_cities," \
          "   fpl.flight_number , fpl.schedule_period_no," \
-         "   fpl.config_table_no" \
+         "   fpl.config_table" \
          "  HAVING fp.end_date=MAX(fp.end_date)" \
          "   AND end_date<=('%s')::DATE-1 UNITS DAY" \
          "   AND '%s' NOT BETWEEN fp.start_date AND fp.end_date" \
@@ -271,7 +274,7 @@ def ReadSchedPeriod(conn, dt1, dt2, alteredFrequency,
          "   AND fp.flight_number='%s'" \
          "   AND fp.frequency_code='%s'" \
          "   AND fp.via_cities='%s'" \
-         "   AND fpl.config_table_no='%s'" \
+         "   AND fpl.config_table='%s'" \
         % (startDate, startDate, endDate,
            startDate, endDate,
            startDate, endDate,
@@ -289,19 +292,19 @@ def ReadSchedPeriod(conn, dt1, dt2, alteredFrequency,
     cur.execute(SpSql)
     n = 0
     for row in cur:
-        print "\t schedule period %s" % row['spn']
+        printlog(1, "\t schedule period %s" % row['spn'])
         n += 1
 
     if n == 0:
-        print "\t not found"
+        printlog(1, "\t not found")
 
     return n
 
 
 def DatesConsecutiveByFrequency(conn, flight_number, dt1, schedule_period_no):
 
-    print "Dates for flight %s date %s period %s [flight_periods]" \
-        % (flight_number, dt1, str(schedule_period_no))
+    printlog(1, "Dates for flight %s date %s period %s [flight_periods]"
+        % (flight_number, dt1, str(schedule_period_no)))
     startDate = dt1.strftime("%m/%d/%Y")
     SpSql = \
         "SELECT WEEKDAY(end_date) ed, WEEKDAY('%s') sd" \
@@ -314,12 +317,12 @@ def DatesConsecutiveByFrequency(conn, flight_number, dt1, schedule_period_no):
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(SpSql)
     for row in cur:
-        print "\tStart %s end %s" % (row['sd'], row['ed'])
+        printlog(1, "\tStart %s end %s" % (row['sd'], row['ed']))
 
 
 def GetFrequencies():
     SpSql = \
-        "SELECT DISTINCT frequency_code, config_table_no                " \
+        "SELECT DISTINCT frequency_code, config_table                " \
         "  FROM flight_configuration                                    " \
         "WHERE ( ? LIKE flight_number OR                                " \
         "       flight_number LIKE DECODE ( ?, '', ?, ? ))    AND       " \

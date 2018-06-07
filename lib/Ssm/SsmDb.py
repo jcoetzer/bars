@@ -13,7 +13,7 @@ def GetConfigTableNo(conn, aAircraftCode):
 
     cur = conn.cursor()
     ssmSql = \
-        "SELECT config_table_no,selling_class,seat_capacity " \
+        "SELECT config_table,selling_class,seat_capacity " \
         "FROM aircraft_config " \
         "WHERE aircraft_code = '%s' ORDER BY seat_capacity DESC" \
         % aAircraftCode

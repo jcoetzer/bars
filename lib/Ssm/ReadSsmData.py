@@ -17,7 +17,7 @@ def ReadSsmFlightData(conn, flight, end_date):
         fpl.schedule_period_no spn, fpl.leg_number ln,fp.via_cities vc,
         fp.flgt_sched_status fss,
         fp.frequency_code fc,fpl.departure_time dt, fpl.arrival_time at,
-        fsd.aircraft_code acn,fpl.config_table_no ctn,
+        fsd.aircraft_code acn,fpl.config_table ctn,
         fpl.departure_terminal dtn,
         fpl.arrival_terminal atn"
         FROM flight_perd_legs fpl, flight_periods fp,flight_segm_date fsd,
@@ -47,7 +47,7 @@ def ReadSsmFlightData(conn, flight, end_date):
         " AND fsd.departure_airport=fpl.departure_airport" \
         " AND fsd.arrival_airport=fpl.arrival_airport" \
         " AND ac.aircraft_code=fsd.aircraft_code" \
-        " AND ac.config_table_no=fpl.config_table_no" \
+        " AND ac.config_table=fpl.config_table" \
         " AND fp.frequency_code LIKE '%%%d%%'" \
         " ORDER BY fp.start_date, fpl.schedule_period_no, fpl.leg_number" \
         % flight.board_weekday
@@ -80,7 +80,7 @@ def ReadSsmFlightData2(conn, flight, end_date):
         "fpl.schedule_period_no spn, fpl.leg_number ln,fp.via_cities vc," \
         "fp.flgt_sched_status fss," \
         "fp.frequency_code fc,fpl.departure_time dt, fpl.arrival_time at," \
-        "fsd.aircraft_code acn,fpl.config_table_no ctn," \
+        "fsd.aircraft_code acn,fpl.config_table ctn," \
         "fpl.departure_terminal dtn," \
         "fpl.arrival_terminal atn" \
         " FROM flight_perd_legs fpl, flight_periods fp,flight_segm_date fsd, aircraft_config ac" \
@@ -98,7 +98,7 @@ def ReadSsmFlightData2(conn, flight, end_date):
         " AND fsd.departure_airport=fpl.departure_airport" \
         " AND fsd.arrival_airport=fpl.arrival_airport" \
         " AND ac.aircraft_code=fsd.aircraft_code" \
-        " AND ac.config_table_no=fpl.config_table_no" \
+        " AND ac.config_table=fpl.config_table" \
         " AND fp.frequency_code LIKE '%%%d%%'" \
         " ORDER BY fp.start_date, fpl.schedule_period_no, fpl.leg_number" \
         % (flight.flight_number, flight.departure_airport,
@@ -209,7 +209,7 @@ def ReadSsmTim(conn, flight, sdate, edate, frequency_code):
     FbSql = \
         "SELECT DISTINCT fpl.departure_airport depr, fpl.arrival_airport arrv, fp.start_date sd, fp.end_date ed, fpl.schedule_period_no spn, " \
         "fpl.leg_number ln, fp.via_cities vc, fp.flgt_sched_status fss, fp.frequency_code fc," \
-        "fpl.departure_time dt, fpl.arrival_time at, fsd.aircraft_code acd, fpl.config_table_no ctn," \
+        "fpl.departure_time dt, fpl.arrival_time at, fsd.aircraft_code acd, fpl.config_table ctn," \
         "fpl.departure_terminal dtn, fpl.arrival_terminal atn" \
         " FROM flight_perd_legs fpl, flight_periods fp,flight_segm_date fsd, aircraft_config ac" \
         " WHERE fpl.flight_number = '%s'" \
@@ -226,7 +226,7 @@ def ReadSsmTim(conn, flight, sdate, edate, frequency_code):
         " AND fsd.departure_airport = fpl.departure_airport" \
         " AND fsd.arrival_airport = fpl.arrival_airport" \
         " AND ac.aircraft_code = fsd.aircraft_code" \
-        " AND ac.config_table_no = fpl.config_table_no" \
+        " AND ac.config_table = fpl.config_table" \
         % (flight.flight_number, flight.departure_airport, flight.arrival_airport,
            sdate.strftime("%m/%d/%Y"), edate.strftime("%m/%d/%Y"))
     if frequency_code is not None:
@@ -257,7 +257,7 @@ def GetFlightDataSsm(conn, flight, sdate, edate, frequency_code):
         """
         SELECT DISTINCT fpl.schedule_period_no spn, fpl.departure_airport da, fpl.arrival_airport aa, fp.start_date sd, fp.end_date ed, fpl.leg_number ln,
             fp.via_cities vc, fp.flgt_sched_status fss, fp.frequency_code fc, fpl.departure_time dt, fpl.arrival_time at, fps.aircraft_code ac,
-            fpl.config_table_no ctn, fpl.departure_terminal dtn, fpl.arrival_terminal atn
+            fpl.config_table ctn, fpl.departure_terminal dtn, fpl.arrival_terminal atn
         FROM flight_perd_legs fpl, flight_periods fp,flight_segm_date fsd, flight_perd_segm fps
         WHERE fpl.flight_number = '%s'
         AND fsd.flight_date BETWEEN '%s' AND '%s'

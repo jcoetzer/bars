@@ -7,11 +7,13 @@ import getopt
 import psycopg2
 from datetime import datetime, timedelta, date
 
+
 def check_bci_new(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb, msk):
-    print "Check booking cross index for origin %s external %s locator %s :" \
-        % (ExtOriginAddress, ExtBookNumb, PnrBookNumb)
+    print("Check booking cross index for origin %s external %s locator %s :"
+          % (ExtOriginAddress, ExtBookNumb, PnrBookNumb))
     ChkSql = \
-        "SELECT bci.book_no bno, bci.ext_book_numb ext, bci.pax_name_rec pnr, bci.book_category bcat, bci.origin_address bor" \
+        "SELECT bci.book_no bno, bci.ext_book_numb ext, bci.pax_name_rec pnr," \
+        " bci.book_category bcat, bci.origin_address bor" \
         " FROM book_crs_index bci \n" \
         " WHERE \n(\n  1=0\n"
     if msk & 1:
@@ -49,13 +51,13 @@ def check_bci_new(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb, msk):
     # Run query
     cur.execute(ChkSql)
     for row in cur:
-        print "\tbook %s origin %s ext %s locator %s category %s" \
-            % (row['bno'], row['bor'], row['ext'], row['pnr'], row['bcat'])
+        print("\tbook %s origin %s ext %s locator %s category %s"
+              % (row['bno'], row['bor'], row['ext'], row['pnr'], row['bcat']))
 
 
 def check_bci_trl(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb):
-    print "Check booking cross index for origin %s external %s locator %s :" \
-        % (ExtOriginAddress, ExtBookNumb, PnrBookNumb)
+    print("Check booking cross index for origin %s external %s locator %s :"
+          % (ExtOriginAddress, ExtBookNumb, PnrBookNumb))
 
     ChkSql = \
         "SELECT bci.book_no bno, bci.ext_book_numb ext, b.pax_name_rec pnr, b.book_category bcat, b.no_of_seats n" \
@@ -72,13 +74,13 @@ def check_bci_trl(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb):
     # Run query
     cur.execute(ChkSql)
     for row in cur:
-        print "\tbook %s ext %s pnr %s category %s (%d seats)" \
-            % (row['bno'], row['ext'], row['pnr'], row['bcat'], row['n'])
+        print("\tbook %s ext %s pnr %s category %s (%d seats)"
+              % (row['bno'], row['ext'], row['pnr'], row['bcat'], row['n']))
 
 
 def check_bci(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb, msk):
-    print "Check booking cross index for origin %s external %s locator %s :" \
-        % (ExtOriginAddress, ExtBookNumb, PnrBookNumb)
+    print("Check booking cross index for origin %s external %s locator %s :"
+          % (ExtOriginAddress, ExtBookNumb, PnrBookNumb))
     ChkSql = \
         "SELECT bci.book_no bno, bci.ext_book_numb ext, bci.pax_name_rec pnr, bci.book_category bcat" \
         " FROM book_crs_index bci\n" \
@@ -117,5 +119,5 @@ def check_bci(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb, msk):
     # Run query
     cur.execute(ChkSql)
     for row in cur:
-        print "\tbook %s ext %s pnr %s category %s" \
-            % (row['bno'], row['ext'], row['pnr'], row['bcat'])
+        print("\tbook %s ext %s pnr %s category %s"
+              % (row['bno'], row['ext'], row['pnr'], row['bcat']))

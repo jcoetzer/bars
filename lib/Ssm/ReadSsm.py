@@ -150,7 +150,7 @@ from SsmLex import *
 
 
 def usage():
-    print "Help!"
+    print("Help!")
     sys.exit(1)
 
 
@@ -173,13 +173,13 @@ def main(argv):
             #fname = str(arg)
         else:
             fname = str(opt)
-            print "read '%s'" % fname
+            print("read '%s'" % fname)
 
     if fname is None or len(fname)==0:
-        print "No input file specified"
+        print("No input file specified")
         return 1
 
-    print "read '%s'" % fname
+    print("read '%s'" % fname)
 
     if fname == "-":
         message = sys.stdin.read()
@@ -188,18 +188,19 @@ def main(argv):
         message = f.read()
         f.close()
 
-    print "go"
+    print("go")
     lex.lex()
 
     lex.input(message)
 
     for tok in iter(lex.token, None):
-        print repr(tok.type), repr(tok.value)
+        print(repr(tok.type), end=' ')
+        print(repr(tok.value))
 
     #for tok in iter(m.token, None):
         #print repr(tok.type), repr(tok.value)
 
-    print "done"
+    print("done")
 
     return 0
 

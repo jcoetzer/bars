@@ -26,7 +26,7 @@ def GetFlightDataSsm(conn, flight_number, fd1, fd2, freq=None):
         "SELECT fpl.schedule_period_no spn,fpl.departure_airport depr, fpl.arrival_airport arrv," \
         "fp.start_date sd,fp.end_date ed,fpl.leg_number ln,fp.via_cities vc," \
         "fp.flgt_sched_status fss,fp.frequency_code fc,fpl.departure_time dt," \
-        "fpl.arrival_time,fps.aircraft_code,fpl.config_table_no," \
+        "fpl.arrival_time,fps.aircraft_code,fpl.config_table," \
         "fpl.departure_terminal dtn, fpl.arrival_terminal atn" \
         " FROM flight_perd_legs fpl,flight_periods fp,flight_segm_date fsd," \
         "flight_perd_segm fps" \

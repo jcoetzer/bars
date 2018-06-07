@@ -446,8 +446,8 @@ ALTER SEQUENCE aig_transaction_transaction_id_seq OWNED BY aig_transaction.trans
 -- Name: aircraft_config; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE aircraft_config (
-    config_table_no character(5) NOT NULL,
+CREATE TABLE public.aircraft_config (
+    config_table character(5) NOT NULL,
     company_code character(3) NOT NULL,
     selling_class character(2) NOT NULL,
     aircraft_code character(3) NOT NULL,
@@ -466,8 +466,25 @@ CREATE TABLE aircraft_config (
     update_time timestamp WITH time zone
 );
 
-
 ALTER TABLE public.aircraft_config OWNER TO postgres;
+
+-- NEW TABLE
+
+CREATE TABLE equipment_config (
+    company_code character(3) NOT NULL,
+    aircraft_code character(3) NOT NULL,
+    config_table character(5) NOT NULL,
+    tail_number character varying(20),
+    cabin_code character(2) NOT NULL,
+    seat_capacity smallint NOT NULL,
+
+    update_user character(16) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
+);
+
+
+ALTER TABLE public.equipment_config OWNER TO postgres;
 
 --
 -- Name: airport; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -3029,7 +3046,7 @@ CREATE TABLE cls_exclusion_rule (
     start_date date,
     end_date date,
     frequency_code character(7),
-    config_table_no character(5) NOT NULL,
+    config_table character(5) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
     update_time timestamp WITH time zone
@@ -5442,7 +5459,7 @@ ALTER TABLE public.flight_checkin OWNER TO postgres;
 CREATE TABLE flight_configuration (
     flight_number character(7) NOT NULL,
     frequency_code character(7) NOT NULL,
-    config_table_no character(5) NOT NULL
+    config_table character(5) NOT NULL
 );
 
 
@@ -5658,7 +5675,7 @@ CREATE TABLE flight_perd_legs (
     departure_time time WITH time zone,
     arrival_time time WITH time zone,
     date_change_ind smallint NOT NULL,
-    config_table_no character(5) NOT NULL,
+    config_table character(5) NOT NULL,
     flight_path_code character(1) NOT NULL,
     departure_terminal character(2) NOT NULL,
     arrival_terminal character(2) NOT NULL,
@@ -5930,7 +5947,7 @@ CREATE TABLE flight_shared_leg (
     flight_path_code character(1),
     departure_terminal character(2),
     arrival_terminal character(2),
-    config_table_no character(5),
+    config_table character(5),
     aircraft_code character(3),
     leg_number smallint,
     update_user character(5) NOT NULL,
@@ -6063,7 +6080,7 @@ CREATE TABLE flt_config_rule (
     start_date date,
     end_date date,
     frequency_code character(7),
-    config_table_no character(5) NOT NULL,
+    config_table character(5) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
     update_time timestamp WITH time zone
@@ -9946,7 +9963,7 @@ ALTER TABLE public.seat_map_class OWNER TO postgres;
 
 CREATE TABLE seat_map_configuration (
     seat_map_id integer NOT NULL,
-    config_table_no character varying(5) NOT NULL,
+    config_table character varying(5) NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
     update_time timestamp WITH time zone
@@ -10833,7 +10850,7 @@ ALTER SEQUENCE ssd_vcversions_rev_id_seq OWNED BY ssd_vcversions.rev_id;
 --
 
 CREATE TABLE ssm_tmp_acft_config (
-    config_table_no character(5) NOT NULL,
+    config_table character(5) NOT NULL,
     company_code character(3) NOT NULL,
     selling_class character(2) NOT NULL,
     aircraft_code character(3) NOT NULL,
@@ -10905,7 +10922,7 @@ CREATE TABLE ssm_tmp_old_flight_perd_legs (
     departure_time smallint NOT NULL,
     arrival_time smallint NOT NULL,
     date_change_ind smallint NOT NULL,
-    config_table_no character(5) NOT NULL,
+    config_table character(5) NOT NULL,
     flight_path_code character(1) NOT NULL,
     departure_terminal character(2) NOT NULL,
     arrival_terminal character(2) NOT NULL,
@@ -11884,7 +11901,7 @@ CREATE TABLE test_perd_legs (
     departure_time smallint NOT NULL,
     arrival_time smallint NOT NULL,
     date_change_ind smallint NOT NULL,
-    config_table_no character(5) NOT NULL,
+    config_table character(5) NOT NULL,
     flight_path_code character(1) NOT NULL,
     departure_terminal character(2) NOT NULL,
     arrival_terminal character(2) NOT NULL,
@@ -14786,7 +14803,7 @@ ALTER TABLE ONLY financial_transaction_book
 --
 
 ALTER TABLE ONLY flight_configuration
-    ADD CONSTRAINT flight_configuration_pkey PRIMARY KEY (flight_number, frequency_code, config_table_no);
+    ADD CONSTRAINT flight_configuration_pkey PRIMARY KEY (flight_number, frequency_code, config_table);
 
 
 --
@@ -15275,7 +15292,7 @@ ALTER TABLE ONLY seat_map_class
 --
 
 ALTER TABLE ONLY seat_map_configuration
-    ADD CONSTRAINT seat_map_configuration_pkey PRIMARY KEY (seat_map_id, config_table_no);
+    ADD CONSTRAINT seat_map_configuration_pkey PRIMARY KEY (seat_map_id, config_table);
 
 
 --

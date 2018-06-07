@@ -50,7 +50,7 @@ class FlightData(object):
                  codeshare=None):
         """New flight."""
         printlog(2, "New flight %s date %s class %s depart %s arrive %s"
-                 " from %s to %s (pair %d) aircraft %s" \
+                 " from %s to %s (pair %d) aircraft %s"
                  % (flight_number, departure_date.strftime("%Y-%m-%d"),
                     class_code,
                     departure_time, arrival_time,
@@ -128,32 +128,34 @@ class FlightData(object):
 
     def display(self, eol=True, prefix=''):
         """Display flight data."""
-        print "%sFlight %6s board %s %s from %s to %s class %s" \
+        print("%sFlight %6s board %s %s from %s to %s class %s"
               % (prefix, self.flight_number, self.board_dow,
                  self.board_date_iso,
-                 self.departure_airport, self.arrival_airport, self.class_code),
+                 self.departure_airport, self.arrival_airport,
+                 self.class_code),
+              end=' ')
         if self.city_pair != 0:
-            print " (city pair %4d)" % self.city_pair,
+            print(" (city pair %4d)" % self.city_pair, end=' ')
         if self.departure_time is not None and self.arrival_time is not None:
-            print "departs %s arrives %s" \
-                % (self.departure_time, self.arrival_time),
+            print("departs %s arrives %s"
+                  % (self.departure_time, self.arrival_time), end=' ')
         elif self.departure_time is not None:
-            print "departs %s" \
-                % (self.departure_time),
+            print("departs %s"
+                  % (self.departure_time), end=' ')
         if self.journey_time is not None and self.journey_time > 0:
-            print "(%-3d minutes)" % self.journey_time,
+            print("(%-3d minutes)" % self.journey_time, end=' ')
         if len(self.aircraft_code) > 0:
-            print "aircraft code %4s" % self.aircraft_code,
+            print("aircraft code %4s" % self.aircraft_code, end=' ')
         if self.seat_capacity > 0:
-            print "(%-3d seats)" % self.seat_capacity,
-        print "%s" % self.reserve_status,
+            print("(%-3d seats)" % self.seat_capacity, end=' ')
+        print("%s" % self.reserve_status, end=' ')
         if len(self.reserve_status):
             if 'X' in self.reserve_status:
-                print "(inactive)",
+                print("(inactive)", end=' ')
         if self.codeshare is not None:
-            print "codeshare %6s" % self.codeshare,
+            print("codeshare %6s" % self.codeshare, end=' ')
         if self.schedule_period_no != 0:
-            print "schedule period %6d" % self.schedule_period_no,
+            print("schedule period %6d" % self.schedule_period_no, end=' ')
         if eol:
             print
 
@@ -199,24 +201,30 @@ class FlightPeriod(object):
 
     def display(self):
         """Display flight period."""
-        print "Flight %6s start %s end %s frequency %s depart %s %02d:%02d arrive %s %02d:%02d aircraft %s (schedule period %4d)" \
-            % (self.flight_number, self.start_date, self.end_date, self.frequency_code,
-               self.departure_airport, self.departure_time/60, self.departure_time%60,
-               self.arrival_airport, self.arrival_time/60, self.arrival_time%60,
-               self.aircraft_code,
-               self.schedule_period_no ),
+        print("Flight %6s start %s end %s frequency %s depart %s %02d:%02d"
+              " arrive %s %02d:%02d aircraft %s (schedule period %4d)"
+              % (self.flight_number, self.start_date, self.end_date,
+                 self.frequency_code,
+                 self.departure_airport,
+                 self.departure_time / 60, self.departure_time % 60,
+                 self.arrival_airport,
+                 self.arrival_time / 60, self.arrival_time % 60,
+                 self.aircraft_code,
+                 self.schedule_period_no), end=' ')
         for codeshare in self.codeshares:
-            print "%s" % codeshare,
+            print("%s" % codeshare, end=' ')
         print
 
     def displaycsv(self):
         """Display flight period data in CSV format."""
-        sys.stdout.write("%s,%s,%s,%s,%s,%02d%02d,%s,%02d%02d,%s,%d" \
+        sys.stdout.write("%s,%s,%s,%s,%s,%02d%02d,%s,%02d%02d,%s,%d"
                          % (self.flight_number, self.start_date.strftime("%d%b%Y").upper(),
                             self.end_date.strftime("%d%b%Y").upper(),
                             self.frequency_code.replace('-', ''),
-                            self.departure_airport, self.departure_time/60, self.departure_time%60,
-                            self.arrival_airport, self.arrival_time/60, self.arrival_time%60,
+                            self.departure_airport,
+                            self.departure_time / 60, self.departure_time % 60,
+                            self.arrival_airport,
+                            self.arrival_time / 60, self.arrival_time % 60,
                             self.aircraft_code,
                             self.schedule_period_no))
         for codeshare in self.codeshares:

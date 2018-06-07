@@ -8,26 +8,26 @@ from ReadFlightDateLegs import ReadFlightDateLegId
 from ReadFlights import ReadFlight
 
 
-def ReadSeatMapConfiguration(conn, seat_map_id=None, config_table_no=None):
+def ReadSeatMapConfiguration(conn, seat_map_id=None, config_table=None):
     """Read seat map configuration from database."""
     print "Seat map configuration for",
     SmcSql = \
-        "SELECT seat_map_id, config_table_no,update_user,update_time FROM seat_map_configuration"
+        "SELECT seat_map_id, config_table,update_user,update_time FROM seat_map_configuration"
 
-    if seat_map_id is not None and config_table_no is not None:
+    if seat_map_id is not None and config_table is not None:
         print "seat map ID %d config table %s" \
-            % (seat_map_id, config_table_no),
+            % (seat_map_id, config_table),
         SmcSql += \
-            " WHERE seat_map_id=%d AND config_table_no='%s'" \
-                (seat_map_id, config_table_no)
+            " WHERE seat_map_id=%d AND config_table='%s'" \
+                (seat_map_id, config_table)
     elif seat_map_id is not None:
         print "seat map ID %d" % seat_map_id,
         SmcSql += \
             " WHERE seat_map_id=%d" % seat_map_id
-    elif config_table_no is not None:
-        print "config table %s" % str(config_table_no),
+    elif config_table is not None:
+        print "config table %s" % str(config_table),
         SmcSql += \
-            " WHERE config_table_no='%s'" % str(config_table_no)
+            " WHERE config_table='%s'" % str(config_table)
     else:
         print "unspecified seat map and configuration table"
         return
@@ -38,16 +38,16 @@ def ReadSeatMapConfiguration(conn, seat_map_id=None, config_table_no=None):
     cur.execute(SmcSql)
     seat_map_id = 0
     n = 0
-    config_table_no = None
+    config_table = None
     for row in cur:
         n += 1
-        config_table_no = str(row['config_table_no'] or '???')
+        config_table = str(row['config_table'] or '???')
         print "\tseat map ID %d config table %s user %s update %s" \
-            % (row['seat_map_id'], config_table_no, row['update_user'], row['update_time'])
+            % (row['seat_map_id'], config_table, row['update_user'], row['update_time'])
     if n==0:
         print "\t not found"
 
-    return config_table_no
+    return config_table
 
 
 # Read flight seat map from database
@@ -418,14 +418,14 @@ def RemoveDuplicateSeatMaps(conn, flight, do_del=False):
             % (FlightLegId , MapId)
 
 
-def ReadAircraftConfig(conn, config_table_no):
+def ReadAircraftConfig(conn, config_table):
 
-    print "Configuration table for config table '%s' [aircraft_config] :" % config_table_no
+    print "Configuration table for config table '%s' [aircraft_config] :" % config_table
     SmcSql = \
-        "SELECT config_table_no,aircraft_code,seat_capacity,selling_class,update_time,update_user" \
+        "SELECT config_table,aircraft_code,seat_capacity,selling_class,update_time,update_user" \
         " FROM aircraft_config " \
-        " WHERE config_table_no = '%s'" \
-            % config_table_no
+        " WHERE config_table = '%s'" \
+            % config_table
     printlog(SmcSql,2)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
@@ -435,7 +435,7 @@ def ReadAircraftConfig(conn, config_table_no):
     for row in cur:
         n += 1
         print "\tconfig %4s aircraft %4s seats %3s class %s user %s update %s" \
-            % (row['config_table_no'], row['aircraft_code'],
+            % (row['config_table'], row['aircraft_code'],
                row['seat_capacity'], row['selling_class'],
                row['update_user'], row['update_time'])
     if n == 0:
@@ -446,7 +446,7 @@ def GetConfigTableNo(conn, aircraft_code):
 
     print "Configuration table for aircraft code '%s' [aircraft_config] :" % aircraft_code
     SmcSql = \
-        "SELECT config_table_no,aircraft_code,seat_capacity,selling_class,update_time,update_user" \
+        "SELECT config_table,aircraft_code,seat_capacity,selling_class,update_time,update_user" \
         " FROM aircraft_config " \
         " WHERE aircraft_code = '%s'" \
             % aircraft_code
@@ -459,7 +459,7 @@ def GetConfigTableNo(conn, aircraft_code):
     for row in cur:
         n += 1
         print "\tConfig %4s aircraft %4s seats %3s class %1s user %-5s update %s" \
-            % (row['config_table_no'], row['aircraft_code'],
+            % (row['config_table'], row['aircraft_code'],
                row['seat_capacity'], row['selling_class'],
                row['update_user'], row['update_time'])
     if n == 0:

@@ -198,7 +198,7 @@ def ReadFlightPerdLegs(conn, flight_number, schedule_period_no=None):
         "SELECT departure_airport,arrival_airport," \
         "departure_time departure," \
         "arrival_time arrival," \
-        "date_change_ind,config_table_no,flight_path_code,departure_terminal," \
+        "date_change_ind,config_table,flight_path_code,departure_terminal," \
         "arrival_terminal,leg_number,update_time" \
         " FROM flight_perd_legs" \
         " WHERE flight_number = '%s'" \

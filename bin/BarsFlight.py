@@ -17,19 +17,20 @@ from DbConnect import OpenDb, CloseDb
 from Flight.WriteFares import AddCityPair, AddFareSegments, AddFares, \
     DelFareSegments
 from Flight.ReadFares import ReadCityPairs, ReadFareSegments, ReadFareCodes
+from ReadAircraftConfig import ReadEquipmentConfig, WriteEquipmentConfig
 
 
-def NewCityPair(conn, departure_airport, arrival_airport, userName, groupName):
+def NewCityPair(conn, departAirport, arriveAirport, userName, groupName):
     """Process new flight."""
     city_pair_id = CheckCityPair(conn,
-                                 departure_airport,
-                                 arrival_airport,
+                                 departAirport,
+                                 arriveAirport,
                                  1,
                                  userName,
                                  groupName)
     if city_pair_id == 0:
-        city_pair_id = AddCityPair(conn, departure_airport,
-                                   arrival_airport,
+        city_pair_id = AddCityPair(conn, departAirport,
+                                   arriveAirport,
                                    userName, groupName)
     return city_pair_id
 
@@ -37,17 +38,28 @@ def NewCityPair(conn, departure_airport, arrival_airport, userName, groupName):
 def NewFlight(conn, aAddress, aSender, aTimeMode,
               aFlightNumber, aFlightDateStart, aFlightDateEnd,
               aDepartCity, aDepartTime, aArriveCity, aArriveTime,
-              aAircraftCode, aFrequencyCode, aCodeshare, aTailNumber,
+              aFrequencyCode, aCodeshare, aTailNumber,
               aUserName, aGroupName):
     """Create new flight."""
+    eqt = ReadEquipmentConfig(conn, aTailNumber)
+    if eqt is None:
+        print("Aircraft tail number %s not found" % aTailNumber)
+        return
+    eqt.display()
     ssm = SsmData(aAddress, aSender, aTimeMode,
                   aFlightNumber, aFlightDateStart, aFlightDateEnd,
                   aDepartCity, aDepartTime, aArriveCity, aArriveTime,
-                  aAircraftCode, aFrequencyCode, aCodeshare, aTailNumber)
+                  eqt.aircraft_code, aFrequencyCode, aCodeshare, aTailNumber,
+                  eqt.cabin_codes, eqt.seat_capacities)
     if not ssm.check():
         print("Data error")
         return
     ProcNew(conn, ssm, aUserName, aGroupName)
+
+
+def NewAircraft(conn, companyCode, tailNumber, aircraftCode, configTable,
+                cabinCodes, seatCapacities):
+    """Add new aircraft."""
 
 
 def usage(pname='BarsFlight.py'):
@@ -92,29 +104,34 @@ def main(argv):
     dofare = False
     dofaredel = False
     donew = False
-    dt1 = None
-    dt2 = None
-    payAmount = None
-    departure_airport = None
-    arrival_airport = None
-    flightNumber = None
+    departDate = None
+    arriveDate = None
+    payAmount = 0
+    departAirport = ''
+    arriveAirport = ''
+    flightNumber = ''
+    codeShare = ''
     departTime = None
     arriveTime = None
-    aircraftCode = None
     frequencyCode = '1234567'
+    aircraftCode = ''
+    configTable = ''
+    tailNumber = ''
+    cabinClasses = []
+    seatCapacities = []
 
     if len(argv) < 1:
         usage()
 
     try:
         opts, args = getopt.getopt(argv,
-                                   "cfhivxyVA:D:E:F:G:K:P:Q:R:T:X:Y:",
+                                   "cfhivxyVA:D:E:F:G:K:P:Q:R:T:U:X:Y:",
                                    ["help", "city", "fare", "faredel",
                                     "new", "eqt", "cnl", "tim", "rpl",
                                     "utc",
                                     "date=", "edate=", "flight=",
                                     "depart=", "arrive=",
-                                    "share=",
+                                    "share=", "cfg=",
                                     "aircraft=", "freq=", "cfgtable="
                                     ])
     except getopt.GetoptError:
@@ -142,27 +159,33 @@ def main(argv):
             aircraftCode = str(arg).upper()
             printlog(1, "\t aircraft code %s" % aircraftCode)
         elif opt in ("-D", "--date"):
-            dt1 = ReadDate(arg)
-            printlog(1, "\t start date %s" % dt1.strftime("%Y-%m-%d"))
+            departDate = ReadDate(arg)
+            printlog(1, "\t start date %s" % departDate.strftime("%Y-%m-%d"))
         elif opt in ("-E", "--edate"):
-            dt2 = ReadDate(arg)
-            printlog(1, "\t end date %s" % dt1.strftime("%Y-%m-%d"))
+            arriveDate = ReadDate(arg)
+            printlog(1, "\t end date %s" % departDate.strftime("%Y-%m-%d"))
         elif opt in ("-F", "--flight"):
             flightNumber = arg
         elif opt in ("-G", "--share"):
             codeShare = arg
+        elif opt in ("-I", "--cabin"):
+            cabinClasses = str(arg).split(',')
+        elif opt in ("-J", "--seat"):
+            seatCapacities = str(arg).split(',')
         elif opt in ("-K", "--freq"):
             frequencyCode = str(arg)
         elif opt in ("-P", "--depart"):
-            departure_airport = str(arg).upper()
-            printlog(1, "\t depart %s" % departure_airport)
+            departAirport = str(arg).upper()
+            printlog(1, "\t depart %s" % departAirport)
         elif opt in ("-Q", "--arrive"):
-            arrival_airport = str(arg).upper()
-            printlog(1, "\t arrive %s" % arrival_airport)
+            arriveAirport = str(arg).upper()
+            printlog(1, "\t arrive %s" % arriveAirport)
         elif opt in ("-R", "--amount"):
             payAmount = int(arg)
         elif opt in ("-T", "--tail"):
             tailNumber = str(arg)
+        elif opt in ("-U", "--cfg"):
+            configTable = str(arg)
         elif opt == "-X":
             departTime = ReadTime(arg)
         elif opt == "-Y":
@@ -180,34 +203,56 @@ def main(argv):
     # Open connection to database
     conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
 
-    if donew:
+    if donew and flightNumber != '' \
+            and departDate is not None \
+            and arriveDate is not None \
+            and departTime is not None \
+            and arriveTime is not None \
+            and departAirport != '' \
+            and arriveAirport != '' \
+            and frequencyCode != '' \
+            and tailNumber != '':
         NewFlight(conn, cfg.Address, cfg.Sender, cfg.TimeMode,
-                  flightNumber, dt1, dt2,
-                  departure_airport, departTime, arrival_airport, arriveTime,
-                  aircraftCode, frequencyCode, codeShare, tailNumber,
+                  flightNumber, departDate, arriveDate,
+                  departAirport, departTime, arriveAirport, arriveTime,
+                  frequencyCode, codeShare, tailNumber,
                   cfg.User, cfg.Group)
-    elif docity and departure_airport is not None \
-            and arrival_airport is not None:
-        NewCityPair(conn, departure_airport, arrival_airport,
+    elif donew and flightNumber == '' \
+            and departDate is None \
+            and arriveDate is None \
+            and departTime is None \
+            and arriveTime is None \
+            and departAirport == '' \
+            and arriveAirport == '' \
+            and aircraftCode != '' \
+            and frequencyCode == '' \
+            and tailNumber != '' \
+            and configTable != '':
+        WriteEquipmentConfig(conn, cfg.CompanyCode, aircraftCode, configTable,
+                             cabinClasses, seatCapacities, cfg.User, cfg.Group)
+    elif docity and departAirport != '' \
+            and arriveAirport != '':
+        NewCityPair(conn, departAirport, arriveAirport,
                     cfg.User, cfg.Group)
     elif docity:
         ReadCityPairs(conn)
-    elif dofare and departure_airport is not None \
-            and arrival_airport is not None and dt1 is not None \
-            and dt2 is not None:
-        city_pair = GetCityPair(conn, departure_airport, arrival_airport)
+    elif dofare and departAirport != '' \
+            and arriveAirport != '' and departDate is not None \
+            and arriveDate is not None:
+        city_pair = GetCityPair(conn, departAirport, arriveAirport)
         if city_pair > 0:
             AddFareSegments(conn, cfg.CompanyCode,
-                            departure_airport, arrival_airport, city_pair,
-                            dt1, dt2, payAmount,
+                            departAirport, arriveAirport, city_pair,
+                            departDate, arriveDate, payAmount,
                             cfg.User, cfg.Group)
-            AddFares(conn, cfg.CompanyCode, departure_airport, arrival_airport,
+            AddFares(conn, cfg.CompanyCode, departAirport, arriveAirport,
                      cfg.SellingClasses, cfg.User, cfg.Group)
-    elif dofaredel and departure_airport is not None \
-            and arrival_airport is not None and dt1 is not None \
-            and dt2 is not None:
+    elif dofaredel and departAirport != '' \
+            and arriveAirport != '' \
+            and departDate is not None \
+            and arriveDate is not None:
         DelFareSegments(conn, cfg.CompanyCode,
-                        departure_airport, arrival_airport, dt1, dt2)
+                        departAirport, arriveAirport, departDate, arriveDate)
     elif dofare:
         ReadFareCodes(conn)
         ReadFareSegments(conn)

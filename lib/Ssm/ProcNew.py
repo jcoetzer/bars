@@ -19,7 +19,7 @@ import datetime
 def CheckAircraftConfig(conn, acft_code):
     """Check aircraft configuration."""
     ConfigTableNo = None
-    caSql = "SELECT config_table_no FROM aircraft_config WHERE aircraft_code = '%s' LIMIT 1" % acft_code
+    caSql = "SELECT config_table FROM aircraft_config WHERE aircraft_code = '%s' LIMIT 1" % acft_code
     cur = conn.cursor()
     printlog(2, "%s" % caSql)
     cur.execute(caSql)
@@ -75,7 +75,7 @@ def FpLegsFromSsm(conn, flightNumber, schedPerdNo,
     fplSql = "INSERT INTO flight_perd_legs ( " \
         "flight_number, schedule_period_no, " \
         "departure_airport, arrival_airport, departure_time, arrival_time, " \
-        "date_change_ind, config_table_no, flight_path_code, " \
+        "date_change_ind, config_table, flight_path_code, " \
         "departure_terminal, arrival_terminal, leg_number, " \
         "update_user, update_group, update_time ) " \
         "VALUES ( '%s', %d, " \
@@ -173,7 +173,7 @@ def AddFlightPeriodLegs(conn,
     INSERT INTO flight_perd_legs (
         flight_number, schedule_period_no, departure_airport,
         arrival_airport, departure_time, arrival_time,
-        date_change_ind, config_table_no,
+        date_change_ind, config_table,
         flight_path_code, departure_terminal,
         arrival_terminal, leg_number,
         update_user, update_group, update_time )
@@ -228,7 +228,7 @@ def IsPeriodToBeExtended(conn, startDate, endDate, startDateMinusOne,
         else:
             alteredFrequency += "-"
         d += 1
-    print "Frequency %s" % alteredFrequency
+    print("Frequency %s" % alteredFrequency)
     spnSql = "SELECT fsd.schedule_period_no" \
         " FROM flight_periods fp,flight_segm_date fsd,flight_perd_legs fpl" \
         " GROUP BY fp.flight_number, fp.start_date,fp.end_date," \
@@ -237,7 +237,7 @@ def IsPeriodToBeExtended(conn, startDate, endDate, startDateMinusOne,
         "fsd.flight_date, fsd.flgt_sched_status," \
         "fsd.schedule_period_no, fp.via_cities," \
         "fpl.flight_number , fpl.schedule_period_no," \
-        "fpl.config_table_no" \
+        "fpl.config_table" \
         " HAVING fp.end_date = MAX ( fp.end_date )" \
         " AND end_date <= '%s'" \
         " AND '%s' NOT BETWEEN fp.start_date AND fp.end_date" \
@@ -252,7 +252,7 @@ def IsPeriodToBeExtended(conn, startDate, endDate, startDateMinusOne,
         " AND fp.end_date + 7 > '%s'" \
         " AND fp.flgt_sched_status IN ( 'A', 'S' )" \
         " AND fp.flight_number = '%s'" \
-        " AND fpl.config_table_no = '%s'" % (
+        " AND fpl.config_table = '%s'" % (
         startDateMinusOne,
         startDate, endDate,
         startDate, endDate,
@@ -278,7 +278,7 @@ def IsPeriodToBeExtended(conn, startDate, endDate, startDateMinusOne,
     for row in cur:
         spn = int(row[0])
 
-    print "Schedule period %d" % spn
+    print("Schedule period %d" % spn)
     cur.close()
     return spn
 
@@ -369,7 +369,7 @@ def AddFlightSharedLeg(conn, flight_number, flight_date, spn,
         dup_flight_date, flight_number, schedule_period_no, board_date, flight_date,
         departure_airport, arrival_airport, departure_time, arrival_time,
         date_change_ind, flight_path_code, departure_terminal, arrival_terminal,
-        config_table_no, aircraft_code, leg_number, update_user, update_time )
+        config_table, aircraft_code, leg_number, update_user, update_time )
      VALUES (
         '%s', '%s', '%s', '%s',
         '%s', '%s', %d, '%s', '%s', '%s',
@@ -617,7 +617,7 @@ def ProcNew(conn, ssm, userName, groupName):
                                  userName,
                                  groupName)
     if city_pair_id == 0:
-        print "City pair not OK"
+        print("City pair not OK")
         return -1
 
     printlog(1, "New flights from %s to %s"
@@ -625,10 +625,10 @@ def ProcNew(conn, ssm, userName, groupName):
 
     aircraft_config_id = CheckAircraftConfig(conn, ssm.aircraft_code)
     if aircraft_config_id is None:
-        print "Aircraft code %s is not configured" % ssm.aircraft_code
+        print("Aircraft code %s is not configured" % ssm.aircraft_code)
         return -1
 
-    print "Aircraft code %s config %s" % (ssm.aircraft_code, aircraft_config_id)
+    print("Aircraft code %s config %s" % (ssm.aircraft_code, aircraft_config_id))
 
     ssmdates = []
     cdate = ssm.start_date

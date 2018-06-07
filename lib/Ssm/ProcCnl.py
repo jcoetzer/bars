@@ -163,15 +163,15 @@ def ProcCnl(conn,
 
     flight_period_id, sdate, edate = CheckFlightPeriod(conn, ssm)
     if flight_period_id == 0:
-        print "Flight period for %s does not exist" % ssm.flight_number
+        printlog(0, "Flight period for %s does not exist" % ssm.flight_number)
         #return -1
 
     if sdate != ssm.start_date:
-        print "Start date from input %s does not match stored value %s" \
-            % (ssm.start_date, sdate)
+        printlog(0, "Start date from input %s does not match stored value %s"
+            % (ssm.start_date, sdate))
     elif edate != ssm.end_date:
-        print "End date from input %s does not match stored value %s" \
-            % (ssm.end_date, edate)
+        printlog(0, "End date from input %s does not match stored value %s"
+            % (ssm.end_date, edate))
     else:
         pass
 

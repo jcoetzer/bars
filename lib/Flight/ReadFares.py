@@ -7,8 +7,8 @@ from BarsLog import printlog
 def ReadCityPairs(conn, departure_airport=None, arrival_airport=None):
     """Read city pairs."""
     RcpSql = """
-        SELECT city_pair, departure_city, arrival_airport, pair_indicator, distance,
-        baggage_alownce, pair_rule_no, remarks
+        SELECT city_pair, departure_city, arrival_airport, pair_indicator,
+        distance, baggage_alownce, pair_rule_no, remarks
     FROM city_pair"""
     if departure_airport is not None and arrival_airport is not None:
         RcpSql += """
@@ -24,7 +24,7 @@ def ReadCityPairs(conn, departure_airport=None, arrival_airport=None):
     flights = []
     for row in cur:
         for item in row:
-            print item,
+            print(item, end=' ')
         print
 
     cur.close()
@@ -46,7 +46,7 @@ def ReadFareSegments(conn):
     flights = []
     for row in cur:
         for item in row:
-            print item,
+            print(item, end=' ')
         print
 
     cur.close()
@@ -70,7 +70,7 @@ def ReadFareCodes(conn):
     flights = []
     for row in cur:
         for item in row:
-            print item,
+            print(item, end=' ')
         print
 
     cur.close()

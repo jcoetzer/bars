@@ -126,7 +126,7 @@ def p_flight4(p):
 
 def p_flight_error(p):
     'flight : error'
-    print "Error in flight '%s'" % (p[1])
+    printlog(0, "Error in flight '%s'" % (p[1]))
 
 #def p_flight2(p):
     #'flight2 : FLTNUM fdatas EOL'
@@ -153,7 +153,7 @@ def p_equip2(p):
     add_equipment(p[2], p[3], p[7], p[5], p[6])
 
 def p_error_equip(p):
-    print "Syntax error in equip"
+    printlog(0, "Syntax error in equip")
 
 # --- leg ---
 
@@ -233,13 +233,13 @@ def YaccFile(fname):
         #print(result)
 
     except TypeError as e:
-        print "Parser failed : %s" % str(e)
+        printlog(0, "Parser failed : %s" % str(e))
 
     return 0
 
 
 def usage():
-    print "Help!"
+    print("Help!")
     sys.exit(1)
 
 

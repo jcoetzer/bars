@@ -52,8 +52,9 @@ PYTHONS = ./bin/FlightDetailsService.pyc \
 	./lib/BarsConfig.pyc \
 	./lib/DbConnect.pyc \
 	./lib/__init__.pyc \
-	./lib/BarsBanner.pyc \
-	./tmp/PaymentReminder.pyc
+	./lib/BarsBanner.pyc
+
+#	./tmp/PaymentReminder.pyc
 
 all: $(PYTHONS)
 
@@ -85,4 +86,4 @@ clean:
 	find $(BARSDIR)/ -name "*.pyc" -print -delete
 
 %.pyc: %.py
-	python -m compileall $*.py
+	python3 -m compileall $*.py
