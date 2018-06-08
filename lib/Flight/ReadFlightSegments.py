@@ -13,7 +13,7 @@ from ReadDateTime import ReadDate
 def ReadSegmentStatus(conn, flight_number, flight_date):
 
     print("Segment status for flight %s board date %s [segment_status]"
-        % (flight_number, flight_date.strftime("%Y-%m-%d")))
+          % (flight_number, flight_date.strftime("%Y-%m-%d")))
     RcSql = \
         "SELECT city_pair,selling_class,status_type,segm_status_code,leg_status_code,processing_flag" \
         " FROM segment_status" \
