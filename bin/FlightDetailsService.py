@@ -15,9 +15,10 @@ import psycopg2
 from BarsLog import printlog, set_verbose
 from ReadDateTime import ReadDate, DateRange
 
-from SsmDb import GetCityPair
-from FlightDetails import GetFlightDetails
+from Ssm.SsmDb import GetCityPair
+from Flight.FlightDetails import GetFlightDetails
 from DbConnect import OpenDb, CloseDb
+from BarsConfig import BarsConfig
 
 
 def usage():

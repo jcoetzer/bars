@@ -1,4 +1,4 @@
-#!/usr/bin/python -B
+# @ file ReadFlightPeriods.py
 """
 Read Flight Periods.
 """
@@ -46,10 +46,10 @@ def ReadFlightPeriods(conn, flight_number, schedule_period_no=None):
     print("Flight periods for flight %s [flight_periods]"
           % flight_number, end=' ')
     AdSql= \
-	    "SELECT flight_number,start_date,end_date,frequency_code,schedule_period_no,invt_end_date,control_branch,invt_control_flag," \
-	    " wait_lst_ctrl_flag,via_cities,flgt_sched_status,open_end_flag,scrutiny_flag,gen_flag_invt,update_user,update_group," \
-            " update_time" \
-	    " FROM flight_periods WHERE flight_number = '%s'" % flight_number
+        "SELECT flight_number,start_date,end_date,frequency_code,schedule_period_no,invt_end_date,control_branch,invt_control_flag," \
+        " wait_lst_ctrl_flag,via_cities,flgt_sched_status,open_end_flag,scrutiny_flag,gen_flag_invt,update_user,update_group," \
+        " update_time" \
+        " FROM flight_periods WHERE flight_number = '%s'" % flight_number
     if schedule_period_no is not None:
         print(", schedule period %d" % schedule_period_no, end=' ')
         AdSql += \
@@ -527,5 +527,3 @@ def ReadSchdChngAction(conn, flight_number, schedule_period_no=None,
         print("\tnot found")
 
     cur.close()
-
-

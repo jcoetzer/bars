@@ -1,5 +1,4 @@
 # @file SsmDb.py
-#
 """
 SSM data as stored in database.
 """

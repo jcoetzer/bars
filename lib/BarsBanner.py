@@ -245,4 +245,3 @@ def print_banner():
     global banners
     n = random.randint(0,len(banners)-1)
     print("%s" % banners[n])
-

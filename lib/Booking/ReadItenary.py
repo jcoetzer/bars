@@ -1,7 +1,6 @@
+# @file ReadItenary.py
 """
 Read itenary.
-
-@file ReadItenary.py
 """
 
 import sys
@@ -22,7 +21,7 @@ def ReadItenary(conn, booking_status, bookno, action_codes,
         "arrival_airport,itenary_stat_flag,reserve_status,itenary_type" \
         " FROM itenary" \
         " WHERE book_no=%d" \
-            % int(bookno)
+        % int(bookno)
     if booking_status == 'A' or booking_status == 'Y':
         itenSql += \
             " AND itenary_stat_flag='A' and itenary_type='R'"
@@ -30,8 +29,8 @@ def ReadItenary(conn, booking_status, bookno, action_codes,
             itenSql += \
                 " AND reserve_status[1,2] IN (%s)" % action_codes
     elif booking_status == 'X':
-        #itenSql += \
-            #" AND itenary_stat_flag!='A' and itenary_type='R'"
+        # itenSql += \
+            # " AND itenary_stat_flag!='A' and itenary_type='R'"
         pass
     elif booking_status == '*':
         pass
@@ -40,7 +39,7 @@ def ReadItenary(conn, booking_status, bookno, action_codes,
     if start_date is not None and end_date is not None:
         itenSql += \
             " AND flight_date>='%s' AND flight_date<='%s'" \
-                % (start_date, end_date)
+            % (start_date, end_date)
     if fnumber is not None and ('%' in fnumber or '_' in fnumber):
         itenSql += \
             " AND flight_number like '%s'" % fnumber

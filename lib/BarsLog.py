@@ -1,4 +1,7 @@
-# BarsLog.py
+# @file BarsLog.py
+"""
+Implement logging stuff.
+"""
 
 import sys
 

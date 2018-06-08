@@ -1,3 +1,4 @@
+# @file WriteFares.py
 """
 Add and delete fare related data.
 """
@@ -75,9 +76,9 @@ def DelFares(conn, company_code, depart_airport, arrive_airport):
     WHERE company_code='%s' AND fare_code='%s'""" \
     % (company_code, fare_code)
 
-    printlog(2, "%s" % AfSql)
+    printlog(2, "%s" % DfSql)
     cur = conn.cursor()
-    cur.execute(AfSql)
+    cur.execute(DfSql)
 
     printlog(2, "Deleted %d row(s)" % cur.rowcount)
 
@@ -121,8 +122,8 @@ def DelFareSegments(conn, company_code, depart_airport, arrive_airport,
                     dt1, dt2):
     """New fares."""
     fare_code = 'X' + company_code + depart_airport + arrive_airport
-    printlog(1, "Delete fare segment %s depart %s arrive %s value %d"
-             % (fare_code, depart_airport, arrive_airport, fare_value))
+    printlog(1, "Delete fare segment %s depart %s arrive %s"
+             % (fare_code, depart_airport, arrive_airport))
     DfSql = """DELETE FROM fare_segm
     WHERE company_code='%s' AND fare_code='%s'
     AND valid_from_date='%s' AND valid_to_date='%s'""" \
@@ -133,4 +134,3 @@ def DelFareSegments(conn, company_code, depart_airport, arrive_airport,
     cur.execute(DfSql)
 
     printlog(2, "Deleted %d row(s)" % cur.rowcount)
-

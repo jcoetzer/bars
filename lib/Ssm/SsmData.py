@@ -1,5 +1,7 @@
 # @file SsmData.py
-
+"""
+SSM data stuff.
+"""
 import re
 from BarsLog import printlog
 from ReadDateTime import ReadDate, ReadTime

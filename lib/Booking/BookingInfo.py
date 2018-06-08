@@ -1,4 +1,4 @@
- # @file BookingInfo.py
+# @file BookingInfo.py
 """
 Data for bookings.
 

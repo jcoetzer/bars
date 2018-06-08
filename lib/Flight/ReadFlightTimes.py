@@ -6,6 +6,7 @@ from BarsLog import set_verbose, get_verbose, printlog
 from ReadDateTime import ReadDate
 from Flight.FlightData import FlightData
 
+
 def ReadFlightTimes(conn, flight):
 
     print("Flight periods for flight %s date %s" %

@@ -1,5 +1,7 @@
 # @file SsmLex.py
-
+"""
+Lex and flex away.
+"""
 import ply.lex as lex
 from BarsLog import printlog, set_verbose
 

@@ -20,6 +20,7 @@ from BarsConfig import BarsConfig
 from BarsLog import set_verbose, printlog
 from ReadDateTime import ReadDate
 #from MangoBanner import print_banner
+from Booking.ReadSeatReservation import ReadSeatReservation
 #from ReadSeatReservation import ReadReserveSeats, ReadFlightDateLegInfo, \
                                 #ReadSeatReservation, \
                                 #CheckSeatReservation, ReadSeatDefinition, \
@@ -30,7 +31,8 @@ from ReadDateTime import ReadDate
                             #ReadFlightDateLegId, ReadFlightDateAllSeats, \
                             #ReadFlightDateLeg
 # from ReadFlightDateLegs import ReadFlightDateLegId
-from Flight.ReadFlights import ReadFlightSegmDates, ReadFlightSegmDate, ReadDeparture, \
+from Flight.ReadFlights import ReadFlightSegmDates, ReadFlightSegmDate, \
+                        ReadDeparture, \
                         ReadFlights, ReadFlightsDate, \
                         ReadFlightDateClassSeatMaps, ReadCodeShare, \
                         SetCodeShare, ReadFlightDeparture, \

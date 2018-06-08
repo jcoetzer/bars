@@ -726,8 +726,8 @@ def ReadFlightSegmDate(conn, flight_number, dts, ndays, reconcile_window):
     return n
 
 
-# TODO this looks broken
 def ReadFLightSeatMap(conn, flight):
+    """Read aircraft code."""
     seat_map_id = flight.seat_map_id
     print("Aircraft for seat map ID %d [seat_map]" % seat_map_id)
     FdSql = "select aircraft_code from seat_map where seat_map_id='%d'" \
@@ -736,6 +736,7 @@ def ReadFLightSeatMap(conn, flight):
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FdSql)
     n = 0
+    aircraft_code = None
     for row in cur:
         n += 1
         aircraft_code = row['aircraft_code']
@@ -743,4 +744,4 @@ def ReadFLightSeatMap(conn, flight):
     if n == 0:
         print("\tnot found")
 
-    return n, aircraft_desc
+    return n, aircraft_code

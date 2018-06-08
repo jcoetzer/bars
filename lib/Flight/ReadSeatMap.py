@@ -51,9 +51,8 @@ def ReadSeatMapConfiguration(conn, seat_map_id=None, config_table=None):
     return config_table
 
 
-# Read flight seat map from database
 def ReadFlightSeatMap(conn, flight_date_leg_id):
-
+    """Read flight seat map from database."""
     print("Flight seat map for flight date leg ID %d [flight_seat_map]"
           % flight_date_leg_id)
     SmcSql = \

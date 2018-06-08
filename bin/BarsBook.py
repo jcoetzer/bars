@@ -13,6 +13,7 @@ from datetime import date
 from datetime import time
 from datetime import datetime
 from datetime import timedelta
+from random import randrange
 import configparser
 
 from BarsLog import printlog, set_verbose
@@ -27,7 +28,8 @@ from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, \
      AddBookFares, AddBookFareSegments, AddBookFarePassengers, \
      AddBookFaresPayments, AddBookRequest, AddPayment, \
      GetPreBookingInfo, AddBookTimeLimit
-
+from Booking.ReadItenary import ReadItenary
+from Flight.ReadFlights import ReadDeparture
 from Flight.ReadFlights import ReadFlightDeparture
 from DbConnect import OpenDb, CloseDb
 from BarsConfig import BarsConfig
@@ -51,6 +53,16 @@ def usage(pn):
     print("Check:")
     print("\t%s --chk -B <BOOK>" % pn)
     sys.exit(1)
+
+
+def random_date(start, end):
+    """
+    Generate random datetime between two datetimes.
+    """
+    delta = end - start
+    int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
+    random_second = randrange(int_delta)
+    return start + timedelta(seconds=random_second)
 
 
 def GetAvail(conn, dt1, dt2, cityPairNo,

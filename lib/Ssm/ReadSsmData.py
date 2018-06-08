@@ -5,6 +5,7 @@ import psycopg2
 from BarsLog import printlog
 from Flight.ReadFlightPeriods import ReadFlightPeriods, ReadFlightPerdLegs
 from Flight.ReadFlights import CheckFlight
+from Ssm.ReadAircraftConfig import ReadAircraftConfig
 
 
 def ReadSsmFlightData(conn, flight, end_date):
@@ -251,8 +252,8 @@ def ReadSsmTim(conn, flight, sdate, edate, frequency_code):
 
 def GetFlightDataSsm(conn, flight, sdate, edate, frequency_code):
     """Flight schedule period bookings for SSM frequency."""
-    print("Flight %s schedule period %s bookings for SSM frequency %s"
-          % (flight.flight_number, schedPerdNo, frequency_code))
+    print("Flight %s bookings for SSM frequency %s"
+          % (flight.flight_number, frequency_code))
     FbSql = \
         """
         SELECT DISTINCT fpl.schedule_period_no spn, fpl.departure_airport da, fpl.arrival_airport aa, fp.start_date sd, fp.end_date ed, fpl.leg_number ln,
