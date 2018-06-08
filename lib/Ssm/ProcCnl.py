@@ -9,10 +9,10 @@ import ply.lex as lex
 import ply.yacc as yacc
 import datetime
 
-from SsmData import SsmData, read_ssm_data
+from Ssm.SsmData import SsmData, read_ssm_data
 from BarsLog import printlog, set_verbose
 from ReadDateTime import ReadDate, DateRange
-from SsmDb import CheckFlightPeriod, GetCityPair
+from Ssm.SsmDb import CheckFlightPeriod, GetCityPair
 
 
 def DeleteSellingClasses(conn,

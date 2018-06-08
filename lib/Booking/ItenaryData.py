@@ -1,4 +1,6 @@
-"""Itenary data."""
+"""
+Itenary data.
+"""
 
 
 import os
@@ -39,7 +41,7 @@ class ItenaryData(object):
         self.company_code = flight_number[0:2]
         self.flight_integer = int(flight_number[2:])
         self.board_dts = ReadDate(str(departure_date))
-        self.board_date_mdy = self.board_dts.strftime("%m/%d/%Y")
+        self.board_date_mdy = self.board_dts.strftime("%Y-%m-%d")
         self.board_date_iso = self.board_dts.strftime("%Y-%m-%d")
         self.class_code = class_code
         self.departure_airport = departure_airport.strip()

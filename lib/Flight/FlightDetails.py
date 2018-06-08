@@ -1,4 +1,6 @@
-# @file FlightDetails.py
+"""
+Read Flight Details.
+"""
 
 import psycopg2
 

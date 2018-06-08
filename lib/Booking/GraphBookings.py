@@ -1,4 +1,7 @@
 # @file GraphBookings.py
+"""
+Draw graph of bookings against time.
+"""
 
 import sys
 import operator
@@ -7,7 +10,9 @@ import psycopg2  # Informix DB module
 from datetime import datetime, timedelta, date
 from BarsLog import set_verbose, get_verbose, printlog
 
+
 def PrintScale(WIDTH):
+    "Print horizontal axis."
     #echo "      0         10        20        30        40        50        60        70        80"
     P=0
     Q=int(WIDTH/10)
@@ -17,7 +22,9 @@ def PrintScale(WIDTH):
         sys.stdout.write("        %2d" % (P*10))
     sys.stdout.write("\n")
 
+
 def PrintAxis(WIDTH):
+    "Print horizontal axis."
     #echo "      0         10        20        30        40        50        60        70        80"
     P=0
     Q=int(WIDTH/10)
@@ -29,15 +36,16 @@ def PrintAxis(WIDTH):
 
 
 def PrintGraph(bookings, dt1, dt2, ORIGIN, WIDTH):
+    "Print the graph."
 
     sys.stderr.write("\x1b[2J\x1b[H")
 
     if ORIGIN is not None:
-        print "Bookings from %s" % (ORIGIN),
+        print("Bookings from %s" % (ORIGIN), end=' ')
     else:
-        print "Bookings",
-    print "between %s and %s" % (dt1.strftime("%Y-%m-%d %H:%M:00"), dt2.strftime("%Y-%m-%d %H:%M:59"))
-    print
+        print("Bookings", end=' ')
+    print("between %s and %s" % (dt1.strftime("%Y-%m-%d %H:%M:00"), dt2.strftime("%Y-%m-%d %H:%M:59")))
+    print("")
 
     PrintScale(WIDTH)
     PrintAxis(WIDTH)
@@ -54,27 +62,27 @@ def PrintGraph(bookings, dt1, dt2, ORIGIN, WIDTH):
         ntotal+=nbookings
         stime = "%s:%s" % (btime[8:10], btime[10:12])
         if nbookings > WIDTH:
-            print "%s |%s[%d]" % (stime, "*"*WIDTH,nbookings )
+            print("%s |%s[%d]" % (stime, "*"*WIDTH,nbookings))
         else:
-            print "%s |%s" % (stime, "*"*nbookings)
+            print("%s |%s" % (stime, "*"*nbookings))
         dt2 -= timedelta(minutes=1)
 
     PrintAxis(WIDTH)
     PrintScale(WIDTH)
     Avg=float(ntotal/n)
-    print "\nTotal   : %d\t" % ntotal,
-    print "Average : %.1f/min\n" % Avg
+    print("\nTotal   : %d\t" % ntotal, end=' ')
+    print("Average : %.1f/min\n" % Avg)
 
 
 def InitGraphBookings(conn, dt1, dt2, ORIGIN=None, WIDTH=0):
-
+    """Gather data to initialize."""
     SQL = "SELECT update_time FROM book"
     SQL += " WHERE update_time>'%s' " % dt1.strftime("%Y/%m/%d/%H/%M/00")
     SQL += " AND update_time<'%s' " % dt2.strftime("%Y/%m/%d/%H/%M/59")
     if ORIGIN is not None:
         SQL += "and origin_address='%s'" % (ORIGIN)
     SQL += "order by update_time desc"
-    printlog("%s" % SQL, 2)
+    printlog(2, "%s" % SQL)
 
     printlog(SQL, 2)
     sys.stdout.flush()
@@ -101,13 +109,13 @@ def InitGraphBookings(conn, dt1, dt2, ORIGIN=None, WIDTH=0):
 
 
 def GraphBookings(conn, show_mins, dt1=None, dt2=None, ORIGIN=None, WIDTH=0):
-
+    """Draw the graph."""
     if WIDTH == 0:
         WIDTH=80
 
     if dt1 is not None and dt2 is not None:
         if dt2 <= dt1:
-            print "Invalid time range"
+            print("Invalid time range")
             return
         bookings = InitGraphBookings(conn, dt1, dt2, ORIGIN, WIDTH)
         PrintGraph(bookings, dt1, dt2, ORIGIN, WIDTH)
@@ -116,7 +124,7 @@ def GraphBookings(conn, show_mins, dt1=None, dt2=None, ORIGIN=None, WIDTH=0):
         dt1 = datetime.now() - timedelta(minutes=show_mins)
         dt2 = datetime.now() - timedelta(minutes=1)
     else:
-        print "No date/time or period provided for booking graph"
+        print("No date/time or period provided for booking graph")
         return
 
     bookings = InitGraphBookings(conn, dt1, dt2, ORIGIN, WIDTH)
@@ -152,5 +160,5 @@ def GraphBookings(conn, show_mins, dt1=None, dt2=None, ORIGIN=None, WIDTH=0):
             btime = dt1.strftime("%Y%m%d%H%M")
             bookings.pop(btime, None)
         except KeyboardInterrupt:
-            print "\nDone"
+            print("\nDone")
             break

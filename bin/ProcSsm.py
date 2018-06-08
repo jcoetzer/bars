@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # @file ProcSsmYacc.py
 #
@@ -29,7 +29,7 @@ from DbConnect import OpenDb, CloseDb
 
 
 def ProcData(conn, ssm, userName, groupName):
-
+    """Process SSM data."""
     rv = 0
     if ssm.action == 'NEW':
         rv = ProcNew(conn, ssm, userName, groupName)
@@ -43,6 +43,7 @@ def ProcData(conn, ssm, userName, groupName):
 
 
 def usage():
+    """TODO Help message."""
     print("Help!")
     sys.exit(1)
 

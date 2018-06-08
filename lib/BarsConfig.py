@@ -2,7 +2,8 @@
 BARS configuration file.
 """
 
-import ConfigParser
+import configparser
+
 
 class BarsConfig(object):
     """
@@ -32,7 +33,7 @@ class BarsConfig(object):
     def __init__(self, cfgfile):
         """Initialize this thing."""
 
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.readfp(open(cfgfile))
 
         self.dbname = config.get('Database', 'dbname')

@@ -1,9 +1,12 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # AvailService.py
 #
+"""
+Provide flight details.
+"""
 
-
+import os
 import sys
 import getopt
 

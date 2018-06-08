@@ -5,7 +5,7 @@ import sys
 import psycopg2
 import time
 from datetime import datetime, timedelta, date
-from FlightData import FlightData
+from Flight.FlightData import FlightData
 from BarsLog import printlog, get_verbose
 from ReadDateTime import ReadDate
 
@@ -19,8 +19,8 @@ def ReadSegmentStatus(conn, flight_number, flight_date):
         " FROM segment_status" \
         " WHERE flight_number='%s'" \
         " AND flight_date='%s'" \
-        % (flight_number, flight_date.strftime("%m/%d/%Y"))
-    printlog(RcSql, 2)
+        % (flight_number, flight_date.strftime("%Y-%m-%d"))
+    printlog(2, RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     for row in cur:

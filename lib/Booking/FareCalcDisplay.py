@@ -1,4 +1,7 @@
 # @file FareCalcDisplay.py
+"""
+Calculate and display fares.
+"""
 
 import psycopg2
 

@@ -4,7 +4,7 @@ import sys
 import psycopg2
 from BarsLog import set_verbose, get_verbose, printlog
 from ReadDateTime import ReadDate
-from FlightData import FlightData
+from Flight.FlightData import FlightData
 
 def ReadFlightTimes(conn, flight):
 
@@ -109,7 +109,7 @@ def ReadFlightDateLegTimes(conn, flight, flight_dates):
             " FROM flight_date_leg" \
             " WHERE flight_number = '%s'" \
             " AND flight_date = '%s'" \
-                % ( flight.flight_number, flight_date.strftime("%m/%d/%Y") )
+                % ( flight.flight_number, flight_date.strftime("%Y-%m-%d") )
         cur.execute(FtSql)
         flight_segm_dates = []
         for row in cur:
@@ -128,7 +128,7 @@ def ReadFlightSharedLegTimes(conn, flight, flight_dates):
             " FROM flight_shared_leg" \
             " WHERE ( flight_number = '%s' OR dup_flight_number = '%s' )" \
             " AND flight_date = '%s'" \
-                % ( flight.flight_number, flight.flight_number, flight_date.strftime("%m/%d/%Y") )
+                % ( flight.flight_number, flight.flight_number, flight_date.strftime("%Y-%m-%d") )
         cur.execute(FtSql)
         flight_segm_dates = []
         for row in cur:

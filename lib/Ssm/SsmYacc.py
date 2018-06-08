@@ -8,8 +8,8 @@ import sys
 import ply.lex as lex
 import ply.yacc as yacc
 
-from SsmLex import tokens
-from SsmData import SsmData, \
+from Ssm.SsmLex import tokens
+from Ssm.SsmData import SsmData, \
     set_action, \
     set_time_zone, \
     add_flight_number, \

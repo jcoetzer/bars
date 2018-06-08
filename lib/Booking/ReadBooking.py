@@ -1,4 +1,8 @@
-# @file ReadBooking.py
+"""
+Red data from booking tables.
+
+@file ReadBooking.py
+"""
 
 import os
 import sys

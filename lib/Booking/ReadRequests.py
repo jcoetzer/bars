@@ -1,4 +1,8 @@
-# @file ReadRequests.py
+"""
+Read requests and stuff.
+
+@file ReadRequests.py
+"""
 
 import sys
 import operator
@@ -33,7 +37,7 @@ def ReadRequestsPnl(conn, book_no, Company, DeprAirport, FlightDate,
         AND p.payment_type = 'BC'
         AND p.book_no = %d"
         AND p.document_date = '%s'""" \
-        % (book_no, FlightDate.strftime("%m/%d/%Y"))
+        % (book_no, FlightDate.strftime("%Y-%m-%d"))
     if DeprAirport is not None:
         ssrSql += \
             " AND p.document_no = '%s'" \

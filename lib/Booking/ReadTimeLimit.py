@@ -1,4 +1,8 @@
-# @file ReadTimeLimit.py
+"""
+Find time limit for booking.
+
+@file ReadTimeLimit.py
+"""
 
 import sys
 import operator

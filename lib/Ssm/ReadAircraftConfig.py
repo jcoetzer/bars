@@ -4,6 +4,7 @@ import sys
 import psycopg2
 from BarsLog import set_verbose, get_verbose, printlog
 from ReadDateTime import ReadDate
+from Ssm.AircraftData import AircraftData
 
 
 def ReadAircraftConfig(conn, aircraft_code, config_table,
@@ -20,7 +21,7 @@ def ReadAircraftConfig(conn, aircraft_code, config_table,
         print("config table %s" % config_table, end=' ')
         AcSql += \
             " WHERE aircraft_code='%s' AND config_table='%s'" \
-                % (aircraft_code, config_table)
+            % (aircraft_code, config_table)
     elif aircraft_code is not None:
         print("aircraft code %s" % aircraft_code, end=' ')
         AcSql += \
@@ -40,14 +41,16 @@ def ReadAircraftConfig(conn, aircraft_code, config_table,
     print("[aircraft_config]")
     printlog(2, AcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    #cur.execute("set isolation dirty read")
     cur.execute(AcSql)
     n = 0
     for row in cur:
         n += 1
-        print("\tconfig table %5s aircraft code %4s capacity %3d class %s company %s inventory %s user %s update %s" \
-            % (row['config_table'], row['aircraft_code'], row['seat_capacity'], row['selling_class'],
-               row['company_code'], row['gen_flag_invt'], row['update_user'], row['update_time']))
+        print("\tconfig table %5s aircraft code %4s capacity %3d class %s"
+              " company %s inventory %s user %s update %s"
+              % (row['config_table'], row['aircraft_code'],
+                 row['seat_capacity'], row['selling_class'],
+                 row['company_code'], row['gen_flag_invt'],
+                 row['update_user'], row['update_time']))
 
     if n == 0:
         print("\tnot found")
@@ -80,13 +83,14 @@ def WriteEquipmentConfig(conn, companyCode, aircraftCode, configTable,
 
 def ReadEquipmentConfig(conn, tailNumber):
     """Read equipment configuration)."""
-    RacSql = """
+    RecSql = """
         SELECT company_code, aircraft_code, config_table, tail_number,
             cabin_code, seat_capacity
         FROM equipment_config
         WHERE tail_number = '%s'""" % tailNumber
-    printlog(2, WecSql)
-    cur.execute(WecSql)
+    printlog(2, RecSql)
+    cur = conn.cursor()
+    cur.execute(RecSql)
 
     if cur.rowcount == 0:
         return None

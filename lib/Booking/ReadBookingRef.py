@@ -1,4 +1,8 @@
-# @file ReadBookingRef.py
+"""
+Read booking references.
+
+@file ReadBookingRef.py
+"""
 
 import sys
 import operator
@@ -7,7 +11,7 @@ import psycopg2
 from BarsLog import printlog
 
 def ReadBookNo(conn, bno):
-
+    """Read booking number."""
     if bno is None:
         return None
     locator = None
@@ -24,7 +28,7 @@ def ReadBookNo(conn, bno):
 
 
 def ReadLocator(conn, locator):
-
+    """Read locator."""
     if locator is None:
         return None
     bno = int(0)
@@ -41,7 +45,7 @@ def ReadLocator(conn, locator):
 
 
 def ReadBookSummaryHistory(conn, bno, bs_date=None):
-
+    """Read booking summary history."""
     bookSql = \
         "SELECT book_summary_history_rcd, sent_date_time FROM book_summary_history WHERE book_no=%d" \
             % bno
@@ -59,7 +63,7 @@ def ReadBookSummaryHistory(conn, bno, bs_date=None):
 
 
 def ReadBookSummary(conn, bno):
-
+    """Read booking summary."""
     bookSql = \
         "SELECT booking_summary_type_rcd FROM booking_summary WHERE booking_number=%d" \
             % bno

@@ -1,22 +1,23 @@
 # @file ReadBookSummary.py
+"""
+Query as used in BookingSummary.ec
+
+select
+      bs.booking_number,
+      bs.booking_date_time,
+      (select b.origin_address from book as b
+       where b.book_no = bs.booking_number) as origin_address,
+      bs.booking_summary_type_rcd,
+      bs.pax_name,
+      bs.sid_no
+from booking_summary as bs
+sid_no is for NoFlySelecteePassengerId (not used)
+"""
 
 import sys
 import operator
 import psycopg2  # Informix DB module
 from BarsLog import set_verbose, get_verbose, printlog
-
-# Query used in BookingSummary.ec:
-#
-# select
-#       bs.booking_number,
-#       bs.booking_date_time,
-#       (select b.origin_address from book as b
-#        where b.book_no = bs.booking_number) as origin_address,
-#       bs.booking_summary_type_rcd,
-#       bs.pax_name,
-#       bs.sid_no
-# from booking_summary as bs
-# sid_no is for NoFlySelecteePassengerId (not used)
 
 
 def ReadBookSummary(conn, book_no, report_code=None):
@@ -60,7 +61,7 @@ def ReadBookSummary(conn, book_no, report_code=None):
 
 
 def ReadBookSummaryHistory(conn, book_no, hist_code=None, email_date=None):
-    '''
+    """
     Check if there are any pending emails
 
     @param conn             database connection
@@ -69,7 +70,7 @@ def ReadBookSummaryHistory(conn, book_no, hist_code=None, email_date=None):
     @param email_date       cutoff date, usually 24 hours ago
 
     @return number of entries found
-    '''
+    """
     printlog(2, "Find book summary history")
     bk_summ = \
         "SELECT book_no,book_summary_history_rcd,sent_date_time" \

@@ -1,5 +1,8 @@
-# @file PricingData.py
+"""
+Classes for pricing data.
 
+Pricing Data stuff.
+"""
 
 import os
 import sys

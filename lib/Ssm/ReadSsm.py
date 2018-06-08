@@ -6,7 +6,7 @@ import getopt
 from BarsLog import printlog, set_verbose
 
 import ply.lex as lex
-from SsmLex import *
+from Ssm.SsmLex import *
 
 
 #import SsmLex

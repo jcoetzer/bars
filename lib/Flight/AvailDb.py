@@ -1,4 +1,8 @@
-from FlightData import FlightData
+"""
+Availability queries.
+"""
+
+from Flight.FlightData import FlightData
 from BarsLog import printlog
 
 def get_selling_conf(conn, aCompanyCode):

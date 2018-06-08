@@ -1,4 +1,6 @@
-
+"""
+Read fares and stuff.
+"""
 import psycopg2
 
 from BarsLog import printlog

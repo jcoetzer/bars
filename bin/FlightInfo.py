@@ -1,9 +1,12 @@
-#!/usr/bin/python -B
+#!/usr/bin/python3 -B
 #
 # Python won't try to write .pyc or .pyo files on the import of source modules
 #
 # @file FlightInfo.py
 #
+"""
+Provide flight information.
+"""
 
 import os
 import sys

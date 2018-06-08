@@ -1,5 +1,8 @@
-# @file ReadItenary.py
+"""
+Read itenary.
 
+@file ReadItenary.py
+"""
 
 import sys
 import operator

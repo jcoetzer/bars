@@ -1,8 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # BarsBook.py
 #
-"""Main for booking."""
+"""
+Main for booking.
+"""
 
 import os
 import sys
@@ -11,7 +13,7 @@ from datetime import date
 from datetime import time
 from datetime import datetime
 from datetime import timedelta
-import ConfigParser
+import configparser
 
 from BarsLog import printlog, set_verbose
 from ReadDateTime import ReadDate

@@ -1,9 +1,11 @@
-
+"""
+Check flight date leg.
+"""
 import sys
 import psycopg2
 from BarsLog import set_verbose, get_verbose, printlog
 from ReadDateTime import ReadDate
-from FlightData import FlightData
+from Flight.FlightData import FlightData
 
 
 def ReadFlightDateLegId(conn, fli):

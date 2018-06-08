@@ -1,16 +1,17 @@
-# @file ReadFlightLegs.py
+"""
+Read Flight Legs.
+"""
 
 
 import sys
 import psycopg2
 from BarsLog import set_verbose, get_verbose, printlog
 from ReadDateTime import ReadDate
-from FlightData import FlightData
+from Flight.FlightData import FlightData
 
 
-# Check flight date leg
 def ReadFlightDateLegs(conn, flight_number, flight_date):
-
+    """Check flight date legs."""
     flight_date_leg_ids = []
     print("Flight date legs for flight %s board %s [flight_date_leg]"
           % (flight_number, flight_date))
@@ -18,8 +19,8 @@ def ReadFlightDateLegs(conn, flight_number, flight_date):
         "SELECT flight_date_leg_id,trim(flight_number) fn,board_date,departure_time," \
         " departure_airport,arrival_airport,leg_number,update_user,update_time" \
         " FROM flight_date_leg WHERE flight_number = '%s' AND board_date = '%s'"  \
-        % (flight_number, flight_date.strftime("%m/%d/%Y"))
-    printlog(RcSql, 2)
+        % (flight_number, flight_date.strftime("%Y-%m-%d"))
+    printlog(2, RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
@@ -40,7 +41,7 @@ def ReadFlightDateLegs(conn, flight_number, flight_date):
 
 
 def ReadFlightSharedLeg(conn, flight_number, dts):
-
+    """Flight shared legs."""
     print("Flight shared legs for flight %s board %s [flight_shared_leg]"
           % (flight_number, dts.strftime("%Y-%m-%d")))
     FslSql = \
@@ -49,8 +50,8 @@ def ReadFlightSharedLeg(conn, flight_number, dts):
         "update_user,update_time" \
         " FROM flight_shared_leg" \
         " WHERE flight_number='%s' AND board_date='%s'" \
-        % (flight_number, dts.strftime("%m/%d/%Y"))
-    printlog(FslSql, 2)
+        % (flight_number, dts.strftime("%Y-%m-%d"))
+    printlog(2, FslSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(FslSql)
@@ -82,9 +83,8 @@ def ReadFlightSharedLeg(conn, flight_number, dts):
     return aircraft_codes, config_table_nos
 
 
-# Check test period leg
 def ReadtestPeriodLegs(conn, flight_number, schedule_period_no):
-
+    """Check test period legs."""
     print("<TEST> Period legs for flight %s, schedule period %d [test_perd_legs]"
         % (flight_number, schedule_period_no))
     RcSql = \
@@ -93,7 +93,7 @@ def ReadtestPeriodLegs(conn, flight_number, schedule_period_no):
         " FROM test_perd_legs" \
         " WHERE flight_number='%s' AND schedule_period_no=%d" \
         % (flight_number, schedule_period_no)
-    printlog(RcSql, 2)
+    printlog(2, RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(RcSql)
@@ -112,9 +112,8 @@ def ReadtestPeriodLegs(conn, flight_number, schedule_period_no):
     return
 
 
-# Read table asr_reconcile_history
 def ReadAsrReconcileHistory(conn, flight_date_leg_id):
-
+    """Read table asr_reconcile_history."""
     print("ASR reconcile history for flight date leg ID %d [asr_reconcile_history]" \
         % flight_date_leg_id)
 
@@ -122,7 +121,7 @@ def ReadAsrReconcileHistory(conn, flight_date_leg_id):
         "SELECT action_id,action_detail,update_user,update_time" \
         " FROM asr_reconcile_history" \
         " WHERE flight_date_leg_id=%d" % flight_date_leg_id
-    printlog(RcSql, 2)
+    printlog(2, RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(RcSql)

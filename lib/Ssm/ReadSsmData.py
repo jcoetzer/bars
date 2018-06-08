@@ -30,9 +30,9 @@ def ReadSsmFlightData(conn, flight, end_date):
     if len(flight.arrival_airport):
         FbSql += " AND fpl.arrival_airport='%s'" % flight.arrival_airport
 
-    if end_date.strftime("%m/%d/%Y") != flight.board_date_mdy:
+    if end_date.strftime("%Y-%m-%d") != flight.board_date_mdy:
         FbSql += " AND fsd.flight_date BETWEEN '%s' AND '%s'" \
-            % (flight.board_date_mdy, end_date.strftime("%m/%d/%Y"))
+            % (flight.board_date_mdy, end_date.strftime("%Y-%m-%d"))
     else:
         FbSql += " AND fsd.flight_date='%s'" % flight.board_date_mdy
 
@@ -228,7 +228,7 @@ def ReadSsmTim(conn, flight, sdate, edate, frequency_code):
         " AND ac.aircraft_code = fsd.aircraft_code" \
         " AND ac.config_table = fpl.config_table" \
         % (flight.flight_number, flight.departure_airport, flight.arrival_airport,
-           sdate.strftime("%m/%d/%Y"), edate.strftime("%m/%d/%Y"))
+           sdate.strftime("%Y-%m-%d"), edate.strftime("%Y-%m-%d"))
     if frequency_code is not None:
         FbSql += \
             " AND fp.frequency_code LIKE '%s'" % frequency_code.replace("-", "_")
@@ -277,7 +277,7 @@ def GetFlightDataSsm(conn, flight, sdate, edate, frequency_code):
         AND fp.frequency_code LIKE '____5__'
         ORDER BY fp.start_date, fpl.schedule_period_no, fpl.leg_number
         """ \
-            % (flight.flight_number, sdate.strftime("%m/%d/%Y"), edate.strftime("%m/%d/%Y"))
+            % (flight.flight_number, sdate.strftime("%Y-%m-%d"), edate.strftime("%Y-%m-%d"))
     printlog(2, FbSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FbSql)

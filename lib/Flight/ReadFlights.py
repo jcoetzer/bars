@@ -5,7 +5,7 @@ import psycopg2
 import psycopg2.extras
 from BarsLog import set_verbose, get_verbose, printlog
 from ReadDateTime import ReadDate
-from FlightData import FlightData
+from Flight.FlightData import FlightData
 
 
 def GetFlightDataSsm(conn, flight_number, fd1, fd2, freq=None):
@@ -47,7 +47,7 @@ def GetFlightDataSsm(conn, flight_number, fd1, fd2, freq=None):
         " AND fsd.segment_number=fps.segment_number" \
         " AND fp.frequency_code LIKE '%s'" \
         " ORDER BY fp.start_date, fpl.schedule_period_no, fpl.leg_number" \
-        % (flight_number, fd1.strftime("%m/%d/%Y"), fd2.strftime("%m/%d/%Y"), freq)
+        % (flight_number, fd1.strftime("%Y-%m-%d"), fd2.strftime("%Y-%m-%d"), freq)
     printlog(2, RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
@@ -59,30 +59,30 @@ def GetFlightDataSsm(conn, flight_number, fd1, fd2, freq=None):
         n += 1
 
     if n == 0:
-        print "\tnot found"
+        print("\tnot found")
 
 
 def ReadFlightInformation(conn, flight_number, flight_date):
 
-    print "Flight information for flight %s board %s [flight_information]" \
-        % (flight_number, flight_date.strftime("%Y-%m-%d"))
+    print("Flight information for flight %s board %s [flight_information]" \
+        % (flight_number, flight_date.strftime("%Y-%m-%d")))
     RcSql = \
         "SELECT departure_airport,arrival_airport,remarks,update_user" \
         " FROM flight_information" \
         " WHERE flight_number = '%s'" \
         " AND board_date = '%s'" \
-            % (flight_number, flight_date.strftime("%m/%d/%Y"))
+            % (flight_number, flight_date.strftime("%Y-%m-%d"))
     printlog(2, RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
     for row in cur:
-        print "\tdepart %s arrive %s remark '%s'" \
-            % (row['departure_airport'], row['arrival_airport'], row['remarks'])
+        print("\tdepart %s arrive %s remark '%s'" \
+            % (row['departure_airport'], row['arrival_airport'], row['remarks']))
         n += 1
 
     if n == 0:
-        print "\tnot found"
+        print("\tnot found")
 
     return
 
@@ -103,7 +103,6 @@ def ReadCodeShare(conn, flight_number, board_date_mdy):
     cs = None
     for row in cur:
         if flight_number != row['flight_number'] :
-            #print " %6s" % row['flight_number'],
             cs = row['flight_number']
         if flight_number != row['dup_flight_number'] :
             cs = row['dup_flight_number'],
@@ -114,8 +113,8 @@ def ReadCodeShare(conn, flight_number, board_date_mdy):
 def SetCodeShare(conn, flight):
 
     # flight.display(False)
-    #print "Codeshares for flight %6s board %s:" % (flight.flight_number, flight.board_date_iso),
-    # print " codeshare : ",
+    #print("Codeshares for flight %6s board %s:" % (flight.flight_number, flight.board_date_iso),
+    # print(" codeshare : ",
     RcSql = \
         "SELECT flight_number, dup_flight_number" \
         " FROM flight_shared_leg fsl" \
@@ -158,17 +157,17 @@ def ReadFlightDateClassSeatMaps(conn, flight):
         "  AND fdl.departure_airport = '%s'" \
         "  AND fdl.arrival_airport = '%s'" \
         "  AND smc.selling_class = '%s'" \
-        % (flight_number, flight_date.strftime("%m/%d/%Y"), departureAirport, arrivalAirport, classCode)
+        % (flight_number, flight_date.strftime("%Y-%m-%d"), departureAirport, arrivalAirport, classCode)
     printlog(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
-    print "Flight %6s on %10s from %3s to %3s : " % (flight_number, flight_date.strftime("%Y-%m-%d"), departureAirport, arrivalAirport),
+    print("Flight %6s on %10s from %3s to %3s : " % (flight_number, flight_date.strftime("%Y-%m-%d"), departureAirport, arrivalAirport), end=' ')
     n = 0
     for row in cur:
         n += 1
-        if n > 1: print "\n       %6s    %10s      %3s    %3s   " % ('', '', '', ''),
-        print "seat map %s (%s)" % (row['smid'], row['desc']),
-    if n == 0: print "seat map not found",
+        if n > 1: print("\n       %6s    %10s      %3s    %3s   " % ('', '', '', ''), end=' ')
+        print("seat map %s (%s)" % (row['smid'], row['desc']), end=' ')
+    if n == 0: print("seat map not found", end=' ')
     print
 
 
@@ -180,21 +179,21 @@ def CheckFlightDateClassSeatMaps(conn, flight):
     departureAirport = flight.departure_airport
     arrivalAirport   = flight.arrival_airport
 
-    print "Flight %6s on %10s from %3s to %3s : " \
+    print("Flight %6s on %10s from %3s to %3s : " \
         % (flight_number, flight_date.strftime("%Y-%m-%d"), departureAirport,
-           arrivalAirport)
+           arrivalAirport))
     RcSql = \
         "SELECT flight_date_leg_id FROM flight_date_leg" \
         " WHERE flight_number = '%s'" \
         "  AND board_date = '%s'" \
-            % (flight_number, flight_date.strftime("%m/%d/%Y"))
+            % (flight_number, flight_date.strftime("%Y-%m-%d"))
     printlog(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
     for row in cur:
         flight_date_leg_id = int(row['flight_date_leg_id'])
-        print "Flight leg ID %d" % flight_date_leg_id
+        print("Flight leg ID %d" % flight_date_leg_id)
 
         # Read flight_seat_map
         RcSql2 = \
@@ -207,7 +206,7 @@ def CheckFlightDateClassSeatMaps(conn, flight):
         n = 0
         for row2 in cur2:
             seat_map_id = int(row2['smi'])
-            print "\t Seat map ID %d" % (seat_map_id)
+            print("\t Seat map ID %d" % (seat_map_id))
             #"SELECT sm.seat_map_id smid, sm.description desc, sm.image_url_path url, sm.image_width iw, sm.image_height ih," \
             #"  sm.block_image bimg, sm.reserve_image rimg, sm.vacant_image vimg, sm.unavailable_image uimg, " \
             #"  sm.seat_width smw, sm.seat_height smh" \
@@ -220,7 +219,7 @@ def CheckFlightDateClassSeatMaps(conn, flight):
             #"  AND fdl.departure_airport = '%s'" \
             #"  AND fdl.arrival_airport = '%s'" \
             #"  AND smc.selling_class = '%s'" \
-            #% (flight_number, flight_date.strftime("%m/%d/%Y"), departureAirport, arrivalAirport, classCode)
+            #% (flight_number, flight_date.strftime("%Y-%m-%d"), departureAirport, arrivalAirport, classCode)
 
         # Read seat_map
         RcSql2 = \
@@ -231,7 +230,7 @@ def CheckFlightDateClassSeatMaps(conn, flight):
         cur2 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur2.execute(RcSql2)
         for row2 in cur2:
-            print "\t Description '%s'" % row2['description']
+            print("\t Description '%s'" % row2['description'])
 
         # Read seat_map_class
         RcSql2 = \
@@ -242,11 +241,11 @@ def CheckFlightDateClassSeatMaps(conn, flight):
         cur2 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur2.execute(RcSql2)
         for row2 in cur2:
-            print "\t Class '%s'" % row2['selling_class']
+            print("\t Class '%s'" % row2['selling_class'])
         n += 1
 
     if n == 0:
-        print "Seat map not found"
+        print("Seat map not found")
     print
 
 
@@ -255,7 +254,7 @@ def ReadDeparture(conn, flight_number, flight_date, delim=' '):
     RcSql = \
         "select departure_airport,arrival_airport, city_pair from flight_segm_date" \
         " where flight_number='%s' and flight_date='%s'" \
-        % (flight_number, flight_date.strftime("%m/%d/%Y"))
+        % (flight_number, flight_date.strftime("%Y-%m-%d"))
     printlog(2, RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
@@ -287,7 +286,7 @@ def ReadFlightDeparture(conn, class_code, flight_number, flight_date):
             flgt_sched_status,schedule_period_no
         FROM flight_segm_date
         WHERE flight_number='%s' AND flight_date='%s'""" \
-        % (flight_number, flight_date.strftime("%m/%d/%Y"))
+        % (flight_number, flight_date.strftime("%Y-%m-%d"))
     printlog(2, RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
@@ -322,7 +321,7 @@ def ReadDepartArrive(conn, flight_number, flight_date, delim=' '):
         "SELECT departure_airport,arrival_airport" \
         " FROM flight_segm_date" \
         " WHERE flight_number='%s' AND flight_date='%s'" \
-        % (flight_number, flight_date.strftime("%m/%d/%Y"))
+        % (flight_number, flight_date.strftime("%Y-%m-%d"))
     printlog(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
@@ -339,12 +338,12 @@ def ReadDepartArrive(conn, flight_number, flight_date, delim=' '):
     return rval
 
 
-def GetFlights(conn, dt1, departure_airport, arrival_airport, company_code = 'ZZ'):    
+def GetFlights(conn, dt1, departure_airport, arrival_airport, company_code = 'ZZ'):
     flights = []
 
     RcSql = \
         "SELECT flight_number FROM flight_segm_date WHERE flight_date='%s' " % \
-        dt1.strftime("%m/%d/%Y")
+        dt1.strftime("%Y-%m-%d")
     if departure_airport is not None:
         RcSql += " and departure_airport='%s'" % departure_airport
     if arrival_airport is not None:
@@ -384,8 +383,8 @@ def checkForRecentUpdate(conn, flight_number, flight_date, departureAirport, arr
 
 def get_special_service_request_inventory(conn, flight_number, flight_date, city_pair):
 
-    print "SSR inventory for flight %s date %s city pair %s [special_service_request_inventory]" \
-        % (flight_number, flight_date, city_pair)
+    print("SSR inventory for flight %s date %s city pair %s [special_service_request_inventory]" \
+        % (flight_number, flight_date, city_pair))
     IsegSql = \
         "SELECT book_no, rqst_code" \
         " FROM special_service_request_inventory" \
@@ -397,9 +396,9 @@ def get_special_service_request_inventory(conn, flight_number, flight_date, city
     n = 0
     for row in cur:
         n += 1
-        print "\t book %s request %s" % (row['booking_no'], row['rqst_code'])
+        print("\t book %s request %s" % (row['booking_no'], row['rqst_code']))
     if n == 0:
-        print "\tnot found"
+        print("\tnot found")
 
 
 
@@ -420,7 +419,7 @@ def get_inventry_segment_class(conn, flight_number, flight_date, class_code):
     Find all legs and segments for the selling class.
     """
 
-    print "Inventory segment class %s for flight %s date %s [inventry_segment]" % (class_code, flight_number, flight_date)
+    print("Inventory segment class %s for flight %s date %s [inventry_segment]" % (class_code, flight_number, flight_date))
     IsegSql = \
         "SELECT segment_number, segm_sngl_sold, segm_group_sold, segm_nrev_sold" \
         " FROM inventry_segment" \
@@ -432,10 +431,10 @@ def get_inventry_segment_class(conn, flight_number, flight_date, class_code):
     n = 0
     for row in cur:
         n += 1
-        print "\tsegment %s sngl %s grup %s nrev %s" \
-            % (row['segment_number'], row['segm_sngl_sold'], row['segm_group_sold'], row['segm_nrev_sold'])
+        print("\tsegment %s sngl %s grup %s nrev %s" \
+            % (row['segment_number'], row['segm_sngl_sold'], row['segm_group_sold'], row['segm_nrev_sold']))
     if n == 0:
-        print "\tnot found"
+        print("\tnot found")
 
 
 def get_inventry_segment(conn, flight_number, flight_date, reconcile_window):
@@ -443,7 +442,7 @@ def get_inventry_segment(conn, flight_number, flight_date, reconcile_window):
     Find all the legs and segments for the flight.
     """
 
-    print "Inventory segment for flight %s date %s [inventry_segment]" % (flight_number, flight_date)
+    print("Inventory segment for flight %s date %s [inventry_segment]" % (flight_number, flight_date))
 
     IsegSql = \
         "SELECT selling_class, leg_number, segment_number, departure_city, arrival_city" \
@@ -457,11 +456,11 @@ def get_inventry_segment(conn, flight_number, flight_date, reconcile_window):
     n = 0
     for row in cur:
         n += 1
-        print "\tclass %s leg %s segment %s depart %s arrive %s" \
-            % (row['selling_class'], row['leg_number'], row['segment_number'], row['departure_city'], row['arrival_city'])
+        print("\tclass %s leg %s segment %s depart %s arrive %s" \
+            % (row['selling_class'], row['leg_number'], row['segment_number'], row['departure_city'], row['arrival_city']))
         get_inventry_segment_class(conn, flight_number, flight_date, row['selling_class'])
     if n == 0:
-        print "\tnot found"
+        print("\tnot found")
 
 
 def nett_sold_reconcile(conn):
@@ -484,11 +483,11 @@ def ReadFlights(conn, flight_number, dt1, dt2, departure_airport, arrival_airpor
             (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d")))
         FsegSql += \
             " AND flight_date BETWEEN '%s' AND '%s'" \
-                % (dt1.strftime("%m/%d/%Y"), dt2.strftime("%m/%d/%Y"))
+                % (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d"))
     elif dt1 is not None:
         printlog(1, "Read flights for date %s [flight_segm_date]" % dt1.strftime("%Y-%m-%d"))
         FsegSql += \
-            " AND flight_date = '%s'" % dt1.strftime("%m/%d/%Y")
+            " AND flight_date = '%s'" % dt1.strftime("%Y-%m-%d")
     if departure_airport is not None and arrival_airport is not None:
         FsegSql += \
             " AND departure_airport='%s' AND arrival_airport='%s'" \
@@ -525,7 +524,7 @@ def ReadFlights(conn, flight_number, dt1, dt2, departure_airport, arrival_airpor
 def ReadFlight(conn, flight_number, dts, class_code='Y'):
     """Read flight."""
     printlog(1, "Read flight %s for date %s [flight_segm_date]" % (flight_number, dts.strftime("%Y-%m-%d")))
-    fdate=dts.strftime("%m/%d/%Y")
+    fdate=dts.strftime("%Y-%m-%d")
     FsegSql=\
         "SELECT flight_number,flight_date,departure_airport,arrival_airport," \
         "city_pair, departure_time, arrival_time, aircraft_code," \
@@ -564,8 +563,8 @@ def ReadFlight(conn, flight_number, dts, class_code='Y'):
 
 def CheckFlight(conn, flight_number, dts, class_code='Y'):
     """Flight segment dates."""
-    print "Flight segment dates for flight %s date %s [flight_segm_date]" % (flight_number, dts.strftime("%Y-%m-%d"))
-    fdate=dts.strftime("%m/%d/%Y")
+    print("Flight segment dates for flight %s date %s [flight_segm_date]" % (flight_number, dts.strftime("%Y-%m-%d")))
+    fdate=dts.strftime("%Y-%m-%d")
     FsegSql=\
         "SELECT flight_number,flight_date,departure_airport,arrival_airport," \
         "city_pair, departure_time, arrival_time, aircraft_code," \
@@ -581,11 +580,11 @@ def CheckFlight(conn, flight_number, dts, class_code='Y'):
     cur.execute(FsegSql)
     n = 0
     for row in cur:
-        print "\tdepart %s %s arrive %s %s city pair %3d schedule period %d aircraft %s status %s" \
+        print("\tdepart %s %s arrive %s %s city pair %3d schedule period %d aircraft %s status %s" \
             % (row['departure_airport'], str(row['departure_time']),
                row['arrival_airport'], str(row['arrival_time']),
                int(row['city_pair']), int(row['schedule_period_no']),
-               row['aircraft_code'], str(row['flgt_sched_status'] or '?'))
+               row['aircraft_code'], str(row['flgt_sched_status'] or '?')))
         n += 1
 
     printlog(1, "Found %d flights for date %s" % (n, dts.strftime("%Y-%m-%d")))
@@ -596,7 +595,7 @@ def ReadFlightsDate(conn, dts, ndays, departure_airport, arrival_airport, code_s
     """Flights for date."""
     printlog(1, "Flights for date %s [flight_segm_date]" % dts.strftime("%Y-%m-%d"))
     if code_share: printlog(1, "With codeshare")
-    fdate=dts.strftime("%m/%d/%Y")
+    fdate=dts.strftime("%Y-%m-%d")
     FsegSql=\
         "SELECT DISTINCT flight_number, flight_date, departure_airport, arrival_airport, city_pair, departure_time, arrival_time, " \
         "aircraft_code, schedule_period_no" \
@@ -637,7 +636,7 @@ def ReadFlightsDate(conn, dts, ndays, departure_airport, arrival_airport, code_s
 def ReadFlightsDateLeg(conn, dts, ndays, departure_airport, arrival_airport, class_code='Y', company_code='ZZ'):
     """Flights for date."""
     printlog(1, "Flights for date %s [flight_segm_date]" % dts.strftime("%Y-%m-%d"), 1)
-    fdate=dts.strftime("%m/%d/%Y")
+    fdate=dts.strftime("%Y-%m-%d")
     FsegSql = \
         "SELECT trim(flight_number) fn, flight_date, board_date, departure_time, departure_airport, arrival_airport, leg_number, schedule_period_no" \
         " FROM flight_date_leg" \
@@ -673,8 +672,8 @@ def ReadFlightsDateLeg(conn, dts, ndays, departure_airport, arrival_airport, cla
 
 def ReadFlightSegmDates(conn, dts, ndays, reconcile_window, company_code='ZZ'):
 
-    fdate=dts.strftime("%m/%d/%Y")
-    print "Flight segment dates %s days %d reconcile %s [flight_segm_date]" % (fdate, ndays, reconcile_window)
+    fdate=dts.strftime("%Y-%m-%d")
+    print("Flight segment dates %s days %d reconcile %s [flight_segm_date]" % (fdate, ndays, reconcile_window))
     FsegSql=\
         "SELECT DISTINCT flight_number, flight_date, departure_airport, arrival_airport, city_pair" \
         " FROM flight_segm_date" \
@@ -689,19 +688,19 @@ def ReadFlightSegmDates(conn, dts, ndays, reconcile_window, company_code='ZZ'):
     for row in cur:
         n += 1
         flight_number = row['flight_number']
-        print "%-6s %s %s %s %3d" % (row['flight_number'], row['flight_date'], row['departure_airport'], row['arrival_airport'], int(row['city_pair']))
-        fdate = row['flight_date'].strftime("%m/%d/%Y")
+        print("%-6s %s %s %s %3d" % (row['flight_number'], row['flight_date'], row['departure_airport'], row['arrival_airport'], int(row['city_pair'])))
+        fdate = row['flight_date'].strftime("%Y-%m-%d")
         get_inventry_segment(conn, row['flight_number'], fdate, reconcile_window)
         get_special_service_request_inventory(conn, flight_number, fdate, row['city_pair'])
     if n == 0:
-        print "\tnot found"
+        print("\tnot found")
 
     return n
 
 
 def ReadFlightSegmDate(conn, flight_number, dts, ndays, reconcile_window):
-    fdate=dts.strftime("%m/%d/%Y")
-    print "Flight segment dates %s days %d reconcile %s [flight_segm_date]" % (fdate, ndays, reconcile_window)
+    fdate=dts.strftime("%Y-%m-%d")
+    print("Flight segment dates %s days %d reconcile %s [flight_segm_date]" % (fdate, ndays, reconcile_window))
     FsegSql=\
         "SELECT flight_number, flight_date, departure_airport, arrival_airport, city_pair, flgt_sched_status" \
         " FROM flight_segm_date" \
@@ -715,14 +714,14 @@ def ReadFlightSegmDate(conn, flight_number, dts, ndays, reconcile_window):
     n = 0
     for row in cur:
         n += 1
-        print "\tflight %-6s date %s depart %s arrive %s city pair %3d status %s" \
+        print("\tflight %-6s date %s depart %s arrive %s city pair %3d status %s" \
             % (row['flight_number'], row['flight_date'], row['departure_airport'], row['arrival_airport'], int(row['city_pair']),
-               row['flgt_sched_status'])
-        fdate = row['flight_date'].strftime("%m/%d/%Y")
+               row['flgt_sched_status']))
+        fdate = row['flight_date'].strftime("%Y-%m-%d")
         get_inventry_segment(conn, row['flight_number'], fdate, reconcile_window)
         get_special_service_request_inventory(conn, flight_number, fdate, row['city_pair'])
     if n == 0:
-        print "\tnot found"
+        print("\tnot found")
 
     return n
 
@@ -730,7 +729,7 @@ def ReadFlightSegmDate(conn, flight_number, dts, ndays, reconcile_window):
 # TODO this looks broken
 def ReadFLightSeatMap(conn, flight):
     seat_map_id = flight.seat_map_id
-    print "Aircraft for seat map ID %d [seat_map]" % seat_map_id
+    print("Aircraft for seat map ID %d [seat_map]" % seat_map_id)
     FdSql = "select aircraft_code from seat_map where seat_map_id='%d'" \
         % (seat_map_id)
     printlog(FdSql)
@@ -740,8 +739,8 @@ def ReadFLightSeatMap(conn, flight):
     for row in cur:
         n += 1
         aircraft_code = row['aircraft_code']
-        print "\taircraft %s" % aircraft_code
+        print("\taircraft %s" % aircraft_code)
     if n == 0:
-        print "\tnot found"
+        print("\tnot found")
 
     return n, aircraft_desc

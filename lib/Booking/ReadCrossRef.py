@@ -1,5 +1,8 @@
-# @file ReadCrossRef.py
-#
+"""
+Read references.
+
+@file ReadCrossRef.py
+"""
 
 import os
 import sys

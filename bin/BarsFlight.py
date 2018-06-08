@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import os
 import sys
@@ -17,7 +17,7 @@ from DbConnect import OpenDb, CloseDb
 from Flight.WriteFares import AddCityPair, AddFareSegments, AddFares, \
     DelFareSegments
 from Flight.ReadFares import ReadCityPairs, ReadFareSegments, ReadFareCodes
-from ReadAircraftConfig import ReadEquipmentConfig, WriteEquipmentConfig
+from Ssm.ReadAircraftConfig import ReadEquipmentConfig, WriteEquipmentConfig
 
 
 def NewCityPair(conn, departAirport, arriveAirport, userName, groupName):
@@ -62,9 +62,15 @@ def NewAircraft(conn, companyCode, tailNumber, aircraftCode, configTable,
     """Add new aircraft."""
 
 
+def ReadEquipment(conn, tailNumber):
+    """Read equipment."""
+    ecfg = ReadEquipmentConfig(conn, tailNumber)
+    ecfg.display()
+
+
 def usage(pname='BarsFlight.py'):
     """Help message."""
-    print("Add city pair:\n\t%s --city -P <CITY> -Q<CITY>")
+    print("Add city pair:\n\t%s --city -P <CITY> -Q<CITY>" % pname)
     print("Add fare:\n\t%s --fare -P <CITY> -Q<CITY> -R <AMOUNT>"
           "-D <DATE> -E <DATE>" % pname)
     print("Write flight data :")
@@ -72,6 +78,8 @@ def usage(pname='BarsFlight.py'):
     print("\t\t -F <FLIGHT> -D <DATE> -Q <FREQ>")
     print("\t\t [-E <DATE>] [-A <CODE>] [-I <TIME>] [-J <TIME>] [-K <CITY>]"
           "[-L <CITY>] [-G <FLIGHT>] [-T <TAIL>]")
+    print("Write aircraft data:")
+    print("\t%s --new -A <CODE> -I <CABIN> -J <SEATS>" % pname)
     print("where")
     print("\t-v\t\t Additional output")
     print("\t--cnl\t\t Cancel flight")
@@ -85,6 +93,8 @@ def usage(pname='BarsFlight.py'):
     print("\t-E <DATE>\t End date, e.g. 11/26/2018")
     print("\t-F <FLIGHT>\t Flight number, e.g. ZZ123")
     print("\t-G <FLIGHT>\t Codeshare flight number, e.g YY2164")
+    print("\t-I <CABIN>\t Comma seperated cabin codes, e.g. 'Y,C'")
+    print("\t-J <SEATS>\t Seat capacities for cabins, e.g. '186,2'")
     print("\t-K <FREQ>\t Frequency code for weekdays, e.g. 34 (Monday is 1)")
     print("\t-P <CITY>\t Departure airport, e.g. JNB")
     print("\t-Q <CITY>\t Arrival airport, e.g. CPT")
@@ -104,6 +114,7 @@ def main(argv):
     dofare = False
     dofaredel = False
     donew = False
+    doeqt = False
     departDate = None
     arriveDate = None
     payAmount = 0
@@ -153,6 +164,8 @@ def main(argv):
             dofare = True
         elif opt == "--faredel":
             dofaredel = True
+        elif opt == "--eqt":
+            doeqt = True
         elif opt == "--new":
             donew = True
         elif opt == "-A" or opt == "--aircraft":
@@ -253,6 +266,8 @@ def main(argv):
             and arriveDate is not None:
         DelFareSegments(conn, cfg.CompanyCode,
                         departAirport, arriveAirport, departDate, arriveDate)
+    elif doeqt and tailNumber != '':
+        ReadEquipment(conn, tailNumber)
     elif dofare:
         ReadFareCodes(conn)
         ReadFareSegments(conn)

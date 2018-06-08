@@ -1,9 +1,12 @@
-#!/usr/bin/python -B
+#!/usr/bin/python3 -B
 #
 # Python won't try to write .pyc or .pyo files on the import of source modules
 #
 # @file SsmInfo.py
 #
+"""
+Provide SSM information.
+"""
 
 import os
 import sys
@@ -23,6 +26,7 @@ from DbConnect import OpenDb, CloseDb
 
 
 def check_ssm_file(procssm, fname):
+    """Check SSM file syntax."""
     dtm = os.path.getmtime(fname)
     dts = datetime.datetime.fromtimestamp(dtm).strftime('%Y-%m-%d %H:%M:%S')
     printlog(1, "Check %s %s (%f)" % (fname, dts, dtm))
@@ -67,7 +71,7 @@ def check_ssm_file(procssm, fname):
 
 
 def check_ssm_files(ssmdir, procssm):
-
+    """Read directory and check SSM files found."""
     printlog(1, "Read directory %s" % ssmdir)
     fnames = []
     nerr = 0
@@ -113,6 +117,7 @@ def check_ssm_files(ssmdir, procssm):
 
 
 def read_ssm_file(procssm, fname):
+    """Read SSM file."""
     t = os.path.getmtime(fname)
     dt = datetime.datetime.fromtimestamp(t).strftime('%Y-%m-%d %H:%M:%S')
     printlog(1, "Read %s %s" % (fname, dt))
@@ -176,11 +181,13 @@ def read_ssm_file(procssm, fname):
 
 
 def daterange(start_date, end_date):
+    """Range of dates."""
     for n in range(int((end_date - start_date).days) + 1):
         yield start_date + timedelta(n)
 
 
 def usage(pname='FlightInfo.py'):
+    """Help message."""
     print("Data for a flight as used by SSM processing :")
     print("\t %s --ssmdata -F <FLIGHT> -D <DATE> [-E <DATE>]" % pname)
     print("\t %s --ssmbook -F <FLIGHT> -D <DATE> -R <PERD>" % pname)

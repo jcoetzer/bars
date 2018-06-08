@@ -1,4 +1,6 @@
-# @file FlightData.py
+"""
+Flight data class.
+"""
 
 
 import os
@@ -68,7 +70,7 @@ class FlightData(object):
         if departure_date is not None:
             self.board_dts = departure_date
             self.board_dow = self.board_dts.strftime("%a")
-            self.board_date_mdy = self.board_dts.strftime("%m/%d/%Y")
+            self.board_date_mdy = self.board_dts.strftime("%Y-%m-%d")
             self.board_date_iso = self.board_dts.strftime("%Y-%m-%d")
             self.board_date_iata = self.board_dts.strftime("%d%b%y").upper()
             # Weekday as a decimal number 0(Sunday), 1(Monday) to 6(Saturday)

@@ -1,5 +1,8 @@
 # @file ReadFaresPayment.py
 #
+"""
+Dysfunctional junk.
+"""
 
 import sys
 import operator
@@ -13,8 +16,8 @@ def ReadBsRetailer(conn, elBookingNumber, epcAgencyCode, v_agencyPayForm):
         epcAgencyCode = ''
     if v_agencyPayForm is None:
         v_agencyPayForm = ''
-    print "Retailer for booking %d agency '%s' payment '%s'" \
-        % (elBookingNumber, epcAgencyCode, v_agencyPayForm)
+    print("Retailer for booking %d agency '%s' payment '%s'" \
+        % (elBookingNumber, epcAgencyCode, v_agencyPayForm))
     BsRetailerSql = """
         SELECT CASE WHEN COUNT(*) > 0 THEN MAX(b.book_no) ELSE 0 END AS bn
             FROM  book AS b
@@ -35,16 +38,16 @@ def ReadBsRetailer(conn, elBookingNumber, epcAgencyCode, v_agencyPayForm):
     cur.execute(BsRetailerSql)
     n = 0
     for row in cur:
-        print "\tbooking %d" % row['bn']
+        print("\tbooking %d" % row['bn'])
         n += 1
     if n==0:
-        print "\t--none--"
+        print("\t--none--")
     cur.close()
 
 
 def ReadBsFaresPayment(conn, book_no, currency_code):
 
-    print "Fare payments for booking %d currency %s" % (book_no, currency_code)
+    print("Fare payments for booking %d currency %s" % (book_no, currency_code))
     FaresPaymentSql = """
 SELECT fare_no,pax_code paxcode,payment_code,fare_calc_code,round(fare_paymt_amt, 2) amount,
 round(fare_paymt_amt, 5) unrounded_amount,paid_curr_code currency_code,
@@ -69,18 +72,20 @@ AND payment_code <> 'FEE'
     cur.execute(FaresPaymentSql)
     n = 0
     for row in cur:
-        print "\tfare %-2s pax %-5s pay %-4s tax %2s currency factor %s count %d" \
-            % (row['fare_no'], row['paxcode'], row['payment_code'], str(row['tax_code'] or ''),
-               row['common_currency_factor'], row['pax_number'])
+        print("\tfare %-2s pax %-5s pay %-4s tax %2s currency factor %s count %d"
+              % (row['fare_no'], row['paxcode'], row['payment_code'],
+                 str(row['tax_code'] or ''), row['common_currency_factor'],
+                 row['pax_number']))
         n += 1
     if n==0:
-        print "\t--none--"
+        print("\t--none--")
     cur.close()
 
 
 def ReadBsPassengerFares(conn, book_no, currency_code):
 
-    print "Passenger fares for booking %d currency %s" % (book_no, currency_code)
+    print("Passenger fares for booking %d currency %s"
+          % (book_no, currency_code))
     PassengerFaresSql = """
                         SELECT bfp.pax_code AS passenger_description_code,
                                 bfp.total_amount_curr AS total_amount_currency,
@@ -126,18 +131,18 @@ def ReadBsPassengerFares(conn, book_no, currency_code):
     cur.execute(PassengerFaresSql)
     n = 0
     for row in cur:
-        print "\tpax %-5s currency factor %s amount %s" \
-            % (row['passenger_description_code'],
-               row['common_currency_factor'], row['total_amount'])
+        print("\tpax %-5s currency factor %s amount %s" \
+              % (row['passenger_description_code'],
+                 row['common_currency_factor'], row['total_amount']))
         n += 1
     if n==0:
-        print "\t--none--"
+        print("\t--none--")
     cur.close()
 
 
 def ReadBsOldFares(conn, book_no, currency_code):
 
-    print "Old fares for booking %d currency %s" % (book_no, currency_code)
+    print("Old fares for booking %d currency %s" % (book_no, currency_code))
     OldFaresSql = """
     SELECT
             bf.et_serial_no AS serial_no
@@ -220,18 +225,19 @@ def ReadBsOldFares(conn, book_no, currency_code):
     cur.execute(OldFaresSql)
     n = 0
     for row in cur:
-        print "\tET %s pax %-5s depart %-4s arrive %-4s amout %s" \
-            % (row['serial_no'], row['passenger_description_code'], row['departure_city'], row['arrival_city'],
-               row['amount'])
+        print("\tET %s pax %-5s depart %-4s arrive %-4s amout %s"
+              % (row['serial_no'], row['passenger_description_code'],
+                 row['departure_city'], row['arrival_city'], row['amount']))
         n += 1
     if n==0:
-        print "\t--none--"
+        print("\t--none--")
     cur.close()
 
 
 def ReadBsOldPassengerFares(conn, book_no, currency_code):
 
-    print "Old passenger fares for booking %d currency %s" % (book_no, currency_code)
+    print("Old passenger fares for booking %d currency %s"
+          % (book_no, currency_code))
     OldPassengerFaresSql = """
                         SELECT
                                  bfp.pax_code                                          AS passenger_description_code
@@ -291,53 +297,54 @@ def ReadBsOldPassengerFares(conn, book_no, currency_code):
     cur.execute(OldPassengerFaresSql)
     n = 0
     for row in cur:
-        print "\tET %s pax %-5s currency factor %s amount %s" \
-            % (row['serial_no'], row['passenger_description_code'],
-               row['common_currency_factor'], row['total_amount'])
+        print("\tET %s pax %-5s currency factor %s amount %s" \
+              % (row['serial_no'], row['passenger_description_code'],
+                 row['common_currency_factor'], row['total_amount']))
         n += 1
     if n==0:
-        print "\t--none--"
+        print("\t--none--")
     cur.close()
 
 
 def ReadBsOldFaresPayment(conn, book_no, currency_code):
 
-    print "Old fares payment for booking %d currency %s" % (book_no, currency_code)
+    print("Old fares payment for booking %d currency %s"
+          % (book_no, currency_code))
     OldFaresPaymentSql = """
-                        SELECT
-                                 fare_no,
-                                 pax_code AS passenger_description_code,
-                                payment_code,
-                                fare_calc_code,
-                                fare_paymt_amt AS amount,
-                                paid_curr_code AS currency_code,
-                                tax_code,
-                                nation_code,
-                                refundable_flag
-                                net_fare_flag,
-                                private_fare_flag,
-                                source_ref_id,
-                                update_time AS updated_date_time,
-                                et_serial_no AS serial_no,
-                                ROUND(
-                                        (SELECT max(nuc_rate) FROM currency_codes AS cc
-                                        WHERE cc.currency_code = '%s')
-                                        /
-                                        coalesce
-                                        (
-                                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
-                                                WHERE hcc.currency_code = bfp.paid_curr_code
-                                                AND bfp.update_time BETWEEN
-                                                hcc.valid_from_date_time AND hcc.valid_to_date_time)
-                                        ,
-                                                (SELECT MAX(nuc_rate) FROM currency_codes AS cc
-                                                WHERE cc.currency_code = bfp.paid_curr_code)
-                                        )
-                                        , 5
-                                ) AS common_currency_factor
-                        FROM hist_book_fares_paym AS bfp
-                        WHERE book_no = %d AND payment_code <> 'FEE'
-"""  % (currency_code, book_no)
+        SELECT
+                    fare_no,
+                    pax_code AS passenger_description_code,
+                payment_code,
+                fare_calc_code,
+                fare_paymt_amt AS amount,
+                paid_curr_code AS currency_code,
+                tax_code,
+                nation_code,
+                refundable_flag
+                net_fare_flag,
+                private_fare_flag,
+                source_ref_id,
+                update_time AS updated_date_time,
+                et_serial_no AS serial_no,
+                ROUND(
+                        (SELECT max(nuc_rate) FROM currency_codes AS cc
+                        WHERE cc.currency_code = '%s')
+                        /
+                        coalesce
+                        (
+                                (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
+                                WHERE hcc.currency_code = bfp.paid_curr_code
+                                AND bfp.update_time BETWEEN
+                                hcc.valid_from_date_time AND hcc.valid_to_date_time)
+                        ,
+                                (SELECT MAX(nuc_rate) FROM currency_codes AS cc
+                                WHERE cc.currency_code = bfp.paid_curr_code)
+                        )
+                        , 5
+                ) AS common_currency_factor
+        FROM hist_book_fares_paym AS bfp
+        WHERE book_no = %d AND payment_code <> 'FEE'""" \
+        % (currency_code, book_no)
 
     printlog(2, "%s" % OldFaresPaymentSql)
 
@@ -346,18 +353,18 @@ def ReadBsOldFaresPayment(conn, book_no, currency_code):
     cur.execute(OldFaresPaymentSql)
     n = 0
     for row in cur:
-        print "\tET %s pax %-5s currency factor %s amount %s" \
-            % (row['serial_no'], row['passenger_description_code'],
-               row['common_currency_factor'], row['amount'])
+        print("\tET %s pax %-5s currency factor %s amount %s"
+              % (row['serial_no'], row['passenger_description_code'],
+                 row['common_currency_factor'], row['amount']))
         n += 1
     if n==0:
-        print "\t--none--"
+        print("\t--none--")
     cur.close()
 
 
 def ReadBsStopOvers(conn, flight_number, board_date, departure_airport, arrival_airport):
     StopOversSql = """
-                        SELECT fsd.arrival_airport AS stop_over_point,
+        SELECT fsd.arrival_airport AS stop_over_point,
                 (SELECT CASE WHEN f1.departure_time > fsd.arrival_time
                                                                 THEN f1.departure_time - fsd.arrival_time
                                 ELSE f1.departure_time - fsd.arrival_time + 1440 end
@@ -381,8 +388,8 @@ def ReadBsStopOvers(conn, flight_number, board_date, departure_airport, arrival_
                  AND f1.board_date = fsd.board_date
                  AND f1.leg_number > 0
                  AND f1.arrival_airport = '%s' )
-                        AND fsd.arrival_airport <> '%s'
-""" % (flight_number, board_date, departure_airport, departure_airport, arrival_airport)
+                        AND fsd.arrival_airport <> '%s'""" \
+    % (flight_number, board_date, departure_airport, departure_airport, arrival_airport)
 
     printlog(2, "%s" % StopOversSql)
 
@@ -391,17 +398,17 @@ def ReadBsStopOvers(conn, flight_number, board_date, departure_airport, arrival_
     cur.execute(StopOversSql)
     n = 0
     for row in cur:
-        print "\t\tstop %s time %s" \
-            % (row['stop_over_point'], row['stop_over_time'])
+        print("\t\tstop %s time %s"
+              % (row['stop_over_point'], row['stop_over_time']))
         n += 1
     if n==0:
-        print "\t\t--no stops--"
+        print("\t\t--no stops--")
     cur.close()
 
 
 def ReadBsItinerary(conn, book_no):
 
-    print "Itenary for booking %d" % (book_no)
+    print("Itenary for booking %d" % (book_no))
     ItinerarySql = """SELECT
                                 itn.route_no,
                                 (SELECT flight_number FROM flight_shared_leg WHERE dup_flight_number = itn.flight_number AND flight_date = itn.flight_date) AS codeshareflightnumber
@@ -469,19 +476,19 @@ def ReadBsItinerary(conn, book_no):
     cur.execute(ItinerarySql)
     n = 0
     for row in cur:
-        print "\tflight %s date %s depart %s arrive %s market '%s' codeshare '%s'" \
+        print("\tflight %s date %s depart %s arrive %s market '%s' codeshare '%s'" \
             % (row['flight_number'], row['flight_date'], row['departure_airport'], row['arrival_airport'],
-               row['marketing_flight_number'], str(row['codeshareflightnumber'] or ''))
+               row['marketing_flight_number'], str(row['codeshareflightnumber'] or '')))
         ReadBsStopOvers(conn, row['flight_number'], row['flight_date'], row['departure_airport'], row['arrival_airport'])
         n += 1
     if n==0:
-        print "\t--none--"
+        print("\t--none--")
     cur.close()
 
 
 def ReadBsFares(conn, book_no, currency_code):
 
-    print "Fares for booking %d currency %s" % (book_no, currency_code)
+    print("Fares for booking %d currency %s" % (book_no, currency_code))
     FaresSql = """
                         SELECT
                                  bf.fare_no
@@ -546,18 +553,18 @@ def ReadBsFares(conn, book_no, currency_code):
     cur.execute(FaresSql)
     n = 0
     for row in cur:
-        print "\tpax %-5s currency factor %s amount %s" \
+        print("\tpax %-5s currency factor %s amount %s" \
             % (row['passenger_description_code'],
-               row['common_currency_factor'], row['total_amount'])
+               row['common_currency_factor'], row['total_amount']))
         n += 1
     if n==0:
-        print "\t--none--"
+        print("\t--none--")
     cur.close()
 
 
 def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFeeTax = '', PaymentTypeFeeWaive = ''):
 
-    print "Booking summary for booking %d currency %s" % (book_no, currency_code)
+    print("Booking summary for booking %d currency %s" % (book_no, currency_code))
     SummarySql = """
                         SELECT
                                 round(coalesce(
@@ -759,10 +766,10 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
     cur.execute(SummarySql)
     n = 0
     for row in cur:
-        print "\t payment %s commission %s fare %s outstanding %s insurance %s fee %s" \
-            % (row['total_payment'], row['total_comm'], row['total_fare'], row['total_outstanding'], row['total_insurance'], row['total_fee'])
+        print("\t payment %s commission %s fare %s outstanding %s insurance %s fee %s" \
+            % (row['total_payment'], row['total_comm'], row['total_fare'], row['total_outstanding'], row['total_insurance'], row['total_fee']))
         n += 1
     if n==0:
-        print "\t--none--"
+        print("\t--none--")
     cur.close()
 

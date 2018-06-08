@@ -7,7 +7,7 @@ import time
 from datetime import datetime, timedelta, date
 from BarsLog import printlog, get_verbose
 from ReadDateTime import ReadTime
-from FlightData import FlightPeriod
+from Flight.FlightData import FlightPeriod
 
 
 def ReadFlightPeriods(conn, flightNumber, dt1, dt2):
@@ -15,8 +15,8 @@ def ReadFlightPeriods(conn, flightNumber, dt1, dt2):
     printlog(1, "Flight periods from %s to %s (flight %s)"
         % (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d"), str(flightNumber or 'all')), 1)
     fperds = []
-    startDate = dt1.strftime("%m/%d/%Y")
-    endDate = dt2.strftime("%m/%d/%Y")
+    startDate = dt1.strftime("%Y-%m-%d")
+    endDate = dt2.strftime("%Y-%m-%d")
     SpSql = \
         "SELECT flight_number,start_date,end_date,frequency_code,schedule_period_no" \
         " FROM flight_periods" \
@@ -80,11 +80,11 @@ def ReadFlightPeriodsLatest(conn, flightNumber, dt1, dt2):
     if dt1 is not None:
         SpSql += \
             " AND end_date >= '%s'" \
-                % ( dt1.strftime("%m/%d/%Y") )
+                % ( dt1.strftime("%Y-%m-%d") )
     if dt2 is not None:
         SpSql += \
             " AND end_date <= '%s'" \
-                % ( dt2.strftime("%m/%d/%Y") )
+                % ( dt2.strftime("%Y-%m-%d") )
     SpSql += \
         " GROUP BY flight_number"
     printlog(2, SpSql)
@@ -102,7 +102,7 @@ def ReadFlightPeriodsLatest(conn, flightNumber, dt1, dt2):
             " WHERE flight_number='%s'" \
             " AND flgt_sched_status='A'" \
             " AND end_date='%s'" \
-                % ( fn, end_date.strftime("%m/%d/%Y") )
+                % ( fn, end_date.strftime("%Y-%m-%d") )
         printlog(2, SpSql1)
         cur1.execute(SpSql1)
         for row1 in cur1:
@@ -139,8 +139,8 @@ def ReadFlightPeriodsLatest(conn, flightNumber, dt1, dt2):
 
 def isMarketingOrOperational(conn, flightNumber, dt1, dt2, frequency=None):
 
-    startDate = dt1.strftime("%m/%d/%Y")
-    endDate = dt2.strftime("%m/%d/%Y")
+    startDate = dt1.strftime("%Y-%m-%d")
+    endDate = dt2.strftime("%Y-%m-%d")
     SpSql = \
         "SELECT COUNT(*) mif" \
         " FROM flight_shared_leg fsl, city_pair cp, flight_segm_date fsd" \
@@ -215,8 +215,8 @@ def ReadConfigNumberOfSeats(conn, AircraftCode, haveClassCode=1,
 def CheckSchedPeriod(conn, dt1, dt2, alteredFrequency,
                     flightNumber, freqCode, newViacities, aircraftConfig):
 
-    startDate = dt1.strftime("%m/%d/%Y")
-    endDate = dt2.strftime("%m/%d/%Y")
+    startDate = dt1.strftime("%Y-%m-%d")
+    endDate = dt2.strftime("%Y-%m-%d")
     printlog(1, "Check schedule period from %s to %s freq %s (%s) flight %s via %s aircraft %s [flight_periods]"
         % (startDate, endDate, alteredFrequency, freqCode, flightNumber,
            newViacities, aircraftConfig))
@@ -242,8 +242,8 @@ def CheckSchedPeriod(conn, dt1, dt2, alteredFrequency,
 def ReadSchedPeriod(conn, dt1, dt2, alteredFrequency,
                     flightNumber, freqCode, newViacities, aircraftConfig):
 
-    startDate = dt1.strftime("%m/%d/%Y")
-    endDate = dt2.strftime("%m/%d/%Y")
+    startDate = dt1.strftime("%Y-%m-%d")
+    endDate = dt2.strftime("%Y-%m-%d")
     printlog(1, "Read schedule period from %s to %s freq %s (alter %s) flight %s via %s aircraft %s [flight_periods, flight_segm_date, flight_perd_legs]" \
         % (startDate, endDate, freqCode, alteredFrequency, flightNumber,
            newViacities, aircraftConfig))
@@ -305,7 +305,7 @@ def DatesConsecutiveByFrequency(conn, flight_number, dt1, schedule_period_no):
 
     printlog(1, "Dates for flight %s date %s period %s [flight_periods]"
         % (flight_number, dt1, str(schedule_period_no)))
-    startDate = dt1.strftime("%m/%d/%Y")
+    startDate = dt1.strftime("%Y-%m-%d")
     SpSql = \
         "SELECT WEEKDAY(end_date) ed, WEEKDAY('%s') sd" \
          " FROM flight_periods" \

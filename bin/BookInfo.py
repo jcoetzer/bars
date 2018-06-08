@@ -1,9 +1,12 @@
-#!/usr/bin/python -B
+#!/usr/bin/python3 -B
 #
 # Python won't try to write .pyc or .pyo files on the import of source modules
 #
 # @file BookInfo.py
 #
+"""
+Read booking information.
+"""
 
 import os
 import sys
@@ -204,7 +207,6 @@ def main(argv):
             printlog(2, "\t bookno %d" % bookno)
         elif opt in ("-C", "--create"):
             # Create date
-            book_info_cfg.crdt = True
             dt1 = ReadDate(arg)
             printlog(2, "\t start %s" % dt1.strftime("%Y-%m-%d"))
         elif opt in ("-D", "--start", "--depart"):

@@ -9,8 +9,8 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 from ScheduleData import SsmData
-from SsmData import read_ssm_data
-from SsmDb import GetConfigTableNo, CheckCityPair
+from Ssm.SsmData import read_ssm_data
+from Ssm.SsmDb import GetConfigTableNo, CheckCityPair
 from BarsLog import printlog, set_verbose
 from ReadDateTime import ReadDate, DateRange
 import datetime
@@ -19,7 +19,8 @@ import datetime
 def CheckAircraftConfig(conn, acft_code):
     """Check aircraft configuration."""
     ConfigTableNo = None
-    caSql = "SELECT config_table FROM aircraft_config WHERE aircraft_code = '%s' LIMIT 1" % acft_code
+    caSql = "SELECT config_table FROM aircraft_config" \
+            " WHERE aircraft_code = '%s' LIMIT 1" % acft_code
     cur = conn.cursor()
     printlog(2, "%s" % caSql)
     cur.execute(caSql)
@@ -30,7 +31,8 @@ def CheckAircraftConfig(conn, acft_code):
     return ConfigTableNo
 
 
-def FpFromSsm(conn, flightNumber, startDate, endDate, frequencyCode, userName, groupName):
+def FpFromSsm(conn, flightNumber, startDate, endDate, frequencyCode,
+              userName, groupName):
     """Process flight from SSM."""
     spnSql = "SELECT COALESCE(MAX(schedule_period_no),0) FROM flight_periods"
     cur = conn.cursor()
@@ -54,14 +56,15 @@ def FpLegsFromSsm(conn, flightNumber, schedPerdNo,
     """Process flight legs from SSM."""
     cur = conn.cursor()
     fplSql = "SELECT s1.nation_code, s2.nation_code " \
-            "FROM state s1, city c1, airport a1, state s2, city c2, airport a2 " \
-            "WHERE a1.airport_code = '%s' " \
-            "AND a1.city_code = c1.city_code " \
-            "AND c1.state_code = s1.state_code " \
-            "AND a2.airport_code = '%s' " \
-            "AND a2.city_code = c2.city_code " \
-            "AND c2.state_code = s2.state_code" % \
-                (depAirport, arrAirport)
+             "FROM state s1, city c1, airport a1," \
+             " state s2, city c2, airport a2 " \
+             "WHERE a1.airport_code = '%s' " \
+             "AND a1.city_code = c1.city_code " \
+             "AND c1.state_code = s1.state_code " \
+             "AND a2.airport_code = '%s' " \
+             "AND a2.city_code = c2.city_code " \
+             "AND c2.state_code = s2.state_code" \
+             % (depAirport, arrAirport)
     printlog(2, "%s" % fplSql)
     cur.execute(fplSql)
     spn = 0
@@ -82,12 +85,12 @@ def FpLegsFromSsm(conn, flightNumber, schedPerdNo,
                  "'%s', '%s', '%s', '%s'," \
                  "%d, '%s', '%s'," \
                  "'%s', '%s', %d," \
-                 "'%s', '%s', NOW() )" % \
-            ( flightNumber, schedPerdNo,
-              depAirport, arrAirport, depTime, arrTime,
-              0, configNo, flightPath,
-              depTerminal, arrTerminal, legNo,
-              'SSM', 'SSM' )
+                 "'%s', '%s', NOW() )" \
+        % (flightNumber, schedPerdNo,
+           depAirport, arrAirport, depTime, arrTime,
+           0, configNo, flightPath,
+           depTerminal, arrTerminal, legNo,
+           'SSM', 'SSM')
     printlog(2, "%s" % fplSql)
     cur.execute(fplSql)
     printlog(2, "Inserted %d row(s)" % cur.rowcount)
@@ -127,7 +130,8 @@ def AddFlightSegmDate(conn,
         "flgt_sched_status, aircraft_code," \
         "flight_closed_flag, flight_brdng_flag," \
         "no_of_stops, leg_number," \
-        "segment_number,  schedule_period_no, update_user, update_group, update_time) " \
+        "segment_number,  schedule_period_no," \
+        "update_user, update_group, update_time) " \
         "VALUES ('%s', '%s', " \
         "%d, '%s', " \
         "'%s', '%s', " \
@@ -248,27 +252,19 @@ def IsPeriodToBeExtended(conn, startDate, endDate, startDateMinusOne,
         " AND fpl.schedule_period_no = fsd.schedule_period_no" \
         " AND fp.flgt_sched_status = fsd.flgt_sched_status" \
         " AND fsd.flight_date NOT BETWEEN '%s' AND '%s'" \
-        " AND ( SELECT COUNT(flight_date) FROM flight_segm_date WHERE flight_date BETWEEN '%s' AND '%s' AND flight_number = fp.flight_number ) = 0" \
+        " AND ( SELECT COUNT(flight_date) FROM flight_segm_date" \
+        " WHERE flight_date BETWEEN '%s' AND '%s'" \
+        " AND flight_number = fp.flight_number ) = 0" \
         " AND fp.end_date + 7 > '%s'" \
         " AND fp.flgt_sched_status IN ( 'A', 'S' )" \
         " AND fp.flight_number = '%s'" \
-        " AND fpl.config_table = '%s'" % (
-        startDateMinusOne,
-        startDate, endDate,
-        startDate, endDate,
-        startDate, endDate,
-        startDate,
-        flightNumber, aircraftConfig )
-        #" AND ( WEEKDAY ( '%s' ))::CHAR IN ('%c', '%c', '%c', '%c', '%c', '%c', '%c' )" \
-        #alteredFrequency[0:1],
-        #alteredFrequency[1:2],
-        #alteredFrequency[2:3],
-        #alteredFrequency[3:4],
-        #alteredFrequency[4:5],
-        #alteredFrequency[5:6],
-        #alteredFrequency[6:7],
-        #" AND fp.frequency_code = '%s'"freqCode \
-        #" AND fp.via_cities = '%s'" newViacities\
+        " AND fpl.config_table = '%s'" \
+        % (startDateMinusOne,
+           startDate, endDate,
+           startDate, endDate,
+           startDate, endDate,
+           startDate,
+           flightNumber, aircraftConfig)
 
     cur = conn.cursor()
     printlog(2, "%s" % spnSql)
@@ -361,7 +357,9 @@ def AddFlightPeriod(conn,
 
 def AddFlightSharedLeg(conn, flight_number, flight_date, spn,
                        departure_city, arrival_city,
-                       departure_time, arrival_time):
+                       departure_time, arrival_time,
+                       config_table='738A', aircraft_code='738',
+                       update_user='SSM'):
     """Add codeshare data."""
     fslSql = """
     INSERT INTO flight_shared_leg(
@@ -378,7 +376,7 @@ def AddFlightSharedLeg(conn, flight_number, flight_date, spn,
     % (flight_number, flight_date, departure_city, arrival_city,
        flight_date, flight_number, spn,  flight_date, flight_date,
        departure_city, arrival_city, departure_time, arrival_time,
-       airport_code, airport_code, update_user)
+       config_table, aircraft_code, update_user)
 
 
 def AddInventorySegment(conn, pflight_number, vflight_date,
@@ -397,7 +395,8 @@ def AddInventorySegment(conn, pflight_number, vflight_date,
             "( flight_number, flight_date," \
             "city_pair, selling_class, departure_city, arrival_city," \
             "leg_number, segment_number, ob_profile_no, " \
-            "group_seat_level,seat_protect_level,limit_sale_level,overbooking_level,posting_level," \
+            "group_seat_level,seat_protect_level,limit_sale_level," \
+            "overbooking_level,posting_level," \
             "sale_notify_level,cancel_notify_level,seat_capacity," \
             "overbooking_percnt," \
             "nett_sngl_sold," \
@@ -431,7 +430,8 @@ def AddInventorySegment(conn, pflight_number, vflight_date,
             % (pflight_number, vflight_date.strftime("%Y-%m-%d"),
                tcity_pair, vselling_class, vdeparture_city, varrival_city,
                vleg_number, vsegment_number, vob_profile_no,
-               vgroup_seat_level, vseat_protect_level, vlimit_sale_level, voverbooking_level, vposting_level,
+               vgroup_seat_level, vseat_protect_level, vlimit_sale_level,
+               voverbooking_level, vposting_level,
                vsale_notify_level, vcancel_notify_level, vseat_capacity,
                vsegm_closed_flag, vwl_closed_flag, vwl_clr_inhbt_flag, vwl_rel_prty_flag,
                vdisplay_priority, pschedule_period_no,
@@ -723,7 +723,8 @@ def ProcNew(conn, ssm, userName, groupName):
         n = 0
         for class_code in ssm.class_codes:
             AddInventorySegment(conn, ssm.flight_number, cdate,
-                                int(city_pair_id), class_code[0], ssm.departure_airport, ssm.arrival_airport,
+                                int(city_pair_id), class_code[0],
+                                ssm.departure_airport, ssm.arrival_airport,
                                 1,    # leg number
                                 '1',  # segment number
                                 '0',  # vob_profile_no
