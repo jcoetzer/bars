@@ -1,3 +1,4 @@
+# @file FlightData.py
 """
 Flight data class.
 """
@@ -13,7 +14,7 @@ from ReadDateTime import ReadTime
 
 
 class FlightData(object):
-
+    """Flight data class."""
     board_dts = None
     board_dow = ''
     board_date_mdy = ''
@@ -159,7 +160,7 @@ class FlightData(object):
         if self.schedule_period_no != 0:
             print("schedule period %6d" % self.schedule_period_no, end=' ')
         if eol:
-            print
+            print("")
 
 
 def FindFlight(flights, flight_number):

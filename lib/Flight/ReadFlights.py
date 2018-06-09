@@ -594,7 +594,8 @@ def CheckFlight(conn, flight_number, dts, class_code='Y'):
 def ReadFlightsDate(conn, dts, ndays, departure_airport, arrival_airport, code_share=False, class_code='Y', company_code='ZZ'):
     """Flights for date."""
     printlog(1, "Flights for date %s [flight_segm_date]" % dts.strftime("%Y-%m-%d"))
-    if code_share: printlog(1, "With codeshare")
+    if code_share:
+        printlog(1, "With codeshare")
     fdate=dts.strftime("%Y-%m-%d")
     FsegSql=\
         "SELECT DISTINCT flight_number, flight_date, departure_airport, arrival_airport, city_pair, departure_time, arrival_time, " \

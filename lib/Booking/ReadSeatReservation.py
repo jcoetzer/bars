@@ -5,13 +5,13 @@ import operator
 import psycopg2
 from datetime import datetime, timedelta, datetime
 from BarsLog import set_verbose, get_verbose, printlog
-from ReadBookingRef import ReadBookNo
+from Booking.ReadBookingRef import ReadBookNo
 
 
 def CheckItenary(conn, flight_number, flight_date, depr_airport, book_no):
     """Itenary for booking."""
-    print("Itenary for booking %d flight %s on %s" \
-        % (book_no, flight_number, flight_date))
+    print("Itenary for booking %d flight %s on %s"
+          % (book_no, flight_number, flight_date))
     RcSql = \
         "SELECT book_no FROM itenary WHERE " \
         " flight_number = '%s' AND   " \
@@ -28,8 +28,8 @@ def CheckItenary(conn, flight_number, flight_date, depr_airport, book_no):
         print("%s" % str(row['book_no'] or ''))
         n += 1
     if n == 0:
-        print("No itenary for booking %d flight %s on %s" \
-            % (book_no, flight_number, flight_date))
+        print("No itenary for booking %d flight %s on %s"
+              % (book_no, flight_number, flight_date))
     return n
 
 
@@ -680,6 +680,3 @@ def ReadDcsSeat(conn, flight_seat_reservation_id):
         print("not found", end=' ')
     print('')
     return n
-
-
-

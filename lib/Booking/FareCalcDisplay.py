@@ -6,7 +6,7 @@ Calculate and display fares.
 import psycopg2
 
 from BarsLog import printlog
-from PricingData import PricingData, FarePricingData
+from Booking.PricingData import PricingData, FarePricingData
 
 
 def FareCalcDisplay(conn,
