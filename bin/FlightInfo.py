@@ -536,8 +536,10 @@ def main(argv):
                                               code_share=csflag)
                     for flight in flights:
                         SetCodeShare(conn, flight)
-                        if list_csv: flight.displaycsv()
-                        else: flight.display()
+                        if list_csv:
+                            flight.displaycsv()
+                        else:
+                            flight.display()
                     #print
             else:
                 printlog(2, "List flights for %s" % dt1.strftime("%Y-%m-%d"))
