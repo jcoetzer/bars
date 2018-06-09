@@ -1,15 +1,13 @@
+Create routes:
+
 /opt/bars/bin/BarsFlight.py --fare -P DUR -Q JNB -D 2018-06-01 -E 2018-12-31 -R 1200 -V
-/opt/bars/bin/BarsFlight.py --fare -v
 /opt/bars/bin/BarsFlight.py --fare -Q DUR -P JNB -D 2018-06-01 -E 2018-12-31 -R 1200 -V
-/opt/bars/bin/BarsFlight.py --fare -v
 /opt/bars/bin/BarsFlight.py --fare -P CPT -Q JNB -D 2018-06-01 -E 2018-12-31 -R 3000 -V
-/opt/bars/bin/BarsFlight.py --fare -v
 /opt/bars/bin/BarsFlight.py --fare -Q CPT -P JNB -D 2018-06-01 -E 2018-12-31 -R 3000 -V
 /opt/bars/bin/BarsFlight.py --fare -v
-/opt/bars/bin/BarsBook.py --price -P JNB -Q CPT -D 2018-07-07
 
-/opt/bars/bin/BarsBook.py --price -P JNB -Q CPT -D 2018-07-07
 
+Create flights:
 
 
 
@@ -25,3 +23,6 @@
 /opt/bars/bin/ssmwrite --new -A 738 -F ZZ234 -G YY9234 -D 01JUN2018 -E 31JUL2018 -K 1234567 -Q JNB -P DUR -T ZSZJD -X 1500 -Y 1630 | /opt/bars/bin/ProcSsm.py  -
 /opt/bars/bin/FlightInfo.py -D 01JUN2018 -v
 
+Chec prices:
+
+/opt/bars/bin/BarsBook.py --price -P JNB -Q CPT -D 2018-07-07

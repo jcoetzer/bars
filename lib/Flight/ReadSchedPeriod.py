@@ -318,19 +318,3 @@ def DatesConsecutiveByFrequency(conn, flight_number, dt1, schedule_period_no):
     cur.execute(SpSql)
     for row in cur:
         printlog(1, "\tStart %s end %s" % (row['sd'], row['ed']))
-
-
-def GetFrequencies():
-    SpSql = \
-        "SELECT DISTINCT frequency_code, config_table                " \
-        "  FROM flight_configuration                                    " \
-        "WHERE ( ? LIKE flight_number OR                                " \
-        "       flight_number LIKE DECODE ( ?, '', ?, ? ))    AND       " \
-        "      (frequency_code [ 1, 1 ] =  DECODE ( ? , '-', '', ? ) OR " \
-        "       frequency_code [ 2, 2 ] =  DECODE ( ? , '-', '', ? ) OR " \
-        "       frequency_code [ 3, 3 ] =  DECODE ( ? , '-', '', ? ) OR " \
-        "       frequency_code [ 4, 4 ] =  DECODE ( ? , '-', '', ? ) OR " \
-        "       frequency_code [ 5, 5 ] =  DECODE ( ? , '-', '', ? ) OR " \
-        "       frequency_code [ 6, 6 ] =  DECODE ( ? , '-', '', ? ) OR " \
-        "       frequency_code [ 7, 7 ] =  DECODE ( ? , '-', '', ? ) OR " \
-        "       frequency_code = '-------' ) "

@@ -48,9 +48,6 @@ def usage(pname="BookInfo.py"):
     print("Booking requests:")
     print("\t%s [-v|-V] --ssr -B <BOOKNO> -D <DATE>" % pname)
     print("Check booking cross index:")
-    print("\t%s [-v|-V] -n -B <BOOKNO> -X <EXTLOC>" % pname)
-    print("\t%s [-v|-V] -n -A <ORIGIN> -B <BOOKNO> -X <EXTLOC>" % pname)
-    print("Check booking cross index:")
     print("\t%s [-v|-V] -t -B <BOOKNO> -X <EXTLOC>" % pname)
     print("\t%s [-v|-V] -t -A <ORIGIN> -B <BOOKNO> -X <EXTLOC>" % pname)
     print("Booking payment data :")
@@ -68,16 +65,16 @@ def usage(pname="BookInfo.py"):
     print("Booking data :")
     print("\t%s [-v|-V] --book -B <BOOKNO>" % pname)
     print("\t%s [-v|-V] --book -L <LOCATOR>" % pname)
-    print("Booking summary XML data :")
-    print("\t%s [-v|-V] --bs -B <BOOKNO> [-G <AGENCY>] [-K <PAY>]" % pname)
-    print("\t%s [-v|-V] -T <TID>" % pname)
+    #print("Booking summary XML data :")
+    #print("\t%s [-v|-V] --bs -B <BOOKNO> [-G <AGENCY>] [-K <PAY>]" % pname)
+    #print("\t%s [-v|-V] -T <TID>" % pname)
     print("where")
     print("\t-A <ORIGIN>\t Origin address")
     print("\t-B <BOOKNO>\t Booking number")
     print("\t-K <PAY>\t Payment form e.g. 'VI'")
     print("\t-G <AGENCY>\t Agency code")
     print("\t-L <LOCATOR>\t Locator")
-    print("\t-T <TID>\t Transaction ID")
+    #print("\t-T <TID>\t Transaction ID")
     print("\t-X <EXTLOC>\t External locator")
     # print("\t-U <CURR>\t Currency code : e.g. ZAR")
     sys.exit(1)
@@ -143,12 +140,11 @@ def main(argv):
     lstfiles['pay'] = ['%s/pay.book_no.lst' % etcdir,
                        '%s/pay.locator.lst' % etcdir]
     lstfiles['tty'] = ['%s/tty.book_no.lst' % etcdir,
-                       '%s/tty.book_no.lst' % etcdir]
+                       '%s/tty.locator.lst' % etcdir]
     lstfiles['book'] = ['%s/book.book_no.lst' % etcdir,
-                        '%s/book.booking_no.lst' % etcdir,
-                        '%s/book.book_no.lst' % etcdir]
+                        '%s/book.locator.lst' % etcdir]
     lstfiles['seat'] = ['%s/seat.book_no.lst' % etcdir,
-                        '%s/seat.booking_no.lst' % etcdir]
+                        '%s/seat.locator.lst' % etcdir]
     lstfiles['itenary'] = ['%s/itenary.book_no.lst' % etcdir]
 
     for opt, arg in opts:

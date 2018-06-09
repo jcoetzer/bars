@@ -35,6 +35,7 @@ class FlightData(object):
     arrival_ts = ''
     codeshare = None
     schedule_period_no = 0
+    city_pair = 0
 
     def __init__(self,
                  class_code,
@@ -141,10 +142,11 @@ class FlightData(object):
             print(" (city pair %4d)" % self.city_pair, end=' ')
         if self.departure_time is not None and self.arrival_time is not None:
             print("departs %s arrives %s"
-                  % (self.departure_time, self.arrival_time), end=' ')
+                  % (self.departure_time.strftime("%H:%M"),
+                     self.arrival_time.strftime("%H:%M")), end=' ')
         elif self.departure_time is not None:
             print("departs %s"
-                  % (self.departure_time), end=' ')
+                  % (self.departure_time.strftime("%H:%M")), end=' ')
         if self.journey_time is not None and self.journey_time > 0:
             print("(%-3d minutes)" % self.journey_time, end=' ')
         if len(self.aircraft_code) > 0:
@@ -202,7 +204,7 @@ class FlightPeriod(object):
         self.aircraft_code = aircraft_code
         self.codeshares = codeshares
 
-    def display(self):
+    def displaytxt(self):
         """Display flight period."""
         print("Flight %6s start %s end %s frequency %s depart %s %02d:%02d"
               " arrive %s %02d:%02d aircraft %s (schedule period %4d)"
@@ -233,3 +235,9 @@ class FlightPeriod(object):
         for codeshare in self.codeshares:
             sys.stdout.write(",%s" % codeshare)
         sys.stdout.write("\n")
+
+    def display(csv=False):
+        if csv:
+            self.displaycsv()
+        else:
+            self.displaytxt()

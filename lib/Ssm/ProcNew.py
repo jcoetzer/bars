@@ -16,11 +16,33 @@ from ReadDateTime import ReadDate, DateRange
 import datetime
 
 
-def CheckAircraftConfig(conn, acft_code):
+def AddAircraft(conn, companyCode, acft_code, acft_desc,
+                userName, groupName):
+    cur = conn.cursor()
+    aaSql = """INSERT INTO master_files
+        VALUES ('ACFT', '%s', '%s', '%s', '%s', NOW())""" \
+        % (acft_code, acft_desc)
+    printlog(2, "%s" % aaSql)
+    cur.execute(aaSql)
+    printlog(2, "Inserted %d row(s)" % cur.rowcount)
+    cur.close()
+
+
+def CheckAircraftConfig(conn, companyCode, acft_code,
+                        class_codes, class_seats):
     """Check aircraft configuration."""
     ConfigTableNo = None
-    caSql = "SELECT config_table FROM aircraft_config" \
-            " WHERE aircraft_code = '%s' LIMIT 1" % acft_code
+    caSql = """SELECT DISTINCT config_table FROM aircraft_config
+            WHERE aircraft_code = '%s'
+            AND company_code = '%s'
+            AND ((selling_class='%s' AND seat_capacity=%d)""" \
+            % (acft_code, companyCode, class_codes[0], int(class_seats[0]))
+    n = 1
+    while n < len(class_codes):
+        caSql += " OR (selling_class='%s' AND seat_capacity=%d)" \
+                 % (class_codes[n], int(class_seats[n]))
+        n += 1
+    caSql += ")"
     cur = conn.cursor()
     printlog(2, "%s" % caSql)
     cur.execute(caSql)
@@ -28,7 +50,34 @@ def CheckAircraftConfig(conn, acft_code):
     for row in cur:
         ConfigTableNo = row[0]
     cur.close()
+    printlog(1, "Aircraft code %s classes %s seats %s: config %s"
+             % (acft_code, class_codes, class_seats, ConfigTableNo))
     return ConfigTableNo
+
+
+def AddAircraftConfig(conn, companyCode, acft_code, configTableNo,
+                      class_codes, class_seats,
+                      userName, groupName):
+    """Check aircraft configuration."""
+    ConfigTableNo = None
+    n = 0
+    cur = conn.cursor()
+    while n < len(class_codes):
+        printlog(1, "New aircraft code %s config %s class %s seats %d"
+                 % (acft_code, configTableNo,
+                    class_codes[n], int(class_seats[n])))
+        caSql = """
+            INSERT INTO aircraft_config
+            VALUES('%s','%s','%s','%s',0,0,0,0,0,0,0,%d,'N','A',
+                   '%s','%s',NOW())""" \
+            % (configTableNo, companyCode, class_codes[n], acft_code,
+               int(class_seats[n]), userName, groupName)
+        printlog(2, "%s" % caSql)
+        cur.execute(caSql)
+        printlog(2, "Inserted %d row(s)" % cur.rowcount)
+        n += 1
+
+    cur.close()
 
 
 def FpFromSsm(conn, flightNumber, startDate, endDate, frequencyCode,
@@ -73,7 +122,7 @@ def FpLegsFromSsm(conn, flightNumber, schedPerdNo,
     for row in cur:
         depNation = row[0]
         arrNation = row[1]
-        print("From %s [%s] to %s [%s]" % (depAirport, row[0], arrAirport))
+        printlog(1, "From %s [%s] to %s [%s]" % (depAirport, row[0], arrAirport))
 
     fplSql = "INSERT INTO flight_perd_legs ( " \
         "flight_number, schedule_period_no, " \
@@ -119,6 +168,10 @@ def AddFlightSegmDate(conn,
                       asegment_number,
                       aschedule_period_no):
     """Add flight segment dates."""
+    printlog(1, "New flight %s segment %d date %s: depart %s %s arrive %s %s"
+             % (aflight_number, asegment_number, assm_tmp_date,
+                adeparture_airport, adeparture_time.strftime("H:%M"),
+                aarrival_airport, aarrival_time.strftime("H:%M")))
     cur = conn.cursor()
     fsdSql = "INSERT INTO flight_segm_date (" \
         "flight_number, board_date," \
@@ -172,6 +225,10 @@ def AddFlightPeriodLegs(conn,
                         aarrival_terminal,
                         aleg_number):
     """Add flight period legs."""
+    printlog(1, "Add flight %s period %s leg %d: depart %s %s arrive %s %s"
+             % (aflight_number, aschedule_period_no, aleg_number,
+                adeparture_airport, adeparture_time,
+                aarrival_airport, aarrival_time))
     cur = conn.cursor()
     fplSql = """
     INSERT INTO flight_perd_legs (
@@ -202,6 +259,9 @@ def AddFlightPeriodSegment(conn,
                            apost_control_flag,
                            asegment_number):
     """Add flight period segments."""
+    printlog(1, "Add flight %s period %s segment %d: city pair %d aircraft %s"
+             % (aflight_number, aschedule_period_no, asegment_number,
+                acity_pair, aaircraft_code))
     cur = conn.cursor()
     fplSql = \
         "INSERT INTO flight_perd_segm (" \
@@ -294,6 +354,9 @@ def WriteFlightInfo(conn,
                     userName,
                     groupName):
     """Write flight information."""
+    printlog(1, "Write flight %s date %s depart %s arrive %s tail %s"
+             % (flight, boardDate,
+                adeparture_airport, aarrival_airport, aTailNumber))
     cur = conn.cursor()
     fiSql = "INSERT INTO flight_information (" \
         " flight_number, board_date," \
@@ -332,6 +395,10 @@ def AddFlightPeriod(conn,
                     puser_name,
                     puser_group):
     """Add flight period."""
+    printlog(1, "Add flight %s period %d: depart %s arrive %s start %d end %s"
+             % (pflight_number, vschedule_period_no,
+                departure_airport, arrival_airport,
+                start_date, end_date))
     cur = conn.cursor()
     fpSql = "INSERT INTO flight_periods(" \
             "flight_number, start_date, end_date, frequency_code," \
@@ -358,7 +425,7 @@ def AddFlightPeriod(conn,
 def AddFlightSharedLeg(conn, flight_number, flight_date, spn,
                        departure_city, arrival_city,
                        departure_time, arrival_time,
-                       config_table='738A', aircraft_code='738',
+                       config_table='738', aircraft_code='738',
                        update_user='SSM'):
     """Add codeshare data."""
     fslSql = """
@@ -391,51 +458,58 @@ def AddInventorySegment(conn, pflight_number, vflight_date,
                         vdisplay_priority, pschedule_period_no,
                         pupdt_user_code, pupdt_dest_id):
     """Add inventory segment."""
-    isSql = "INSERT INTO inventry_segment" \
-            "( flight_number, flight_date," \
-            "city_pair, selling_class, departure_city, arrival_city," \
-            "leg_number, segment_number, ob_profile_no, " \
-            "group_seat_level,seat_protect_level,limit_sale_level," \
-            "overbooking_level,posting_level," \
-            "sale_notify_level,cancel_notify_level,seat_capacity," \
-            "overbooking_percnt," \
-            "nett_sngl_sold," \
-            "nett_sngl_wait," \
-            "nett_group_sold," \
-            "nett_group_wait," \
-            "nett_nrev_sold," \
-            "nett_nrev_wait," \
-            "segm_sngl_sold," \
-            "segm_sngl_wait," \
-            "segm_group_sold," \
-            "segm_group_wait," \
-            "segm_nrev_sold," \
-            "segm_nrev_wait," \
-            "segm_group_nrealsd," \
-            "segm_sngl_ticktd," \
-            "segm_group_ticktd," \
-            "segm_nrev_ticktd," \
-            "segment_closed_flag,wl_closed_flag, wl_clear_inhibit_flag,wl_release_party_flag," \
-            "scrutiny_flag, display_priority,schedule_period_no," \
-            "invt_update_flag, update_user, group_name, update_time )" \
-            " VALUES ( '%s', '%s'," \
-            " %d, '%s', '%s', '%s'," \
-            " %d, '%s', '%s', " \
-            " %d, %d, %d, %d, %d," \
-            " %d, %d, %d," \
-            " 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0," \
-            " '%s', '%s', '%s', '%s'," \
-            " 'N', %d, %d," \
-            " 'N', '%s', '%s', NOW() )" \
-            % (pflight_number, vflight_date.strftime("%Y-%m-%d"),
-               tcity_pair, vselling_class, vdeparture_city, varrival_city,
-               vleg_number, vsegment_number, vob_profile_no,
-               vgroup_seat_level, vseat_protect_level, vlimit_sale_level,
-               voverbooking_level, vposting_level,
-               vsale_notify_level, vcancel_notify_level, vseat_capacity,
-               vsegm_closed_flag, vwl_closed_flag, vwl_clr_inhbt_flag, vwl_rel_prty_flag,
-               vdisplay_priority, pschedule_period_no,
-               pupdt_user_code, pupdt_dest_id)
+    printlog(1, "Add inventory segment for flight %s date %s:"
+             "class %s seats %d depart %s arrive %s"
+             % (pflight_number, vflight_date,
+                vselling_class, vseat_capacity,
+                vdeparture_city, varrival_city))
+    isSql = """INSERT INTO inventry_segment (
+            flight_number, flight_date,
+            city_pair, selling_class, departure_city, arrival_city,
+            leg_number, segment_number, ob_profile_no,
+            group_seat_level,seat_protect_level,limit_sale_level,
+            overbooking_level,posting_level,
+            sale_notify_level,cancel_notify_level,seat_capacity,
+            overbooking_percnt,
+            nett_sngl_sold,
+            nett_sngl_wait,
+            nett_group_sold,
+            nett_group_wait,
+            nett_nrev_sold,
+            nett_nrev_wait,
+            segm_sngl_sold,
+            segm_sngl_wait,
+            segm_group_sold,
+            segm_group_wait,
+            segm_nrev_sold,
+            segm_nrev_wait,
+            segm_group_nrealsd,
+            segm_sngl_ticktd,
+            segm_group_ticktd,
+            segm_nrev_ticktd,
+            segment_closed_flag,wl_closed_flag, wl_clear_inhibit_flag,
+            wl_release_party_flag,
+            scrutiny_flag, display_priority,schedule_period_no,
+            invt_update_flag, update_user, group_name, update_time )
+        VALUES ( '%s', '%s',
+            %d, '%s', '%s', '%s',
+            %d, '%s', '%s',
+            %d, %d, %d, %d, %d,
+            %d, %d, %d,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            '%s', '%s', '%s', '%s',
+            'N', %d, %d,
+            'N', '%s', '%s', NOW() )""" \
+    % (pflight_number, vflight_date.strftime("%Y-%m-%d"),
+        tcity_pair, vselling_class, vdeparture_city, varrival_city,
+        vleg_number, vsegment_number, vob_profile_no,
+        vgroup_seat_level, vseat_protect_level, vlimit_sale_level,
+        voverbooking_level, vposting_level,
+        vsale_notify_level, vcancel_notify_level, vseat_capacity,
+        vsegm_closed_flag, vwl_closed_flag, vwl_clr_inhbt_flag,
+        vwl_rel_prty_flag,
+        vdisplay_priority, pschedule_period_no,
+        pupdt_user_code, pupdt_dest_id)
     printlog(2, "%s" % isSql)
     cur = conn.cursor()
     cur.execute(isSql)
@@ -453,6 +527,10 @@ def AddFlightDateLeg(conn,
                      userName,
                      groupName):
     """Add flight date leg."""
+    printlog(1, "Add flight %s date %s leg %d:"
+             " depart %s %s arrive %s"
+             % (flight, boardDate, legNo, adeparture_airport, adeparture_time,
+                aarrival_airport))
     fdlSql = """
         INSERT INTO flight_date_leg (
             flight_number, board_date, flight_date, departure_time,
@@ -482,6 +560,9 @@ def AddFlightPeriodClasses(conn, flightNumber, spn, class_codes):
         i = lc - 1
         while i > 0:
             dp += 1
+            printlog(1, "Add flight %s period %d class %s:"
+                     " parent %s display %d"
+                     % (flightNumber, spn, class_code[i], class_code[i-1], dp))
             fpcSql = """
             INSERT INTO flight_perd_cls(
                 flight_number, schedule_period_no, selling_class,
@@ -496,6 +577,9 @@ def AddFlightPeriodClasses(conn, flightNumber, spn, class_codes):
             printlog(2, "Inserted %d row(s)" % cur.rowcount)
             i -= 1
         dp += 1
+        printlog(1, "Add flight %s period %d class %s:"
+                 " parent %s display %d"
+                 % (flightNumber, spn, class_code[0], class_code[0], dp))
         fpcSql = """
         INSERT INTO flight_perd_cls(
             flight_number, schedule_period_no, selling_class, parent_sell_cls,
@@ -523,19 +607,21 @@ def AddFlightPeriodSegmentClasses(conn, flight_number, spn, city_pair,
         while j < lc:
             fpscSql = """
             INSERT INTO flt_perd_seg_cls(
-                    flight_number, schedule_period_no, city_pair, selling_class,
-                    group_seat_level, seat_protect_level, limit_sale_level, overbooking_level,
-                    posting_level, sale_notify_level, cancel_notify_level,
-                    seat_capacity,
-                    ob_profile_no, segment_closed_flag, wl_closed_flag, wl_clear_inhibit_flag,
-                    wl_release_party_flag, segment_number, update_time)
+                    flight_number, schedule_period_no, city_pair,
+                    selling_class, group_seat_level, seat_protect_level,
+                    limit_sale_level, overbooking_level, posting_level,
+                    sale_notify_level, cancel_notify_level, seat_capacity,
+                    ob_profile_no, segment_closed_flag, wl_closed_flag,
+                    wl_clear_inhibit_flag, wl_release_party_flag,
+                    segment_number, update_time)
                 VALUES (
-                    '%s', %d, %d, '%s',
-                    0, 0, 0, 0,
+                    '%s', %d, %d,
+                    '%s', 0, 0,
                     0, 0, 0,
-                    %d,
-                    '', 'N', 'N', 'N',
-                    'N', 1, NOW() )""" \
+                    0, 0, %d,
+                    '', 'N', 'N',
+                    'N', 'N',
+                    1, NOW() )""" \
             % (flight_number, spn, city_pair, class_code[j],
                int(configs[i]))
             printlog(2, "%s" % fpscSql)
@@ -558,7 +644,8 @@ def AddFlightPeriodParents(conn, flight_number, spn, class_codes):
         while i > 0:
             fppSql = """
             INSERT INTO flight_perd_prnt(
-                flight_number, schedule_period_no, selling_class, parent_sell_cls, update_time )
+                flight_number, schedule_period_no, selling_class,
+                parent_sell_cls, update_time )
             VALUES(
                 '%s', %d, '%s', '%s', NOW() )""" \
             % (flight_number, spn, class_code[i], class_code[i-1])
@@ -568,7 +655,8 @@ def AddFlightPeriodParents(conn, flight_number, spn, class_codes):
             i -= 1
         fppSql = """
         INSERT INTO flight_perd_prnt(
-            flight_number, schedule_period_no, selling_class, parent_sell_cls, update_time )
+            flight_number, schedule_period_no, selling_class,
+            parent_sell_cls, update_time )
         VALUES(
             '%s', %d, '%s', '%s', NOW() )""" \
         % (flight_number, spn, class_code[0], class_code[0])
@@ -621,14 +709,16 @@ def ProcNew(conn, ssm, userName, groupName):
         return -1
 
     printlog(1, "New flights from %s to %s"
-             % (ssm.start_date.strftime("%Y-%m-%d"), ssm.end_date.strftime("%Y-%m-%d")))
+             % (ssm.start_date.strftime("%Y-%m-%d"),
+                ssm.end_date.strftime("%Y-%m-%d")))
 
     aircraft_config_id = CheckAircraftConfig(conn, ssm.aircraft_code)
     if aircraft_config_id is None:
         print("Aircraft code %s is not configured" % ssm.aircraft_code)
         return -1
 
-    print("Aircraft code %s config %s" % (ssm.aircraft_code, aircraft_config_id))
+    print("Aircraft code %s config %s" % (ssm.aircraft_code,
+                                          aircraft_config_id))
 
     ssmdates = []
     cdate = ssm.start_date
@@ -672,7 +762,7 @@ def ProcNew(conn, ssm, userName, groupName):
                       ssm.arrival_terminal,
                       ssm.arrival_time,
                       '',
-                      ssm.aircraft_code,
+                      config_no,
                       1)
 
     for cdate in ssmdates:
@@ -753,7 +843,7 @@ def ProcNew(conn, ssm, userName, groupName):
                         ssm.departure_time,
                         ssm.arrival_time,
                         0,                 # date change indicator
-                        ssm.aircraft_code,  # config table no
+                        config_no,         # config table no
                         '',                # flight path code,
                         ssm.departure_terminal,
                         ssm.arrival_terminal,

@@ -10,7 +10,7 @@ class SsmData(object):
     arrival_terminal = 'X'
     frequency_code = 0
     aircraft_code = '738'
-    aircraft_conf = '738A'
+    aircraft_conf = '738'
     class_codes = ['Y', 'C']
     class_seats = [186, 2]
 

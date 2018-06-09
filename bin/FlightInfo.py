@@ -18,7 +18,7 @@ from datetime import datetime, timedelta, datetime
 
 from BarsConfig import BarsConfig
 from BarsLog import set_verbose, printlog
-from ReadDateTime import ReadDate
+from ReadDateTime import ReadDate, ReadTime
 #from MangoBanner import print_banner
 from Booking.ReadSeatReservation import ReadSeatReservation
 #from ReadSeatReservation import ReadReserveSeats, ReadFlightDateLegInfo, \
@@ -75,6 +75,7 @@ from Flight.ReadFlightTimes import ReadFlightTimes, ReadFlightPerdLegsTimes, \
                             ReadFlightSegmDateTimes, ReadFlightSegmDates, \
                             ReadFlightDateLegTimes, ReadFlightSharedLegTimes
 from DbConnect import OpenDb, CloseDb
+from BarsBanner import print_banner
 
 
 def read_flight_stuff(conn, flight_number, dt1, selling_cls, seat_number):
@@ -184,7 +185,7 @@ def daterange(start_date, end_date):
 
 
 def usage(pname='FlightInfo.py'):
-    #print_banner()
+    print_banner()
     print("Flights for a booking :")
     print("\t %s -B <BOOKNO>" % pname)
     print("\t %s -L <LOCATOR>" % pname)
@@ -465,9 +466,9 @@ def main(argv):
         elif opt in ("-T", "--cfgtable"):
             config_table = str(arg).upper()
         elif opt == "-X":
-            departure_time = int(arg)
+            departure_time = ReadTime(arg)
         elif opt == "-Y":
-            arrival_time = int(arg)
+            arrival_time = ReadTime(arg)
         elif opt == '-V':
             # Debug output
             set_verbose(2)
@@ -517,13 +518,11 @@ def main(argv):
     elif chk_perd and dt1 is not None and dt2 is not None:
         fperds = ReadFlightPeriods(conn, flight_number, dt1, dt2)
         for fperd in fperds:
-            if list_csv: fperd.displaycsv()
-            else: fperd.display()
+            fperd.display(list_csv)
     elif chk_perd:
         fperds = ReadFlightPeriodsLatest(conn, flight_number, dt1, dt2)
         for fperd in fperds:
-            if list_csv: fperd.displaycsv()
-            else: fperd.display()
+            fperd.display(list_csv)
     elif flight_number is None:
         if list_flights and dt1 is not None:
             if dt2 is not None:
@@ -536,10 +535,7 @@ def main(argv):
                                               code_share=csflag)
                     for flight in flights:
                         SetCodeShare(conn, flight)
-                        if list_csv:
-                            flight.displaycsv()
-                        else:
-                            flight.display()
+                        flight.display()
                     #print
             else:
                 printlog(2, "List flights for %s" % dt1.strftime("%Y-%m-%d"))
@@ -548,8 +544,7 @@ def main(argv):
                                           code_share=csflag)
                 for flight in flights:
                     SetCodeShare(conn, flight)
-                    if list_csv: flight.displaycsv()
-                    else: flight.display()
+                    flight.display()
         # elif chk_avail and dt1 is not None and departure_airport is not None and arrival_airport is not None:
             # CheckAvailability(conn, dt1, departure_airport, arrival_airport, company_code)
         elif flt_recon and recCount and dt1 is not None:
@@ -613,8 +608,7 @@ def main(argv):
                                           departure_airport, arrival_airport,
                                           code_share=csflag)
                 for flight in flights:
-                    if list_csv: flight.displaycsv()
-                    else: flight.display()
+                    flight.display()
         elif dt1 is not None:
             flights = ReadFlightsDate(conn, dt1, recCount, departure_airport,
                                       arrival_airport, code_share=csflag)
@@ -640,10 +634,12 @@ def main(argv):
                         dt2.strftime("%Y-%m-%d")))
             n = 0
             for single_date in daterange(dt1, dt2):
-                n, departure_airport, arrival_airport, city_pair = \
-                    ReadDeparture(conn, flight_number, single_date)
-                if n == 1:
-                    break
+                n, flights = \
+                    ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
+                                  flight_number, single_date)
+                departure_airport = flights[0].departure_airport
+                arrival_airport = flights[0].departure_airport
+                city_pair = flights[0].city_pair
             if n != 1:
                 print("Could not read departures and arrivals" \
                       " for flight %s board %s" \
@@ -652,8 +648,9 @@ def main(argv):
                     conn.close()
                     return 1
         elif not fare_route and dt1 is not None:
-            n, departure_airport, arrival_airport, city_pair = \
-                ReadDeparture(conn, flight_number, dt1)
+            n, flights = \
+                ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
+                              flight_number, dt1)
             if n != 1:
                 print("Could not read departures and arrivals" \
                       " for flight %s board %s" \
@@ -661,6 +658,9 @@ def main(argv):
                 if not force_query:
                     conn.close()
                     return 1
+            departure_airport = flights[0].departure_airport
+            arrival_airport = flights[0].departure_airport
+            city_pair = flights[0].city_pair
         if city_pair == 0:
             printlog(1, "City pair not found", 1)
         printlog(1, "Depart %s arrive %s city pair %d"
@@ -670,6 +670,7 @@ def main(argv):
             flight = FlightData('Y', flight_number, dt1,
                                 departure_time, arrival_time,
                                 departure_airport, arrival_airport, 0,
+                                'X', 'X',
                                 company_code, aircraft_code)
             schedule_period_no, start_date, end_date = \
                 ReadFlightTimes(conn, flight)
@@ -697,6 +698,7 @@ def main(argv):
             flight = FlightData('Y', flight_number, dt1,
                                 departure_time, arrival_time,
                                 departure_airport, arrival_airport, 0,
+                                'X', 'X',
                                 company_code, aircraft_code)
             pax_books = ReadFlightPaxNames(conn, flight)
             n_pax_books = len(pax_books)
@@ -721,39 +723,41 @@ def main(argv):
                               % (pax_book, pax_books[pax_book]))
             print("Matched %d records" % n)
         elif ssm_tim and dt1 is not None and dt2 is not None:
-            flight = FlightData('Y', flight_number, dt1,
-                                departure_time, arrival_time,
-                                departure_airport, arrival_airport,
-                                0, company_code, aircraft_code)
-            n = ReadSsmTim(conn, flight, dt1, dt2, frequency_code)
+            n, flights = \
+                ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
+                              flight_number, dt1)
+            if n != 1:
+                print("Could not read departures and arrivals" \
+                      " for flight %s board %s" \
+                      % (flight_number, dt1.strftime("%Y-%m-%d")))
+                if not force_query:
+                    conn.close()
+                    return 1
+            n = ReadSsmTim(conn, flights[0], dt1, dt2, frequency_code)
             if n == 0:
-                CheckSsmTim(conn, flight, sdate, edate, frequency_code, aircraft_code)
+                CheckSsmTim(conn, flights[0], sdate, edate, frequency_code, aircraft_code)
         elif flt_recon and dt1 is not None:
             AsrReconcile(conn, flight_number, dt1)
         elif pax_book and dt1 is not None:
-            flight = FlightData('Y', flight_number, dt1,
-                                departure_time, arrival_time,
-                                departure_airport, arrival_airport,
-                                0, company_code, aircraft_code)
-            ReadFlightBookings(conn, flight)
+            n, flights = \
+                ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
+                              flight_number, dt1)
+            ReadFlightBookings(conn, flights[0])
         elif contact_pax and dt1 is not None:
-            flight = FlightData('Y', flight_number, dt1,
-                                departure_time, arrival_time,
-                                departure_airport, arrival_airport,
-                                0, company_code, aircraft_code)
-            ReadFlightContacts(conn, flight)
+            n, flights = \
+                ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
+                              flight_number, dt1)
+            ReadFlightContacts(conn, flights[0])
         elif ssm_data and dt1 is not None:
-            flight = FlightData('Y', flight_number, dt1,
-                                departure_time, arrival_time,
-                                departure_airport, arrival_airport,
-                                0, company_code, aircraft_code)
-            ReadSsmFlightData(conn, flight, dt2)
+            n, flights = \
+                ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
+                              flight_number, dt1)
+            ReadSsmFlightData(conn, flights[0], dt1)
         elif ssm_book and schedule_period_no is not None and dt1 is not None:
-            flight = FlightData('Y', flight_number, dt1,
-                                departure_time, arrival_time,
-                                departure_airport, arrival_airport,
-                                0, company_code, aircraft_code)
-            ReadSsmBookData(conn, flight, schedule_period_no)
+            n, flights = \
+                ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
+                              flight_number, dt1)
+            ReadSsmBookData(conn, flights[0], schedule_period_no)
         elif contact_pax and dt1 is not None:
             flight = ReadFlightPax(conn, flight_number, dt1)
         elif list_flights:

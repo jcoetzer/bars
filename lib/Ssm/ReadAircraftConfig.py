@@ -50,7 +50,8 @@ def ReadAircraftConfig(conn, aircraft_code, config_table,
               % (row['config_table'], row['aircraft_code'],
                  row['seat_capacity'], row['selling_class'],
                  row['company_code'], row['gen_flag_invt'],
-                 row['update_user'], row['update_time']))
+                 row['update_user'],
+                 row['update_time'].strftime("%Y-%m-%d %H:%M")))
 
     if n == 0:
         print("\tnot found")

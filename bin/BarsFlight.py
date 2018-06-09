@@ -11,13 +11,15 @@ from ReadDateTime import ReadDate, ReadTime
 from BarsLog import set_verbose, printlog
 from Ssm.SsmDb import CheckCityPair, GetCityPair
 from ScheduleData import SsmData
-from Ssm.ProcNew import ProcNew
+from Ssm.ProcNew import ProcNew, AddAircraftConfig, CheckAircraftConfig, \
+    AddAircraft
 from BarsConfig import BarsConfig
 from DbConnect import OpenDb, CloseDb
 from Flight.WriteFares import AddCityPair, AddFareSegments, AddFares, \
     DelFareSegments
 from Flight.ReadFares import ReadCityPairs, ReadFareSegments, ReadFareCodes
 from Ssm.ReadAircraftConfig import ReadEquipmentConfig, WriteEquipmentConfig
+from BarsBanner import print_banner
 
 
 def NewCityPair(conn, departAirport, arriveAirport, userName, groupName):
@@ -70,6 +72,7 @@ def ReadEquipment(conn, tailNumber):
 
 def usage(pname='BarsFlight.py'):
     """Help message."""
+    print_banner()
     print("Add city pair:\n\t%s --city -P <CITY> -Q<CITY>" % pname)
     print("Add fare:\n\t%s --fare -P <CITY> -Q<CITY> -R <AMOUNT>"
           "-D <DATE> -E <DATE>" % pname)
@@ -79,7 +82,8 @@ def usage(pname='BarsFlight.py'):
     print("\t\t [-E <DATE>] [-A <CODE>] [-I <TIME>] [-J <TIME>] [-K <CITY>]"
           "[-L <CITY>] [-G <FLIGHT>] [-T <TAIL>]")
     print("Write aircraft data:")
-    print("\t%s --new -A <CODE> -I <CABIN> -J <SEATS>" % pname)
+    print("\t%s --new -A <CODE> -N <NAME>"
+    print("\t%s --new -A <CODE> -U <CODE> -T <TAIL> -I <CABIN> -J <SEATS>" % pname)
     print("where")
     print("\t-v\t\t Additional output")
     print("\t--cnl\t\t Cancel flight")
@@ -96,9 +100,11 @@ def usage(pname='BarsFlight.py'):
     print("\t-I <CABIN>\t Comma seperated cabin codes, e.g. 'Y,C'")
     print("\t-J <SEATS>\t Seat capacities for cabins, e.g. '186,2'")
     print("\t-K <FREQ>\t Frequency code for weekdays, e.g. 34 (Monday is 1)")
+    print("\t-N <NAME>\t Aircraft name, e.g. 'Boeing 737'"
     print("\t-P <CITY>\t Departure airport, e.g. JNB")
     print("\t-Q <CITY>\t Arrival airport, e.g. CPT")
     print("\t-T <TAIL>\t Tail number, e.g. ZSBZZ")
+    print("\t-U <CODE>\t Configuration code, e.g. 738A")
     print("\t-X <TIME>\t Departure time, e.g. 1120")
     print("\t-Y <TIME>\t Arrival time, e.g. 1325")
     sys.exit(2)
@@ -130,18 +136,19 @@ def main(argv):
     tailNumber = ''
     cabinClasses = []
     seatCapacities = []
+    aircraftName = None
 
     if len(argv) < 1:
         usage()
 
     try:
         opts, args = getopt.getopt(argv,
-                                   "cfhivxyVA:D:E:F:G:K:P:Q:R:T:U:X:Y:",
+                                   "cfhivxyVA:D:E:F:G:I:J:K:N:P:Q:R:T:U:X:Y:",
                                    ["help", "city", "fare", "faredel",
                                     "new", "eqt", "cnl", "tim", "rpl",
                                     "utc",
                                     "date=", "edate=", "flight=",
-                                    "depart=", "arrive=",
+                                    "depart=", "arrive=", "name=",
                                     "share=", "cfg=",
                                     "aircraft=", "freq=", "cfgtable="
                                     ])
@@ -170,39 +177,48 @@ def main(argv):
             donew = True
         elif opt == "-A" or opt == "--aircraft":
             aircraftCode = str(arg).upper()
-            printlog(1, "\t aircraft code %s" % aircraftCode)
+            printlog(2, "aircraft code %s" % aircraftCode)
         elif opt in ("-D", "--date"):
             departDate = ReadDate(arg)
-            printlog(1, "\t start date %s" % departDate.strftime("%Y-%m-%d"))
+            printlog(2, "start date %s" % departDate.strftime("%Y-%m-%d"))
         elif opt in ("-E", "--edate"):
             arriveDate = ReadDate(arg)
-            printlog(1, "\t end date %s" % departDate.strftime("%Y-%m-%d"))
+            printlog(2, "end date %s" % departDate.strftime("%Y-%m-%d"))
         elif opt in ("-F", "--flight"):
             flightNumber = arg
         elif opt in ("-G", "--share"):
             codeShare = arg
         elif opt in ("-I", "--cabin"):
             cabinClasses = str(arg).split(',')
+            printlog(2, "classes %s" % cabinClasses)
         elif opt in ("-J", "--seat"):
             seatCapacities = str(arg).split(',')
+            printlog(2, "seats %s" % seatCapacities)
         elif opt in ("-K", "--freq"):
             frequencyCode = str(arg)
+        elif opt in ("-N", "--name"):
+            aircraftName = str(arg)
         elif opt in ("-P", "--depart"):
             departAirport = str(arg).upper()
-            printlog(1, "\t depart %s" % departAirport)
+            printlog(2, "depart %s" % departAirport)
         elif opt in ("-Q", "--arrive"):
             arriveAirport = str(arg).upper()
-            printlog(1, "\t arrive %s" % arriveAirport)
+            printlog(2, "arrive %s" % arriveAirport)
         elif opt in ("-R", "--amount"):
             payAmount = int(arg)
+            printlog(2, "payment %d" % payAmount)
         elif opt in ("-T", "--tail"):
             tailNumber = str(arg)
+            printlog(2, "tail number %s" % tailNumber)
         elif opt in ("-U", "--cfg"):
             configTable = str(arg)
+            printlog(2, "configuration %s" % configTable)
         elif opt == "-X":
             departTime = ReadTime(arg)
+            printlog(2, "depart time %s" % departAirport)
         elif opt == "-Y":
             arriveTime = ReadTime(arg)
+            printlog(2, "arrive time %s" % arriveTime)
         else:
             print("Unknown option '%s'" % opt)
             return 1
@@ -230,19 +246,23 @@ def main(argv):
                   departAirport, departTime, arriveAirport, arriveTime,
                   frequencyCode, codeShare, tailNumber,
                   cfg.User, cfg.Group)
-    elif donew and flightNumber == '' \
-            and departDate is None \
-            and arriveDate is None \
-            and departTime is None \
-            and arriveTime is None \
-            and departAirport == '' \
-            and arriveAirport == '' \
+    elif donew and len(cabinClasses) > 0 \
+            and len(seatCapacities) > 0 \
             and aircraftCode != '' \
-            and frequencyCode == '' \
             and tailNumber != '' \
             and configTable != '':
-        WriteEquipmentConfig(conn, cfg.CompanyCode, aircraftCode, configTable,
-                             cabinClasses, seatCapacities, cfg.User, cfg.Group)
+        cfgt = CheckAircraftConfig(conn, cfg.CompanyCode, aircraftCode,
+                                   cabinClasses, seatCapacities)
+        if cfgt is None:
+            WriteEquipmentConfig(conn, cfg.CompanyCode, aircraftCode,
+                                 tailNumber, configTable, cabinClasses,
+                                 seatCapacities, cfg.User, cfg.Group)
+            AddAircraftConfig(conn, cfg.CompanyCode, aircraftCode, configTable,
+                              cabinClasses, seatCapacities,
+                              cfg.User, cfg.Group)
+    elif donew and aircraftCode != '' \
+            and aircraftName != '':
+        AddAircraft(conn, aircraftCode, aircraftName)
     elif docity and departAirport != '' \
             and arriveAirport != '':
         NewCityPair(conn, departAirport, arriveAirport,

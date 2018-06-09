@@ -92,11 +92,12 @@ def AddBook(conn, aBookNo, aPnr, aSeatQuantity, aOriginAddress,
         INSERT INTO book(
             book_no, pax_name_rec, book_type, group_name,
             no_of_seats,
-            book_category, group_wait_seats, group_rqst_seats, group_realtn_pcnt,
+            book_category, group_wait_seats, group_request_seats,
+            group_realtn_pcnt,
             origin_address, origin_branch_code,
             agency_code, received_from, tour_code, amount_paid,
             booking_status, scrutiny_flag,
-            first_segm_date, last_segm_date, reaccom_prty, dvd_process_flag,
+            first_segm_date, last_segm_date, reaccom_party, dvd_process_flag,
             rdu_process_flag, grp_process_flag, nrl_process_flag,
             create_user, create_group, create_time,
             update_user, update_group, update_time )
@@ -182,7 +183,7 @@ def AddBookTimeLimit(conn, aBookNo, aDestBranch, aUser, aGroup):
     btlSql = """
         INSERT INTO book_time_limits(
             book_no, timelmt_sequence_no, timelmt_type,
-            cancel_flag, dest_branch, all_passenger_flag, processing_flag,
+            cancel_flag, dest_branch, all_pax_flag, processing_flag,
             update_user, update_group, update_time )
         VALUES (
             %d, 1, 'T',
@@ -337,7 +338,7 @@ def AddBookRequest(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup):
                 action_code, actn_number,
                 processing_flag, rqr_count,
                 request_text,
-                all_passenger_flag, all_itenary_flag,
+                all_pax_flag, all_itenary_flag,
                 update_user, update_group,
                 update_time )
             VALUES ( %d, %d,
@@ -372,12 +373,14 @@ def AddPassenger(conn, aBookNo,
         vPaxNo += 1
         apSql = """
             INSERT INTO passenger(
-                book_no, passenger_no, pax_name,
+                book_no, pax_no, pax_name,
                 client_prfl_no, request_nos, remark_nos, fare_nos,
-                contact_nos, timelmt_nos, ticket_nos, name_incl_type, pax_code, processing_flag,
+                contact_nos, timelmt_nos, ticket_nos, name_incl_type, pax_code,
+                processing_flag,
                 update_user, update_group, update_time,
                 tty_pax_line_no, tty_pax_grp_no, tty_pax_grp_seq )
-            VALUES (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', NOW(), %d, %d, %d)""" \
+            VALUES (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s',
+                    '%s', '%s', '%s', '%s', '%s', NOW(), %d, %d, %d)""" \
             % (aBookNo, vPaxNo,
                aPaxName,
                vClientProfileNo,

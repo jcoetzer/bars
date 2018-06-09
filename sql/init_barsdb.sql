@@ -4,9 +4,9 @@ insert into master_files values ('ACFT', '738', 'Boeing 737-800', 'SSM', 'BARS')
 insert into master_files values ('ACFT', '733', 'Boeing 737-300', 'SSM', 'BARS');
 insert into master_files values ('ACFT', '320', 'Airbus A320', 'SSM', 'BARS');
 
-insert into aircraft_config values ('738A','ZZ','Y','738',0,0,0,0,0,0,0,186,'N','N','SSM','BARS',NOW());
-insert into aircraft_config values ('738A','ZZ','C','738',0,0,0,0,0,0,0,2,'N','N','SSM','BARS',NOW());
-insert into aircraft_config values ('733A','ZZ','Y','733',0,0,0,0,0,0,0,2,'N','N','SSM','BARS',NOW());
+insert into aircraft_config values ('738','ZZ','Y','738',0,0,0,0,0,0,0,186,'N','N','SSM','BARS',NOW());
+insert into aircraft_config values ('738','ZZ','C','738',0,0,0,0,0,0,0,2,'N','N','SSM','BARS',NOW());
+insert into aircraft_config values ('733','ZZ','Y','733',0,0,0,0,0,0,0,2,'N','N','SSM','BARS',NOW());
 
 insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
  values('ZZ', 'Y', 'Y', 'Y', 'Y', 1.05, 'SSM', 'BARS', NOW());

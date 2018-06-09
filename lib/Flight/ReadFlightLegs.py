@@ -46,7 +46,7 @@ def ReadFlightSharedLeg(conn, flight_number, dts):
     print("Flight shared legs for flight %s board %s [flight_shared_leg]"
           % (flight_number, dts.strftime("%Y-%m-%d")))
     FslSql = \
-        "select dup_flight_number,dup_board_date,dup_departure_airport,dup_arrival_airport,dup_flight_date," \
+        "SELECT dup_flight_number,dup_board_date,dup_departure_airport,dup_arrival_airport,dup_flight_date," \
         "date_change_ind,flight_path_code,departure_terminal,arrival_terminal,config_table,aircraft_code,leg_number," \
         "update_user,update_time" \
         " FROM flight_shared_leg" \

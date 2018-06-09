@@ -101,9 +101,9 @@ def ReadBookingData(conn, bk_cfg_files, book_no, locator):
             for row in rows:
                 n = 0
                 for col in row:
-                    print("%-*s" % (colwids[n], str(col or ''))),
+                    print("%-*s" % (colwids[n], str(col or '')), end=' ')
                     n += 1
-                print
-            print
+                print('')
+            print('')
 
     cur.close()

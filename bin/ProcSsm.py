@@ -26,6 +26,7 @@ from Ssm.SsmDb import CheckCityPair, CheckFlightPeriod
 import psycopg2
 from BarsConfig import BarsConfig
 from DbConnect import OpenDb, CloseDb
+from BarsBanner import print_banner
 
 
 def ProcData(conn, ssm, userName, groupName):
@@ -44,6 +45,7 @@ def ProcData(conn, ssm, userName, groupName):
 
 def usage():
     """TODO Help message."""
+    print_banner()
     print("Help!")
     sys.exit(1)
 

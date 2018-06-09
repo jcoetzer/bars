@@ -477,7 +477,6 @@ CREATE TABLE equipment_config (
     tail_number character varying(20),
     cabin_code character(2) NOT NULL,
     seat_capacity smallint NOT NULL,
-
     update_user character(16) NOT NULL,
     update_group character(8) NOT NULL,
     update_time timestamp WITH time zone
@@ -5453,19 +5452,6 @@ CREATE TABLE flight_checkin (
 ALTER TABLE public.flight_checkin OWNER TO postgres;
 
 --
--- Name: flight_configuration; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
---
-
-CREATE TABLE flight_configuration (
-    flight_number character(7) NOT NULL,
-    frequency_code character(7) NOT NULL,
-    config_table character(5) NOT NULL
-);
-
-
-ALTER TABLE public.flight_configuration OWNER TO postgres;
-
---
 -- Name: flight_date_leg; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
@@ -7692,7 +7678,7 @@ ALTER TABLE public.pass_itin_ref_det OWNER TO postgres;
 -- Name: pass_remarks; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE pass_remarks (
+CREATE TABLE pax_remarks (
     book_no integer NOT NULL,
     remark_sequence_no smallint NOT NULL,
     remark_text character varying(240),
@@ -7703,7 +7689,7 @@ CREATE TABLE pass_remarks (
 );
 
 
-ALTER TABLE public.pass_remarks OWNER TO postgres;
+ALTER TABLE public.pax_remarks OWNER TO postgres;
 
 --
 -- Name: passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -14796,14 +14782,6 @@ ALTER TABLE ONLY field_control_type
 
 ALTER TABLE ONLY financial_transaction_book
     ADD CONSTRAINT financial_transaction_book_pkey PRIMARY KEY (serial_no);
-
-
---
--- Name: flight_configuration_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
---
-
-ALTER TABLE ONLY flight_configuration
-    ADD CONSTRAINT flight_configuration_pkey PRIMARY KEY (flight_number, frequency_code, config_table);
 
 
 --

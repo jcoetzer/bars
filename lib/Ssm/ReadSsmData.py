@@ -13,15 +13,15 @@ def ReadSsmFlightData(conn, flight, end_date):
     print("Flight %s board %s data for SSM"
           % (flight.flight_number, flight.board_date_iso))
     FbSql = \
-        """SELECT DISTINCT fpl.departure_airport da,fpl.arrival_airport aa,
-        fp.start_date sd,fp.end_date ed,
-        fpl.schedule_period_no spn, fpl.leg_number ln,fp.via_cities vc,
+        """SELECT DISTINCT fpl.departure_airport da, fpl.arrival_airport aa,
+        fp.start_date sd, fp.end_date ed,
+        fpl.schedule_period_no spn, fpl.leg_number ln, fp.via_cities vc,
         fp.flgt_sched_status fss,
-        fp.frequency_code fc,fpl.departure_time dt, fpl.arrival_time at,
-        fsd.aircraft_code acn,fpl.config_table ctn,
+        fp.frequency_code fc, fpl.departure_time fdt, fpl.arrival_time fat,
+        fsd.aircraft_code acn, fpl.config_table ctn,
         fpl.departure_terminal dtn,
-        fpl.arrival_terminal atn"
-        FROM flight_perd_legs fpl, flight_periods fp,flight_segm_date fsd,
+        fpl.arrival_terminal atn
+        FROM flight_perd_legs fpl, flight_periods fp, flight_segm_date fsd,
              aircraft_config ac
         WHERE fpl.flight_number='%s'""" \
         % (flight.flight_number)
@@ -38,19 +38,19 @@ def ReadSsmFlightData(conn, flight, end_date):
         FbSql += " AND fsd.flight_date='%s'" % flight.board_date_mdy
 
     FbSql += \
-        " AND fpl.leg_number>=0" \
-        " AND fp.flgt_sched_status IN ('A', 'R', 'D', 'M', 'U')" \
-        " AND fp.flight_number=fpl.flight_number"  \
-        " AND fsd.flight_number=fpl.flight_number" \
-        " AND fsd.schedule_period_no=fpl.schedule_period_no"  \
-        " AND fp.schedule_period_no=fpl.schedule_period_no" \
-        " AND fpl.leg_number=fsd.leg_number" \
-        " AND fsd.departure_airport=fpl.departure_airport" \
-        " AND fsd.arrival_airport=fpl.arrival_airport" \
-        " AND ac.aircraft_code=fsd.aircraft_code" \
-        " AND ac.config_table=fpl.config_table" \
-        " AND fp.frequency_code LIKE '%%%d%%'" \
-        " ORDER BY fp.start_date, fpl.schedule_period_no, fpl.leg_number" \
+        """ AND fpl.leg_number>=0
+        AND fp.flgt_sched_status IN ('A', 'R', 'D', 'M', 'U')
+        AND fp.flight_number=fpl.flight_number \
+        AND fsd.flight_number=fpl.flight_number
+        AND fsd.schedule_period_no=fpl.schedule_period_no \
+        AND fp.schedule_period_no=fpl.schedule_period_no
+        AND fpl.leg_number=fsd.leg_number
+        AND fsd.departure_airport=fpl.departure_airport
+        AND fsd.arrival_airport=fpl.arrival_airport
+        AND ac.aircraft_code=fsd.aircraft_code
+        AND ac.config_table=fpl.config_table
+        AND fp.frequency_code LIKE '%%%d%%'
+        ORDER BY fp.start_date, fpl.schedule_period_no, fpl.leg_number""" \
         % flight.board_weekday
 
     printlog(2, FbSql)

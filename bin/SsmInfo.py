@@ -23,6 +23,7 @@ from ReadSchedPeriod import ReadSchedPeriod, ReadConfigNumberOfSeats
 from ReadSsmData import ReadSsmFlightData, ReadSsmBookData, ReadSsmTim
 from BarsConfig import BarsConfig
 from DbConnect import OpenDb, CloseDb
+from BarsBanner import print_banner
 
 
 def check_ssm_file(procssm, fname):
@@ -188,6 +189,7 @@ def daterange(start_date, end_date):
 
 def usage(pname='FlightInfo.py'):
     """Help message."""
+    print_banner()
     print("Data for a flight as used by SSM processing :")
     print("\t %s --ssmdata -F <FLIGHT> -D <DATE> [-E <DATE>]" % pname)
     print("\t %s --ssmbook -F <FLIGHT> -D <DATE> -R <PERD>" % pname)

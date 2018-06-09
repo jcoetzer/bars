@@ -249,31 +249,39 @@ def CheckFlightDateClassSeatMaps(conn, flight):
     print
 
 
-def ReadDeparture(conn, flight_number, flight_date, delim=' '):
+def ReadDeparture(conn, company_code, class_code, flight_number, flight_date):
     """Read departure and arrival city codes."""
     RcSql = \
-        "select departure_airport,arrival_airport, city_pair from flight_segm_date" \
-        " where flight_number='%s' and flight_date='%s'" \
+        """SELECT departure_airport,arrival_airport, city_pair,
+                  departure_terminal, arrival_terminal,
+                  departure_time, arrival_time
+        FROM flight_segm_date
+        WHERE flight_number='%s' AND flight_date='%s'""" \
         % (flight_number, flight_date.strftime("%Y-%m-%d"))
     printlog(2, RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
-    rval = ""
-    rval2 = ""
-    rval3 = 0
+    flights = []
     for row in cur:
-        if n:
-            rval += delim
-            rval2 += delim
-            # rval3 += delim
-        rval += str(row['departure_airport'] or '')
-        rval2 += str(row['arrival_airport'] or '')
-        rval3 += int(row['city_pair'] or 0)
+        fltinfo = FlightData(class_code,
+                             flight_number,
+                             flight_date,
+                             row['departure_time'],
+                             row['arrival_time'],
+                             row['departure_airport'],
+                             row['arrival_airport'],
+                             row['departure_terminal'],
+                             row['arrival_terminal'],
+                             row['city_pair'],
+                             company_code)
+        flights.append(fltinfo)
         n += 1
-        printlog(1, "\tDepart %s arrive %s city pair %d" % (rval, rval2, rval3))
+        printlog(1, "\tDepart %s arrive %s city pair %d"
+                 % (fltinfo.departure_airport, fltinfo.arrival_airport,
+                    fltinfo.city_pair))
 
-    return n, rval, rval2, rval3
+    return n, flights
 
 
 def ReadFlightDeparture(conn, class_code, flight_number, flight_date):

@@ -33,10 +33,12 @@ from Flight.ReadFlights import ReadDeparture
 from Flight.ReadFlights import ReadFlightDeparture
 from DbConnect import OpenDb, CloseDb
 from BarsConfig import BarsConfig
+from BarsBanner import print_banner
 
 
 def usage(pn):
     """Help message."""
+    print_banner()
     print("Availability:")
     print("\t%s --avail -P <CITY> -Q <CITY> -D <DATE> [-E <DATE>]" % pn)
     print("Pricing:")
@@ -127,9 +129,9 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
         payAmount = 0.0
     if sellClass is None:
         sellClass = 'Y'
-    if departAirport is None or arriveAirport is None:
-        print("Flight number and date must be specified")
-        return
+    #if departAirport is None or arriveAirport is None:
+        #print("Flight number and date must be specified")
+        #return
     n, fd = ReadFlightDeparture(conn, sellClass, flightNumber, dt1)
     if n == 0:
         print("Flight number and date not found")
@@ -365,8 +367,10 @@ def main(argv):
                  departAirport, arriveAirport,
                  selling_classs, cfg.CompanyCode)
     elif dodetail:
-        GetFlightDetails(conn, flightNumber, dt1, flightNumber2, dt2,
-                         departAirport, arriveAirport)
+        GetFlightDetails(conn, flightNumber, dt1, departAirport, arriveAirport)
+        if flightNumber2 is not None and dt2 is not None:
+            GetFlightDetails(conn, flightNumber2, dt2, departAirport,
+                             arriveAirport)
     elif doprice:
         cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
         GetPrice(conn,
@@ -389,17 +393,17 @@ def main(argv):
                  cfg.FareCategory,
                  cfg.AuthorityLevel)
     elif dobook:
-        cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
+        # cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
         PutBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
                 cfg.OriginBranchCode, cfg.AgencyCode,
                 paxNames, paxDobs,
                 payAmount,
                 flightNumber, dt1,
-                None, None,
                 departAirport, arriveAirport,
                 departTime, arriveTime,
-                departTerm, arriveTerm,
-                cityPairNo, sellClass,
+                # departTerm, arriveTerm,
+                # cityPairNo,
+                sellClass,
                 vTimeLimit,
                 cfg.User, cfg.Group)
     elif dopay:
