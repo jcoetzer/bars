@@ -74,6 +74,7 @@ install: $(PYTHONS)
 	find ./etc/ -name "*.cfg" -print -exec cp {} $(BARSDIR)/etc/ \;
 	mkdir -p $(BARSDIR)/sql
 	find ./sql -name "*.sql" -print -exec cp {} $(BARSDIR)/sql/ \;
+	mkdir -p $(BARSDIR)/etc
 	find ./etc -type f -print -exec cp {} $(BARSDIR)/etc/ \;
 
 uninstall:
