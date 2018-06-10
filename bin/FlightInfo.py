@@ -742,7 +742,7 @@ def main(argv):
             n, flights = \
                 ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
                               flight_number, dt1)
-            ReadFlightBookings(conn, flights[0])
+            ReadFlightBookings(conn, flights[0].flight_number, flights[0].board_dts)
         elif contact_pax and dt1 is not None:
             n, flights = \
                 ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],

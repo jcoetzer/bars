@@ -15,6 +15,8 @@ from datetime import datetime
 from datetime import timedelta
 from random import randrange
 import configparser
+from faker import Faker
+from random import randint
 
 from BarsLog import printlog, set_verbose
 from ReadDateTime import ReadDate
@@ -27,13 +29,14 @@ from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, \
      AddItenary, AddPassenger, \
      AddBookFares, AddBookFareSegments, AddBookFarePassengers, \
      AddBookFaresPayments, AddBookRequest, AddPayment, \
-     GetPreBookingInfo, AddBookTimeLimit
+     GetPreBookingInfo, AddBookTimeLimit, AddContact
 from Booking.ReadItenary import ReadItenary
 from Flight.ReadFlights import ReadDeparture
 from Flight.ReadFlights import ReadFlightDeparture
 from DbConnect import OpenDb, CloseDb
 from BarsConfig import BarsConfig
 from BarsBanner import print_banner
+from Booking.PassengerData import PassengerData
 
 
 def usage(pn):
@@ -109,7 +112,7 @@ def GetPrice(conn,
 
 def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
             vOriginBranchCode, vAgencyCode,
-            paxNames, paxDobs,
+            paxRecs,
             payAmount,
             flightNumber, dt1,
             flightNumber2, dt2,
@@ -118,13 +121,10 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
             aTimeLimit,
             vUser, vGroup):
     """Make a booking."""
-    vSeatQuantity = len(paxNames)
-    if vSeatQuantity == 0:
+    if paxRecs is None:
         print("No passenger names")
         return
-    if len(paxDobs) == 0:
-        print("No passenger birth dates")
-        return
+    vSeatQuantity = len(paxRecs)
     if payAmount is None:
         payAmount = 0.0
     if sellClass is None:
@@ -173,11 +173,12 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
                    cityPairNo, sellClass,
                    vUser, vGroup)
 
-    AddPassenger(conn, bn,
-                 paxNames,
-                 'ADULT', 'A',
-                 vUser, vGroup)
-    AddBookRequest(conn, bn, vCompany, 'CKIN', paxDobs, vUser, vGroup)
+    AddPassenger(conn, bn, paxRecs, vUser, vGroup)
+    AddContact(conn, bn, paxRecs, vUser, vGroup)
+    paxRequests = []
+    for paxRec in paxRecs:
+        paxRequests.append(paxRec.date_of_birth)
+    AddBookRequest(conn, bn, vCompany, 'CKIN', paxRequests, vUser, vGroup)
     AddBookTimeLimit(conn, bn, vAgencyCode, vUser, vGroup)
 
 
@@ -193,7 +194,8 @@ def PutPay(conn, aCurrency, aPayAmount, aPayAmount2,
         return 1
     vPaymentForm = 'VI'
     vPaymentType = 'CC'
-    vDocNum = '4242424242424242'
+    fake = Faker()
+    vDocNum = fake.credit_card_number()
     vPaymentMode = ' '
     vRemark = ' '
     vFareNo = 1
@@ -245,8 +247,8 @@ def main(argv):
     bn = None
     departTime = None
     arriveTime = None
-    paxNames = None
-    paxDobs = None
+    paxNames = []
+    paxDobs = []
     payAmount = None
     payAmount2 = None
     sellClass = None
@@ -394,15 +396,29 @@ def main(argv):
                  cfg.AuthorityLevel)
     elif dobook:
         # cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
+        paxRecs = []
+        if len(paxNames) == 0:
+            lnames = randint(1, 9)
+            n = 0
+            while n < lnames:
+                paxRec = PassengerData('ADULT', n+1)
+                paxRec.fakeit()
+                paxRec.display()
+                paxRecs.append(paxRec)
+                n += 1
+        else:
+            n = 0
+            for paxName in paxNames:
+                paxRec = PassengerData('ADULT', n+1, paxName, paxDobs[n])
+                paxRecs.append(paxRec)
+                n += 1
         PutBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
                 cfg.OriginBranchCode, cfg.AgencyCode,
-                paxNames, paxDobs,
+                paxRecs,
                 payAmount,
                 flightNumber, dt1,
                 departAirport, arriveAirport,
                 departTime, arriveTime,
-                # departTerm, arriveTerm,
-                # cityPairNo,
                 sellClass,
                 vTimeLimit,
                 cfg.User, cfg.Group)

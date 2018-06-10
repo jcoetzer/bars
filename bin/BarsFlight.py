@@ -19,6 +19,7 @@ from Flight.WriteFares import AddCityPair, AddFareSegments, AddFares, \
     DelFareSegments
 from Flight.ReadFares import ReadCityPairs, ReadFareSegments, ReadFareCodes
 from Ssm.ReadAircraftConfig import ReadEquipmentConfig, WriteEquipmentConfig
+from Flight.ReadFlightBookings import ReadFlightBookings, ReadFlightContacts
 from BarsBanner import print_banner
 
 
@@ -82,7 +83,7 @@ def usage(pname='BarsFlight.py'):
     print("\t\t [-E <DATE>] [-A <CODE>] [-I <TIME>] [-J <TIME>] [-K <CITY>]"
           "[-L <CITY>] [-G <FLIGHT>] [-T <TAIL>]")
     print("Write aircraft data:")
-    print("\t%s --new -A <CODE> -N <NAME>"
+    print("\t%s --new -A <CODE> -N <NAME>" % pname)
     print("\t%s --new -A <CODE> -U <CODE> -T <TAIL> -I <CABIN> -J <SEATS>" % pname)
     print("where")
     print("\t-v\t\t Additional output")
@@ -100,7 +101,7 @@ def usage(pname='BarsFlight.py'):
     print("\t-I <CABIN>\t Comma seperated cabin codes, e.g. 'Y,C'")
     print("\t-J <SEATS>\t Seat capacities for cabins, e.g. '186,2'")
     print("\t-K <FREQ>\t Frequency code for weekdays, e.g. 34 (Monday is 1)")
-    print("\t-N <NAME>\t Aircraft name, e.g. 'Boeing 737'"
+    print("\t-N <NAME>\t Aircraft name, e.g. 'Boeing 737'")
     print("\t-P <CITY>\t Departure airport, e.g. JNB")
     print("\t-Q <CITY>\t Arrival airport, e.g. CPT")
     print("\t-T <TAIL>\t Tail number, e.g. ZSBZZ")
@@ -121,6 +122,8 @@ def main(argv):
     dofaredel = False
     donew = False
     doeqt = False
+    dopax = False
+    docontact = False
     departDate = None
     arriveDate = None
     payAmount = 0
@@ -146,7 +149,7 @@ def main(argv):
                                    "cfhivxyVA:D:E:F:G:I:J:K:N:P:Q:R:T:U:X:Y:",
                                    ["help", "city", "fare", "faredel",
                                     "new", "eqt", "cnl", "tim", "rpl",
-                                    "utc",
+                                    "utc", "pax", "contact",
                                     "date=", "edate=", "flight=",
                                     "depart=", "arrive=", "name=",
                                     "share=", "cfg=",
@@ -175,6 +178,10 @@ def main(argv):
             doeqt = True
         elif opt == "--new":
             donew = True
+        elif opt == "--pax":
+            dopax = True
+        elif opt == "--contact":
+            docontact = True
         elif opt == "-A" or opt == "--aircraft":
             aircraftCode = str(arg).upper()
             printlog(2, "aircraft code %s" % aircraftCode)
@@ -267,6 +274,10 @@ def main(argv):
             and arriveAirport != '':
         NewCityPair(conn, departAirport, arriveAirport,
                     cfg.User, cfg.Group)
+    if dopax and flightNumber != '' and departDate is not None:
+        ReadFlightBookings(conn, flightNumber, departDate)
+    if docontact and flightNumber != '' and departDate is not None:
+        ReadFlightContacts(conn, flightNumber, departDate)
     elif docity:
         ReadCityPairs(conn)
     elif dofare and departAirport != '' \

@@ -7570,10 +7570,10 @@ CREATE TABLE paradox_chg (
 ALTER TABLE public.paradox_chg OWNER TO postgres;
 
 --
--- Name: pass_contact; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: pax_contact; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE pass_contact (
+CREATE TABLE pax_contact (
     book_no integer NOT NULL,
     pax_no smallint NOT NULL,
     home_phone_no character varying(30),
@@ -7608,7 +7608,7 @@ CREATE TABLE pass_contact (
 );
 
 
-ALTER TABLE public.pass_contact OWNER TO postgres;
+ALTER TABLE public.pax_contact OWNER TO postgres;
 
 --
 -- Name: pass_desc_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -7699,6 +7699,7 @@ CREATE TABLE passenger (
     book_no integer NOT NULL,
     pax_no smallint NOT NULL,
     pax_name character(53) NOT NULL,
+    birth_date date,
     client_prfl_no character(15),
     request_nos character varying(1024),
     remark_nos character varying(30),
@@ -15026,11 +15027,11 @@ ALTER TABLE ONLY osi_et_text
 
 
 --
--- Name: pass_contact_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
+-- Name: pax_contact_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
-ALTER TABLE ONLY pass_contact
-    ADD CONSTRAINT pass_contact_pkey PRIMARY KEY (book_no, pax_no);
+ALTER TABLE ONLY pax_contact
+    ADD CONSTRAINT pax_contact_pkey PRIMARY KEY (book_no, pax_no);
 
 
 --

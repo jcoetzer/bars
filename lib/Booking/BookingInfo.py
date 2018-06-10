@@ -226,6 +226,9 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
 def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode, aFlight, aDate,
                         aDepart, aArrive, aCurrency, aAmount, aUser, aGroup):
     """Add entry for book fare segment."""
+    printlog(1, "Add book fare segment for booking %d:"
+             " code %s flight %s date %s amount %s%d"
+             % (aBookNo, aPaxCode, aFlight, aDate, aCurrency, aAmount))
     abfSql = """
         INSERT INTO book_fares_segm(
             book_no, fare_no, pax_code,
@@ -259,6 +262,9 @@ def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode, aFlight, aDate,
 def AddBookFarePassengers(conn, aBookNo, aPaxCode, aCurrency, aAmount,
                           aUser, aGroup):
     """Add entry for book fare passenger."""
+    printlog(1, "Add book fare passenger for booking %d:"
+             " passenger code %s amount %s%d"
+             % (aBookNo, aPaxCode, aCurrency, aAmount))
     vFare = ' '
     vRestrict = ' '
     abfSql = """
@@ -285,6 +291,8 @@ def AddBookFarePassengers(conn, aBookNo, aPaxCode, aCurrency, aAmount,
 def AddBookFaresPayments(conn, aBookNo, aFareNo, aPaxCode, aFareCode,
                          aCurrency, aAmount, aUser, aGroup, aSource):
     """Add entry for book fare payment."""
+    printlog(1, "Add book fare payment for booking %d:"
+             "passenger code %s amount %s%d" % (aBookNo, aCurrency, aAmount))
     abfSql = """
         INSERT INTO book_fares_paym(
             book_no, fare_no, pax_code,
@@ -319,8 +327,8 @@ def AddBookRequest(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup):
     """Add book request."""
     # Value for request sequence number
     cur = conn.cursor()
-    abrSql = "SELECT MAX(rqst_sequence_no) FROM book_requests WHERE book_no = %d" \
-             % aBookNo
+    abrSql = """SELECT MAX(rqst_sequence_no)
+        FROM book_requests WHERE book_no = %d""" % aBookNo
     printlog(2, "%s" % abrSql)
     cur.execute(abrSql)
     vRequestSeq = 0
@@ -331,7 +339,7 @@ def AddBookRequest(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup):
     for aReqText in aReqTexts:
         vRequestSeq += 1
         abrSql = """
-            INSERT INTO book_requests (
+        INSERT INTO book_requests (
                 book_no, rqst_sequence_no,
                 item_no, indicator, rqst_code,
                 carrier_code,
@@ -356,11 +364,12 @@ def AddBookRequest(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup):
     cur.close()
 
 
-def AddPassenger(conn, aBookNo,
-                 aPaxNames,
-                 aPaxCode, aProcFlag,
+def AddPassenger(conn, aBookNo, aPaxRecs,
                  aUser, aGroup):
     """Add passenger record."""
+    printlog(1, "Add passengers for booking %d: %s (%s)"
+             % (aBookNo, aPaxRecs[0].passenger_name,
+                aPaxRecs[0].passenger_code))
     vClientProfileNo = ' '
     vFareNo = ' '
     vTimeLimitNo = ' '
@@ -368,29 +377,50 @@ def AddPassenger(conn, aBookNo,
     vTtyGrpNo = 0
     vTtyGrpSeq = 0
     cur = conn.cursor()
-    vPaxNo = 0
-    for aPaxName in aPaxNames:
-        vPaxNo += 1
+    for paxRec in aPaxRecs:
         apSql = """
             INSERT INTO passenger(
-                book_no, pax_no, pax_name,
+                book_no, pax_no, pax_name, birth_date,
                 client_prfl_no, request_nos, remark_nos, fare_nos,
                 contact_nos, timelmt_nos, ticket_nos, name_incl_type, pax_code,
-                processing_flag,
-                update_user, update_group, update_time,
+                processing_flag, update_user, update_group, update_time,
                 tty_pax_line_no, tty_pax_grp_no, tty_pax_grp_seq )
-            VALUES (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s',
-                    '%s', '%s', '%s', '%s', '%s', NOW(), %d, %d, %d)""" \
-            % (aBookNo, vPaxNo,
-               aPaxName,
+            VALUES (%d, %d, '%s', '%s',
+                    '%s', '%s', '%s', '%s',
+                    '%s', '%s', '%s', '%s', '%s',
+                    '%s', '%s', '%s', NOW(),
+                    %d, %d, %d)""" \
+            % (aBookNo, paxRec.passenger_no,
+               paxRec.passenger_name, paxRec.date_of_birth,
                vClientProfileNo,
                " ", " ", vFareNo, " ",
                vTimeLimitNo, " ", " ",
-               aPaxCode, aProcFlag,
+               paxRec.passenger_code, paxRec.processing_flg,
                aUser, aGroup,
                vTtyLineNo, vTtyGrpNo, vTtyGrpSeq)
         printlog(2, "%s" % apSql)
         cur.execute(apSql)
+        printlog(2, "Inserted %d row(s)" % cur.rowcount)
+    cur.close()
+
+
+def AddContact(conn, aBookNo, aPaxRecs, aUser, aGroup):
+    """Add entry for contact info."""
+    cur = conn.cursor()
+    for paxRec in aPaxRecs:
+        printlog(1, "Add contact for booking %d: phone %s email %s"
+                 % (aBookNo, paxRec.contact_phone, paxRec.contact_email))
+        abfSql = """
+            INSERT INTO pax_contact(
+                book_no, pax_no, contact_phone_no, email_address,
+                update_user, update_group, update_time )
+            VALUES (
+                %d, %d, '%s',
+                '%s', '%s', '%s', NOW() )""" \
+            % (aBookNo, paxRec.passenger_no, paxRec.contact_phone,
+               paxRec.contact_email, aUser, aGroup)
+        printlog(2, "%s" % abfSql)
+        cur.execute(abfSql)
         printlog(2, "Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
@@ -401,6 +431,8 @@ def AddPayment(conn, aPaymentForm, aPaymentType, aCurrency, aAmount,
                aBranchCode, aRemark,
                aUser, aGroup):
     """Add payment entry."""
+    printlog(1, "Add payment for booking %d: %s%d type %s doc %s"
+             % (aBookNo, aCurrency, aAmount, aDocNum))
     apSql = """
         INSERT INTO payments(
                 payment_form, payment_type,
@@ -436,7 +468,7 @@ def AddPayment(conn, aPaymentForm, aPaymentType, aCurrency, aAmount,
 
 def GetPreBookingInfo(conn, book_no):
     """Query to run sometimes."""
-    printlog(2, "Pre booking info %d" % book_no)
+    printlog(2, "Pre booking %d info" % book_no)
     preBookingInfoSql = """
         SELECT bo.book_no,
             bo.pax_name_rec,
