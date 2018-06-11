@@ -36,6 +36,7 @@ from Flight.ReadFlights import ReadFlightDeparture
 from DbConnect import OpenDb, CloseDb
 from BarsConfig import BarsConfig
 from BarsBanner import print_banner
+from Booking.ReadBooking import ReadPassengers
 from Booking.PassengerData import PassengerData
 
 
@@ -108,6 +109,21 @@ def GetPrice(conn,
                             dt2.strftime('%Y-%m-%d'))
     for fare in fares:
         fare.display()
+
+def GetPassengers(conn, bn):
+    """Read and display passengers in booking."""
+    paxRecs = ReadPassengers(conn, bn)
+    for paxRec in paxRecs:
+        paxRec.display()
+    return paxRecs
+
+
+def GetItenary(conn, aBookNo):
+    """Read and display itenaries for booking."""
+    itenRecs = ReadItenary(conn, aBookNo, '', '')
+    for itenRec in itenRecs:
+        itenRec.display()
+    return itenRecs
 
 
 def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
@@ -182,49 +198,45 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
     AddBookTimeLimit(conn, bn, vAgencyCode, vUser, vGroup)
 
 
-def PutPay(conn, aCurrency, aPayAmount, aPayAmount2,
-           aBookNo,
-           aPaxNames, aPaxCode,
-           aDepart, aArrive,
-           aOriginBranchCode,
+def PutPay(conn, aBookNo, aSellClass,
+           aCurrency, aPayAmount, aPayAmount2,
+           aCompany, aOriginBranchCode, aFareCode,
+           vPaymentType, vPaymentForm, vDocNum,
            aUser, aGroup):
     """Process payment."""
     if aBookNo is None:
         print("Book number not specified")
         return 1
-    vPaymentForm = 'VI'
-    vPaymentType = 'CC'
-    fake = Faker()
-    vDocNum = fake.credit_card_number()
+    paxRecs = GetPassengers(conn, aBookNo)
+    # itenRecs = GetItenary(conn, aBookNo)
     vPaymentMode = ' '
     vRemark = ' '
     vFareNo = 1
-    AddPayment(conn, vPaymentForm, vPaymentType, aCurrency, aPayAmount,
+    AddPayment(conn, vPaymentForm, vPaymentType, aCurrency, int(aPayAmount),
                vDocNum, vPaymentMode,
-               aBookNo, aPaxNames[0], aPaxCode,
+               aBookNo, paxRecs[0].passenger_name, paxRecs[0].passenger_code,
                aOriginBranchCode, vRemark,
                aUser, aGroup)
-    if aDepart is None or aArrive is None:
-        irecs = ReadItenary(conn, None, aBookNo, None,
-                            fnumber=None, start_date=None, end_date=None)
-        li = len(irecs)
-        if li > 2:
-            print("Found %d itenaries")
-            return
-        elif li == 2:
-            for irec in irecs:
-                pass
-        elif li == 1:
-            irec = irecs[0]
-            irec.display()
-            n, departure_airport, arrival_airport, city_pair = \
-                ReadDeparture(conn, irec.flight_number, dt1=None)
-            AddBookFares(conn, aBookNo, vFareNo, aPaxCode,
-                         departure_airport, arrival_airport,
-                         aCurrency, aPayAmount, aUser, aGroup)
+
+    payAmounts = [int(aPayAmount*100), int(aPayAmount2*100)]
+    irecs = ReadItenary(conn, aBookNo, None, None,
+                        fnumber=None, start_date=None, end_date=None)
+    if len(irecs) > 2:
+        print("Found %d itenaries")
+        return 1
     else:
-        AddBookFares(conn, aBookNo, vFareNo, aPaxCode, aDepart, aArrive,
-                     aCurrency, aPayAmount, aUser, aGroup)
+        n = 0
+        for irec in irecs:
+            irec.display()
+            AddBookFares(conn, aBookNo, vFareNo, paxRecs[0].passenger_code,
+                         irec.departure_airport, irec.arrival_airport,
+                         aCurrency, payAmounts[n], aUser, aGroup)
+            AddBookFaresPayments(conn, aBookNo, vFareNo,
+                                 paxRecs[0].passenger_code, aFareCode,
+                                 aCurrency, payAmounts[n],
+                                 aUser, aGroup)
+            n += 1
+
     return 0
 
 
@@ -249,10 +261,11 @@ def main(argv):
     arriveTime = None
     paxNames = []
     paxDobs = []
-    payAmount = None
-    payAmount2 = None
+    payAmount = 0.0
+    payAmount2 = 0.0
     sellClass = None
     vTimeLimit = datetime.now() + timedelta(days=2)
+    vDocNum = None
 
     # Option flags
     doavail = False
@@ -270,7 +283,7 @@ def main(argv):
                                ["help",
                                 "avail", "book", "detail", "price", "pay",
                                 "chk",
-                                "bn=", "dob="
+                                "bn=", "dob=", "card=",
                                 "date=", "edate=", "flight=", "rflight="])
 
     for opt, arg in opts:
@@ -294,9 +307,11 @@ def main(argv):
         elif opt == '--pay':
             dopay = True
         elif opt in ("-R", "--amount"):
-            payAmount = str(arg)
+            payAmount = float(arg)
         elif opt in ("-S", "--ramount"):
-            payAmount2 = str(arg)
+            payAmount2 = float(arg)
+        elif opt in ("-T", "--card"):
+            vDocNum = str(arg)
         elif opt in ('-B', '--bn'):
             bn = int(arg)
             printlog(2, "Booking number %d" % bn)
@@ -355,8 +370,8 @@ def main(argv):
         GetPreBookingInfo(conn, bn)
         return 0
 
-    if dt1 is None:
-        print("No departure date specified")
+    if dt1 is None and bn is None:
+        print("No departure date or booking number specified")
         return 1
 
     if dt2 is None:
@@ -423,11 +438,22 @@ def main(argv):
                 vTimeLimit,
                 cfg.User, cfg.Group)
     elif dopay:
-        PutPay(conn, cfg.Currency, payAmount, payAmount2,
-               bn, paxNames, cfg.PaxCode,
-               departAirport, arriveAirport,
-               cfg.OriginBranchCode,
-               cfg.User, cfg.Group)
+        if payAmount is None:
+            print("Payment amount not specified")
+        else:
+            vPaymentForm = 'VI'
+            vPaymentType = 'CC'
+            if vDocNum is None:
+                fake = Faker()
+                vDocNum = fake.credit_card_number()
+            PutPay(conn, bn, sellClass,
+                   cfg.Currency, payAmount, payAmount2,
+                   cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareCode,
+                   vPaymentType, vPaymentForm, vDocNum,
+                   cfg.User, cfg.Group)
+    elif bn is not None:
+        GetPassengers(conn, bn)
+        GetItenary(conn, bn)
     else:
         print("Nothing to do")
 

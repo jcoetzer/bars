@@ -202,6 +202,9 @@ def AddBookTimeLimit(conn, aBookNo, aDestBranch, aUser, aGroup):
 def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
                  aCurrency, aAmount, aUser, aGroup):
     """Add entry for book fare."""
+    printlog(1, "Add book %d fare %d code %s depart %s arrive %s amount %s%d"
+             % (aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
+                aCurrency, aAmount))
     abfSql = """
         INSERT INTO book_fares(
             book_no, fare_no, pax_code,
@@ -289,10 +292,11 @@ def AddBookFarePassengers(conn, aBookNo, aPaxCode, aCurrency, aAmount,
 
 
 def AddBookFaresPayments(conn, aBookNo, aFareNo, aPaxCode, aFareCode,
-                         aCurrency, aAmount, aUser, aGroup, aSource):
+                         aCurrency, aAmount, aUser, aGroup, aSource=None):
     """Add entry for book fare payment."""
-    printlog(1, "Add book fare payment for booking %d:"
-             "passenger code %s amount %s%d" % (aBookNo, aCurrency, aAmount))
+    printlog(1, "Add book %d fare %d"
+             " passenger code %s payment %s%d"
+             % (aBookNo, aFareNo, aPaxCode, aCurrency, aAmount))
     abfSql = """
         INSERT INTO book_fares_paym(
             book_no, fare_no, pax_code,
@@ -311,11 +315,11 @@ def AddBookFaresPayments(conn, aBookNo, aFareNo, aPaxCode, aFareCode,
                  'N', 'N',
                  'N', 'N',
                  'N',
-                 '%s', '%s', NOW(), '%s' ) """ \
+                 '%s', '%s', NOW(), %d ) """ \
         % (aBookNo, aFareNo, aPaxCode,
            aFareCode,
            aCurrency, aAmount,
-           aUser, aGroup, aSource)
+           aUser, aGroup, int(aSource or 0))
     printlog(2, "%s" % abfSql)
     cur = conn.cursor()
     cur.execute(abfSql)
@@ -385,10 +389,13 @@ def AddPassenger(conn, aBookNo, aPaxRecs,
                 contact_nos, timelmt_nos, ticket_nos, name_incl_type, pax_code,
                 processing_flag, update_user, update_group, update_time,
                 tty_pax_line_no, tty_pax_grp_no, tty_pax_grp_seq )
-            VALUES (%d, %d, '%s', '%s',
+            VALUES (%d, %d,
+                    '%s', '%s',
+                    '%s',
                     '%s', '%s', '%s', '%s',
-                    '%s', '%s', '%s', '%s', '%s',
-                    '%s', '%s', '%s', NOW(),
+                    '%s', '%s', '%s',
+                    '%s', '%s',
+                    '%s', '%s', NOW(),
                     %d, %d, %d)""" \
             % (aBookNo, paxRec.passenger_no,
                paxRec.passenger_name, paxRec.date_of_birth,
@@ -432,7 +439,7 @@ def AddPayment(conn, aPaymentForm, aPaymentType, aCurrency, aAmount,
                aUser, aGroup):
     """Add payment entry."""
     printlog(1, "Add payment for booking %d: %s%d type %s doc %s"
-             % (aBookNo, aCurrency, aAmount, aDocNum))
+             % (aBookNo, aCurrency, aAmount, aPaymentType, aDocNum))
     apSql = """
         INSERT INTO payments(
                 payment_form, payment_type,
@@ -440,7 +447,8 @@ def AddPayment(conn, aPaymentForm, aPaymentType, aCurrency, aAmount,
                 payment_date, document_no, payment_mode,
                 book_no, pax_name, pax_code,
                 origin_branch_code, remarks_text, received_from,
-                paid_flag, pay_stat_flag, recpt_stat_flag, invc_stat_flag, payment_ind,
+                paid_flag, pay_stat_flag, recpt_stat_flag, invc_stat_flag,
+                payment_flag,
                 create_user, create_group, create_time,
                 update_user, update_group, update_time)
         VALUES ('%s', '%s',
@@ -448,7 +456,8 @@ def AddPayment(conn, aPaymentForm, aPaymentType, aCurrency, aAmount,
                 CURRENT_DATE, '%s', '%s',
                 %d, '%s', '%s',
                 '%s', '%s', ' ',
-                'Y', 'A', 'A', 'A', 'Y',
+                'Y', 'A', 'A', 'A',
+                'Y',
                 '%s', '%s', NOW(),
                 '%s', '%s', NOW()
                 )""" \

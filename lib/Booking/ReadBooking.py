@@ -1,7 +1,6 @@
+# @file ReadBooking.py
 """
-Red data from booking tables.
-
-@file ReadBooking.py
+Read data from booking tables.
 """
 
 import os
@@ -12,10 +11,12 @@ import psycopg2
 from datetime import datetime, timedelta, date
 
 from BarsLog import set_verbose, get_verbose, printlog
+from Booking.PassengerData import PassengerData
 # from ReadBookings import GetBookColumns
 
 
 def ReadBooking(conn, book_no):
+    """Read booking data and stuff."""
     dt1 = None
     bcol = "booking_status,pax_name_rec,origin_address,first_segm_date," \
            "no_of_seats,book_agency"
@@ -41,7 +42,10 @@ def ReadBooking(conn, book_no):
 
 
 def ReadBookingData(conn, bk_cfg_files, book_no, locator):
-
+    """Read booking data and stuff."""
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    # Run query
+    cur.execute(bookSql)
     for bk_cfg_file in bk_cfg_files:
 
         printlog(2, "Read config file %s" % bk_cfg_file)
@@ -107,3 +111,31 @@ def ReadBookingData(conn, bk_cfg_files, book_no, locator):
             print('')
 
     cur.close()
+
+
+def ReadPassengers(conn, book_no):
+    """
+    Read passengers
+
+    TODO and contact details.
+    """
+    cur = conn.cursor()
+    RpSql = """SELECT pa.pax_name papn, pa.request_nos parn, pa.pax_no papr,
+            pa.pax_code papc, pa.birth_date pb, pa.processing_flag pf
+            FROM passenger pa
+            WHERE pa.book_no = %d
+            AND pa.pax_no > 0""" % book_no
+    cur.execute(RpSql)
+    paxRecs = []
+    for row in cur:
+        pax_name = row[0]
+        pax_no = row[2]
+        pax_code = row[3]
+        pax_dob = row[4]
+        pax_flag = row[5]
+        paxRec = PassengerData(pax_code, pax_no, pax_name, pax_dob,
+                               None, None, pax_flag)
+        paxRecs.append(paxRec)
+
+    cur.close()
+    return paxRecs

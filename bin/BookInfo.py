@@ -272,7 +272,7 @@ def main(argv):
     elif doSsr and bookno is not None:
         if dt1 is None:
             pnr, dt1 = ReadBooking(conn, bookno)
-        irecs = ReadItenary(conn, None, bookno, None,
+        irecs = ReadItenary(conn, bookno, None, None,
                             fnumber=None, start_date=None, end_date=None)
         for irec in irecs:
             irec.display()

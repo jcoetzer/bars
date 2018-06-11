@@ -11,7 +11,7 @@ from BarsLog import set_verbose, get_verbose, printlog
 from Booking.ItenaryData import ItenaryData
 
 
-def ReadItenary(conn, booking_status, bookno, action_codes,
+def ReadItenary(conn, bookno, booking_status, action_codes,
                 fnumber=None, start_date=None, end_date=None):
     """Read itenary."""
     itenaryrecs = []

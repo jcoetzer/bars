@@ -87,4 +87,4 @@ clean:
 	find $(BARSDIR)/ -name "*.pyc" -print -delete
 
 %.pyc: %.py
-	python3 -m compileall $*.py
+	@python3 -m compileall $*.py
