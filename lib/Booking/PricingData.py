@@ -14,6 +14,10 @@ from ReadDateTime import ReadDate
 
 class FarePricingData(object):
 
+    fare_code = ''
+    selling_class = ''
+    fare_value = 0
+
     def __init__(self,
                  fare_code,
                  city_pair,
@@ -25,7 +29,7 @@ class FarePricingData(object):
                  byps_strt_auth_level,
                  byps_end_auth_level,
                  selling_class):
-        self.fare_code = fare_code,
+        self.fare_code = fare_code
         self.city_pair = city_pair
         self.valid_from_date = valid_from_date
         self.valid_to_date = valid_to_date
@@ -37,8 +41,7 @@ class FarePricingData(object):
         self.selling_class = selling_class
 
     def display(self):
-        print("Fare data:")
-        print("\tFare code %s class %s value %.2f"
+        print("Fare code %s class %s value %.2f"
               % (self.fare_code, self.selling_class, self.fare_value))
 
 

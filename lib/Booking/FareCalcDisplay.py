@@ -31,20 +31,12 @@ def FareCalcDisplay(conn,
     WHERE fs.company_code = '%s'
     AND fs.active_flag = 'A'
     AND fs.city_pair = %d
-    AND
-    (
-        (
-            fs.valid_from_date <= '%s'
+    AND ( ( fs.valid_from_date <= '%s'
             AND fs.valid_to_date >= '%s'
-            AND fc.onw_return_flag = 'O'
-        )
-        OR
-        (
-            fs.valid_from_date <= '%s'
+            AND fc.onw_return_flag = 'O' )
+       OR ( fs.valid_from_date <= '%s'
             AND fs.valid_to_date >= '%s'
-            AND fc.onw_return_flag = 'R'
-        )
-    )
+            AND fc.onw_return_flag = 'R' ) )
     AND fc.company_code = fs.company_code
     AND fc.fare_code = fs.fare_code
     AND fc.selling_class = '%s'
@@ -52,21 +44,9 @@ def FareCalcDisplay(conn,
     AND fc.fare_category = '%s'
     AND fc.acss_strt_auth_level <= %d
     AND fc.acss_end_auth_level >= %d
-    AND
-    (
-        (
-            fs.eff_from_date <= '%s'
-            AND fs.eff_to_date >= '%s'
-        )
-        OR
-        (
-            fs.eff_from_date IS NULL
-        )
-        OR
-        (
-            fs.eff_to_date IS NULL
-        )
-    )
+    AND ( ( fs.eff_from_date <= '%s' AND fs.eff_to_date >= '%s' )
+       OR ( fs.eff_from_date IS NULL )
+       OR ( fs.eff_to_date IS NULL ) )
     ORDER BY fs.company_code, fs.city_pair, fs.fare_value, fs.fare_code
     """ % (
     acompany_code,
@@ -85,7 +65,7 @@ def FareCalcDisplay(conn,
     pricings = []
     printlog(2, "Selected %d row(s)" % cur.rowcount)
     for row in cur:
-        fare_code = str(row[0])
+        fare_code = row[0]
         city_pair = row[1]
         valid_from_date = row[2]
         valid_to_date = row[3]
@@ -111,4 +91,24 @@ def FareCalcDisplay(conn,
         pricings.append(pricing)
 
     return pricings
+
+
+def ReadPayments(conn, book_no):
+    """Read payments for booking."""
+    RpSql = """
+        SELECT payment_form, payment_type, payment_amount, payment_date,
+        document_no, payment_mode, pax_name, pax_code,
+        contact_phone_no,
+        paid_flag, pay_stat_flag, recpt_stat_flag, invc_stat_flag,
+        update_time
+        FROM payments
+        WHERE book_no = %d""" % book_no
+    printlog(2, RpSql)
+    cur = conn.cursor()
+    cur.execute(RpSql)
+    for row in cur:
+        for val in row:
+            print("%s" % val, end=' ')
+        print('')
+
 

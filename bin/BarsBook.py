@@ -24,7 +24,7 @@ from ReadDateTime import ReadDate
 from Ssm.SsmDb import GetCityPair
 from Flight.AvailDb import get_selling_conf, get_avail_flights, OldAvailSvc
 from Flight.FlightDetails import GetFlightDetails
-from Booking.FareCalcDisplay import FareCalcDisplay
+from Booking.FareCalcDisplay import FareCalcDisplay, ReadPayments
 from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, \
      AddItenary, AddPassenger, \
      AddBookFares, AddBookFareSegments, AddBookFarePassengers, \
@@ -96,19 +96,23 @@ def GetPrice(conn,
              onw_return_ind,
              fare_category,
              authority_level):
-    """Get price information."""
+    """Read and display price information."""
+    printlog("Get price for city pair %d class %s on %s"
+             % (cityPairNo, selling_class, dt1))
     fares = FareCalcDisplay(conn,
                             vCompany,
                             cityPairNo,
-                            dt1.strftime('%Y-%m-%d'),
-                            dt2.strftime('%Y-%m-%d'),
+                            dt1,
+                            dt2,
                             selling_class,
                             onw_return_ind,
                             fare_category,
                             authority_level,
-                            dt2.strftime('%Y-%m-%d'))
+                            dt2)
     for fare in fares:
         fare.display()
+    return fares
+
 
 def GetPassengers(conn, bn):
     """Read and display passengers in booking."""
@@ -139,7 +143,7 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
     """Make a booking."""
     if paxRecs is None:
         print("No passenger names")
-        return
+        return 0, ''
     vSeatQuantity = len(paxRecs)
     if payAmount is None:
         payAmount = 0.0
@@ -151,7 +155,7 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
     n, fd = ReadFlightDeparture(conn, sellClass, flightNumber, dt1)
     if n == 0:
         print("Flight number and date not found")
-        return
+        return 0, ''
     departAirport = fd.departure_airport
     arriveAirport = fd.arrival_airport
     cityPairNo = fd.city_pair
@@ -174,7 +178,7 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
         n, fd = ReadFlightDeparture(conn, sellClass, flightNumber2, dt2)
         if n == 0:
             print("Return flight number and date not found")
-            return
+            return 0, ''
         departAirport = fd.departure_airport
         arriveAirport = fd.arrival_airport
         cityPairNo = fd.city_pair
@@ -188,7 +192,6 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
                    departTerm, arriveTerm,
                    cityPairNo, sellClass,
                    vUser, vGroup)
-
     AddPassenger(conn, bn, paxRecs, vUser, vGroup)
     AddContact(conn, bn, paxRecs, vUser, vGroup)
     paxRequests = []
@@ -196,6 +199,7 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
         paxRequests.append(paxRec.date_of_birth)
     AddBookRequest(conn, bn, vCompany, 'CKIN', paxRequests, vUser, vGroup)
     AddBookTimeLimit(conn, bn, vAgencyCode, vUser, vGroup)
+    return bn, pnr
 
 
 def PutPay(conn, aBookNo, aSellClass,
@@ -217,7 +221,6 @@ def PutPay(conn, aBookNo, aSellClass,
                aBookNo, paxRecs[0].passenger_name, paxRecs[0].passenger_code,
                aOriginBranchCode, vRemark,
                aUser, aGroup)
-
     payAmounts = [int(aPayAmount*100), int(aPayAmount2*100)]
     irecs = ReadItenary(conn, aBookNo, None, None,
                         fnumber=None, start_date=None, end_date=None)
@@ -226,6 +229,7 @@ def PutPay(conn, aBookNo, aSellClass,
         return 1
     else:
         n = 0
+        totalPayment = 0
         for irec in irecs:
             irec.display()
             AddBookFares(conn, aBookNo, vFareNo, paxRecs[0].passenger_code,
@@ -235,8 +239,11 @@ def PutPay(conn, aBookNo, aSellClass,
                                  paxRecs[0].passenger_code, aFareCode,
                                  aCurrency, payAmounts[n],
                                  aUser, aGroup)
+            totalPayment += payAmounts[n]
             n += 1
-
+        AddBookFarePassengers(conn, aBookNo, paxRecs[0].passenger_code,
+                              aCurrency, totalPayment,
+                              aUser, aGroup)
     return 0
 
 
@@ -416,8 +423,13 @@ def main(argv):
             lnames = randint(1, 9)
             n = 0
             while n < lnames:
-                paxRec = PassengerData('ADULT', n+1)
-                paxRec.fakeit()
+                # Make the last pax in group a child
+                if lnames > 3 and n == lnames-1:
+                    paxRec = PassengerData('CHILD', n+1)
+                    paxRec.fakeit(cfg.DialCode, paxRecs[n-1].last_name)
+                else:
+                    paxRec = PassengerData('ADULT', n+1)
+                    paxRec.fakeit(cfg.DialCode)
                 paxRec.display()
                 paxRecs.append(paxRec)
                 n += 1
@@ -427,33 +439,51 @@ def main(argv):
                 paxRec = PassengerData('ADULT', n+1, paxName, paxDobs[n])
                 paxRecs.append(paxRec)
                 n += 1
-        PutBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
-                cfg.OriginBranchCode, cfg.AgencyCode,
-                paxRecs,
-                payAmount,
-                flightNumber, dt1,
-                departAirport, arriveAirport,
-                departTime, arriveTime,
-                sellClass,
-                vTimeLimit,
-                cfg.User, cfg.Group)
+        bn, pnr = PutBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
+                          cfg.OriginBranchCode, cfg.AgencyCode,
+                          paxRecs,
+                          payAmount,
+                          flightNumber, dt1,
+                          departAirport, arriveAirport,
+                          departTime, arriveTime,
+                          sellClass,
+                          vTimeLimit,
+                          cfg.User, cfg.Group)
+        if bn > 0:
+            print("Created booking %d (%s)" % (bn, pnr))
     elif dopay:
         if payAmount is None:
-            print("Payment amount not specified")
-        else:
-            vPaymentForm = 'VI'
-            vPaymentType = 'CC'
-            if vDocNum is None:
-                fake = Faker()
-                vDocNum = fake.credit_card_number()
-            PutPay(conn, bn, sellClass,
-                   cfg.Currency, payAmount, payAmount2,
-                   cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareCode,
-                   vPaymentType, vPaymentForm, vDocNum,
-                   cfg.User, cfg.Group)
+            itens = GetItenary(conn, bn)
+            payAmount = 0
+            for iten in itens:
+                fares = GetPrice(conn,
+                                 cfg.CompanyCode,
+                                 iten.city_pair,
+                                 iten.board_dts,
+                                 iten.board_dts,
+                                 cfg.SellingClass,
+                                 cfg.OnwReturnIndicator,
+                                 cfg.FareCategory,
+                                 cfg.AuthorityLevel)
+                for fare in fares:
+                    payAmount += fare.fare_value
+            paxRecs = GetPassengers(conn, bn)
+            payAmount *= len(paxRecs)
+            print("Payment amount not specified: calculated as %d" % payAmount)
+        vPaymentForm = 'VI'
+        vPaymentType = 'CC'
+        if vDocNum is None:
+            fake = Faker()
+            vDocNum = fake.credit_card_number()
+        PutPay(conn, bn, sellClass,
+               cfg.Currency, payAmount, payAmount2,
+               cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareCode,
+               vPaymentType, vPaymentForm, vDocNum,
+               cfg.User, cfg.Group)
     elif bn is not None:
         GetPassengers(conn, bn)
         GetItenary(conn, bn)
+        ReadPayments(conn, bn)
     else:
         print("Nothing to do")
 

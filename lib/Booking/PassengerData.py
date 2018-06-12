@@ -5,6 +5,7 @@ Passenger name, date of birth and contact details.
 
 import os
 import sys
+from random import randint
 
 from BarsLog import printlog, get_verbose
 from ReadDateTime import ReadDate
@@ -70,34 +71,56 @@ class PassengerData(object):
             self.contact_email = contact_email
         self.processing_flg = processing_flg
 
-    def fakeit(self):
+    def fakeit(self, aDialCode='+27', last_name=None):
         global fake
         if self.passenger_no % 2 == 0:
-            self.last_name = fake.last_name_female()
             self.first_name = fake.first_name_female()
-            self.passenger_title = fake.prefix_female()
+            lnames = randint(0, 1)
+            n = 0
+            while n < lnames:
+                self.first_name += ' ' + fake.first_name_female()
+                n += 1
+            if self.passenger_code == 'ADULT':
+                self.last_name = fake.last_name_female()
+                self.passenger_title = fake.prefix_female()
+            else:
+                self.last_name = last_name
+                self.passenger_title = 'MISS'
         else:
-            self.last_name = fake.last_name_male()
             self.first_name = fake.first_name_male()
-            self.passenger_title = fake.prefix_male()
-        self.passenger_name = str(self.last_name + '/' + self.first_name + ' '
+            lnames = randint(0, 2)
+            n = 0
+            while n < lnames:
+                self.first_name += ' ' + fake.first_name_male()
+                n += 1
+            if self.passenger_code == 'ADULT':
+                self.last_name = fake.last_name_male()
+                self.passenger_title = fake.prefix_male()
+            else:
+                self.last_name = last_name
+                self.passenger_title = 'MR'
+        self.passenger_name = str(self.last_name + '/' +
+                                  self.first_name.replace(' ', '') + ' '
             + self.passenger_title).upper().replace('.', '')
         if self.passenger_code == 'CHILD':
             self.date_of_birth = fake.date_between(start_date="-16y", end_date="-1y")
         else:
             self.date_of_birth = fake.date_between(start_date="-80y", end_date="-16y")
-        self.contact_phone = '+27' + fake.msisdn()[4:]
-        self.contact_email = str(self.first_name + self.last_name + '@'
+        self.contact_phone = aDialCode + fake.msisdn()[4:]
+        self.contact_email = str(self.first_name.split(' ')[0] + self.last_name + '@'
                                  + fake.domain_name()).lower()
 
     def display(self, prefix='\t'):
+        print("%sPassenger %d (paid %s %s) %s"
+                % (prefix, self.passenger_no, self.processing_flg,
+                    self.passenger_code,
+                    self.passenger_name), end=' ')
         if self.date_of_birth is not None:
             dob = self.date_of_birth.strftime("%Y-%m-%d")
-            print("%sPassenger %d (%s) %s : %s born %s phone %s email %s" \
-                   % (prefix, self.passenger_no, self.passenger_code,
-                      self.processing_flg, self.passenger_name, dob,
-                      self.contact_phone, self.contact_email))
-        else:
-            print("%sPassenger %s (paid %s) %s" \
-                  % (prefix, self.passenger_code, self.processing_flg,
-                     self.passenger_name))
+            print(": born %s" \
+                   % (dob), end=' ')
+        if self.contact_phone is not None \
+        and self.contact_email is not None:
+            print("phone %s email %s"
+                  % (self.contact_phone, self.contact_email), end=' ')
+        print('')

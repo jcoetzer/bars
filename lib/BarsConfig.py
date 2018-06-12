@@ -29,6 +29,7 @@ class BarsConfig(object):
     Address = 'SWIZZ1G'
     Sender = 'JNB0AZZ'
     TimeMode = 'LT'
+    DialCode = '+27'
 
     def __init__(self, cfgfile):
         """Initialize this thing."""
@@ -53,6 +54,7 @@ class BarsConfig(object):
         self.User = config.get('Users', 'User')
         self.Group = config.get('Users', 'Group')
         self.Currency = config.get('Country', 'Currency')
+        self.DialCode = config.get('Country', 'DialCode')
 
         self.Address = config.get('Tty', 'Sender')
         self.Sender = config.get('Tty', 'Sender')

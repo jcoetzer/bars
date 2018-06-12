@@ -63,8 +63,7 @@ from Flight.ReadSeatMap import ReadFlightSeatMap, \
                           #ReadFareAgencies
 from Flight.ReadSchedPeriod import ReadSchedPeriod, ReadConfigNumberOfSeats, \
                             ReadFlightPeriods, ReadFlightPeriodsLatest
-#from ReadFlightBookings import ReadFlightBookings, ReadFlightContacts, \
-                               #ReadFlightPaxNames
+from Flight.ReadFlightBookings import ReadFlightBookings, ReadFlightContacts
 from Ssm.ReadSsmData import ReadSsmFlightData, ReadSsmBookData, ReadSsmTim
 from Flight.ReadFlightLegs import ReadFlightSharedLeg, ReadFlightDateLegs, \
                            ReadtestPeriodLegs, ReadAsrReconcileHistory

@@ -265,7 +265,7 @@ def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode, aFlight, aDate,
 def AddBookFarePassengers(conn, aBookNo, aPaxCode, aCurrency, aAmount,
                           aUser, aGroup):
     """Add entry for book fare passenger."""
-    printlog(1, "Add book fare passenger for booking %d:"
+    printlog(1, "Add book %d fare passenger:"
              " passenger code %s amount %s%d"
              % (aBookNo, aPaxCode, aCurrency, aAmount))
     vFare = ' '
@@ -438,7 +438,7 @@ def AddPayment(conn, aPaymentForm, aPaymentType, aCurrency, aAmount,
                aBranchCode, aRemark,
                aUser, aGroup):
     """Add payment entry."""
-    printlog(1, "Add payment for booking %d: %s%d type %s doc %s"
+    printlog(1, "Add book %d payment: %s%d type %s doc %s"
              % (aBookNo, aCurrency, aAmount, aPaymentType, aDocNum))
     apSql = """
         INSERT INTO payments(
@@ -477,7 +477,7 @@ def AddPayment(conn, aPaymentForm, aPaymentType, aCurrency, aAmount,
 
 def GetPreBookingInfo(conn, book_no):
     """Query to run sometimes."""
-    printlog(2, "Pre booking %d info" % book_no)
+    printlog(2, "Pre book %d info" % book_no)
     preBookingInfoSql = """
         SELECT bo.book_no,
             bo.pax_name_rec,
