@@ -268,8 +268,8 @@ def main(argv):
     arriveTime = None
     paxNames = []
     paxDobs = []
-    payAmount = 0.0
-    payAmount2 = 0.0
+    payAmount = None
+    payAmount2 = None
     sellClass = None
     vTimeLimit = datetime.now() + timedelta(days=2)
     vDocNum = None
@@ -439,6 +439,8 @@ def main(argv):
                 paxRec = PassengerData('ADULT', n+1, paxName, paxDobs[n])
                 paxRecs.append(paxRec)
                 n += 1
+        if payAmount is None:
+            payAmount = 0.0
         bn, pnr = PutBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
                           cfg.OriginBranchCode, cfg.AgencyCode,
                           paxRecs,
@@ -475,11 +477,12 @@ def main(argv):
         if vDocNum is None:
             fake = Faker()
             vDocNum = fake.credit_card_number()
-        PutPay(conn, bn, sellClass,
-               cfg.Currency, payAmount, payAmount2,
-               cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareCode,
-               vPaymentType, vPaymentForm, vDocNum,
-               cfg.User, cfg.Group)
+        print("Pay %s%d with card %s" % (cfg.Currency, payAmount, vDocNum))
+        #PutPay(conn, bn, sellClass,
+               #cfg.Currency, payAmount, payAmount2,
+               #cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareCode,
+               #vPaymentType, vPaymentForm, vDocNum,
+               #cfg.User, cfg.Group)
     elif bn is not None:
         GetPassengers(conn, bn)
         GetItenary(conn, bn)

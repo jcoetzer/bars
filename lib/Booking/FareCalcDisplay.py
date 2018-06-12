@@ -7,6 +7,7 @@ import psycopg2
 
 from BarsLog import printlog
 from Booking.PricingData import PricingData, FarePricingData
+from Booking.PaymentData import PaymentData
 
 
 def FareCalcDisplay(conn,
@@ -96,19 +97,25 @@ def FareCalcDisplay(conn,
 def ReadPayments(conn, book_no):
     """Read payments for booking."""
     RpSql = """
-        SELECT payment_form, payment_type, payment_amount, payment_date,
+        SELECT payment_form, payment_type, paid_curr_code, payment_amount,
+        payment_date,
         document_no, payment_mode, pax_name, pax_code,
         contact_phone_no,
-        paid_flag, pay_stat_flag, recpt_stat_flag, invc_stat_flag,
+        paid_flag, pay_stat_flag,
         update_time
         FROM payments
         WHERE book_no = %d""" % book_no
     printlog(2, RpSql)
-    cur = conn.cursor()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RpSql)
     for row in cur:
-        for val in row:
-            print("%s" % val, end=' ')
-        print('')
+        payRec = PaymentData(row['payment_form'], row['payment_type'],
+                             row['paid_curr_code'], row['payment_amount'],
+                             row['payment_date'],
+                             row['document_no'], row['payment_mode'],
+                             row['pax_name'], row['pax_code'],
+                             row['paid_flag'], row['pay_stat_flag'],
+                             row['update_time'])
+        payRec.display()
 
 
