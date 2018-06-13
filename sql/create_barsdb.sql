@@ -928,8 +928,8 @@ ALTER TABLE public.availbty_rule OWNER TO postgres;
 
 CREATE TABLE avs_history (
     avs_history_id bigint NOT NULL,
-    departure_city character varying(5) NOT NULL,
-    arrival_city character varying(5) NOT NULL,
+    departure_airport character varying(5) NOT NULL,
+    arrival_airport character varying(5) NOT NULL,
     origin_address character varying(10) NOT NULL,
     dest_address character varying(10) NOT NULL,
     flight_number character varying(7) NOT NULL,
@@ -1100,7 +1100,7 @@ CREATE TABLE book (
     origin_branch_code character(12) NOT NULL,
     agency_code character(8),
     book_agency character(8),
-    departure_city character(5),
+    departure_airport character(5),
     departure_nation character(2),
     origin_address character(10),
     record_locator character varying(69),
@@ -1331,7 +1331,7 @@ CREATE TABLE book_fares (
     fare_no smallint NOT NULL,
     pax_code character(5) NOT NULL,
     departure_airport character(5) NOT NULL,
-    arrival_city character(5) NOT NULL,
+    arrival_airport character(5) NOT NULL,
     total_amount_curr character(3) NOT NULL,
     total_amount numeric(15,5),
     fare_construction character varying(255),
@@ -5746,7 +5746,7 @@ CREATE TABLE flight_reconcile (
     city_pair integer,
     selling_class character(2),
     departure_airport character(5),
-    arrival_city character(5),
+    arrival_airport character(5),
     segm_sngl_sold smallint,
     book_sngl_sold smallint,
     segm_group_sold smallint,
@@ -6374,8 +6374,8 @@ CREATE TABLE hist_book_fares (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
     pax_code character(5) NOT NULL,
-    departure_city character(5) NOT NULL,
-    arrival_city character(5) NOT NULL,
+    departure_airport character(5) NOT NULL,
+    arrival_airport character(5) NOT NULL,
     total_amount_curr character(3) NOT NULL,
     total_amount numeric(15,5),
     fare_construction character varying(255),
@@ -6572,8 +6572,6 @@ CREATE TABLE hist_itenary (
     itenary_no smallint NOT NULL,
     flight_number character(7) NOT NULL,
     flight_date date NOT NULL,
-    departure_city character(5),
-    arrival_city character(5),
     departure_airport character(5),
     arrival_airport character(5),
     departure_time smallint,
@@ -7002,8 +7000,8 @@ CREATE TABLE inventry_segment (
     flight_date date NOT NULL,
     city_pair integer NOT NULL,
     selling_class character(2) NOT NULL,
-    departure_city character(5) NOT NULL,
-    arrival_city character(5) NOT NULL,
+    departure_airport character(5) NOT NULL,
+    arrival_airport character(5) NOT NULL,
     leg_number smallint NOT NULL,
     segment_number character(22) NOT NULL,
     ob_profile_no character(5) NOT NULL,
@@ -7149,8 +7147,6 @@ CREATE TABLE itenary (
     itenary_no smallint NOT NULL,
     flight_number character(7) NOT NULL,
     flight_date date NOT NULL,
-    departure_city character(5),
-    arrival_city character(5),
     departure_airport character(5),
     arrival_airport character(5),
     departure_time time WITH time zone,
@@ -7675,7 +7671,7 @@ CREATE TABLE pass_itin_ref_det (
 ALTER TABLE public.pass_itin_ref_det OWNER TO postgres;
 
 --
--- Name: pass_remarks; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: pax_remarks; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE pax_remarks (
@@ -8584,7 +8580,7 @@ CREATE TABLE post_hist_book (
     origin_branch_code character(12) NOT NULL,
     book_agency_code character(8),
     book_agency character(8),
-    departure_city character(5),
+    departure_airport character(5),
     departure_nation character(2),
     origin_address character(10),
     record_locator character varying(69),
@@ -8622,8 +8618,8 @@ CREATE TABLE post_hist_book_fares (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
     pax_code character(5) NOT NULL,
-    departure_city character(5) NOT NULL,
-    arrival_city character(5) NOT NULL,
+    departure_airport character(5) NOT NULL,
+    arrival_airport character(5) NOT NULL,
     total_amount_curr character(3) NOT NULL,
     total_amount numeric(15,5),
     fare_construction character varying(255),
@@ -8823,8 +8819,6 @@ CREATE TABLE post_hist_itenary (
     itenary_no smallint NOT NULL,
     flight_number character(7) NOT NULL,
     flight_date date NOT NULL,
-    departure_city character(5),
-    arrival_city character(5),
     departure_airport character(5),
     arrival_airport character(5),
     departure_time smallint,
@@ -9254,28 +9248,28 @@ CREATE TABLE realloc_history (
     book_no integer,
     old_flight_no character(7) NOT NULL,
     old_flight_date date NOT NULL,
-    old_departure_city character(5) NOT NULL,
-    old_arrival_city character(5) NOT NULL,
+    old_departure_airport character(5) NOT NULL,
+    old_arrival_airport character(5) NOT NULL,
     new1_flight_no character(7),
     new1_flight_date date,
-    new1_departure_city character(5),
-    new1_arrival_city character(5),
+    new1_departure_airport character(5),
+    new1_arrival_airport character(5),
     new2_flight_no character(7),
     new2_flight_date date,
-    new2_departure_city character(5),
-    new2_arrival_city character(5),
+    new2_departure_airport character(5),
+    new2_arrival_airport character(5),
     new3_flight_no character(7),
     new3_flight_date date,
-    new3_departure_city character(5),
-    new3_arrival_city character(5),
+    new3_departure_airport character(5),
+    new3_arrival_airport character(5),
     new4_flight_no character(7),
     new4_flight_date date,
-    new4_departure_city character(5),
-    new4_arrival_city character(5),
+    new4_departure_airport character(5),
+    new4_arrival_airport character(5),
     new5_flight_no character(7),
     new5_flight_date date,
-    new5_departure_city character(5),
-    new5_arrival_city character(5),
+    new5_departure_airport character(5),
+    new5_arrival_airport character(5),
     old_selling_cls character(2),
     new1_selling_cls character(2),
     new2_selling_cls character(2),
@@ -9340,9 +9334,7 @@ CREATE TABLE reallocation_request_flights (
     old_schedule_period_no integer,
     old_perd_sequence_no integer,
     other_departure_airport character(3),
-    other_departure_city character(3),
     other_arrival_airport character(3),
-    other_arrival_city character(3),
     other_departure_time smallint,
     other_arrival_time smallint,
     other_class_code character(2)
@@ -9451,8 +9443,8 @@ CREATE TABLE rep_inventry_counts (
     rep_type character(3) NOT NULL,
     flight_number character(7) NOT NULL,
     flight_date date NOT NULL,
-    departure_city character(5) NOT NULL,
-    arrival_city character(5) NOT NULL,
+    departure_airport character(5) NOT NULL,
+    arrival_airport character(5) NOT NULL,
     cabin_code character(2) NOT NULL,
     selling_class character(2) NOT NULL,
     cabin_capacity smallint NOT NULL,
@@ -9564,8 +9556,8 @@ ALTER TABLE public.response_data OWNER TO postgres;
 CREATE TABLE restrict_rule (
     table_number integer,
     flight_number character(7),
-    departure_city character(5),
-    arrival_city character(5),
+    departure_airport character(5),
+    arrival_airport character(5),
     start_date date,
     end_date date,
     frequency_code character(7),
@@ -10931,8 +10923,8 @@ CREATE TABLE ssm_tmp_old_inventry_segment (
     flight_date date NOT NULL,
     city_pair integer NOT NULL,
     selling_class character(2) NOT NULL,
-    departure_city character(5) NOT NULL,
-    arrival_city character(5) NOT NULL,
+    departure_airport character(5) NOT NULL,
+    arrival_airport character(5) NOT NULL,
     leg_number smallint NOT NULL,
     segment_number character(22) NOT NULL,
     ob_profile_no character(5) NOT NULL,
@@ -11814,8 +11806,8 @@ CREATE TABLE test_inventry_segm (
     flight_date date NOT NULL,
     city_pair integer NOT NULL,
     selling_class character(2) NOT NULL,
-    departure_city character(5) NOT NULL,
-    arrival_city character(5) NOT NULL,
+    departure_airport character(5) NOT NULL,
+    arrival_airport character(5) NOT NULL,
     leg_number smallint NOT NULL,
     segment_number character(22) NOT NULL,
     ob_profile_no character(5) NOT NULL,
@@ -15051,11 +15043,11 @@ ALTER TABLE ONLY pass_itin_ref
 
 
 --
--- Name: pass_remarks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
+-- Name: pax_remarks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
-ALTER TABLE ONLY pass_remarks
-    ADD CONSTRAINT pass_remarks_pkey PRIMARY KEY (book_no, remark_sequence_no);
+ALTER TABLE ONLY pax_remarks
+    ADD CONSTRAINT pax_remarks_pkey PRIMARY KEY (book_no, remark_sequence_no);
 
 
 --

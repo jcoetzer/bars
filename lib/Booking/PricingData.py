@@ -180,7 +180,7 @@ class TaxCode(object):
     """Tax codes."""
     def __init__(self, company_code, tax_code, coverage_type,
                  coverage_amount, description,
-                 tax_type, tax_amount, tax_amount, detailid,
+                 tax_type, tax_amount, detailid,
                  flight_number, departure_date,
                  departure_airport, arrival_airport):
         self.company_code = company_code
@@ -189,7 +189,6 @@ class TaxCode(object):
         self.coverage_amount = coverage_amount
         self.description = description
         self.tax_type = tax_type
-        self.tax_amount = tax_amount
         self.tax_amount = tax_amount
         self.detailid = detailid
         self.flight_number = flight_number
@@ -207,7 +206,6 @@ class TaxCode(object):
         print("\t\t\tCoverage value    : %s" % self.coverage_amount)
         print("\t\t\tDescription       : %s" % self.description)
         print("\t\t\tTax type          : %s" % self.tax_type)
-        print("\t\t\tTax value         : %s" % self.tax_amount)
         print("\t\t\tTax amount        : %s" % self.tax_amount)
         print("\t\t\tDetail id         : %s" % self.detailid)
         print("\t\t\tFlight number     : %s" % self.flight_number)

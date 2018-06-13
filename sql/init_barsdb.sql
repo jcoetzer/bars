@@ -1,62 +1,62 @@
 insert into system_setting values('ASMSSMOBP','SSM profile','SSM','SSM','ZZ','SSM','SSM',NOW());
 
-insert into master_files values ('ACFT', '738', 'Boeing 737-800', 'SSM', 'BARS');
-insert into master_files values ('ACFT', '733', 'Boeing 737-300', 'SSM', 'BARS');
-insert into master_files values ('ACFT', '320', 'Airbus A320', 'SSM', 'BARS');
+-- insert into master_files values ('ACFT', '738', 'Boeing 737-800', 'SSM', 'BARS');
+-- insert into master_files values ('ACFT', '733', 'Boeing 737-300', 'SSM', 'BARS');
+-- insert into master_files values ('ACFT', '320', 'Airbus A320', 'SSM', 'BARS');
+-- 
+-- insert into aircraft_config values ('738','ZZ','Y','738',0,0,0,0,0,0,0,186,'N','N','SSM','BARS',NOW());
+-- insert into aircraft_config values ('738','ZZ','C','738',0,0,0,0,0,0,0,2,'N','N','SSM','BARS',NOW());
+-- insert into aircraft_config values ('733','ZZ','Y','733',0,0,0,0,0,0,0,2,'N','N','SSM','BARS',NOW());
 
-insert into aircraft_config values ('738','ZZ','Y','738',0,0,0,0,0,0,0,186,'N','N','SSM','BARS',NOW());
-insert into aircraft_config values ('738','ZZ','C','738',0,0,0,0,0,0,0,2,'N','N','SSM','BARS',NOW());
-insert into aircraft_config values ('733','ZZ','Y','733',0,0,0,0,0,0,0,2,'N','N','SSM','BARS',NOW());
-
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'Y', 'Y', 'Y', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'Z', 'Y', 'Y', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'A', 'Y', 'Z', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'U', 'Y', 'A', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'S', 'Y', 'U', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'B', 'Y', 'S', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'M', 'Y', 'B', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'P', 'Y', 'M', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'D', 'Y', 'P', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'I', 'Y', 'D', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'T', 'Y', 'I', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'H', 'Y', 'T', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'Q', 'Y', 'H', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'V', 'Y', 'Q', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'W', 'Y', 'V', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'L', 'Y', 'W', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'X', 'Y', 'L', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'R', 'Y', 'X', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'N', 'Y', 'R', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'G', 'Y', 'N', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'E', 'Y', 'G', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'F', 'Y', 'E', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'K', 'Y', 'F', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'J', 'Y', 'K', 'Y', 1.05, 'SSM', 'BARS', NOW());
-insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, group_name, update_time)
+insert into selling_conf (company_code, selling_class, cabin_code, parent_sell_cls, sell_cls_category, ffp_fact_mult, update_user, update_group, update_time)
  values('ZZ', 'O', 'Y', 'J', 'Y', 1.05, 'SSM', 'BARS', NOW());
 
 
@@ -115,18 +115,18 @@ insert into airport values('ZEC', 'FASC', 'Secunda Airport', 'Secunda', 'ZA', 'U
 
 insert into city select city_code, city_name, 'ZA', 'A', 'N', 'SSM', 'BARS', NOW() from airport;
 
-insert into city_pair(departure_city,arrival_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
- values('CPT', 'JNB', 'A', 1500, '20kg', 1, '', 'SSM', 'BARS', NOW());
-insert into city_pair(departure_city,arrival_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
- values('JNB', 'CPT', 'A', 1500, '20kg', 1, '', 'SSM', 'BARS', NOW());
-insert into city_pair(departure_city,arrival_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
- values('JNB', 'DUR', 'A', 600 , '20kg', 1, '', 'SSM', 'BARS', NOW());
-insert into city_pair(departure_city,arrival_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
- values('DUR', 'JNB', 'A', 600 , '20kg', 1, '', 'SSM', 'BARS', NOW());
-insert into city_pair(departure_city,arrival_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
- values('CPT', 'DUR', 'A', 1250, '20kg', 1, '', 'SSM', 'BARS', NOW());
-insert into city_pair(departure_city,arrival_city,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
- values('DUR', 'CPT', 'A', 1250, '20kg', 1, '', 'SSM', 'BARS', NOW());
+-- insert into city_pair(departure_airport,arrival_airport,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
+--  values('CPT', 'JNB', 'A', 1500, '20kg', 1, '', 'SSM', 'BARS', NOW());
+-- insert into city_pair(departure_airport,arrival_airport,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
+--  values('JNB', 'CPT', 'A', 1500, '20kg', 1, '', 'SSM', 'BARS', NOW());
+-- insert into city_pair(departure_airport,arrival_airport,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
+--  values('JNB', 'DUR', 'A', 600 , '20kg', 1, '', 'SSM', 'BARS', NOW());
+-- insert into city_pair(departure_airport,arrival_airport,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
+--  values('DUR', 'JNB', 'A', 600 , '20kg', 1, '', 'SSM', 'BARS', NOW());
+-- insert into city_pair(departure_airport,arrival_airport,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
+--  values('CPT', 'DUR', 'A', 1250, '20kg', 1, '', 'SSM', 'BARS', NOW());
+-- insert into city_pair(departure_airport,arrival_airport,pair_indicator,distance,baggage_alownce,pair_rule_no,remarks,update_user,update_group,update_time)
+--  values('DUR', 'CPT', 'A', 1250, '20kg', 1, '', 'SSM', 'BARS', NOW());
 
 -- insert into fare_segm values('ZZ','XZZOW',1,'2018-01-01','2018-12-31','2017-12-01',NULL,3000.0,'BASR','SSM',NOW());
 -- insert into fare_segm values('ZZ','XZZOW',2,'2018-01-01','2018-12-31','2017-12-01',NULL,3000.0,'BASR','SSM',NOW());
