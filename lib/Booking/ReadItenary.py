@@ -18,6 +18,7 @@ def ReadItenary(conn, bookno, booking_status, action_codes,
 
     itenSql = \
         "SELECT flight_number,flight_date,selling_class,departure_airport," \
+        "city_pair," \
         "arrival_airport,itenary_stat_flag,reserve_status,itenary_type" \
         " FROM itenary" \
         " WHERE book_no=%d" \
@@ -56,6 +57,7 @@ def ReadItenary(conn, bookno, booking_status, action_codes,
                                        row['selling_class'],
                                        row['departure_airport'],
                                        row['arrival_airport'],
+                                       row['city_pair'],
                                        row['itenary_stat_flag'],
                                        row['reserve_status'],
                                        row['itenary_type']))

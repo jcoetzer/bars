@@ -29,7 +29,7 @@ class ItenaryData(object):
     itenary_type = None
 
     def __init__(self, flight_number, departure_date, class_code,
-                 departure_airport, arrival_airport,
+                 departure_airport, arrival_airport, city_pair,
                  status_flag, reserve_status, itenary_type=None):
         """New itenary for flight."""
         printlog(2, "New itenary flight %s date %s class %s"
@@ -47,6 +47,7 @@ class ItenaryData(object):
         self.class_code = class_code
         self.departure_airport = departure_airport.strip()
         self.arrival_airport = arrival_airport.strip()
+        self.city_pair = city_pair
         self.status_flag = status_flag
         self.reserve_status = reserve_status
         self.itenary_type = str(itenary_type or '?')

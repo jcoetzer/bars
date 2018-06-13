@@ -5,7 +5,7 @@ Data for bookings.
 Various inserts.
 """
 
-# import psycopg2
+import psycopg2
 import string
 from BarsLog import printlog
 
@@ -202,9 +202,30 @@ def AddBookTimeLimit(conn, aBookNo, aDestBranch, aUser, aGroup):
 def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
                  aCurrency, aAmount, aUser, aGroup):
     """Add entry for book fare."""
+    cur = conn.cursor()
     printlog(1, "Add book %d fare %d code %s depart %s arrive %s amount %s%d"
              % (aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
                 aCurrency, aAmount))
+    abfSql = """UPDATE book_fares SET (
+            departure_airport, arrival_airport, total_amount_curr, total_amount,
+            fare_construction, endrsmnt_rstrctns, fare_stat_flag,
+            update_user, update_group, update_time )
+        = ('%s', '%s', '%s', '%f',
+           '-', '-', 'S',
+           '%s', '%s', NOW() )
+        WHERE book_no = %d
+        AND fare_no = %d
+        AND pax_code = '%s'
+        """ \
+        % (aDepart, aArrive, aCurrency, aAmount,
+           aUser, aGroup, aBookNo, aFareNo, aPaxCode)
+    cur.execute(abfSql)
+    if cur.rowcount > 0:
+        printlog(0, "Payment for book %d fare %d code %s has been processed"
+                 % (aBookNo, aFareNo, aPaxCode))
+        cur.close()
+        return
+
     abfSql = """
         INSERT INTO book_fares(
             book_no, fare_no, pax_code,
@@ -220,15 +241,48 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
             aDepart, aArrive, aCurrency, aAmount,
             aUser, aGroup)
     printlog(2, "%s" % abfSql)
-    cur = conn.cursor()
-    cur.execute(abfSql)
-    printlog(2, "Inserted %d row(s)" % cur.rowcount)
+    try:
+        cur.execute(abfSql)
+        printlog(2, "Inserted %d row(s)" % cur.rowcount)
+    except psycopg2.IntegrityError:
+        printlog(0, "Payment for book %d fare %d code %s has been processed before"
+                 % (aBookNo, aFareNo, aPaxCode))
     cur.close()
 
 
 def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode, aFlight, aDate,
                         aDepart, aArrive, aCurrency, aAmount, aUser, aGroup):
     """Add entry for book fare segment."""
+    abfSql = """
+        UPDATE book_fares_segm SET (
+            flight_number, board_date,
+            departure_airport, arrival_airport,
+            selling_class, fare_basis,
+            valid_from_date, valid_to_date,
+            update_user, update_group,
+            update_time )
+        = ('%s', '%s',
+           '%s', '%s',
+           '%s', '%s',
+           '%s', '%s',
+           '%s', '%s',
+           NOW())
+        WHERE book_no = %d
+        AND fare_no = %d
+        AND pax_code = '%s'""" \
+        % (aFlight, aDate,
+           aDepart, aArrive,
+           aCurrency, aAmount,
+           aDate, aDate,
+           aUser, aGroup,
+           aBookNo, aFareNo, aPaxCode)
+    printlog(2, "%s" % abfSql)
+    cur = conn.cursor()
+    printlog(2, "Updated %d row(s)" % cur.rowcount)
+    if cur.rowcount > 0:
+        cur.close()
+        return
+
     printlog(1, "Add book fare segment for booking %d:"
              " code %s flight %s date %s amount %s%d"
              % (aBookNo, aPaxCode, aFlight, aDate, aCurrency, aAmount))
@@ -256,7 +310,6 @@ def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode, aFlight, aDate,
            aDate, aDate,
            aUser, aGroup)
     printlog(2, "%s" % abfSql)
-    cur = conn.cursor()
     cur.execute(abfSql)
     printlog(2, "Inserted %d row(s)" % cur.rowcount)
     cur.close()

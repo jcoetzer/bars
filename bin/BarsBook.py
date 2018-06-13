@@ -97,7 +97,7 @@ def GetPrice(conn,
              fare_category,
              authority_level):
     """Read and display price information."""
-    printlog("Get price for city pair %d class %s on %s"
+    printlog(1, "Get price for city pair %d class %s on %s"
              % (cityPairNo, selling_class, dt1))
     fares = FareCalcDisplay(conn,
                             vCompany,
@@ -211,6 +211,7 @@ def PutPay(conn, aBookNo, aSellClass,
     if aBookNo is None:
         print("Book number not specified")
         return 1
+    printlog(1, "Process payment for book %d" % (aBookNo))
     paxRecs = GetPassengers(conn, aBookNo)
     # itenRecs = GetItenary(conn, aBookNo)
     vPaymentMode = ' '
@@ -269,7 +270,7 @@ def main(argv):
     paxNames = []
     paxDobs = []
     payAmount = None
-    payAmount2 = None
+    payAmount2 = 0
     sellClass = None
     vTimeLimit = datetime.now() + timedelta(days=2)
     vDocNum = None
@@ -478,11 +479,11 @@ def main(argv):
             fake = Faker()
             vDocNum = fake.credit_card_number()
         print("Pay %s%d with card %s" % (cfg.Currency, payAmount, vDocNum))
-        #PutPay(conn, bn, sellClass,
-               #cfg.Currency, payAmount, payAmount2,
-               #cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareCode,
-               #vPaymentType, vPaymentForm, vDocNum,
-               #cfg.User, cfg.Group)
+        PutPay(conn, bn, sellClass,
+               cfg.Currency, payAmount, payAmount2,
+               cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareCode,
+               vPaymentType, vPaymentForm, vDocNum,
+               cfg.User, cfg.Group)
     elif bn is not None:
         GetPassengers(conn, bn)
         GetItenary(conn, bn)
