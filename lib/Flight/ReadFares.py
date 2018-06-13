@@ -38,7 +38,7 @@ def ReadFareSegments(conn):
     printlog(1, "Fare segments:")
     RfSql = """
     SELECT company_code, fare_code, city_pair, valid_from_date, valid_to_date,
-        fare_value, active_flag
+        fare_amount, active_flag
     FROM fare_segm"""
 
     printlog(2, "%s" % RfSql)

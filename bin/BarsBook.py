@@ -29,7 +29,7 @@ from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, \
      AddItenary, AddPassenger, \
      AddBookFares, AddBookFareSegments, AddBookFarePassengers, \
      AddBookFaresPayments, AddBookRequest, AddPayment, \
-     GetPreBookingInfo, AddBookTimeLimit, AddContact
+     GetPreBookingInfo, AddBookTimeLimit, AddContact, UpdateBookPayment
 from Booking.ReadItenary import ReadItenary
 from Flight.ReadFlights import ReadDeparture
 from Flight.ReadFlights import ReadFlightDeparture
@@ -222,7 +222,8 @@ def PutPay(conn, aBookNo, aSellClass,
                aBookNo, paxRecs[0].passenger_name, paxRecs[0].passenger_code,
                aOriginBranchCode, vRemark,
                aUser, aGroup)
-    payAmounts = [int(aPayAmount*100), int(aPayAmount2*100)]
+    # payAmounts = [int(aPayAmount*100), int(aPayAmount2*100)]
+    payAmounts = [aPayAmount, aPayAmount2]
     irecs = ReadItenary(conn, aBookNo, None, None,
                         fnumber=None, start_date=None, end_date=None)
     if len(irecs) > 2:
@@ -245,7 +246,84 @@ def PutPay(conn, aBookNo, aSellClass,
         AddBookFarePassengers(conn, aBookNo, paxRecs[0].passenger_code,
                               aCurrency, totalPayment,
                               aUser, aGroup)
+    UpdateBookPayment(conn, aBookNo, totalPayment)
     return 0
+
+
+def DoBook(conn, cfg, paxNames, paxDobs, flightNumber, dt1,
+           departAirport, arriveAirport,
+           departTime, arriveTime,
+           sellClass,
+           vTimeLimit, payAmount):
+    """Do the booking thing."""
+    paxRecs = []
+    if len(paxNames) == 0:
+        lnames = randint(1, 9)
+        n = 0
+        while n < lnames:
+            # Make the last pax in group a child
+            if lnames > 3 and n == lnames-1:
+                paxRec = PassengerData('CHILD', n+1)
+                paxRec.fakeit(cfg.DialCode, paxRecs[n-1].last_name)
+            else:
+                paxRec = PassengerData('ADULT', n+1)
+                paxRec.fakeit(cfg.DialCode)
+            paxRec.display()
+            paxRecs.append(paxRec)
+            n += 1
+    else:
+        n = 0
+        for paxName in paxNames:
+            paxRec = PassengerData('ADULT', n+1, paxName, paxDobs[n])
+            paxRecs.append(paxRec)
+            n += 1
+    if payAmount is None:
+        payAmount = 0.0
+    bn, pnr = PutBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
+                      cfg.OriginBranchCode, cfg.AgencyCode,
+                      paxRecs,
+                      payAmount,
+                      flightNumber, dt1,
+                      departAirport, arriveAirport,
+                      departTime, arriveTime,
+                      sellClass,
+                      vTimeLimit,
+                      cfg.User, cfg.Group)
+    if bn > 0:
+        print("Created booking %d (%s)" % (bn, pnr))
+    return bn
+
+
+def DoPay(conn, cfg, bn, payAmount, payAmount2, vDocNum, sellClass):
+    if payAmount is None:
+        itens = GetItenary(conn, bn)
+        payAmount = 0
+        for iten in itens:
+            fares = GetPrice(conn,
+                                cfg.CompanyCode,
+                                iten.city_pair,
+                                iten.board_dts,
+                                iten.board_dts,
+                                cfg.SellingClass,
+                                cfg.OnwReturnIndicator,
+                                cfg.FareCategory,
+                                cfg.AuthorityLevel)
+            for fare in fares:
+                payAmount += fare.fare_value
+        paxRecs = GetPassengers(conn, bn)
+        payAmount *= len(paxRecs)
+        print("Payment amount not specified: calculated as %d" % payAmount)
+    vPaymentForm = 'VI'
+    vPaymentType = 'CC'
+    if vDocNum is None:
+        fake = Faker()
+        vDocNum = fake.credit_card_number()
+    print("Pay %s%d with card %s" % (cfg.Currency, payAmount, vDocNum))
+    PutPay(conn, bn, sellClass,
+            cfg.Currency, payAmount, payAmount2,
+            cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareCode,
+            vPaymentType, vPaymentForm, vDocNum,
+            cfg.User, cfg.Group)
 
 
 # TODO Cyclomatic complexity too high
@@ -418,72 +496,15 @@ def main(argv):
                  cfg.FareCategory,
                  cfg.AuthorityLevel)
     elif dobook:
-        # cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
-        paxRecs = []
-        if len(paxNames) == 0:
-            lnames = randint(1, 9)
-            n = 0
-            while n < lnames:
-                # Make the last pax in group a child
-                if lnames > 3 and n == lnames-1:
-                    paxRec = PassengerData('CHILD', n+1)
-                    paxRec.fakeit(cfg.DialCode, paxRecs[n-1].last_name)
-                else:
-                    paxRec = PassengerData('ADULT', n+1)
-                    paxRec.fakeit(cfg.DialCode)
-                paxRec.display()
-                paxRecs.append(paxRec)
-                n += 1
-        else:
-            n = 0
-            for paxName in paxNames:
-                paxRec = PassengerData('ADULT', n+1, paxName, paxDobs[n])
-                paxRecs.append(paxRec)
-                n += 1
-        if payAmount is None:
-            payAmount = 0.0
-        bn, pnr = PutBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
-                          cfg.OriginBranchCode, cfg.AgencyCode,
-                          paxRecs,
-                          payAmount,
-                          flightNumber, dt1,
-                          departAirport, arriveAirport,
-                          departTime, arriveTime,
-                          sellClass,
-                          vTimeLimit,
-                          cfg.User, cfg.Group)
-        if bn > 0:
-            print("Created booking %d (%s)" % (bn, pnr))
+        bn = DoBook(conn, cfg, paxNames, paxDobs, flightNumber, dt1,
+                    departAirport, arriveAirport,
+                    departTime, arriveTime,
+                    sellClass,
+                    vTimeLimit, payAmount)
+        if dopay:
+            DoPay(conn, cfg, bn, payAmount, payAmount2, vDocNum, sellClass)
     elif dopay:
-        if payAmount is None:
-            itens = GetItenary(conn, bn)
-            payAmount = 0
-            for iten in itens:
-                fares = GetPrice(conn,
-                                 cfg.CompanyCode,
-                                 iten.city_pair,
-                                 iten.board_dts,
-                                 iten.board_dts,
-                                 cfg.SellingClass,
-                                 cfg.OnwReturnIndicator,
-                                 cfg.FareCategory,
-                                 cfg.AuthorityLevel)
-                for fare in fares:
-                    payAmount += fare.fare_value
-            paxRecs = GetPassengers(conn, bn)
-            payAmount *= len(paxRecs)
-            print("Payment amount not specified: calculated as %d" % payAmount)
-        vPaymentForm = 'VI'
-        vPaymentType = 'CC'
-        if vDocNum is None:
-            fake = Faker()
-            vDocNum = fake.credit_card_number()
-        print("Pay %s%d with card %s" % (cfg.Currency, payAmount, vDocNum))
-        PutPay(conn, bn, sellClass,
-               cfg.Currency, payAmount, payAmount2,
-               cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareCode,
-               vPaymentType, vPaymentForm, vDocNum,
-               cfg.User, cfg.Group)
+        DoPay(conn, cfg, bn, payAmount, payAmount2, vDocNum, sellClass)
     elif bn is not None:
         GetPassengers(conn, bn)
         GetItenary(conn, bn)

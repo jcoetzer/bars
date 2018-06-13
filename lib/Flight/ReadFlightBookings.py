@@ -26,6 +26,7 @@ def ReadFlightBookings(conn, flight_number, board_date):
         % (flight_number, board_date)
     printlog(2, FbSql)
     cur.execute(FbSql)
+    npax = 0
     for row in cur:
         book_no = row['itbn']
         departure_time = str(row['itdt'].strftime("%H:%M") or '')
@@ -46,12 +47,14 @@ def ReadFlightBookings(conn, flight_number, board_date):
         printlog(2, FbSql2)
         cur2.execute(FbSql2)
         for row2 in cur2:
-            print("\t%s %s %s %s"
-                  % (row2['papn'], str(row2['parn'] or ''),
-                     str(row2['papr'] or ''), row2['papc']))
+            print("\t %3s %s %s %s"
+                  % (str(row2['papr'] or ''), row2['papn'], str(row2['parn'] or ''),
+                     row2['papc']))
+            npax += 1
     cur2.close()
     cur.close()
-    print("")
+    print("Flight %s on %s has %d passengers"
+          % (flight_number, board_date, npax))
 
 
 def ReadFlightContacts(conn, flight_number, board_date):

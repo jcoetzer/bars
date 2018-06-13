@@ -50,15 +50,15 @@ def ReadBsFaresPayment(conn, book_no, currency_code):
     print("Fare payments for booking %d currency %s" % (book_no, currency_code))
     FaresPaymentSql = """
 SELECT fare_no,pax_code paxcode,payment_code,fare_calc_code,round(fare_paymt_amt, 2) amount,
-round(fare_paymt_amt, 5) unrounded_amount,paid_curr_code currency_code,
+round(fare_paymt_amt, 5) unrounded_amount, currency_code,
 tax_code,nation_code,refundable_flag,net_fare_flag,private_fare_flag,source_ref_id
 ,round( (SELECT max(nuc_rate) FROM currency_codes cc WHERE cc.currency_code = '%s') /
         coalesce( (SELECT max(nuc_rate) FROM hist_currency_codes hcc
-              WHERE hcc.currency_code = bfp.paid_curr_code
+              WHERE hcc.currency_code = bfp.currency_code
               AND bfp.update_time between
               hcc.valid_from_date_time AND hcc.valid_to_date_time),
              (SELECT max(nuc_rate) FROM currency_codes cc
-                WHERE cc.currency_code = bfp.paid_curr_code) ), 5 ) common_currency_factor,
+                WHERE cc.currency_code = bfp.currency_code) ), 5 ) common_currency_factor,
 (SELECT count(book_no) FROM passenger WHERE book_no = %d AND pax_code <> 'INF') pax_number
 FROM book_fares_paym bfp
 WHERE book_no = %d
@@ -317,7 +317,7 @@ def ReadBsOldFaresPayment(conn, book_no, currency_code):
                 payment_code,
                 fare_calc_code,
                 fare_paymt_amt AS amount,
-                paid_curr_code AS currency_code,
+                currency_code,
                 tax_code,
                 nation_code,
                 refundable_flag
@@ -333,12 +333,12 @@ def ReadBsOldFaresPayment(conn, book_no, currency_code):
                         coalesce
                         (
                                 (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
-                                WHERE hcc.currency_code = bfp.paid_curr_code
+                                WHERE hcc.currency_code = bfp.currency_code
                                 AND bfp.update_time BETWEEN
                                 hcc.valid_from_date_time AND hcc.valid_to_date_time)
                         ,
                                 (SELECT MAX(nuc_rate) FROM currency_codes AS cc
-                                WHERE cc.currency_code = bfp.paid_curr_code)
+                                WHERE cc.currency_code = bfp.currency_code)
                         )
                         , 5
                 ) AS common_currency_factor
@@ -577,12 +577,12 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         coalesce
                                                         (
                                                                 (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
-                                                                WHERE hcc.currency_code = pa1.paid_curr_code
+                                                                WHERE hcc.currency_code = pa1.currency_code
                                                                 AND pa1.crea_date_time) between
                                                                 hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
                                                                 (SELECT max(nuc_rate) FROM currency_codes AS cc
-                                                                WHERE cc.currency_code = pa1.paid_curr_code)
+                                                                WHERE cc.currency_code = pa1.currency_code)
                                                         )
                                                 ) FROM payments pa1
                                         WHERE pa1.book_no = bo.book_no AND pa1.paid_flag = 'Y'
@@ -622,12 +622,12 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         coalesce
                                                         (
                                                                 (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
-                                                                WHERE hcc.currency_code = bfp.paid_curr_code
+                                                                WHERE hcc.currency_code = bfp.currency_code
                                                                 AND bfp.update_time between
                                                                 hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
                                                                 (SELECT max(nuc_rate) FROM currency_codes AS cc
-                                                                WHERE cc.currency_code = bfp.paid_curr_code)
+                                                                WHERE cc.currency_code = bfp.currency_code)
                                                         )
                                                 )
                                         FROM book_fares_paym AS bfp
@@ -645,12 +645,12 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         coalesce
                                                         (
                                                                 (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
-                                                                WHERE hcc.currency_code = bfp.paid_curr_code
+                                                                WHERE hcc.currency_code = bfp.currency_code
                                                                 AND bfp.update_time between
                                                                 hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
                                                                 (SELECT max(nuc_rate) FROM currency_codes AS cc
-                                                                WHERE cc.currency_code = bfp.paid_curr_code)
+                                                                WHERE cc.currency_code = bfp.currency_code)
                                                         )
                                                 )
                                         FROM book_fares_paym AS bfp
@@ -667,12 +667,12 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         coalesce
                                                         (
                                                                 (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
-                                                                WHERE hcc.currency_code = pa1.paid_curr_code
+                                                                WHERE hcc.currency_code = pa1.currency_code
                                                                 AND pa1.crea_date_time between
                                                                 hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
                                                                 (SELECT max(nuc_rate) FROM currency_codes AS cc
-                                                                WHERE cc.currency_code = pa1.paid_curr_code)
+                                                                WHERE cc.currency_code = pa1.currency_code)
                                                         )
                                                 ) FROM payments pa1
                                         WHERE pa1.book_no = bo.book_no AND pa1.paid_flag = 'Y'
@@ -687,12 +687,12 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         coalesce
                                                         (
                                                                 (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
-                                                                WHERE hcc.currency_code = pa.paid_curr_code
+                                                                WHERE hcc.currency_code = pa.currency_code
                                                                 AND pa.crea_date_time between
                                                                 hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
                                                                 (SELECT max(nuc_rate) FROM currency_codes AS cc
-                                                                WHERE cc.currency_code = pa.paid_curr_code)
+                                                                WHERE cc.currency_code = pa.currency_code)
                                                         )
                                                 )) FROM payments AS pa
                                         WHERE pa.book_no = bo.book_no
@@ -708,12 +708,12 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         coalesce
                                                         (
                                                                 (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
-                                                                WHERE hcc.currency_code = bfp.paid_curr_code
+                                                                WHERE hcc.currency_code = bfp.currency_code
                                                                 AND bfp.update_time between
                                                                 hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
                                                                 (SELECT max(nuc_rate) FROM currency_codes AS cc
-                                                                WHERE cc.currency_code = bfp.paid_curr_code)
+                                                                WHERE cc.currency_code = bfp.currency_code)
                                                         )
                                                 )
                                         FROM book_fares_paym AS bfp
@@ -732,12 +732,12 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                                         coalesce
                                                         (
                                                                 (SELECT max(nuc_rate) FROM hist_currency_codes AS hcc
-                                                                WHERE hcc.currency_code = pa.paid_curr_code
+                                                                WHERE hcc.currency_code = pa.currency_code
                                                                 AND pa.crea_date_time between
                                                                 hcc.valid_from_date_time AND hcc.valid_to_date_time)
                                                         ,
                                                                 (SELECT max(nuc_rate) FROM currency_codes AS cc
-                                                                WHERE cc.currency_code = pa.paid_curr_code)
+                                                                WHERE cc.currency_code = pa.currency_code)
                                                                                                                                             AND bfpm.pax_code      = bfp.pax_code
                                                                                                 AND bfp.book_no = %d            )
                                                 )) FROM payments AS pa

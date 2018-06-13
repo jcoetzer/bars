@@ -85,22 +85,22 @@ def DelFares(conn, company_code, depart_airport, arrive_airport):
 
 def AddFareSegment(conn, company_code, fare_code,
                    city_pair, depart_airport, arrive_airport, dt1, dt2,
-                   fare_value,
+                   fare_amount,
                    aUser, aGroup):
     """New fare segment."""
     printlog(1, "Add fare segment %s depart %s arrive %s value %d"
-             % (fare_code, depart_airport, arrive_airport, fare_value))
+             % (fare_code, depart_airport, arrive_airport, fare_amount))
     AfsSql = """
     INSERT INTO fare_segm(
         company_code, fare_code, city_pair, valid_from_date, valid_to_date,
-        fare_value, active_flag,
+        fare_amount, active_flag,
         update_user, update_group, update_time )
     VALUES (
         '%s', '%s', %d, '%s', '%s',
         %d.0, 'A',
         '%s', '%s', NOW() )""" \
     % (company_code, fare_code, city_pair, dt1, dt2,
-       fare_value, aUser, aGroup)
+       fare_amount, aUser, aGroup)
 
     printlog(2, "%s" % AfsSql)
     cur = conn.cursor()
@@ -109,13 +109,13 @@ def AddFareSegment(conn, company_code, fare_code,
 
 
 def AddFareSegments(conn, company_code, depart_airport, arrive_airport,
-                    city_pair, dt1, dt2, fare_value,
+                    city_pair, dt1, dt2, fare_amount,
                     aUser, aGroup):
     """New fare segments."""
     fare_code = 'X' + company_code + depart_airport + arrive_airport
     AddFareSegment(conn, company_code, fare_code,
                    city_pair, depart_airport, arrive_airport, dt1, dt2,
-                   fare_value, aUser, aGroup)
+                   fare_amount, aUser, aGroup)
 
 
 def DelFareSegments(conn, company_code, depart_airport, arrive_airport,

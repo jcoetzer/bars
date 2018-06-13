@@ -97,7 +97,7 @@ def FareCalcDisplay(conn,
 def ReadPayments(conn, book_no):
     """Read payments for booking."""
     RpSql = """
-        SELECT payment_form, payment_type, paid_curr_code, payment_amount,
+        SELECT payment_form, payment_type, currency_code, payment_amount,
         payment_date,
         document_no, payment_mode, pax_name, pax_code,
         contact_phone_no,
@@ -110,7 +110,7 @@ def ReadPayments(conn, book_no):
     cur.execute(RpSql)
     for row in cur:
         payRec = PaymentData(row['payment_form'], row['payment_type'],
-                             row['paid_curr_code'], row['payment_amount'],
+                             row['currency_code'], row['payment_amount'],
                              row['payment_date'],
                              row['document_no'], row['payment_mode'],
                              row['pax_name'], row['pax_code'],
