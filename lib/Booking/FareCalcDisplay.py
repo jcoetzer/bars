@@ -24,7 +24,7 @@ def FareCalcDisplay(conn,
     fcdSql = """
     SELECT fs.fare_code,
             fs.city_pair, fs.valid_from_date,
-            fs.valid_to_date, fs.fare_value,
+            fs.valid_to_date, fs.fare_amount,
             fc.short_description, fc.onw_return_flag,
             fc.byps_strt_auth_level, fc.byps_end_auth_level,
             fc.selling_class
@@ -48,7 +48,7 @@ def FareCalcDisplay(conn,
     AND ( ( fs.eff_from_date <= '%s' AND fs.eff_to_date >= '%s' )
        OR ( fs.eff_from_date IS NULL )
        OR ( fs.eff_to_date IS NULL ) )
-    ORDER BY fs.company_code, fs.city_pair, fs.fare_value, fs.fare_code
+    ORDER BY fs.company_code, fs.city_pair, fs.fare_amount, fs.fare_code
     """ % (
     acompany_code,
     acity_pair,
@@ -70,19 +70,19 @@ def FareCalcDisplay(conn,
         city_pair = row[1]
         valid_from_date = row[2]
         valid_to_date = row[3]
-        fare_value = float(row[4])
+        fare_amount = float(row[4])
         short_description = row[5]
         onw_return_flag = row[6]
         byps_strt_auth_level = row[7]
         byps_end_auth_level = row[8]
         selling_class = row[9]
         printlog(2, "Fare %s from %s to %s: %f"
-                 % (fare_code, valid_from_date, valid_to_date, fare_value))
+                 % (fare_code, valid_from_date, valid_to_date, fare_amount))
         pricing = FarePricingData(fare_code,
                                   city_pair,
                                   valid_from_date,
                                   valid_to_date,
-                                  fare_value,
+                                  fare_amount,
                                   short_description,
                                   onw_return_flag,
                                   byps_strt_auth_level,

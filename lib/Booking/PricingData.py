@@ -16,14 +16,14 @@ class FarePricingData(object):
 
     fare_code = ''
     selling_class = ''
-    fare_value = 0
+    fare_amount = 0
 
     def __init__(self,
                  fare_code,
                  city_pair,
                  valid_from_date,
                  valid_to_date,
-                 fare_value,
+                 fare_amount,
                  short_description,
                  onw_return_ind,
                  byps_strt_auth_level,
@@ -33,7 +33,7 @@ class FarePricingData(object):
         self.city_pair = city_pair
         self.valid_from_date = valid_from_date
         self.valid_to_date = valid_to_date
-        self.fare_value = fare_value
+        self.fare_amount = fare_amount
         self.short_description = short_description
         self.onw_return_ind = onw_return_ind
         self.byps_strt_auth_level = byps_strt_auth_level
@@ -42,7 +42,7 @@ class FarePricingData(object):
 
     def display(self):
         print("Fare code %s class %s value %.2f"
-              % (self.fare_code, self.selling_class, self.fare_value))
+              % (self.fare_code, self.selling_class, self.fare_amount))
 
 
 class PricingData(object):
@@ -78,30 +78,30 @@ class PassengerCode(object):
     def __init__(self,
                  passenger_code,
                  seat_count,
-                 fare_value_per_seat,
+                 fare_amount_per_seat,
                  surcharge_per_seat,
-                 tax_value_per_seat,
+                 tax_amount_per_seat,
                  fare_ladder,
                  farecodes,
                  taxcodes):
         self.passenger_code = passenger_code
         self.seat_count = int(seat_count)
-        self.fare_value_per_seat = float(fare_value_per_seat)
+        self.fare_amount_per_seat = float(fare_amount_per_seat)
         self.surcharge_per_seat = float(surcharge_per_seat)
-        self.tax_value_per_seat = float(tax_value_per_seat)
+        self.tax_amount_per_seat = float(tax_amount_per_seat)
         self.fare_ladder = fare_ladder
         self.fare_codes = farecodes
         self.tax_codes = taxcodes
         printlog(2, "New passenger code %s count %d value %.2f"
                  % (self.passenger_code, self.seat_count,
-                    self.fare_value_per_seat))
+                    self.fare_amount_per_seat))
 
     def display(self):
         print("\t*\tPassenger code      : %s" % self.passenger_code)
         print("\t\tSeat count          : %d" % self.seat_count)
-        print("\t\tFare value per seat : %.2f" % self.fare_value_per_seat)
+        print("\t\tFare value per seat : %.2f" % self.fare_amount_per_seat)
         print("\t\tSurcharge per seat  : %.2f" % self.surcharge_per_seat)
-        print("\t\tTax value per seat  : %.2f" % self.tax_value_per_seat)
+        print("\t\tTax value per seat  : %.2f" % self.tax_amount_per_seat)
         print("\t\tFare ladder         : %s" % self.fare_ladder)
         print("\t\tFare codes :")
         for fare_code in self.fare_codes:
@@ -179,17 +179,17 @@ class FlightCode(object):
 class TaxCode(object):
     """Tax codes."""
     def __init__(self, company_code, tax_code, coverage_type,
-                 coverage_value, description,
-                 tax_type, tax_value, tax_amount, detailid,
+                 coverage_amount, description,
+                 tax_type, tax_amount, tax_amount, detailid,
                  flight_number, departure_date,
                  departure_airport, arrival_airport):
         self.company_code = company_code
         self.tax_code = tax_code
         self.coverage_type = coverage_type
-        self.coverage_value = coverage_value
+        self.coverage_amount = coverage_amount
         self.description = description
         self.tax_type = tax_type
-        self.tax_value = tax_value
+        self.tax_amount = tax_amount
         self.tax_amount = tax_amount
         self.detailid = detailid
         self.flight_number = flight_number
@@ -204,10 +204,10 @@ class TaxCode(object):
         print("\t\t*\tTax code          : %s" % self.tax_code)
         print("\t\t\tCompany code      : %s" % self.company_code)
         print("\t\t\tCoverage type     : %s" % self.coverage_type)
-        print("\t\t\tCoverage value    : %s" % self.coverage_value)
+        print("\t\t\tCoverage value    : %s" % self.coverage_amount)
         print("\t\t\tDescription       : %s" % self.description)
         print("\t\t\tTax type          : %s" % self.tax_type)
-        print("\t\t\tTax value         : %s" % self.tax_value)
+        print("\t\t\tTax value         : %s" % self.tax_amount)
         print("\t\t\tTax amount        : %s" % self.tax_amount)
         print("\t\t\tDetail id         : %s" % self.detailid)
         print("\t\t\tFlight number     : %s" % self.flight_number)

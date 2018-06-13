@@ -309,7 +309,7 @@ def DoPay(conn, cfg, bn, payAmount, payAmount2, vDocNum, sellClass):
                                 cfg.FareCategory,
                                 cfg.AuthorityLevel)
             for fare in fares:
-                payAmount += fare.fare_value
+                payAmount += fare.fare_amount
         paxRecs = GetPassengers(conn, bn)
         payAmount *= len(paxRecs)
         print("Payment amount not specified: calculated as %d" % payAmount)
