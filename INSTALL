@@ -6,6 +6,8 @@ Create routes:
 /opt/bars/bin/BarsFlight.py --fare -Q CPT -P JNB -D 2018-06-01 -E 2018-12-31 -R 3000 -V
 /opt/bars/bin/BarsFlight.py --fare -v
 
+Add aircraft:
+/opt/bars/bin/BarsFlight.py -V --new -A 738 -U 738A -T ZSJCA -I Y,C -J 186,2`
 
 Create flights:
 

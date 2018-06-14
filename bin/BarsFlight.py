@@ -80,8 +80,8 @@ def usage(pname='BarsFlight.py'):
     print("Write flight data :")
     print("\t%s --cnl|--eqt|--new|--rpl|--tim" % pname)
     print("\t\t -F <FLIGHT> -D <DATE> -Q <FREQ>")
-    print("\t\t [-E <DATE>] [-A <CODE>] [-I <TIME>] [-J <TIME>] [-K <CITY>]"
-          "[-L <CITY>] [-G <FLIGHT>] [-T <TAIL>]")
+    print("\t\t [-E <DATE>] [-A <CODE>] [-X <TIME>] [-Y <TIME>] [-P <CITY>]"
+          "[-Q <CITY>] [-G <FLIGHT>] [-T <TAIL>]")
     print("Write aircraft data:")
     print("\t%s --new -A <CODE> -N <NAME>" % pname)
     print("\t%s --new -A <CODE> -U <CODE> -T <TAIL> -I <CABIN> -J <SEATS>" % pname)
@@ -222,7 +222,7 @@ def main(argv):
             printlog(2, "configuration %s" % configTable)
         elif opt == "-X":
             departTime = ReadTime(arg)
-            printlog(2, "depart time %s" % departAirport)
+            printlog(2, "depart time %s" % departTime)
         elif opt == "-Y":
             arriveTime = ReadTime(arg)
             printlog(2, "arrive time %s" % arriveTime)
@@ -267,6 +267,15 @@ def main(argv):
             AddAircraftConfig(conn, cfg.CompanyCode, aircraftCode, configTable,
                               cabinClasses, seatCapacities,
                               cfg.User, cfg.Group)
+        else:
+            print("Found configuration %s" % cfgt)
+            eqt = ReadEquipmentConfig(conn, tailNumber)
+            if eqt is None:
+                WriteEquipmentConfig(conn, cfg.CompanyCode, aircraftCode,
+                                     tailNumber, cfgt, cabinClasses,
+                                     seatCapacities, cfg.User, cfg.Group)
+            else:
+                eqt.display()
     elif donew and aircraftCode != '' \
             and aircraftName != '':
         AddAircraft(conn, aircraftCode, aircraftName)
@@ -274,9 +283,9 @@ def main(argv):
             and arriveAirport != '':
         NewCityPair(conn, departAirport, arriveAirport,
                     cfg.User, cfg.Group)
-    if dopax and flightNumber != '' and departDate is not None:
+    elif dopax and flightNumber != '' and departDate is not None:
         ReadFlightBookings(conn, flightNumber, departDate)
-    if docontact and flightNumber != '' and departDate is not None:
+    elif docontact and flightNumber != '' and departDate is not None:
         ReadFlightContacts(conn, flightNumber, departDate)
     elif docity:
         ReadCityPairs(conn)

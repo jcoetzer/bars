@@ -105,6 +105,10 @@ def ReadEquipmentConfig(conn, tailNumber):
         tailNumber = row[3]
         cabinClasses.append(row[4])
         seatCapacities.append(row[5])
+        
+    if len(cabinClasses) == 0:
+        printlog("Equipment %s not found" % tailNumber)
+        return None
 
     eqt = AircraftData(companyCode, aircraftCode, configTable,
                        tailNumber, cabinClasses, seatCapacities)
