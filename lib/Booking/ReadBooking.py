@@ -18,7 +18,7 @@ from Booking.PassengerData import PassengerData
 def ReadBooking(conn, book_no):
     """Read booking data and stuff."""
     dt1 = None
-    bcol = "booking_status,pax_name_rec,origin_address,first_segm_date," \
+    bcol = "status_flag,pax_name_rec,origin_address,first_segm_date," \
            "no_of_seats,book_agency"
     # GetBookColumns()
 
@@ -33,7 +33,7 @@ def ReadBooking(conn, book_no):
         pnr = row['pax_name_rec']
         dt1 = row['first_segm_date']
         print("\t%s %s %s %s %s %s"
-              % (row['booking_status'], row['pax_name_rec'],
+              % (row['status_flag'], row['pax_name_rec'],
                  row['origin_address'], row['first_segm_date'],
                  row['no_of_seats'], row['book_agency']))
 

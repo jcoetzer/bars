@@ -39,8 +39,8 @@ def ReadFlightPax(conn, aFlightNumber, aFlightDate):
         inner join book as bo on bo.book_no = it.book_no inner join passenger as pa on pa.book_no = it.book_no
         inner join action_codes as ac on substr(it.reserve_status,1,2) = ac.action_code AND ac.pnl_adl_flag = 'Y'
         where fsd.flight_number= '%s' AND fsd.board_date = '%s'
-        and it.itenary_type <> 'I' AND pa.passenger_no > 0 AND pa.pax_code <> 'INF' AND it.itenary_stat_flag <> 'X' AND
-        bo.booking_status <> 'X' ORDER BY it.book_no, pa.pax_name""" \
+        and it.itenary_type <> 'I' AND pa.passenger_no > 0 AND pa.pax_code <> 'INF' AND it.status_flag <> 'X' AND
+        bo.status_flag <> 'X' ORDER BY it.book_no, pa.pax_name""" \
         % (aFlightNumber, aFlightDate.strftime('%Y-%m-%d'))
     printlog(2, fpSql)
     cur = conn.cursor()

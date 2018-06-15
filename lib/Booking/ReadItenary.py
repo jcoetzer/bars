@@ -11,7 +11,7 @@ from BarsLog import set_verbose, get_verbose, printlog
 from Booking.ItenaryData import ItenaryData
 
 
-def ReadItenary(conn, bookno, booking_status, action_codes,
+def ReadItenary(conn, bookno, status_flag, action_codes,
                 fnumber=None, start_date=None, end_date=None):
     """Read itenary."""
     itenaryrecs = []
@@ -19,21 +19,21 @@ def ReadItenary(conn, bookno, booking_status, action_codes,
     itenSql = \
         "SELECT flight_number,flight_date,selling_class,departure_airport," \
         "city_pair," \
-        "arrival_airport,itenary_stat_flag,reserve_status,itenary_type" \
+        "arrival_airport,status_flag,reserve_status,itenary_type" \
         " FROM itenary" \
         " WHERE book_no=%d" \
         % int(bookno)
-    if booking_status == 'A' or booking_status == 'Y':
+    if status_flag == 'A' or status_flag == 'Y':
         itenSql += \
-            " AND itenary_stat_flag='A' and itenary_type='R'"
+            " AND status_flag='A' and itenary_type='R'"
         if len(action_codes):
             itenSql += \
                 " AND reserve_status[1,2] IN (%s)" % action_codes
-    elif booking_status == 'X':
+    elif status_flag == 'X':
         # itenSql += \
-            # " AND itenary_stat_flag!='A' and itenary_type='R'"
+            # " AND status_flag!='A' and itenary_type='R'"
         pass
-    elif booking_status == '*':
+    elif status_flag == '*':
         pass
     else:
         pass
@@ -58,8 +58,33 @@ def ReadItenary(conn, bookno, booking_status, action_codes,
                                        row['departure_airport'],
                                        row['arrival_airport'],
                                        row['city_pair'],
-                                       row['itenary_stat_flag'],
+                                       row['status_flag'],
                                        row['reserve_status'],
                                        row['itenary_type']))
     cur.close()
     return itenaryrecs
+
+
+def UpdateItenary(conn, aBookNo, aStatus='A'):
+    """Activate itenary."""
+    printlog(1, "Set book %d itenary status to %s" % (aBookNo, aStatus))
+    UaSql = """UPDATE itenary
+               SET (status_flag, processing_flag)
+                 = ('%s', 'Y')
+               WHERE book_no = %d""" \
+            % (aStatus, aBookNo)
+    cur = conn.cursor()
+    printlog(2, UaSql)
+    cur.execute(UaSql)
+    printlog(2, "Updated %d rows" % cur.rowcount)
+
+
+def UpdateBook(conn, aBookNo, aStatus='A'):
+    """Activate itenary."""
+    printlog(1, "Set book %d status to %s" % (aBookNo, aStatus))
+    UaSql = """UPDATE book SET status_flag='%s'
+            WHERE book_no = %d""" % (aStatus, aBookNo)
+    cur = conn.cursor()
+    printlog(2, UaSql)
+    cur.execute(UaSql)
+    printlog(2, "Updated %d rows" % cur.rowcount)

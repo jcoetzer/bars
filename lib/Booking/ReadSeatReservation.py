@@ -148,7 +148,7 @@ def CheckSeatReservation(conn, flight_number, flight_date, depr_airport,
     return rval
 
 
-def ReadSeatReservationId(conn, flight_number, flight_date, booking_status,
+def ReadSeatReservationId(conn, flight_number, flight_date, status_flag,
                           release_date_time):
 
     print("Seat reservation ID for flight %s on %s :" \
@@ -164,15 +164,15 @@ def ReadSeatReservationId(conn, flight_number, flight_date, booking_status,
         "  WHERE fdl.flight_number = '%s'" \
         "  AND fdl.board_date = '%s')" \
             % (flight_number, flight_date.strftime("%m/%d/%Y"))
-    if booking_status != '*':
+    if status_flag != '*':
         RcSql += \
             " AND (blocked_flag IS NULL OR blocked_flag <> 'Y')" \
             " AND temporary_reserve_flag = 'Y'"
-    elif booking_status == 'Y':
+    elif status_flag == 'Y':
         RcSql += \
             " AND (blocked_flag IS NULL OR blocked_flag <> 'Y')" \
             " AND temporary_reserve_flag = 'Y'"
-    elif booking_status == 'N':
+    elif status_flag == 'N':
         RcSql += \
             " AND (blocked_flag IS NULL OR blocked_flag <> 'N')" \
             " AND temporary_reserve_flag = 'N'"

@@ -29,12 +29,12 @@ def BookingIsPaid(conn, pbook_no, vbookstatus=None):
 
     if vbookstatus is None:
         # Check if booking cancelled
-        bk_cnl = "SELECT booking_status, book_no FROM book WHERE book_no=%d" \
+        bk_cnl = "SELECT status_flag, book_no FROM book WHERE book_no=%d" \
                  % pbook_no
         printlog(bk_cnl, 2)
         cur.execute(bk_cnl)
         for row in cur:
-            vbookstatus = row['booking_status']
+            vbookstatus = row['status_flag']
 
     if pbook_no is not None:
         # Check if book_no is valid

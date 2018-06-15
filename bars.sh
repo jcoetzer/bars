@@ -1,2 +1,3 @@
 export BARSDIR=/opt/bars
-export PYTHONPATH=/opt/bars/bin:/opt/bars/lib
+export PYTHONPATH=$BARSDIR/bin:$BARSDIR/lib
+export PATH=$PATH:$BARSDIR/bin

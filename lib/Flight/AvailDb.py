@@ -20,7 +20,7 @@ def get_selling_conf(conn, aCompanyCode):
     selling_classs = []
     city_pair_id = 0
     for row in cur:
-        printlog(1, "Selling configuration class %s cabin %s" % (row[0], row[1]))
+        printlog(2, "Selling configuration class %s cabin %s" % (row[0], row[1]))
         selling_classs.append(str(row[0]))
 
     cur.close()

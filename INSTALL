@@ -25,6 +25,11 @@ Create flights:
 /opt/bars/bin/ssmwrite --new -A 738 -F ZZ234 -G YY9234 -D 01JUN2018 -E 31JUL2018 -K 1234567 -Q JNB -P DUR -T ZSZJD -X 1500 -Y 1630 | /opt/bars/bin/ProcSsm.py  -
 /opt/bars/bin/FlightInfo.py -D 01JUN2018 -v
 
-Chec prices:
+Check prices:
 
 /opt/bars/bin/BarsBook.py --price -P JNB -Q CPT -D 2018-07-07
+
+
+Make bookings:
+
+BarsBook.py -F ZZ133 -D 2018-06-01 --book --pay

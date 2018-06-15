@@ -133,7 +133,7 @@ def ReadSsmBookData(conn, flight, schedPerdNo):
         " FROM itenary i, action_codes ac, flight_periods fp, city_pair cp," \
         " flight_date_leg fdl, book b" \
         " WHERE fdl.flight_date between fp.start_date AND fp.end_date" \
-        " AND i.itenary_stat_flag = 'A'" \
+        " AND i.status_flag = 'A'" \
         " AND i.itenary_type = 'R'" \
         " AND i.route_no < 100" \
         " AND ac.action_code = i.reserve_status [ 1, 2 ]" \
@@ -146,7 +146,7 @@ def ReadSsmBookData(conn, flight, schedPerdNo):
         " AND fdl.departure_airport = cp.departure_city" \
         " AND fdl.arrival_airport = cp.arrival_airport" \
         " AND i.book_no = b.book_no" \
-        " AND b.booking_status <> 'X'" \
+        " AND b.status_flag <> 'X'" \
         " AND flgt_sched_status = 'A'" \
         " AND fp.flight_number = '%s'" \
         " AND fp.schedule_period_no = %d" \

@@ -1,3 +1,3 @@
 # bars
-BARS Airlines Reservation System.
+BARS Airlines Reservation Simulation.
 Under construction.

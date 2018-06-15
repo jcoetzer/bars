@@ -20,6 +20,7 @@ from Flight.WriteFares import AddCityPair, AddFareSegments, AddFares, \
 from Flight.ReadFares import ReadCityPairs, ReadFareSegments, ReadFareCodes
 from Ssm.ReadAircraftConfig import ReadEquipmentConfig, WriteEquipmentConfig
 from Flight.ReadFlightBookings import ReadFlightBookings, ReadFlightContacts
+from Flight.ReadTaxes import ReadTaxes
 from BarsBanner import print_banner
 
 
@@ -69,6 +70,16 @@ def ReadEquipment(conn, tailNumber):
     """Read equipment."""
     ecfg = ReadEquipmentConfig(conn, tailNumber)
     ecfg.display()
+
+
+def GetTaxes(conn, aCompanyCode, aFlightDate, aReturnDate, aAirport,
+              pass_code1='ADULT', pass_code2='CHILD',
+              aState='GP', aNation='ZA',
+              aReturnInd='O'):
+    ReadTaxes(conn, aCompanyCode, aFlightDate, aReturnDate, aAirport,
+              pass_code1, pass_code2,
+              aState, aNation,
+              aReturnInd)
 
 
 def usage(pname='BarsFlight.py'):
@@ -123,6 +134,7 @@ def main(argv):
     donew = False
     doeqt = False
     dopax = False
+    dotax = False
     docontact = False
     departDate = None
     arriveDate = None
@@ -149,7 +161,7 @@ def main(argv):
                                    "cfhivxyVA:D:E:F:G:I:J:K:N:P:Q:R:T:U:X:Y:",
                                    ["help", "city", "fare", "faredel",
                                     "new", "eqt", "cnl", "tim", "rpl",
-                                    "utc", "pax", "contact",
+                                    "utc", "pax", "contact", "tax",
                                     "date=", "edate=", "flight=",
                                     "depart=", "arrive=", "name=",
                                     "share=", "cfg=",
@@ -180,6 +192,8 @@ def main(argv):
             donew = True
         elif opt == "--pax":
             dopax = True
+        elif opt == "--tax":
+            dotax = True
         elif opt == "--contact":
             docontact = True
         elif opt == "-A" or opt == "--aircraft":
@@ -311,6 +325,8 @@ def main(argv):
     elif dofare:
         ReadFareCodes(conn)
         ReadFareSegments(conn)
+    elif dotax and departAirport != '' and departDate is not None:
+        GetTaxes(conn, cfg.CompanyCode, departDate, arriveDate, departAirport)
     else:
         print("Huh?")
 

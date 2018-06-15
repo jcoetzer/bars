@@ -95,8 +95,8 @@ def AddBook(conn, aBookNo, aPnr, aSeatQuantity, aOriginAddress,
             book_category, group_wait_seats, group_request_seats,
             group_realtn_pcnt,
             origin_address, origin_branch_code,
-            agency_code, received_from, tour_code, amount_paid,
-            booking_status, scrutiny_flag,
+            agency_code, received_from, tour_code, payment_amount,
+            status_flag, scrutiny_flag,
             first_segm_date, last_segm_date, reaccom_party, dvd_process_flag,
             rdu_process_flag, grp_process_flag, nrl_process_flag,
             create_user, create_group, create_time,
@@ -153,7 +153,7 @@ def AddItenary(conn, aBookNo,
             departure_time,arrival_time,date_change_ind,flight_path_code,
             departure_terminal,arrival_terminal,city_pair,
             physical_class,selling_class,
-            itenary_stat_flag,itenary_type,reserve_status,
+            status_flag,itenary_type,reserve_status,
             fare_nos,processing_flag,rlr_rqr_count,
             action_to_company,update_user,update_group,update_time )
          VALUES (
@@ -208,10 +208,10 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
                 aCurrency, aAmount))
     abfSql = """UPDATE book_fares SET (
             departure_airport, arrival_airport, total_amount_curr, total_amount,
-            fare_construction, endrsmnt_rstrctns, fare_stat_flag,
+            fare_construction, endrsmnt_rstrctns, status_flag,
             update_user, update_group, update_time )
         = ('%s', '%s', '%s', '%f',
-           '-', '-', 'S',
+           '-', '-', 'A',
            '%s', '%s', NOW() )
         WHERE book_no = %d
         AND fare_no = %d
@@ -230,12 +230,12 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
         INSERT INTO book_fares(
             book_no, fare_no, pax_code,
             departure_airport, arrival_airport, total_amount_curr, total_amount,
-            fare_construction, endrsmnt_rstrctns, fare_stat_flag,
+            fare_construction, endrsmnt_rstrctns, status_flag,
             update_user, update_group, update_time )
         VALUES (
             %d, %d, '%s',
            '%s', '%s', '%s', '%f',
-           '-', '-', 'S',
+           '-', '-', 'A',
            '%s', '%s', NOW() )""" \
          % (aBookNo, aFareNo, aPaxCode,
             aDepart, aArrive, aCurrency, aAmount,
@@ -524,7 +524,7 @@ def AddPayment(conn, aPaymentForm, aPaymentType, aCurrency, aAmount,
                 book_no, pax_name, pax_code,
                 origin_branch_code, remarks_text, received_from,
                 paid_flag, pay_stat_flag, recpt_stat_flag, invc_stat_flag,
-                payment_flag,
+                status_flag,
                 create_user, create_group, create_time,
                 update_user, update_group, update_time)
         VALUES ('%s', '%s',
@@ -563,7 +563,7 @@ def GetPreBookingInfo(conn, book_no):
               WHERE pax.book_no=bo.book_no AND pax.passenger_no=1),
             bo.agency_code,
             bo.create_time,
-            bo.booking_status,
+            bo.status_flag,
             bo.no_of_seats,
             bo.book_category,
             ta.trade_name,
@@ -598,18 +598,21 @@ def GetPreBookingInfo(conn, book_no):
         group_name = row[2]
         agency_code = row[4]
         create_time = row[5]
-        booking_status = row[6]
+        status_flag = row[6]
         print("Book %d PNR %s group %s agency %s time %s status %s"
               % (book_no, pax_name_rec, group_name.strip(), agency_code,
-                 create_time, booking_status))
+                 create_time, status_flag))
     cur.close()
 
 
-def UpdateBookPayment(conn, aBookNo, aPayment):
+def UpdateBookPayment(conn, aBookNo, aCurrency, aPayment):
     """Update payment amount in book table."""
-    printlog(1, "Update book %d payment %s%f" % aPayment)
-    UbpSql = "UPDATE book SET amount_paid=amount_paid+%f WHERE book_no=%d" \
-        % (aPayment, aBookNo)
+    printlog(1, "Update book %d payment %s%f" % (aBookNo, aCurrency, aPayment))
+    UbpSql = """UPDATE book
+                SET (payment_amount, status_flag)
+                  = (payment_amount+%f, 'A')
+                WHERE book_no=%d""" \
+             % (aPayment, aBookNo)
     printlog(2, "%s" % UbpSql)
     cur = conn.cursor()
     cur.execute(UbpSql)

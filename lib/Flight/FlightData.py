@@ -81,13 +81,13 @@ class FlightData(object):
             if self.board_weekday == 0:
                 self.board_weekday = 7
         if departure_time is not None:
-            self.departure_time = departure_time.strftime('%H:%M')
+            self.departure_time = departure_time   #.strftime('%H:%M')
             # self.departure_time = ReadTime(departure_time)
             # self.departure_ts = str("%02d:%02d"
             #                        % (self.departure_time.hour,
             #                           self.departure_time.minute))
         if arrival_time is not None:
-            self.arrival_time = arrival_time.strftime('%H:%M')
+            self.arrival_time = arrival_time   #.strftime('%H:%M')
             # self.arrival_time = ReadTime(arrival_time)
             # self.arrival_ts = str("%02s:%02d"
             #                       % (self.arrival_time.hour,

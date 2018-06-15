@@ -154,7 +154,7 @@ def ReadBsOldFares(conn, book_no, currency_code):
             ,round(bf.total_amount, 2) AS total_amount
             ,round(bf.total_amount, 5) AS unrounded_total_amount
             ,bf.total_amount_curr
-            ,bf.fare_stat_flag AS fare_status
+            ,bf.status_flag AS fare_status
             ,dcy.city_name AS departure_city_name
             ,acy.city_name AS arrival_city_name
             ,'0' AS source_reference_id
@@ -206,7 +206,7 @@ def ReadBsOldFares(conn, book_no, currency_code):
                     ,bf.arrival_airport
                     ,bf.total_amount
                     ,bf.total_amount_curr
-                    ,bf.fare_stat_flag
+                    ,bf.status_flag
                     ,dcy.city_name
                     ,acy.city_name
                 ,13
@@ -431,7 +431,7 @@ def ReadBsItinerary(conn, book_no):
                                 ,dcy.city_name          AS departure_city_name
                                 ,aap.airport_name       AS arrival_airport_name
                                 ,acy.city_name          AS arrival_city_name
-                                ,itn.itenary_stat_flag
+                                ,itn.status_flag
                                 ,itn.request_nos
                                 ,itn.date_change_ind    AS date_change_ind
                                 ,case when
@@ -460,7 +460,7 @@ def ReadBsItinerary(conn, book_no):
                         left join airport       AS aap on aap.airport_code      = itn.arrival_airport
                         left join city          AS acy on acy.city_code         = itn.arrival_city
                         WHERE itn.book_no = %d
-                          AND itn.itenary_stat_flag <> 'X'
+                          AND itn.status_flag <> 'X'
                           AND (itn.flight_number like '%%OPEN' or (
                              itn.itenary_type = 'R'
                              AND ac.action_code is not null)
@@ -498,7 +498,7 @@ def ReadBsFares(conn, book_no, currency_code):
                                 ,round(bf.total_amount, 2)                      AS total_amount
                                 ,round(bf.total_amount, 5)                      AS unrounded_total_amount
                                 ,bf.total_amount_curr                           AS total_amount_curr
-                                ,bf.fare_stat_flag                                       AS fare_status
+                                ,bf.status_flag                                       AS fare_status
                                 ,dcy.city_name                                          AS departure_city_name
                                 ,acy.city_name                                          AS arrival_city_name
                                 ,'0'                                                            AS source_reference_id
@@ -541,7 +541,7 @@ def ReadBsFares(conn, book_no, currency_code):
                         left join city                          AS dcy on dcy.city_code = bf.departure_city
                         left join city                          AS acy on acy.city_code = bf.arrival_airport
                         group by bf.fare_no, bf.pax_code, bf.departure_city, bf.arrival_airport
-                                , bf.total_amount, bf.total_amount_curr, bf.fare_stat_flag, dcy.city_name
+                                , bf.total_amount, bf.total_amount_curr, bf.status_flag, dcy.city_name
                                 , acy.city_name, 11, 12, 13, 14
                         order by bf.pax_code, bf.fare_no
 """ % (currency_code, book_no)

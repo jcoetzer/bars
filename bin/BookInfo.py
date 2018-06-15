@@ -83,7 +83,7 @@ def usage(pname="BookInfo.py"):
 def main(argv):
     """Pythonic entry point."""
 
-    booking_status = None
+    status_flag = None
     bookno = None
     dt1 = None
     dt2 = None

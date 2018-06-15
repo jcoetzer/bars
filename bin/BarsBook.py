@@ -30,7 +30,7 @@ from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, \
      AddBookFares, AddBookFareSegments, AddBookFarePassengers, \
      AddBookFaresPayments, AddBookRequest, AddPayment, \
      GetPreBookingInfo, AddBookTimeLimit, AddContact, UpdateBookPayment
-from Booking.ReadItenary import ReadItenary
+from Booking.ReadItenary import ReadItenary, UpdateItenary, UpdateBook
 from Flight.ReadFlights import ReadDeparture
 from Flight.ReadFlights import ReadFlightDeparture
 from DbConnect import OpenDb, CloseDb
@@ -132,7 +132,7 @@ def GetItenary(conn, aBookNo):
 
 def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
             vOriginBranchCode, vAgencyCode,
-            paxRecs,
+            paxRecs, aCurrency,
             payAmount,
             flightNumber, dt1,
             flightNumber2, dt2,
@@ -246,7 +246,10 @@ def PutPay(conn, aBookNo, aSellClass,
         AddBookFarePassengers(conn, aBookNo, paxRecs[0].passenger_code,
                               aCurrency, totalPayment,
                               aUser, aGroup)
-    UpdateBookPayment(conn, aBookNo, totalPayment)
+    UpdateBookPayment(conn, aBookNo, aCurrency, totalPayment)
+    UpdateItenary(conn, aBookNo, 'A')
+    UpdateBook(conn, aBookNo, 'A')
+
     return 0
 
 
@@ -281,7 +284,7 @@ def DoBook(conn, cfg, paxNames, paxDobs, flightNumber, dt1,
         payAmount = 0.0
     bn, pnr = PutBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
                       cfg.OriginBranchCode, cfg.AgencyCode,
-                      paxRecs,
+                      paxRecs, cfg.Currency,
                       payAmount,
                       flightNumber, dt1,
                       departAirport, arriveAirport,

@@ -623,7 +623,9 @@ def ReadFlightsDate(conn, dts, ndays, departure_airport, arrival_airport, code_s
     flights = []
     for row in cur:
         printlog(1, "Flight %-6s date %s depart %s arrive %s city pair %3d" \
-            % (row['flight_number'], row['flight_date'], row['departure_airport'], row['arrival_airport'], int(row['city_pair'])))
+                 % (row['flight_number'], row['flight_date'],
+                    row['departure_airport'], row['arrival_airport'],
+                    int(row['city_pair'])))
         flight_number = row['flight_number']
         departure_date = row['flight_date']
         departure_time = row['departure_time']

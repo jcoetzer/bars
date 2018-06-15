@@ -68,7 +68,7 @@ def ReadRequestsPnl(conn, book_no, Company, DeprAirport, FlightDate,
     return n
 
 
-def ReadRequests(conn, book_no, rqst_code, delim=" ", booking_status='A'):
+def ReadRequests(conn, book_no, rqst_code, delim=" ", status_flag='A'):
     d_reqs = []
     if book_no < 0:
         d_reqs.append(str("%3s%s%24s" % ("Act", delim, str("SSR code %s" % rqst_code))))
@@ -81,10 +81,10 @@ def ReadRequests(conn, book_no, rqst_code, delim=" ", booking_status='A'):
         "SELECT rqst_sequence_no,rqst_code,carrier_code,action_code,actn_number,request_text," \
         " processing_flag,all_passenger_flag,all_itenary_flag " \
         " FROM book_requests WHERE book_no=%d" % book_no
-    if booking_status == 'A' or booking_status == 'Y':
+    if status_flag == 'A' or status_flag == 'Y':
         ssrSql += \
             " and action_code not like 'X%'"
-    elif booking_status == 'X':
+    elif status_flag == 'X':
         ssrSql += \
             " and action_code like 'X%'"
     else:
