@@ -52,8 +52,8 @@ def ReadTaxes(conn, aCompanyCode, aFlightDate, aReturnDate, aAirport,
     printlog(2, "Selected %d row(s)" % cur.rowcount)
     for row in cur:
         for item in row:
-            printlog(1, "%s" % item, end=' ')
-        print
+            print("%s" % item, end=' ')
+        print('')
 
     cur.close()
 
