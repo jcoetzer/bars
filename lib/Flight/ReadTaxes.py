@@ -18,7 +18,7 @@ def ReadTaxes(conn, aCompanyCode, aFlightDate, aReturnDate, aAirport,
     flightDate = aFlightDate.strftime('%Y-%m-%d')
     returnDate = aReturnDate.strftime('%Y-%m-%d')
     RtSql = """SELECT company_code, tax_code,
-            pax_code, tax_sequence, tax_type, tax_value, nuc_rate,
+            pax_code, tax_sequence, tax_type, tax_amount, nuc_rate,
             valid_from_date, valid_to_date,
             short_description
             FROM taxes, currency_codes
