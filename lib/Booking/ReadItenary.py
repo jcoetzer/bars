@@ -1,6 +1,6 @@
 # @file ReadItenary.py
 """
-Read itenary.
+Read itinerary.
 """
 
 import sys
@@ -13,25 +13,25 @@ from Booking.ItenaryData import ItenaryData
 
 def ReadItenary(conn, bookno, status_flag, action_codes,
                 fnumber=None, start_date=None, end_date=None):
-    """Read itenary."""
-    itenaryrecs = []
+    """Read itinerary."""
+    itineraryrecs = []
 
     itenSql = \
         "SELECT flight_number,flight_date,selling_class,departure_airport," \
         "city_pair," \
-        "arrival_airport,status_flag,reserve_status,itenary_type" \
-        " FROM itenary" \
+        "arrival_airport,status_flag,reserve_status,itinerary_type" \
+        " FROM itineraries" \
         " WHERE book_no=%d" \
         % int(bookno)
     if status_flag == 'A' or status_flag == 'Y':
         itenSql += \
-            " AND status_flag='A' and itenary_type='R'"
+            " AND status_flag='A' and itinerary_type='R'"
         if len(action_codes):
             itenSql += \
                 " AND reserve_status[1,2] IN (%s)" % action_codes
     elif status_flag == 'X':
         # itenSql += \
-            # " AND status_flag!='A' and itenary_type='R'"
+            # " AND status_flag!='A' and itinerary_type='R'"
         pass
     elif status_flag == '*':
         pass
@@ -52,7 +52,7 @@ def ReadItenary(conn, bookno, status_flag, action_codes,
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(itenSql)
     for row in cur:
-        itenaryrecs.append(ItenaryData(row['flight_number'],
+        itineraryrecs.append(ItenaryData(row['flight_number'],
                                        row['flight_date'],
                                        row['selling_class'],
                                        row['departure_airport'],
@@ -60,15 +60,15 @@ def ReadItenary(conn, bookno, status_flag, action_codes,
                                        row['city_pair'],
                                        row['status_flag'],
                                        row['reserve_status'],
-                                       row['itenary_type']))
+                                       row['itinerary_type']))
     cur.close()
-    return itenaryrecs
+    return itineraryrecs
 
 
 def UpdateItenary(conn, aBookNo, aStatus='A'):
-    """Activate itenary."""
-    printlog(1, "Set book %d itenary status to %s" % (aBookNo, aStatus))
-    UaSql = """UPDATE itenary
+    """Activate itinerary."""
+    printlog(1, "Set bookings %d itinerary status to %s" % (aBookNo, aStatus))
+    UaSql = """UPDATE itineraries
                SET (status_flag, processing_flag)
                  = ('%s', 'Y')
                WHERE book_no = %d""" \
@@ -80,9 +80,9 @@ def UpdateItenary(conn, aBookNo, aStatus='A'):
 
 
 def UpdateBook(conn, aBookNo, aStatus='A'):
-    """Activate itenary."""
-    printlog(1, "Set book %d status to %s" % (aBookNo, aStatus))
-    UaSql = """UPDATE book SET status_flag='%s'
+    """Activate itinerary."""
+    printlog(1, "Set bookings %d status to %s" % (aBookNo, aStatus))
+    UaSql = """UPDATE bookings SET status_flag='%s'
             WHERE book_no = %d""" % (aStatus, aBookNo)
     cur = conn.cursor()
     printlog(2, UaSql)

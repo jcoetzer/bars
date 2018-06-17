@@ -108,7 +108,7 @@ def add_equipment(atype, abook, atail, cdata, cdata2=None):
     if cdata2 is not None:
         aircraft_conf.append(cdata2)
     aircraft_tail = atail
-    printlog(2, "Type %s book %s cabin %s tail %s"
+    printlog(2, "Type %s booking %s cabin %s tail %s"
              % (aircraft_code, abook, aircraft_conf, aircraft_tail))
 
 

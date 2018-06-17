@@ -26,13 +26,13 @@ class ItenaryData(object):
     status_flag = None
     reserve_status = None
     city_pair = None
-    itenary_type = None
+    itinerary_type = None
 
     def __init__(self, flight_number, departure_date, class_code,
                  departure_airport, arrival_airport, city_pair,
-                 status_flag, reserve_status, itenary_type=None):
-        """New itenary for flight."""
-        printlog(2, "New itenary flight %s date %s class %s"
+                 status_flag, reserve_status, itinerary_type=None):
+        """New itinerary for flight."""
+        printlog(2, "New itinerary flight %s date %s class %s"
                  " from %s to %s status %s reserve %s"
                  % (flight_number, departure_date, class_code,
                     departure_airport, arrival_airport,
@@ -50,13 +50,13 @@ class ItenaryData(object):
         self.city_pair = city_pair
         self.status_flag = status_flag
         self.reserve_status = reserve_status
-        self.itenary_type = str(itenary_type or '?')
+        self.itinerary_type = str(itinerary_type or '?')
 
     def display(self):
-        """Display itenary."""
+        """Display itinerary."""
         print("Itenary flight %6s date %s from %s to %s status %s"
               " reserve %s type %s"
               % (self.flight_number, self.board_date_iso,
                  self.departure_airport, self.arrival_airport,
-                 self.status_flag, self.reserve_status, self.itenary_type))
+                 self.status_flag, self.reserve_status, self.itinerary_type))
 

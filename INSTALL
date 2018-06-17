@@ -1,35 +1,48 @@
+Initialize database:
+
+$ psql -f create_barsdb.sql
+$ psql barsdb -f init_airport.sql
+$ psql barsdb -f init_aircraft.sql
+$ psql barsdb -f init_fares.sql
+$ psql barsdb -f init_taxes.sql
+$ psql barsdb -f init_selling_conf.sql
+
 Create routes:
 
-/opt/bars/bin/BarsFlight.py --fare -P DUR -Q JNB -D 2018-06-01 -E 2018-12-31 -R 1200 -V
-/opt/bars/bin/BarsFlight.py --fare -Q DUR -P JNB -D 2018-06-01 -E 2018-12-31 -R 1200 -V
-/opt/bars/bin/BarsFlight.py --fare -P CPT -Q JNB -D 2018-06-01 -E 2018-12-31 -R 3000 -V
-/opt/bars/bin/BarsFlight.py --fare -Q CPT -P JNB -D 2018-06-01 -E 2018-12-31 -R 3000 -V
-/opt/bars/bin/BarsFlight.py --fare -v
+$ /opt/bars/bin/BarsFlight.py --fare -P JNB -Q DUR -D 2018-06-01 -E 2018-12-31 -R 1200 -V
+$ /opt/bars/bin/BarsFlight.py --fare -P DUR -Q JNB -D 2018-06-01 -E 2018-12-31 -R 1200 -V
+$ /opt/bars/bin/BarsFlight.py --fare -P JNB -Q CPT -D 2018-06-01 -E 2018-12-31 -R 3000 -V
+$ /opt/bars/bin/BarsFlight.py --fare -P CPT -Q JNB -D 2018-06-01 -E 2018-12-31 -R 3000 -V
+$ /opt/bars/bin/BarsFlight.py --fare -P DUR -Q CPT -D 2018-06-01 -E 2018-12-31 -R 3000 -V
+$ /opt/bars/bin/BarsFlight.py --fare -P CPT -Q DUR -D 2018-06-01 -E 2018-12-31 -R 3000 -V
+$ /opt/bars/bin/BarsFlight.py --fare -v
 
 Add aircraft:
-/opt/bars/bin/BarsFlight.py -V --new -A 738 -U 738A -T ZSJCA -I Y,C -J 186,2`
+$ /opt/bars/bin/BarsFlight.py -V --new -A 738 -U 738A -T ZSZJC -I Y,C -J 186,2
+$ /opt/bars/bin/BarsFlight.py -V --new -A 738 -U 738A -T ZSZJD -I Y,C -J 186,2
+$ /opt/bars/bin/BarsFlight.py -V --new -A 738 -U 738A -T ZSZDC -I Y,C -J 186,2
 
 Create flights:
 
+$ /opt/bars/bin/ssmwrite --new -A 738 -F ZZ123 -G YY9123 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P JNB -Q CPT -T ZSZJC -X 0600 -Y 0805 | /opt/bars/bin/ProcSsm.py  -
+$ /opt/bars/bin/ssmwrite --new -A 738 -F ZZ323 -G YY9323 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P CPT -Q JNB -T ZSZJC -X 1000 -Y 1205 | /opt/bars/bin/ProcSsm.py  -
 
+$ /opt/bars/bin/ssmwrite --new -A 738 -F ZZ124 -G YY9223 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P JNB -Q DUR -T ZSZJD -X 0630 -Y 0800 | /opt/bars/bin/ProcSsm.py  -
+$ /opt/bars/bin/ssmwrite --cnl -A 738 -F ZZ224 -G YY9223 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P DUR -Q JNB -T ZSZJD -X 0630 -Y 0800 | /opt/bars/bin/ProcSsm.py  -
 
-/opt/bars/bin/ssmwrite --new -A 738 -F ZZ123 -G YY9123 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P JNB -Q CPT -T ZSZJC -X 0600 -Y 0805 | /opt/bars/bin/ProcSsm.py  -
-/opt/bars/bin/FlightInfo.py -D 01JUN2018
-/opt/bars/bin/ssmwrite --new -A 738 -F ZZ323 -G YY9323 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P JNB -Q CPT -T ZSZJC -X 1000 -Y 1205 | /opt/bars/bin/ProcSsm.py  -
-/opt/bars/bin/ssmwrite --new -A 738 -F ZZ223 -G YY9223 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P JNB -Q DUR -T ZSZJD -X 0630 -Y 0800 | /opt/bars/bin/ProcSsm.py  -
-/opt/bars/bin/ssmwrite --cnl -A 738 -F ZZ223 -G YY9223 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P JNB -Q DUR -T ZSZJD -X 0630 -Y 0800 | /opt/bars/bin/ProcSsm.py  -
-/opt/bars/bin/ssmwrite --cnl -A 738 -F ZZ133 -G YY9133 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P JNB -Q DUR -T ZSZJD -X 0630 -Y 0800 | /opt/bars/bin/ProcSsm.py  -
-/opt/bars/bin/ssmwrite --new -A 738 -F ZZ133 -G YY9133 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P JNB -Q DUR -T ZSZJD -X 0630 -Y 0800 | /opt/bars/bin/ProcSsm.py  -
-/opt/bars/bin/ssmwrite --new -A 738 -F ZZ233 -G YY9233 -D 01JUN2018 -E 31JUL2018 -K 1234567 -Q JNB -P DUR -T ZSZJD -X 0900 -Y 1030 | /opt/bars/bin/ProcSsm.py  -
-/opt/bars/bin/ssmwrite --new -A 738 -F ZZ134 -G YY9134 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P JNB -Q DUR -T ZSZJD -X 1230 -Y 1400 | /opt/bars/bin/ProcSsm.py  -
-/opt/bars/bin/ssmwrite --new -A 738 -F ZZ234 -G YY9234 -D 01JUN2018 -E 31JUL2018 -K 1234567 -Q JNB -P DUR -T ZSZJD -X 1500 -Y 1630 | /opt/bars/bin/ProcSsm.py  -
-/opt/bars/bin/FlightInfo.py -D 01JUN2018 -v
+$ /opt/bars/bin/ssmwrite --cnl -A 738 -F ZZ133 -G YY9133 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P JNB -Q DUR -T ZSZJD -X 0630 -Y 0800 | /opt/bars/bin/ProcSsm.py  -
+$ /opt/bars/bin/ssmwrite --new -A 738 -F ZZ133 -G YY9133 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P JNB -Q DUR -T ZSZJD -X 0630 -Y 0800 | /opt/bars/bin/ProcSsm.py  -
+
+$ /opt/bars/bin/ssmwrite --new -A 738 -F ZZ233 -G YY9233 -D 01JUN2018 -E 31JUL2018 -K 1234567 -Q JNB -P DUR -T ZSZJD -X 0900 -Y 1030 | /opt/bars/bin/ProcSsm.py  -
+$ /opt/bars/bin/ssmwrite --new -A 738 -F ZZ134 -G YY9134 -D 01JUN2018 -E 31JUL2018 -K 1234567 -P JNB -Q DUR -T ZSZJD -X 1230 -Y 1400 | /opt/bars/bin/ProcSsm.py  -
+$ /opt/bars/bin/ssmwrite --new -A 738 -F ZZ234 -G YY9234 -D 01JUN2018 -E 31JUL2018 -K 1234567 -Q JNB -P DUR -T ZSZJD -X 1500 -Y 1630 | /opt/bars/bin/ProcSsm.py  -
+$ /opt/bars/bin/FlightInfo.py -D 01JUN2018 -v
 
 Check prices:
 
-/opt/bars/bin/BarsBook.py --price -P JNB -Q CPT -D 2018-07-07
+$ /opt/bars/bin/BarsBook.py --price -P JNB -Q CPT -D 2018-07-07
 
 
 Make bookings:
 
-BarsBook.py -F ZZ133 -D 2018-06-01 --book --pay
+$ BarsBook.py -F ZZ133 -D 2018-06-01 --book --pay

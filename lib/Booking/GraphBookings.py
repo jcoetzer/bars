@@ -76,7 +76,7 @@ def PrintGraph(bookings, dt1, dt2, ORIGIN, WIDTH):
 
 def InitGraphBookings(conn, dt1, dt2, ORIGIN=None, WIDTH=0):
     """Gather data to initialize."""
-    SQL = "SELECT update_time FROM book"
+    SQL = "SELECT update_time FROM bookings"
     SQL += " WHERE update_time>'%s' " % dt1.strftime("%Y/%m/%d/%H/%M/00")
     SQL += " AND update_time<'%s' " % dt2.strftime("%Y/%m/%d/%H/%M/59")
     if ORIGIN is not None:
@@ -138,7 +138,7 @@ def GraphBookings(conn, show_mins, dt1=None, dt2=None, ORIGIN=None, WIDTH=0):
             dt1 = datetime.now() - timedelta(minutes=show_mins)
             dt2 = datetime.now() - timedelta(minutes=1)
 
-            SQL = "SELECT count(book_no) nbook FROM book"
+            SQL = "SELECT count(book_no) nbook FROM bookings"
             SQL += " WHERE update_time>='%s' " % dt2.strftime("%Y/%m/%d/%H/%M/00")
             SQL += " AND update_time<='%s' " % dt2.strftime("%Y/%m/%d/%H/%M/59")
             if ORIGIN is not None:

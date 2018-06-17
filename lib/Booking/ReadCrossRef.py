@@ -35,7 +35,7 @@ def check_bci_new(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb, msk):
             "  OR ( 3=3 AND len(bci.pax_name_rec)>2" \
             " AND bci.ext_book_numb != '%s'" \
             " AND bci.origin_address != '%s'\n" \
-            "       AND bci.pax_name_rec = (SELECT b.pax_name_rec FROM book b, book_crs_index bc" \
+            "       AND bci.pax_name_rec = (SELECT b.pax_name_rec FROM bookings b, book_crs_index bc" \
             " WHERE bc.book_no=b.book_no AND bc.ext_book_numb = '%s'" \
             " AND bc.origin_address != '%s' ) ) \n" \
                 % (ExtBookNumb, ExtOriginAddress, ExtBookNumb, ExtOriginAddress)
@@ -64,7 +64,7 @@ def check_bci_trl(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb):
 
     ChkSql = \
         "SELECT bci.book_no bno, bci.ext_book_numb ext, b.pax_name_rec pnr, b.book_category bcat, b.no_of_seats n" \
-        " FROM book_crs_index bci, book b " \
+        " FROM book_crs_index bci, bookings b " \
         " WHERE ( ( bci.ext_book_numb IS NOT NULL " \
         "          AND bci.origin_address = \"%s\" " \
         "          AND bci.ext_book_numb = \"%s\" ) OR " \
@@ -104,7 +104,7 @@ def check_bci(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb, msk):
             "  OR ( bci.pax_name_rec IS NOT NULL" \
             " AND bci.ext_book_numb != '%s'" \
             " AND bci.origin_address != '%s'\n" \
-            "       AND bci.pax_name_rec = (SELECT b.pax_name_rec FROM book b, book_crs_index bc" \
+            "       AND bci.pax_name_rec = (SELECT b.pax_name_rec FROM bookings b, book_crs_index bc" \
             " WHERE bc.book_no=b.book_no AND bc.ext_book_numb = '%s'" \
             " AND bc.origin_address != '%s' ) ) \n" \
                 % (ExtBookNumb, ExtOriginAddress, ExtBookNumb, ExtOriginAddress)

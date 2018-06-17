@@ -20,7 +20,7 @@ def ReadBsRetailer(conn, elBookingNumber, epcAgencyCode, v_agencyPayForm):
         % (elBookingNumber, epcAgencyCode, v_agencyPayForm))
     BsRetailerSql = """
         SELECT CASE WHEN COUNT(*) > 0 THEN MAX(b.book_no) ELSE 0 END AS bn
-            FROM  book AS b
+            FROM  bookings AS b
             WHERE b.book_no = %d
             AND  (b.agency_code = '%s' or
                  (b.agency_code IS NULL AND b.book_no IN
@@ -423,8 +423,8 @@ def ReadBsItinerary(conn, book_no):
                                  ,arrival_time
                                 ,ac.seat_rqst_type
                                 ,itn.book_no
-                                ,itn.alt_itenary_no     AS alt_itinerary_no
-                                ,itn.itenary_no         AS itinerary_no
+                                ,itn.alt_itinerary_no     AS alt_itinerary_no
+                                ,itn.itinerary_no         AS itinerary_no
                                 ,itn.departure_airport       AS departure_airport
                                 ,itn.arrival_airport       AS arrival_airport
                                 ,dap.airport_name       AS departure_airport_name
@@ -452,7 +452,7 @@ def ReadBsItinerary(conn, book_no):
                                      )
                              end
                                         AS marketing_flight_number
-                        FROM  itenary            AS itn
+                        FROM  itineraries            AS itn
                         left join action_codes  AS ac   on action_code  = substr(itn.reserve_status, 1, 2)
                              AND ac.company_code = (SELECT company_code FROM system_param)
                         left join airport       AS dap on dap.airport_code      = itn.departure_airport
@@ -462,7 +462,7 @@ def ReadBsItinerary(conn, book_no):
                         WHERE itn.book_no = %d
                           AND itn.status_flag <> 'X'
                           AND (itn.flight_number like '%%OPEN' or (
-                             itn.itenary_type = 'R'
+                             itn.itinerary_type = 'R'
                              AND ac.action_code is not null)
                           )
                         order by        itn.flight_date,
@@ -744,7 +744,7 @@ def ReadBsSummary(conn, book_no, currency_code, PaymentTypeFee='', PaymentTypeFe
                                         WHERE pa.book_no = bo.book_no
                                         AND pa.payment_type IN ('%s', '%s', '%s'))
                                 , 0), 2) AS total_fee
-                        FROM book AS bo WHERE bo.book_no = %s
+                        FROM bookings AS bo WHERE bo.book_no = %s
 """ % (currency_code,
        PaymentTypeFee, PaymentTypeFeeTax, PaymentTypeFeeWaive,
        currency_code,

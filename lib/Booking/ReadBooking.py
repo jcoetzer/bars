@@ -23,7 +23,7 @@ def ReadBooking(conn, book_no):
     # GetBookColumns()
 
     bookSql = \
-        "SELECT %s FROM book WHERE book_no=%d" % (bcol, book_no)
+        "SELECT %s FROM bookings WHERE book_no=%d" % (bcol, book_no)
 
     print("Booking %d" % book_no)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)

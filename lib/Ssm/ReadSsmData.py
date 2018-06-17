@@ -130,11 +130,11 @@ def ReadSsmBookData(conn, flight, schedPerdNo):
           % (flight.flight_number, schedPerdNo))
     FbSql = \
         "SELECT DISTINCT i.book_no bn" \
-        " FROM itenary i, action_codes ac, flight_periods fp, city_pair cp," \
-        " flight_date_leg fdl, book b" \
+        " FROM itinerary i, action_codes ac, flight_periods fp, city_pairs cp," \
+        " flight_date_leg fdl, bookings b" \
         " WHERE fdl.flight_date between fp.start_date AND fp.end_date" \
         " AND i.status_flag = 'A'" \
-        " AND i.itenary_type = 'R'" \
+        " AND i.itinerary_type = 'R'" \
         " AND i.route_no < 100" \
         " AND ac.action_code = i.reserve_status [ 1, 2 ]" \
         " AND ac.seat_rqst_type IN ('C', 'W', 'R')" \

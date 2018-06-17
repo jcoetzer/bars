@@ -14,12 +14,13 @@ from ReadDateTime import ReadDate
 
 class FarePricingData(object):
 
-    fare_code = ''
+    fare_basis_code = ''
     selling_class = ''
-    fare_amount = 0
+    fare_amount = 0.0
+    total_amount = 0.0
 
     def __init__(self,
-                 fare_code,
+                 fare_basis_code,
                  city_pair,
                  valid_from_date,
                  valid_to_date,
@@ -29,7 +30,7 @@ class FarePricingData(object):
                  byps_strt_auth_level,
                  byps_end_auth_level,
                  selling_class):
-        self.fare_code = fare_code
+        self.fare_basis_code = fare_basis_code
         self.city_pair = city_pair
         self.valid_from_date = valid_from_date
         self.valid_to_date = valid_to_date
@@ -40,9 +41,22 @@ class FarePricingData(object):
         self.byps_end_auth_level = byps_end_auth_level
         self.selling_class = selling_class
 
+    def apply_taxes(self, aTaxes):
+        self.total_amount = self.fare_amount
+        for tax in aTaxes:
+            if tax.tax_type == '=':
+                printlog(2, "Add %f to base fare" % tax.tax_amount)
+                self.total_amount += tax.tax_amount
+            elif tax.tax_type == '%':
+                printlog(2, "Add %.0f%% to base fare" % tax.tax_amount)
+                self.total_amount *= 1 + (tax.tax_amount / 100)
+            else:
+                pass
+
     def display(self):
-        print("Fare code %s class %s value %.2f"
-              % (self.fare_code, self.selling_class, self.fare_amount))
+        print("Fare code %s class %s base %.2f total %.2f"
+              % (self.fare_basis_code, self.selling_class, self.fare_amount,
+                 self.total_amount))
 
 
 class PricingData(object):
@@ -72,7 +86,7 @@ class PricingData(object):
 
 class PassengerCode(object):
 
-    fare_codes = []
+    fare_basis_codes = []
     tax_codes = []
 
     def __init__(self,
@@ -90,7 +104,7 @@ class PassengerCode(object):
         self.surcharge_per_seat = float(surcharge_per_seat)
         self.tax_amount_per_seat = float(tax_amount_per_seat)
         self.fare_ladder = fare_ladder
-        self.fare_codes = farecodes
+        self.fare_basis_codes = farecodes
         self.tax_codes = taxcodes
         printlog(2, "New passenger code %s count %d value %.2f"
                  % (self.passenger_code, self.seat_count,
@@ -104,8 +118,8 @@ class PassengerCode(object):
         print("\t\tTax value per seat  : %.2f" % self.tax_amount_per_seat)
         print("\t\tFare ladder         : %s" % self.fare_ladder)
         print("\t\tFare codes :")
-        for fare_code in self.fare_codes:
-            fare_code.display()
+        for fare_basis_code in self.fare_basis_codes:
+            fare_basis_code.display()
         print("\t\tTax codes :")
         for tax_code in self.tax_codes:
             tax_code.display()
@@ -114,7 +128,7 @@ class PassengerCode(object):
 class FareCode(object):
 
     company_code = 'ZZ'
-    fare_code = ''
+    fare_basis_code = ''
     class_code = 'Y'
     passenger_code = 'ADULT'
     base_amount = 0.00
@@ -124,11 +138,11 @@ class FareCode(object):
     flights = []
     flight_codes = []
 
-    def __init__(self, company_code, fare_code, class_code, passenger_code,
+    def __init__(self, company_code, fare_basis_code, class_code, passenger_code,
                  base_amount,
                  fare_route_id, valid_from, valid_to, flightcodes):
         self.company_code = company_code
-        self.fare_code = fare_code
+        self.fare_basis_code = fare_basis_code
         self.class_code = class_code
         self.passenger_code = passenger_code
         self.base_amount = float(base_amount)
@@ -137,10 +151,10 @@ class FareCode(object):
         self.valid_to = ReadDate(valid_to)
         self.flight_codes = flightcodes
         printlog(2, "New fare code %s class %s ID %s"
-                 % (self.fare_code, self.class_code, self.fare_route_id))
+                 % (self.fare_basis_code, self.class_code, self.fare_route_id))
 
     def display(self, prefix='\t'):
-        print("\t\t*\tFare code       : %s" % self.fare_code)
+        print("\t\t*\tFare code       : %s" % self.fare_basis_code)
         print("\t\t\tCompany code    : %s" % self.company_code)
         print("\t\t\tClass code      : %s" % self.class_code)
         print("\t\t\tPassenger code  : %s" % self.passenger_code)

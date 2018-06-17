@@ -12,7 +12,7 @@ def ReadCityPairs(conn, departure_airport=None, arrival_airport=None):
     RcpSql = """
         SELECT city_pair, departure_city, arrival_airport, pair_indicator,
         distance, baggage_alownce, pair_rule_no, remarks
-    FROM city_pair"""
+    FROM city_pairs"""
     if departure_airport is not None and arrival_airport is not None:
         RcpSql += """
             WHERE departure_city = '%s'
@@ -37,9 +37,9 @@ def ReadFareSegments(conn):
     """Read fare segments."""
     printlog(1, "Fare segments:")
     RfSql = """
-    SELECT company_code, fare_code, city_pair, valid_from_date, valid_to_date,
+    SELECT company_code, fare_basis_code, city_pair, valid_from_date, valid_to_date,
         fare_amount, active_flag
-    FROM fare_segm"""
+    FROM fare_segments"""
 
     printlog(2, "%s" % RfSql)
     cur = conn.cursor()
@@ -61,9 +61,9 @@ def ReadFareCodes(conn):
     printlog(1, "Fare codes:")
     RfSql = """
         SELECT
-        company_code, fare_code, short_description, description,
+        company_code, fare_basis_code, short_description, description,
         selling_class, fare_category, onw_return_flag
-    FROM fare_codes"""
+    FROM fare_basis_codes"""
 
     printlog(2, "%s" % RfSql)
     cur = conn.cursor()

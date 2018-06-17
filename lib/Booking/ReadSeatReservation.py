@@ -13,7 +13,7 @@ def CheckItenary(conn, flight_number, flight_date, depr_airport, book_no):
     print("Itenary for booking %d flight %s on %s"
           % (book_no, flight_number, flight_date))
     RcSql = \
-        "SELECT book_no FROM itenary WHERE " \
+        "SELECT book_no FROM itineraries WHERE " \
         " flight_number = '%s' AND   " \
         " flight_date  = '%s' AND " \
         " book_no  = %d    AND " \
@@ -28,7 +28,7 @@ def CheckItenary(conn, flight_number, flight_date, depr_airport, book_no):
         print("%s" % str(row['book_no'] or ''))
         n += 1
     if n == 0:
-        print("No itenary for booking %d flight %s on %s"
+        print("No itineraries for booking %d flight %s on %s"
               % (book_no, flight_number, flight_date))
     return n
 
@@ -641,7 +641,7 @@ def FlightSeatBookings(conn, flight_number, flight_date,
     for row in cur:
         flight_seat_reservation_id = int(row['flight_seat_reservation_id'])
         if get_verbose() >= 1:
-            print("\tseat reserve id %8d group reserve id %8d book %8d seat def id %8d" \
+            print("\tseat reserve id %8d group reserve id %8d bookings %8d seat def id %8d" \
                 % (flight_seat_reservation_id,
                    int(row['flight_seat_reservation_group_id']),
                    int(row['book_no'] or 0), row['sdi']), end=' ')

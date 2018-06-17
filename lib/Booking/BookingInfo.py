@@ -84,12 +84,12 @@ def AddBook(conn, aBookNo, aPnr, aSeatQuantity, aOriginAddress,
             aFlightDate,
             aUser, aGroup):
     """
-    Add entry to book table.
+    Add entry to bookings table.
 
     Return booking number.
     """
     abSql = """
-        INSERT INTO book(
+        INSERT INTO bookings(
             book_no, pax_name_rec, book_type, group_name,
             no_of_seats,
             book_category, group_wait_seats, group_request_seats,
@@ -131,7 +131,7 @@ def AddItenary(conn, aBookNo,
                aDepartTime, aArriveTime,
                aDepartTerm, aArriveTerm,
                aCityPair, aSellClass, aUser, aGroup):
-    """Add entry for itenary."""
+    """Add entry for itinerary."""
     printlog(2, "Itenary for booking %d: flight %s date %s depart %s %s (%s) arrive %s %s (%s)"
              % (aBookNo, aFlightNumber, aFlightDate,
                 aDepart, aDepartTime, aDepartTerm,
@@ -139,21 +139,21 @@ def AddItenary(conn, aBookNo,
     dateChangeInd = 0
     flightPathCode = aDepart[0]
     physicalClass = 'Y'
-    # itenaryStatus = 'A'
-    # itenaryType = 'I'
+    # itineraryStatus = 'A'
+    # itineraryType = 'I'
     # reserveStatus = 'HK'
     # fareNumber = 1
     actionToCompany = aFlightNumber[0:2]
     aiSql = """
-        INSERT INTO itenary(
+        INSERT INTO itineraries(
             book_no,
-            route_no,alt_itenary_no,itenary_no,
+            route_no,alt_itinerary_no,itinerary_no,
             flight_number,flight_date,
             departure_city,arrival_city,departure_airport,arrival_airport,
             departure_time,arrival_time,date_change_ind,flight_path_code,
             departure_terminal,arrival_terminal,city_pair,
             physical_class,selling_class,
-            status_flag,itenary_type,reserve_status,
+            status_flag,itinerary_type,reserve_status,
             fare_nos,processing_flag,rlr_rqr_count,
             action_to_company,update_user,update_group,update_time )
          VALUES (
@@ -201,9 +201,9 @@ def AddBookTimeLimit(conn, aBookNo, aDestBranch, aUser, aGroup):
 
 def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
                  aCurrency, aAmount, aUser, aGroup):
-    """Add entry for book fare."""
+    """Add entry for booking fare."""
     cur = conn.cursor()
-    printlog(1, "Add book %d fare %d code %s depart %s arrive %s amount %s%d"
+    printlog(1, "Add booking %d fare %d code %s depart %s arrive %s amount %s%d"
              % (aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
                 aCurrency, aAmount))
     abfSql = """UPDATE book_fares SET (
@@ -221,7 +221,7 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
            aUser, aGroup, aBookNo, aFareNo, aPaxCode)
     cur.execute(abfSql)
     if cur.rowcount > 0:
-        printlog(0, "Payment for book %d fare %d code %s has been processed"
+        printlog(0, "Payment for booking %d fare %d code %s has been processed"
                  % (aBookNo, aFareNo, aPaxCode))
         cur.close()
         return
@@ -245,22 +245,74 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
         cur.execute(abfSql)
         printlog(2, "Inserted %d row(s)" % cur.rowcount)
     except psycopg2.IntegrityError:
-        printlog(0, "Payment for book %d fare %d code %s has been processed before"
+        printlog(0, "Payment for booking %d fare %d code %s has been processed before"
                  % (aBookNo, aFareNo, aPaxCode))
     cur.close()
 
 
-def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode, aFlight, aDate,
-                        aDepart, aArrive, aCurrency, aAmount, aUser, aGroup):
-    """Add entry for book fare segment."""
+def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode,
+                        aDepart, aArrive,
+                        aFlight, aFlightDate,
+                        aStartDate, aEndDate,
+                        aSellClass, aFareBasis,
+                        aCurrency, aAmount,
+                        aUser, aGroup):
+    """
+    Add entry for booking fare segment.
+
+    A fare basis code is an alphabetic or alpha-numeric code used by airlines
+    to identify a fare type and allow airline staff and travel agents to find
+    the rules applicable to that fare. There are some patterns that have
+    evolved over the years and may still be in use.
+
+    Fare codes start with a letter called a booking class (indicating travel
+    class among other things) which matches the letter code that the
+    reservation is booked in. Other letters or numbers follow. Typically a fare
+    basis will be 3 to 7 characters long, but can be up to 8.
+
+    Booking code    Meaning
+    F               full-fare First class
+    J               full-fare Business class
+    W               full-fare Premium Economy class
+    Y               full-fare Economy class
+
+    E 	             Second letter
+        Excursion Fare: has a minimum and maximum stay requirement to encourage
+        use by the holiday market and not business travellers.
+    NUMERALS 	     Latter parts of the fare basis
+        Numerals indicate the maximum stay the fare rules will allow at a
+        destination. Thus a YE45 is an economy excursion fare with a maximum
+        stay of 45 days. Similar patterns could be YE3M indicating a 3-month
+        maximum.
+    H OR L          Other than first letter
+        High or low season
+    W OR X 	    Other than as the first letter
+        These two letters are used to state if a fare is valid on a weekday (X)
+        or restricted to weekends (W).
+    OW 	            Follows the initial booking code.
+        One-way fare only
+    RT 	            Follows the initial booking code.
+        Return fare
+    COUNTRY CODE    At the end of the code, except for "CH" or "IN"
+        Fare bases may end with two-letter country codes. This will be the
+        case when an airline has an international fare in both directions.
+        For example, a fare from Great Britain to Australia may be YE3MGB, and
+        YE3MAU from Australia to Great Britain. This allows the fare to have
+        similar rules, but may have some variations in change fees or to
+        comply with local trade restrictions.
+    CH              Last two characters
+        Child fare (typically up to 11 years old, but 15 in some cases)
+    IN 	            Last two characters
+        Infant fare (typically up to 2 years old, but 3 years in some cases)
+    """
     abfSql = """
-        UPDATE book_fares_segm SET (
-            flight_number, board_date,
-            departure_airport, arrival_airport,
-            selling_class, fare_basis,
-            valid_from_date, valid_to_date,
-            update_user, update_group,
-            update_time )
+        UPDATE booking_fare_segments
+        SET ( flight_number, board_date,
+              departure_airport, arrival_airport,
+              selling_class, fare_basis_code,
+              valid_from_date, valid_to_date,
+              update_user, update_group,
+              update_time )
         = ('%s', '%s',
            '%s', '%s',
            '%s', '%s',
@@ -270,10 +322,10 @@ def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode, aFlight, aDate,
         WHERE book_no = %d
         AND fare_no = %d
         AND pax_code = '%s'""" \
-        % (aFlight, aDate,
+        % (aFlight, aFlightDate,
            aDepart, aArrive,
-           aCurrency, aAmount,
-           aDate, aDate,
+           aSellClass, aFareBasis,
+           aStartDate, aEndDate,
            aUser, aGroup,
            aBookNo, aFareNo, aPaxCode)
     printlog(2, "%s" % abfSql)
@@ -283,15 +335,15 @@ def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode, aFlight, aDate,
         cur.close()
         return
 
-    printlog(1, "Add book fare segment for booking %d:"
+    printlog(1, "Add booking fare segment for booking %d:"
              " code %s flight %s date %s amount %s%d"
              % (aBookNo, aPaxCode, aFlight, aDate, aCurrency, aAmount))
     abfSql = """
-        INSERT INTO book_fares_segm(
+        INSERT INTO booking_fare_segments(
             book_no, fare_no, pax_code,
             flight_number, board_date,
             departure_airport, arrival_airport,
-            selling_class, fare_basis,
+            selling_class, fare_basis_code,
             valid_from_date, valid_to_date,
             update_user, update_group,
             update_time )
@@ -307,7 +359,7 @@ def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode, aFlight, aDate,
            aFlight, aDate,
            aDepart, aArrive,
            aCurrency, aAmount,
-           aDate, aDate,
+           aStartDate, aEndDate,
            aUser, aGroup)
     printlog(2, "%s" % abfSql)
     cur.execute(abfSql)
@@ -317,8 +369,8 @@ def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode, aFlight, aDate,
 
 def AddBookFarePassengers(conn, aBookNo, aPaxCode, aCurrency, aAmount,
                           aUser, aGroup):
-    """Add entry for book fare passenger."""
-    printlog(1, "Add book %d fare passenger:"
+    """Add entry for booking fare passenger."""
+    printlog(1, "Add booking %d fare passenger:"
              " passenger code %s amount %s%d"
              % (aBookNo, aPaxCode, aCurrency, aAmount))
     vFare = ' '
@@ -367,10 +419,10 @@ def AddBookFarePassengers(conn, aBookNo, aPaxCode, aCurrency, aAmount,
     cur.close()
 
 
-def AddBookFaresPayments(conn, aBookNo, aFareNo, aPaxCode, aFareCode,
+def AddBookFaresPayments(conn, aBookNo, aFareNo, aPaxCode, aFareBasisCode,
                          aCurrency, aAmount, aUser, aGroup, aSource=None):
-    """Add entry for book fare payment."""
-    printlog(1, "Add book %d fare %d"
+    """Add entry for booking fare payment."""
+    printlog(1, "Add booking %d fare %d"
              " passenger code %s payment %s%d"
              % (aBookNo, aFareNo, aPaxCode, aCurrency, aAmount))
     abfSql = """
@@ -393,7 +445,7 @@ def AddBookFaresPayments(conn, aBookNo, aFareNo, aPaxCode, aFareCode,
                  'N',
                  '%s', '%s', NOW(), %d ) """ \
         % (aBookNo, aFareNo, aPaxCode,
-           aFareCode,
+           aFareBasisCode,
            aCurrency, aAmount,
            aUser, aGroup, int(aSource or 0))
     printlog(2, "%s" % abfSql)
@@ -404,7 +456,7 @@ def AddBookFaresPayments(conn, aBookNo, aFareNo, aPaxCode, aFareCode,
 
 
 def AddBookRequest(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup):
-    """Add book request."""
+    """Add booking request."""
     # Value for request sequence number
     cur = conn.cursor()
     abrSql = """SELECT MAX(rqst_sequence_no)
@@ -426,7 +478,7 @@ def AddBookRequest(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup):
                 action_code, actn_number,
                 processing_flag, rqr_count,
                 request_text,
-                all_pax_flag, all_itenary_flag,
+                all_pax_flag, all_itinerary_flag,
                 update_user, update_group,
                 update_time )
             VALUES ( %d, %d,
@@ -514,7 +566,7 @@ def AddPayment(conn, aPaymentForm, aPaymentType, aCurrency, aAmount,
                aBranchCode, aRemark,
                aUser, aGroup):
     """Add payment entry."""
-    printlog(1, "Add book %d payment: %s%d type %s doc %s"
+    printlog(1, "Add booking %d payment: %s%d type %s doc %s"
              % (aBookNo, aCurrency, aAmount, aPaymentType, aDocNum))
     apSql = """
         INSERT INTO payments(
@@ -553,7 +605,7 @@ def AddPayment(conn, aPaymentForm, aPaymentType, aCurrency, aAmount,
 
 def GetPreBookingInfo(conn, book_no):
     """Query to run sometimes."""
-    printlog(2, "Pre book %d info" % book_no)
+    printlog(2, "Pre booking %d info" % book_no)
     preBookingInfoSql = """
         SELECT bo.book_no,
             bo.pax_name_rec,
@@ -580,7 +632,7 @@ def GetPreBookingInfo(conn, book_no):
                     WHERE pay.book_no = bo.book_no
                     AND pay.paid_flag = 'Y'
                     AND pay.payment_amount > 0 ) )
-        FROM book AS bo
+        FROM bookings AS bo
         LEFT JOIN travel_agency AS ta ON ta.agency_code = bo.agency_code
         LEFT JOIN book_cross_index AS bci ON bci.book_no = bo.book_no
         WHERE bo.book_no = %d """ \
@@ -606,9 +658,9 @@ def GetPreBookingInfo(conn, book_no):
 
 
 def UpdateBookPayment(conn, aBookNo, aCurrency, aPayment):
-    """Update payment amount in book table."""
-    printlog(1, "Update book %d payment %s%f" % (aBookNo, aCurrency, aPayment))
-    UbpSql = """UPDATE book
+    """Update payment amount in bookings table."""
+    printlog(1, "Update booking %d payment %s%f" % (aBookNo, aCurrency, aPayment))
+    UbpSql = """UPDATE bookings
                 SET (payment_amount, status_flag)
                   = (payment_amount+%f, 'A')
                 WHERE book_no=%d""" \

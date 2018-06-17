@@ -24,7 +24,7 @@ class BarsConfig(object):
     Group = 'BANANA'
     PaxCode = 'ADULT'
     Currency = 'ZAR'
-    FareCode = 'XZZOW'
+    FareBasisCode = 'YZZOW'
     BookCategory = 'S'     # or G for groups
     Address = 'SWIZZ1G'
     Sender = 'JNB0AZZ'
@@ -49,7 +49,7 @@ class BarsConfig(object):
         self.AgencyCode = config.get('Airline', 'AgencyCode')
         self.SellingClasses = config.get('Airline', 'SellingClasses')
         self.PaxCode = config.get('Airline', 'PaxCode')
-        self.FareCode = config.get('Airline', 'FareCode')
+        self.FareBasisCode = config.get('Airline', 'FareBasisCode')
         self.BookCategory = config.get('Airline', 'BookCategory')
         self.User = config.get('Users', 'User')
         self.Group = config.get('Users', 'Group')

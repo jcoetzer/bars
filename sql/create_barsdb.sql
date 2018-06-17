@@ -1084,10 +1084,10 @@ ALTER SEQUENCE boarding_control_number_boarding_control_number_id_seq OWNED BY b
 
 
 --
--- Name: book; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: bookings; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE book (
+CREATE TABLE bookings (
     book_no integer DEFAULT 0 NOT NULL,
     pax_name_rec character(6),
     book_type character(2) NOT NULL,
@@ -1127,7 +1127,7 @@ CREATE TABLE book (
 );
 
 
-ALTER TABLE public.book OWNER TO postgres;
+ALTER TABLE public.bookings OWNER TO postgres;
 
 --
 -- Name: book_additional_data; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -1397,10 +1397,10 @@ CREATE TABLE book_fares_paym (
 ALTER TABLE public.book_fares_paym OWNER TO postgres;
 
 --
--- Name: book_fares_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: booking_fare_segments; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE book_fares_segm (
+CREATE TABLE booking_fare_segments (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
     pax_code character(5) NOT NULL,
@@ -1409,7 +1409,7 @@ CREATE TABLE book_fares_segm (
     departure_airport character(5) NOT NULL,
     arrival_airport character(5) NOT NULL,
     selling_class character(5) NOT NULL,
-    fare_basis character(15) NOT NULL,
+    fare_basis_code character(15) NOT NULL,
     valid_from_date date NOT NULL,
     valid_to_date date NOT NULL,
     update_user character(5) NOT NULL,
@@ -1418,7 +1418,7 @@ CREATE TABLE book_fares_segm (
 );
 
 
-ALTER TABLE public.book_fares_segm OWNER TO postgres;
+ALTER TABLE public.booking_fare_segments OWNER TO postgres;
 
 --
 -- Name: book_fares_tckt; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -1566,7 +1566,7 @@ CREATE TABLE book_requests (
     rqr_count smallint,
     request_text character varying(255),
     all_pax_flag character(1) NOT NULL,
-    all_itenary_flag character(1) NOT NULL,
+    all_itinerary_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
     update_time timestamp WITH time zone
@@ -1592,7 +1592,7 @@ CREATE TABLE book_requests_old (
     rqr_count smallint,
     request_text character varying(255),
     all_pax_flag character(1) NOT NULL,
-    all_itenary_flag character(1) NOT NULL,
+    all_itinerary_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
     update_time timestamp WITH time zone
@@ -1673,7 +1673,7 @@ CREATE TABLE book_ticket_cpn (
     invol_ind character varying(3),
     uac_state character(1) DEFAULT 'N'::bpchar NOT NULL,
     cos_state character(1) DEFAULT 'N'::bpchar NOT NULL,
-    fare_code character(15) NOT NULL,
+    fare_basis_code character(15) NOT NULL,
     valid_from_date date,
     valid_to_date date,
     baggage_alownce character(5),
@@ -2355,7 +2355,7 @@ ALTER TABLE public.business_pax_class OWNER TO postgres;
 
 CREATE TABLE business_pax_fare (
     business_pax_id integer NOT NULL,
-    fare_code character varying(15) NOT NULL,
+    fare_basis_code character varying(15) NOT NULL,
     update_user character varying(5),
     update_group character varying(8),
     update_time timestamp WITH time zone
@@ -2391,7 +2391,7 @@ CREATE TABLE cancel_fees (
     tax_rate numeric(15,5),
     per_pax_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     fee_type character(1) DEFAULT 'B'::bpchar,
-    fare_code character varying(15),
+    fare_basis_code character varying(15),
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
     update_time timestamp WITH time zone
@@ -2461,21 +2461,21 @@ CREATE TABLE change_type_ref (
 ALTER TABLE public.change_type_ref OWNER TO postgres;
 
 --
--- Name: changed_itenary; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: changed_itinerary; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE changed_itenary (
+CREATE TABLE changed_itinerary (
     book_no integer NOT NULL,
     route_no smallint NOT NULL,
-    alt_itenary_no smallint NOT NULL,
-    itenary_no smallint NOT NULL,
+    alt_itinerary_no smallint NOT NULL,
+    itinerary_no smallint NOT NULL,
     flight_number character(7) NOT NULL,
     flight_date date NOT NULL,
     create_time character(19) NOT NULL
 );
 
 
-ALTER TABLE public.changed_itenary OWNER TO postgres;
+ALTER TABLE public.changed_itinerary OWNER TO postgres;
 
 --
 -- Name: char_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -2539,10 +2539,10 @@ CREATE TABLE city_airport (
 ALTER TABLE public.city_airport OWNER TO postgres;
 
 --
--- Name: city_pair; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: city_pairs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE city_pair (
+CREATE TABLE city_pairs (
     departure_airport character(5) NOT NULL,
     arrival_airport character(5) NOT NULL,
     city_pair integer NOT NULL,
@@ -2560,7 +2560,7 @@ CREATE TABLE city_pair (
 );
 
 
-ALTER TABLE public.city_pair OWNER TO postgres;
+ALTER TABLE public.city_pairs OWNER TO postgres;
 
 --
 -- Name: city_pair_city_pair_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -2580,7 +2580,7 @@ ALTER TABLE public.city_pair_city_pair_seq OWNER TO postgres;
 -- Name: city_pair_city_pair_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE city_pair_city_pair_seq OWNED BY city_pair.city_pair;
+ALTER SEQUENCE city_pair_city_pair_seq OWNED BY city_pairs.city_pair;
 
 
 --
@@ -3023,7 +3023,7 @@ CREATE TABLE client_travel (
     arrival_time character(19),
     flight_path_code character(1),
     selling_class character(2),
-    fare_code character(15),
+    fare_basis_code character(15),
     fare_amount numeric(15,5),
     travel_credits numeric(15,5),
     update_user character(5) NOT NULL,
@@ -3064,7 +3064,7 @@ CREATE TABLE comm_exception (
     company_code character(3) NOT NULL,
     valid_from_date date NOT NULL,
     commission_seq smallint NOT NULL,
-    fare_code character(15),
+    fare_basis_code character(15),
     departure_airport character(5),
     arrival_airport character(5),
     flight_number character(7),
@@ -3236,19 +3236,19 @@ CREATE TABLE connect_city (
 ALTER TABLE public.connect_city OWNER TO postgres;
 
 --
--- Name: corporate_fare_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: corporate_fare_basis_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE corporate_fare_codes (
+CREATE TABLE corporate_fare_basis_codes (
     corporate_type character(20) NOT NULL,
-    fare_code character(15) NOT NULL,
+    fare_basis_code character(15) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
     update_time timestamp WITH time zone NOT NULL
 );
 
 
-ALTER TABLE public.corporate_fare_codes OWNER TO postgres;
+ALTER TABLE public.corporate_fare_basis_codes OWNER TO postgres;
 
 --
 -- Name: counter_sales_in_mesgs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -4604,8 +4604,8 @@ CREATE TABLE fare (
     reference_flag character(1) NOT NULL,
     reference_fare_id bigint,
     original_fare_id bigint,
-    fare_code character(15) NOT NULL,
-    fare_code_desc character varying(255),
+    fare_basis_code character(15) NOT NULL,
+    fare_basis_code_desc character varying(255),
     value_can_split character(1),
     selling_class character(2) NOT NULL,
     booking_category character(1) NOT NULL,
@@ -4783,12 +4783,12 @@ CREATE TABLE fare_branch (
 ALTER TABLE public.fare_branch OWNER TO postgres;
 
 --
--- Name: fare_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: fare_basis_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE fare_codes (
+CREATE TABLE fare_basis_codes (
     company_code character(3) NOT NULL,
-    fare_code character(15) NOT NULL,
+    fare_basis_code character(15) NOT NULL,
     short_description character varying(30),
     description character varying(255),
     selling_class character(2) NOT NULL,
@@ -4804,7 +4804,7 @@ CREATE TABLE fare_codes (
 );
 
 
-ALTER TABLE public.fare_codes OWNER TO postgres;
+ALTER TABLE public.fare_basis_codes OWNER TO postgres;
 
 --
 -- Name: fare_comb_route; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -4850,7 +4850,7 @@ ALTER TABLE public.fare_combinability OWNER TO postgres;
 
 CREATE TABLE fare_combinations (
     fare_id bigint NOT NULL,
-    fare_code character(15),
+    fare_basis_code character(15),
     origin_airport character(5),
     dest_airport character(5),
     refundable_flag character(1),
@@ -5180,12 +5180,12 @@ CREATE TABLE fare_rule_codes (
 ALTER TABLE public.fare_rule_codes OWNER TO postgres;
 
 --
--- Name: fare_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: fare_segments; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE fare_segm (
+CREATE TABLE fare_segments (
     company_code character(3) NOT NULL,
-    fare_code character(15) NOT NULL,
+    fare_basis_code character(15) NOT NULL,
     city_pair integer NOT NULL,
     valid_from_date date NOT NULL,
     valid_to_date date NOT NULL,
@@ -5201,7 +5201,7 @@ CREATE TABLE fare_segm (
 );
 
 
-ALTER TABLE public.fare_segm OWNER TO postgres;
+ALTER TABLE public.fare_segments OWNER TO postgres;
 
 --
 -- Name: fare_segm_rule; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -5209,7 +5209,7 @@ ALTER TABLE public.fare_segm OWNER TO postgres;
 
 CREATE TABLE fare_segm_rule (
     company_code character(3) NOT NULL,
-    fare_code character(15) NOT NULL,
+    fare_basis_code character(15) NOT NULL,
     city_pair integer NOT NULL,
     valid_from_date date NOT NULL,
     fare_rule_no character(8) NOT NULL,
@@ -5251,7 +5251,7 @@ CREATE TABLE fee (
     payment_type character(5),
     payment_form character(5),
     booking_category character(1),
-    fare_code character varying(15),
+    fare_basis_code character varying(15),
     create_user character(5) NOT NULL,
     create_time timestamp WITH time zone DEFAULT now() NOT NULL,
     inactivated_user_code character(5),
@@ -5312,7 +5312,7 @@ ALTER TABLE public.fee_class OWNER TO postgres;
 
 CREATE TABLE fee_fare (
     fee_id bigint NOT NULL,
-    fare_code character varying(20) NOT NULL,
+    fare_basis_code character varying(20) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
     update_time timestamp WITH time zone NOT NULL
@@ -6187,12 +6187,12 @@ CREATE TABLE forced_fare (
     flight_number4 character(7),
     flight_number5 character(7),
     flight_number6 character(7),
-    fare_code character(16) NOT NULL,
+    fare_basis_code character(16) NOT NULL,
     fare_amount numeric(15,5) NOT NULL,
     fare_currency character(3) NOT NULL,
     refundable_flag character(1) NOT NULL,
     return_flag character(1) NOT NULL,
-    base_fare_code character(16),
+    base_fare_basis_code character(16),
     base_class character(2),
     base_amount numeric(15,5),
     book_no integer,
@@ -6444,10 +6444,10 @@ CREATE TABLE hist_book_fares_paym (
 ALTER TABLE public.hist_book_fares_paym OWNER TO postgres;
 
 --
--- Name: hist_book_fares_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: hist_booking_fare_segments; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE hist_book_fares_segm (
+CREATE TABLE hist_booking_fare_segments (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
     pax_code character(5) NOT NULL,
@@ -6456,7 +6456,7 @@ CREATE TABLE hist_book_fares_segm (
     departure_airport character(5) NOT NULL,
     arrival_airport character(5) NOT NULL,
     selling_class character(5) NOT NULL,
-    fare_basis character(15) NOT NULL,
+    fare_basis_code character(15) NOT NULL,
     valid_from_date date NOT NULL,
     valid_to_date date NOT NULL,
     update_user character(5) NOT NULL,
@@ -6466,7 +6466,7 @@ CREATE TABLE hist_book_fares_segm (
 );
 
 
-ALTER TABLE public.hist_book_fares_segm OWNER TO postgres;
+ALTER TABLE public.hist_booking_fare_segments OWNER TO postgres;
 
 --
 -- Name: hist_book_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -6485,7 +6485,7 @@ CREATE TABLE hist_book_requests (
     rqr_count smallint,
     request_text character varying(255),
     all_pax_flag character(1) NOT NULL,
-    all_itenary_flag character(1) NOT NULL,
+    all_itinerary_flag character(1) NOT NULL,
     et_serial_no integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
@@ -6562,14 +6562,14 @@ CREATE TABLE hist_currency_codes (
 ALTER TABLE public.hist_currency_codes OWNER TO postgres;
 
 --
--- Name: hist_itenary; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: hist_itinerary; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE hist_itenary (
+CREATE TABLE hist_itinerary (
     book_no integer NOT NULL,
     route_no smallint NOT NULL,
-    alt_itenary_no smallint NOT NULL,
-    itenary_no smallint NOT NULL,
+    alt_itinerary_no smallint NOT NULL,
+    itinerary_no smallint NOT NULL,
     flight_number character(7) NOT NULL,
     flight_date date NOT NULL,
     departure_airport character(5),
@@ -6584,7 +6584,7 @@ CREATE TABLE hist_itenary (
     physical_class character(2),
     selling_class character(2),
     status_flag character(1),
-    itenary_type character(1),
+    itinerary_type character(1),
     reserve_status character(5),
     request_nos character varying(1024),
     fare_nos smallint NOT NULL,
@@ -6601,7 +6601,7 @@ CREATE TABLE hist_itenary (
 );
 
 
-ALTER TABLE public.hist_itenary OWNER TO postgres;
+ALTER TABLE public.hist_itinerary OWNER TO postgres;
 
 --
 -- Name: hist_passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -7137,14 +7137,14 @@ CREATE TABLE invt_update_ignore (
 ALTER TABLE public.invt_update_ignore OWNER TO postgres;
 
 --
--- Name: itenary; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: itineraries; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE itenary (
+CREATE TABLE itineraries (
     book_no integer NOT NULL,
     route_no smallint NOT NULL,
-    alt_itenary_no smallint NOT NULL,
-    itenary_no smallint NOT NULL,
+    alt_itinerary_no smallint NOT NULL,
+    itinerary_no smallint NOT NULL,
     flight_number character(7) NOT NULL,
     flight_date date NOT NULL,
     departure_airport character(5),
@@ -7159,7 +7159,7 @@ CREATE TABLE itenary (
     physical_class character(2),
     selling_class character(2),
     status_flag character(1),
-    itenary_type character(1),
+    itinerary_type character(1),
     reserve_status character(5),
     request_nos character varying(1024),
     fare_nos smallint NOT NULL,
@@ -7175,13 +7175,13 @@ CREATE TABLE itenary (
 );
 
 
-ALTER TABLE public.itenary OWNER TO postgres;
+ALTER TABLE public.itineraries OWNER TO postgres;
 
 --
--- Name: itenary_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: itinerary_pass; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE itenary_pass (
+CREATE TABLE itinerary_pass (
     book_no integer NOT NULL,
     contact_sequence_no smallint NOT NULL,
     transit_phone_no character(30) NOT NULL,
@@ -7191,14 +7191,14 @@ CREATE TABLE itenary_pass (
     transit_zip character(15),
     transit_nation character(25),
     all_pax_flag character(1) NOT NULL,
-    all_itenary_flag character(1) NOT NULL,
+    all_itinerary_flag character(1) NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
     update_time timestamp WITH time zone
 );
 
 
-ALTER TABLE public.itenary_pass OWNER TO postgres;
+ALTER TABLE public.itinerary_pass OWNER TO postgres;
 
 
 --
@@ -8710,10 +8710,10 @@ ALTER SEQUENCE post_hist_book_fares_paym_post_hist_book_fares_paym_id_seq OWNED 
 
 
 --
--- Name: post_hist_book_fares_segm; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: post_hist_booking_fare_segments; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE post_hist_book_fares_segm (
+CREATE TABLE post_hist_booking_fare_segments (
     book_no integer NOT NULL,
     fare_no smallint NOT NULL,
     pax_code character(5) NOT NULL,
@@ -8722,24 +8722,24 @@ CREATE TABLE post_hist_book_fares_segm (
     departure_airport character(5) NOT NULL,
     arrival_airport character(5) NOT NULL,
     selling_class character(5) NOT NULL,
-    fare_basis character(15) NOT NULL,
+    fare_basis_code character(15) NOT NULL,
     valid_from_date date NOT NULL,
     valid_to_date date NOT NULL,
     et_serial_no integer DEFAULT 0 NOT NULL,
-    post_hist_book_fares_segm_id integer NOT NULL,
+    post_hist_booking_fare_segments_id integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
     update_time timestamp WITH time zone
 );
 
 
-ALTER TABLE public.post_hist_book_fares_segm OWNER TO postgres;
+ALTER TABLE public.post_hist_booking_fare_segments OWNER TO postgres;
 
 --
--- Name: post_hist_book_fares_segm_post_hist_book_fares_segm_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: post_hist_booking_fare_segments_post_hist_booking_fare_segments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE post_hist_book_fares_segm_post_hist_book_fares_segm_id_seq
+CREATE SEQUENCE post_hist_booking_fare_segments_post_hist_booking_fare_segments_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -8747,13 +8747,13 @@ CREATE SEQUENCE post_hist_book_fares_segm_post_hist_book_fares_segm_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.post_hist_book_fares_segm_post_hist_book_fares_segm_id_seq OWNER TO postgres;
+ALTER TABLE public.post_hist_booking_fare_segments_post_hist_booking_fare_segments_id_seq OWNER TO postgres;
 
 --
--- Name: post_hist_book_fares_segm_post_hist_book_fares_segm_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: post_hist_booking_fare_segments_post_hist_booking_fare_segments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE post_hist_book_fares_segm_post_hist_book_fares_segm_id_seq OWNED BY post_hist_book_fares_segm.post_hist_book_fares_segm_id;
+ALTER SEQUENCE post_hist_booking_fare_segments_post_hist_booking_fare_segments_id_seq OWNED BY post_hist_booking_fare_segments.post_hist_booking_fare_segments_id;
 
 
 --
@@ -8773,7 +8773,7 @@ CREATE TABLE post_hist_book_requests (
     rqr_count smallint,
     request_text character varying(255),
     all_pax_flag character(1) NOT NULL,
-    all_itenary_flag character(1) NOT NULL,
+    all_itinerary_flag character(1) NOT NULL,
     et_serial_no integer NOT NULL,
     update_user character(5) NOT NULL,
     update_group character(8) NOT NULL,
@@ -8809,14 +8809,14 @@ CREATE TABLE post_hist_book_time_limits (
 ALTER TABLE public.post_hist_book_time_limits OWNER TO postgres;
 
 --
--- Name: post_hist_itenary; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: post_hist_itinerary; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE post_hist_itenary (
+CREATE TABLE post_hist_itinerary (
     book_no integer NOT NULL,
     route_no smallint NOT NULL,
-    alt_itenary_no smallint NOT NULL,
-    itenary_no smallint NOT NULL,
+    alt_itinerary_no smallint NOT NULL,
+    itinerary_no smallint NOT NULL,
     flight_number character(7) NOT NULL,
     flight_date date NOT NULL,
     departure_airport character(5),
@@ -8831,7 +8831,7 @@ CREATE TABLE post_hist_itenary (
     physical_class character(2),
     selling_class character(2),
     status_flag character(1),
-    itenary_type character(1),
+    itinerary_type character(1),
     reserve_status character(5),
     request_nos character varying(1024),
     fare_nos smallint NOT NULL,
@@ -8848,7 +8848,7 @@ CREATE TABLE post_hist_itenary (
 );
 
 
-ALTER TABLE public.post_hist_itenary OWNER TO postgres;
+ALTER TABLE public.post_hist_itinerary OWNER TO postgres;
 
 --
 -- Name: post_hist_passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -11037,9 +11037,9 @@ ALTER TABLE public.std_comment OWNER TO postgres;
 
 CREATE TABLE sub_fare_seg_rule (
     company_code character(3) NOT NULL,
-    fare_code character(15) NOT NULL,
+    fare_basis_code character(15) NOT NULL,
     city_pair integer NOT NULL,
-    sub_fare_code character(5) NOT NULL,
+    sub_fare_basis_code character(5) NOT NULL,
     fare_rule_no character(8) NOT NULL,
     active_flag character(1) DEFAULT 'A'::bpchar NOT NULL,
     export_timestamp timestamp WITH time zone,
@@ -11057,10 +11057,10 @@ ALTER TABLE public.sub_fare_seg_rule OWNER TO postgres;
 
 CREATE TABLE sub_fare_segm (
     company_code character(3) NOT NULL,
-    fare_code character(15) NOT NULL,
+    fare_basis_code character(15) NOT NULL,
     city_pair integer NOT NULL,
     pax_code character(5) NOT NULL,
-    sub_fare_code character(5) NOT NULL,
+    sub_fare_basis_code character(5) NOT NULL,
     change_type character(1) NOT NULL,
     change_amount numeric(15,5) NOT NULL,
     active_flag character(1) DEFAULT 'A'::bpchar NOT NULL,
@@ -11669,7 +11669,7 @@ CREATE TABLE ticket_layout (
     xyflight_date character(12) NOT NULL,
     xyflight_time character(12) NOT NULL,
     xyreserve_status character(12) NOT NULL,
-    xyfare_basis character(12) NOT NULL,
+    xyfare_basis_code character(12) NOT NULL,
     xyvalid_before character(12) NOT NULL,
     xyvalid_after character(12) NOT NULL,
     xybagg_allow character(12) NOT NULL,
@@ -13453,7 +13453,7 @@ ALTER TABLE ONLY cash_transaction ALTER COLUMN transaction_id SET DEFAULT nextva
 -- Name: city_pair; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY city_pair ALTER COLUMN city_pair SET DEFAULT nextval('city_pair_city_pair_seq'::regclass);
+ALTER TABLE ONLY city_pairs ALTER COLUMN city_pair SET DEFAULT nextval('city_pair_city_pair_seq'::regclass);
 
 
 --
@@ -13736,10 +13736,10 @@ ALTER TABLE ONLY post_hist_book_fares_paym ALTER COLUMN post_hist_book_fares_pay
 
 
 --
--- Name: post_hist_book_fares_segm_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: post_hist_booking_fare_segments_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY post_hist_book_fares_segm ALTER COLUMN post_hist_book_fares_segm_id SET DEFAULT nextval('post_hist_book_fares_segm_post_hist_book_fares_segm_id_seq'::regclass);
+ALTER TABLE ONLY post_hist_booking_fare_segments ALTER COLUMN post_hist_booking_fare_segments_id SET DEFAULT nextval('post_hist_booking_fare_segments_post_hist_booking_fare_segments_id_seq'::regclass);
 
 
 --
@@ -14221,8 +14221,8 @@ ALTER TABLE ONLY book_fares
 -- Name: book_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
-ALTER TABLE ONLY book
-    ADD CONSTRAINT book_pkey PRIMARY KEY (book_no);
+ALTER TABLE ONLY bookings
+    ADD CONSTRAINT bookings_pkey PRIMARY KEY (book_no);
 
 
 --
@@ -14278,7 +14278,7 @@ ALTER TABLE ONLY business_pax_class
 --
 
 ALTER TABLE ONLY business_pax_fare
-    ADD CONSTRAINT business_pax_fare_pkey PRIMARY KEY (business_pax_id, fare_code);
+    ADD CONSTRAINT business_pax_fare_pkey PRIMARY KEY (business_pax_id, fare_basis_code);
 
 
 --
@@ -14734,7 +14734,7 @@ ALTER TABLE ONLY fee_class
 --
 
 ALTER TABLE ONLY fee_fare
-    ADD CONSTRAINT fee_fare_pkey PRIMARY KEY (fee_id, fare_code);
+    ADD CONSTRAINT fee_fare_pkey PRIMARY KEY (fee_id, fare_basis_code);
 
 
 --
@@ -14938,11 +14938,11 @@ ALTER TABLE ONLY inventry_auto_rules_details
 
 
 --
--- Name: itenary_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
+-- Name: itinerary_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
-ALTER TABLE ONLY itenary
-    ADD CONSTRAINT itenary_pkey PRIMARY KEY (book_no, route_no, alt_itenary_no, itenary_no);
+ALTER TABLE ONLY itineraries
+    ADD CONSTRAINT itineraries_pkey PRIMARY KEY (book_no, route_no, alt_itinerary_no, itinerary_no);
 
 
 --
@@ -15139,11 +15139,11 @@ ALTER TABLE ONLY post_hist_book_fares_paym
 
 
 --
--- Name: post_hist_book_fares_segm_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
+-- Name: post_hist_booking_fare_segments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
-ALTER TABLE ONLY post_hist_book_fares_segm
-    ADD CONSTRAINT post_hist_book_fares_segm_pkey PRIMARY KEY (post_hist_book_fares_segm_id);
+ALTER TABLE ONLY post_hist_booking_fare_segments
+    ADD CONSTRAINT post_hist_booking_fare_segments_pkey PRIMARY KEY (post_hist_booking_fare_segments_id);
 
 
 --

@@ -59,9 +59,9 @@ def usage(pname="BookInfo.py"):
     print("Booking seating data :")
     print("\t%s [-v|-V] --seat -B <BOOKNO>" % pname)
     print("\t%s [-v|-V] --seat -L <LOCATOR>" % pname)
-    print("Booking itenary data :")
-    print("\t%s [-v|-V] --itenary -B <BOOKNO>" % pname)
-    print("\t%s [-v|-V] --itenary -L <LOCATOR>" % pname)
+    print("Booking itinerary data :")
+    print("\t%s [-v|-V] --itinerary -B <BOOKNO>" % pname)
+    print("\t%s [-v|-V] --itinerary -L <LOCATOR>" % pname)
     print("Booking data :")
     print("\t%s [-v|-V] --book -B <BOOKNO>" % pname)
     print("\t%s [-v|-V] --book -L <LOCATOR>" % pname)
@@ -123,7 +123,7 @@ def main(argv):
                                    "1234ghlnprtvV"
                                    "A:B:C:D:E:F:G:I:J:K:L:N:P:T:U:X:",
                                    ["help", "ssr", "tty"
-                                    "book", "pay", "seat", "itenary", "bs",
+                                    "book", "pay", "seat", "itinerary", "bs",
                                     "origin=", "bookno=", "end=",
                                     "start=", "create=", "action=", "flight=",
                                     "ext=", "pax=", "pay=",
@@ -145,7 +145,7 @@ def main(argv):
                         '%s/book.locator.lst' % etcdir]
     lstfiles['seat'] = ['%s/seat.book_no.lst' % etcdir,
                         '%s/seat.locator.lst' % etcdir]
-    lstfiles['itenary'] = ['%s/itenary.book_no.lst' % etcdir]
+    lstfiles['itinerary'] = ['%s/itinerary.book_no.lst' % etcdir]
 
     for opt, arg in opts:
         if opt == '-h' or opt == '--help':
@@ -170,7 +170,7 @@ def main(argv):
             doBook = True
         elif opt == "--bs":
             doBsXml = True
-        elif opt == "--itenary":
+        elif opt == "--itinerary":
             doItenary = True
         elif opt == "--pay":
             doPay = True
@@ -312,7 +312,7 @@ def main(argv):
     elif doSeat and bookno is not None:
         ReadBookingData(conn, lstfiles['seat'], bookno, None)
     elif doItenary and bookno is not None:
-        ReadBookingData(conn, lstfiles['itenary'], bookno, None)
+        ReadBookingData(conn, lstfiles['itinerary'], bookno, None)
     elif bookno is not None and locator is not None:
         ReadBookingData(conn, lstfiles['pay'], bookno, locator)
     else:

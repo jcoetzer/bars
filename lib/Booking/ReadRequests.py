@@ -17,7 +17,7 @@ def ReadRequestsPnl(conn, book_no, Company, DeprAirport, FlightDate,
         "SELECT DISTINCT book_requests.rqst_sequence_no seq,
         book_requests.indicator ind, book_requests.rqst_code rq,
         book_requests.action_code acc, book_requests.actn_number acn,
-        book_requests.request_text req, book_requests.all_itenary_flag alli,
+        book_requests.request_text req, book_requests.all_itinerary_flag alli,
         book_requests.all_passenger_flag allp
          FROM book_requests, service_requests
          WHERE book_requests.book_no = %d
@@ -31,7 +31,7 @@ def ReadRequestsPnl(conn, book_no, Company, DeprAirport, FlightDate,
         f.pnl_adl_identifier AS rqst_code,
         'HK' AS action_code, '1' AS actn_number,
          (trim(p.payment_form) || ' ' || abs(round(p.payment_amount, 2)*100)::integer)::varchar(60) AS request_text,
-         'Y' AS all_itenary_flag, 'Y' AS all_passenger_flag
+         'Y' AS all_itinerary_flag, 'Y' AS all_passenger_flag
         FROM payments AS p
         INNER JOIN FEE AS f ON f.fee_code = p.payment_form
         AND p.payment_type = 'BC'
@@ -76,10 +76,10 @@ def ReadRequests(conn, book_no, rqst_code, delim=" ", status_flag='A'):
     elif book_no == 0:
         d_reqs.append(str("%3s%s%24s" % ("", delim, "")))
         return 0, d_reqs
-    printlog(1, "Read book requests for booking %d" % (book_no))
+    printlog(1, "Read booking requests for booking %d" % (book_no))
     ssrSql = \
         "SELECT rqst_sequence_no,rqst_code,carrier_code,action_code,actn_number,request_text," \
-        " processing_flag,all_passenger_flag,all_itenary_flag " \
+        " processing_flag,all_passenger_flag,all_itinerary_flag " \
         " FROM book_requests WHERE book_no=%d" % book_no
     if status_flag == 'A' or status_flag == 'Y':
         ssrSql += \
@@ -197,7 +197,7 @@ def ReadRequestCodes(conn, book_no, delim=" "):
     printlog(1, "Read request codes for booking %d" % (bookno), 2)
     ssrSql = \
         "SELECT rqst_sequence_no,rqst_code,carrier_code,action_code,actn_number,request_text," \
-        " processing_flag,all_passenger_flag,all_itenary_flag" \
+        " processing_flag,all_passenger_flag,all_itinerary_flag" \
         " FROM book_requests WHERE book_no=%d" % book_no
     ssrSql += \
         " AND action_code NOT LIKE 'X%'"

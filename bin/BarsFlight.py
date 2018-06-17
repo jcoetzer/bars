@@ -76,10 +76,12 @@ def GetTaxes(conn, aCompanyCode, aFlightDate, aReturnDate, aAirport,
               pass_code1='ADULT', pass_code2='CHILD',
               aState='GP', aNation='ZA',
               aReturnInd='O'):
-    ReadTaxes(conn, aCompanyCode, aFlightDate, aReturnDate, aAirport,
-              pass_code1, pass_code2,
-              aState, aNation,
-              aReturnInd)
+    taxes = ReadTaxes(conn, aCompanyCode, aFlightDate, aReturnDate, aAirport,
+                      pass_code1, pass_code2,
+                      aState, aNation,
+                      aReturnInd)
+    for tax in taxes:
+        tax.display()
 
 
 def usage(pname='BarsFlight.py'):

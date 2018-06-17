@@ -13,14 +13,14 @@ def ReadFlightBookings(conn, flight_number, board_date):
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur2 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     printlog(1, "Flight %s board %s bookings"
-             " [flight_segm_date,itenary,book,action_codes]"
+             " [flight_segm_date,itineraries,bookings,action_codes]"
              % (flight_number, board_date))
     FbSql = \
         """SELECT DISTINCT it.book_no itbn, bo.origin_address booa,
             it.departure_airport itda, it.arrival_airport itaa,
             it.departure_time itdt, it.arrival_time itat, it.request_nos itrn,
             it.selling_class itsc, bo.no_of_seats bons, group_name bogn
-        FROM itenary it, book bo
+        FROM itineraries it, bookings bo
              WHERE it.flight_number='%s' AND it.flight_date='%s'
              AND bo.book_no = it.book_no""" \
         % (flight_number, board_date)
@@ -59,12 +59,12 @@ def ReadFlightBookings(conn, flight_number, board_date):
 
 def ReadFlightContacts(conn, flight_number, board_date):
     """Read contact info for flight."""
-    print("Itenary for flight %s board %s passenger contact [itenary]"
+    print("Itenary for flight %s board %s passenger contact [itineraries]"
           % (flight_number, board_date))
     FbSql = \
         """SELECT email_address, contact_phone_no
         FROM pax_contact WHERE book_no IN
-            (SELECT DISTINCT book_no FROM itenary
+            (SELECT DISTINCT book_no FROM itineraries
              WHERE flight_number='%s' AND flight_date='%s')""" \
         % (flight_number, board_date)
     printlog(2, FbSql)

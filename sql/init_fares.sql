@@ -1,0 +1,37 @@
+-- delete from fare_segments;
+-- insert into fare_segments values('ZZ','XZZJNBCPT',1,'2018-01-01','2018-12-31','2017-12-01',NULL,3000.0,'SAM','BARS',NOW());
+-- insert into fare_segments values('ZZ','XZZCPTJNB',2,'2018-01-01','2018-12-31','2017-12-01',NULL,3000.0,'SAM','BARS',NOW());
+-- insert into fare_segments values('ZZ','YZZOW',3,'2018-01-01','2018-12-31','2017-12-01',NULL,1200.0,'SAM','BARS',NOW());
+-- insert into fare_segments values('ZZ','YZZOW',4,'2018-01-01','2018-12-31','2017-12-01',NULL,3000.0,'SAM','BARS',NOW());
+-- insert into fare_segments values('ZZ','YZZOW',5,'2018-01-01','2018-12-31','2017-12-01',NULL,2500.0,'SAM','BARS',NOW());
+-- insert into fare_segments values('ZZ','YZZOW',6,'2018-01-01','2018-12-31','2017-12-01',NULL,3000.0,'SAM','BARS',NOW());
+
+delete from fare_basis_codes;
+
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class Y','Y','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class Z','Z','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class A','A','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class U','U','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class S','S','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class B','B','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class M','M','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class P','P','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class D','D','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class I','I','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class T','T','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class H','H','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class Q','Q','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class V','V','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class W','W','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class L','L','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class X','X','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class R','R','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class N','N','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class G','G','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class E','E','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class F','F','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class K','K','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class J','J','ZZOW','O','SAM','BARS',NOW());
+insert into fare_basis_codes(company_code,fare_basis_code,short_description,description,selling_class,fare_category,onw_return_flag,update_user,update_group,update_time) values('ZZ','YZZOW','Fare','Fare for class O','O','ZZOW','O','SAM','BARS',NOW());
+update fare_basis_codes set acss_strt_auth_level=100;
+update fare_basis_codes set acss_end_auth_level=100;

@@ -404,7 +404,7 @@ def get_special_service_request_inventory(conn, flight_number, flight_date, city
     n = 0
     for row in cur:
         n += 1
-        print("\t book %s request %s" % (row['booking_no'], row['rqst_code']))
+        print("\t bookings %s request %s" % (row['booking_no'], row['rqst_code']))
     if n == 0:
         print("\tnot found")
 

@@ -34,7 +34,7 @@ def GetCityPair(conn, depart_airport, arrive_airport):
     """Read city pair number."""
     cur = conn.cursor()
     ssmSql = \
-        "SELECT city_pair FROM city_pair" \
+        "SELECT city_pair FROM city_pairs" \
         " WHERE departure_airport='%s' AND arrival_airport='%s'" \
         % (depart_airport, arrive_airport)
     printlog(2, "%s" % ssmSql)
@@ -54,7 +54,7 @@ def CheckCityPair(conn, depart_airport, arrive_airport, pair_rule_no,
     """Read city pair number."""
     cur = conn.cursor()
     ssmSql = \
-        "SELECT city_pair FROM city_pair" \
+        "SELECT city_pair FROM city_pairs" \
         " WHERE departure_airport='%s' AND arrival_airport='%s'" \
         % (depart_airport, arrive_airport)
     printlog(2, "%s" % ssmSql)

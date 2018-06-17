@@ -144,12 +144,12 @@ def p_period(p):
 
 def p_equip(p):
     'equip : STYPE AIRCRFT PAXBOOK DOT CLASS TAIL EOL'
-    printlog(1, "*** Equipment: type %s aircraft %s book %s tail %s class %s" % (p[1], p[2], p[3], p[6], p[5]))
+    printlog(1, "*** Equipment: type %s aircraft %s booking %s tail %s class %s" % (p[1], p[2], p[3], p[6], p[5]))
     add_equipment(p[2], p[3], p[6], p[5])
 
 def p_equip2(p):
     'equip2 : STYPE AIRCRFT PAXBOOK DOT CLASS CLASS TAIL EOL'
-    printlog(1, "*** Equipment: type %s aircraft %s book %s tail %s class %s class %s" % (p[1], p[2], p[3], p[7], p[5], p[6]))
+    printlog(1, "*** Equipment: type %s aircraft %s booking %s tail %s class %s class %s" % (p[1], p[2], p[3], p[7], p[5], p[6]))
     add_equipment(p[2], p[3], p[7], p[5], p[6])
 
 def p_error_equip(p):

@@ -38,6 +38,7 @@ from BarsConfig import BarsConfig
 from BarsBanner import print_banner
 from Booking.ReadBooking import ReadPassengers
 from Booking.PassengerData import PassengerData
+from Flight.ReadTaxes import ReadTaxes, ApplyTaxes
 
 
 def usage(pn):
@@ -88,20 +89,22 @@ def GetAvail(conn, dt1, dt2, cityPairNo,
 
 
 def GetPrice(conn,
-             vCompany,
-             cityPairNo,
-             dt1,
-             dt2,
-             selling_class,
-             onw_return_ind,
-             fare_category,
-             authority_level):
+             aCompanyCode,
+             departAirport, arriveAirport,
+             dt1, dt2,
+             selling_class, onw_return_ind, fare_category, authority_level):
     """Read and display price information."""
+    cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
     printlog(1, "Get price for city pair %d class %s on %s"
              % (cityPairNo, selling_class, dt1))
+    taxes = ReadTaxes(conn, aCompanyCode, dt1, dt2, departAirport,
+                      pass_code1='ADULT', pass_code2='CHILD',
+                      aState='GP', aNation='ZA',
+                      aReturnInd='O')
     fares = FareCalcDisplay(conn,
-                            vCompany,
+                            aCompanyCode,
                             cityPairNo,
+                            taxes,
                             dt1,
                             dt2,
                             selling_class,
@@ -110,6 +113,7 @@ def GetPrice(conn,
                             authority_level,
                             dt2)
     for fare in fares:
+        fare.apply_taxes(taxes)
         fare.display()
     return fares
 
@@ -204,7 +208,7 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
 
 def PutPay(conn, aBookNo, aSellClass,
            aCurrency, aPayAmount, aPayAmount2,
-           aCompany, aOriginBranchCode, aFareCode,
+           aCompany, aOriginBranchCode, aFareBasisCode,
            vPaymentType, vPaymentForm, vDocNum,
            aUser, aGroup):
     """Process payment."""
@@ -238,7 +242,7 @@ def PutPay(conn, aBookNo, aSellClass,
                          irec.departure_airport, irec.arrival_airport,
                          aCurrency, payAmounts[n], aUser, aGroup)
             AddBookFaresPayments(conn, aBookNo, vFareNo,
-                                 paxRecs[0].passenger_code, aFareCode,
+                                 paxRecs[0].passenger_code, aFareBasisCode,
                                  aCurrency, payAmounts[n],
                                  aUser, aGroup)
             totalPayment += payAmounts[n]
@@ -297,20 +301,19 @@ def DoBook(conn, cfg, paxNames, paxDobs, flightNumber, dt1,
     return bn
 
 
-def DoPay(conn, cfg, bn, payAmount, payAmount2, vDocNum, sellClass):
+def DoPay(conn, cfg, bn, departAirport, arriveAirport, payAmount, payAmount2, vDocNum, sellClass):
     if payAmount is None:
         itens = GetItenary(conn, bn)
         payAmount = 0
         for iten in itens:
             fares = GetPrice(conn,
-                                cfg.CompanyCode,
-                                iten.city_pair,
-                                iten.board_dts,
-                                iten.board_dts,
-                                cfg.SellingClass,
-                                cfg.OnwReturnIndicator,
-                                cfg.FareCategory,
-                                cfg.AuthorityLevel)
+                             cfg.CompanyCode,
+                             departAirport, arriveAirport,
+                             iten.board_dts, iten.board_dts,
+                             cfg.SellingClass,
+                             cfg.OnwReturnIndicator,
+                             cfg.FareCategory,
+                             cfg.AuthorityLevel)
             for fare in fares:
                 payAmount += fare.fare_amount
         paxRecs = GetPassengers(conn, bn)
@@ -324,7 +327,7 @@ def DoPay(conn, cfg, bn, payAmount, payAmount2, vDocNum, sellClass):
     print("Pay %s%d with card %s" % (cfg.Currency, payAmount, vDocNum))
     PutPay(conn, bn, sellClass,
             cfg.Currency, payAmount, payAmount2,
-            cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareCode,
+            cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareBasisCode,
             vPaymentType, vPaymentForm, vDocNum,
             cfg.User, cfg.Group)
 
@@ -478,26 +481,22 @@ def main(argv):
             GetFlightDetails(conn, flightNumber2, dt2, departAirport,
                              arriveAirport)
     elif doprice:
-        cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
         GetPrice(conn,
                  cfg.CompanyCode,
-                 cityPairNo,
-                 dt1,
-                 dt2,
+                 departAirport, arriveAirport,
+                 dt1, dt2,
                  cfg.SellingClass,
                  cfg.OnwReturnIndicator,
                  cfg.FareCategory,
                  cfg.AuthorityLevel)
-        cityPairNo = GetCityPair(conn, arriveAirport, departAirport)
-        GetPrice(conn,
-                 cfg.CompanyCode,
-                 cityPairNo,
-                 dt1,
-                 dt2,
-                 cfg.SellingClass,
-                 cfg.OnwReturnIndicator,
-                 cfg.FareCategory,
-                 cfg.AuthorityLevel)
+        #GetPrice(conn,
+                 #cfg.CompanyCode,
+                 #arriveAirport, departAirport
+                 #dt1, dt2,
+                 #cfg.SellingClass,
+                 #cfg.OnwReturnIndicator,
+                 #cfg.FareCategory,
+                 #cfg.AuthorityLevel)
     elif dobook:
         bn = DoBook(conn, cfg, paxNames, paxDobs, flightNumber, dt1,
                     departAirport, arriveAirport,

@@ -21,7 +21,7 @@ from BarsLog import set_verbose, get_verbose, printlog
 
 
 def ReadBookSummary(conn, book_no, report_code=None):
-    """Find book summary.
+    """Find booking summary.
 
     Check if there are any pending emails
 
@@ -31,7 +31,7 @@ def ReadBookSummary(conn, book_no, report_code=None):
 
     @return number of entries found
     """
-    printlog(2, "Find book summary"),
+    printlog(2, "Find bookings summary"),
     bk_summ = \
         "SELECT booking_number,booking_summary_type_rcd,pax_name" \
         " FROM booking_summary" \
@@ -71,7 +71,7 @@ def ReadBookSummaryHistory(conn, book_no, hist_code=None, email_date=None):
 
     @return number of entries found
     """
-    printlog(2, "Find book summary history")
+    printlog(2, "Find bookings summary history")
     bk_summ = \
         "SELECT book_no,book_summary_history_rcd,sent_date_time" \
         " FROM book_summary_history" \
