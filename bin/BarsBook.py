@@ -24,7 +24,8 @@ from ReadDateTime import ReadDate
 from Ssm.SsmDb import GetCityPair
 from Flight.AvailDb import get_selling_conf, get_avail_flights, OldAvailSvc
 from Flight.FlightDetails import GetFlightDetails
-from Booking.FareCalcDisplay import FareCalcDisplay, ReadPayments
+from Booking.FareCalcDisplay import FareCalcDisplay, ReadPayments, \
+     ReadSellingConfig
 from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, \
      AddItenary, AddPassenger, \
      AddBookFares, AddBookFareSegments, AddBookFarePassengers, \
@@ -94,6 +95,9 @@ def GetPrice(conn,
              dt1, dt2,
              selling_class, onw_return_ind, fare_category, authority_level):
     """Read and display price information."""
+    sellconfigs = ReadSellingConfig(conn, aCompanyCode)
+    for cls in sorted(sellconfigs, key=sellconfigs.get, reverse=False):
+        sellconfigs[cls].display()
     cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
     printlog(1, "Get price for city pair %d class %s on %s"
              % (cityPairNo, selling_class, dt1))
@@ -101,21 +105,24 @@ def GetPrice(conn,
                       pass_code1='ADULT', pass_code2='CHILD',
                       aState='GP', aNation='ZA',
                       aReturnInd='O')
-    fares = FareCalcDisplay(conn,
-                            aCompanyCode,
-                            cityPairNo,
-                            taxes,
-                            dt1,
-                            dt2,
-                            selling_class,
-                            onw_return_ind,
-                            fare_category,
-                            authority_level,
-                            dt2)
-    for fare in fares:
-        fare.apply_taxes(taxes)
-        fare.display()
-    return fares
+    for cls in sorted(sellconfigs, key=sellconfigs.get, reverse=False):
+        fare_factor = float(sellconfigs[cls].fare_factor)
+        fares = FareCalcDisplay(conn,
+                                aCompanyCode,
+                                cityPairNo,
+                                taxes,
+                                dt1,
+                                dt2,
+                                cls,
+                                onw_return_ind,
+                                fare_category,
+                                authority_level,
+                                dt2,
+                                fare_factor)
+        for fare in fares:
+            fare.apply_taxes(taxes)
+            fare.display()
+    # return fares
 
 
 def GetPassengers(conn, bn):

@@ -42,7 +42,7 @@ def AddFare(conn, company_code, fare_basis_code, selling_class, aUser, aGroup):
     AfSql = """
     INSERT INTO fare_basis_codes(
         company_code, fare_basis_code, short_description, description,
-        selling_class, fare_category, onw_return_flag,
+        selling_class, fare_category, oneway_return_flag,
         acss_strt_auth_level, acss_end_auth_level,
         update_user, update_group, update_time)
     VALUES(

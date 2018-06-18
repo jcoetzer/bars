@@ -6,8 +6,30 @@ Calculate and display fares.
 import psycopg2
 
 from BarsLog import printlog
-from Booking.PricingData import PricingData, FarePricingData
+from Booking.PricingData import SellingConfig, PricingData, FarePricingData
 from Booking.PaymentData import PaymentData
+
+
+def ReadSellingConfig(conn, acompany_code):
+    """Read selling classes."""
+    rscSql = """SELECT company_code, selling_class, cabin_code,
+                parent_sell_cls, ffp_fact_mult,display_priority
+                FROM selling_conf
+                WHERE company_code = '%s'""" \
+             % acompany_code
+    printlog(2, rscSql)
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute(rscSql)
+    sellconfigs = {}
+    for row in cur:
+        selling_class = row['selling_class']
+        sellconf = SellingConfig(acompany_code, selling_class,
+                                 row['parent_sell_cls'], row['cabin_code'],
+                                 row['ffp_fact_mult'], row['display_priority'])
+        #sellconf.display()
+        sellconfigs[selling_class] = sellconf
+
+    return sellconfigs
 
 
 def FareCalcDisplay(conn,
@@ -17,16 +39,17 @@ def FareCalcDisplay(conn,
                     aflight_date,
                     areturn_date,
                     aselling_class,
-                    aonw_return_flag,
+                    aoneway_return_flag,
                     afare_category,
                     aauthority_level,
-                    aTargetDate):
+                    aTargetDate,
+                    fare_factor=1.0):
     """Fare calculation."""
     fcdSql = """
     SELECT fs.fare_basis_code,
             fs.city_pair, fs.valid_from_date,
             fs.valid_to_date, fs.fare_amount,
-            fc.short_description, fc.onw_return_flag,
+            fc.short_description, fc.oneway_return_flag,
             fc.byps_strt_auth_level, fc.byps_end_auth_level,
             fc.selling_class
     FROM fare_segments fs, fare_basis_codes fc
@@ -35,14 +58,14 @@ def FareCalcDisplay(conn,
     AND fs.city_pair = %d
     AND ( ( fs.valid_from_date <= '%s'
             AND fs.valid_to_date >= '%s'
-            AND fc.onw_return_flag = 'O' )
+            AND fc.oneway_return_flag = 'O' )
        OR ( fs.valid_from_date <= '%s'
             AND fs.valid_to_date >= '%s'
-            AND fc.onw_return_flag = 'R' ) )
+            AND fc.oneway_return_flag = 'R' ) )
     AND fc.company_code = fs.company_code
     AND fc.fare_basis_code = fs.fare_basis_code
     AND fc.selling_class = '%s'
-    AND fc.onw_return_flag = '%s'
+    AND fc.oneway_return_flag = '%s'
     AND fc.fare_category = '%s'
     AND fc.acss_strt_auth_level <= %d
     AND fc.acss_end_auth_level >= %d
@@ -56,7 +79,7 @@ def FareCalcDisplay(conn,
     aflight_date.strftime('%Y-%m-%d'), aflight_date.strftime('%Y-%m-%d'),
     aflight_date.strftime('%Y-%m-%d'), aflight_date.strftime('%Y-%m-%d'),
     aselling_class,
-    aonw_return_flag,
+    aoneway_return_flag,
     afare_category,
     aauthority_level, aauthority_level,
     aTargetDate.strftime('%Y-%m-%d'), aTargetDate.strftime('%Y-%m-%d'))
@@ -74,19 +97,21 @@ def FareCalcDisplay(conn,
         valid_to_date = row[3]
         fare_amount = float(row[4])
         short_description = row[5]
-        onw_return_flag = row[6]
+        oneway_return_flag = row[6]
         byps_strt_auth_level = row[7]
         byps_end_auth_level = row[8]
         selling_class = row[9]
-        printlog(2, "Fare %s from %s to %s: %f"
-                 % (fare_basis_code, valid_from_date, valid_to_date, fare_amount))
+        fare_amount *= fare_factor
+        printlog(2, "Fare %s from %s to %s class %s: %f"
+                 % (fare_basis_code, valid_from_date, valid_to_date,
+                    selling_class, fare_amount))
         pricing = FarePricingData(fare_basis_code,
                                   city_pair,
                                   valid_from_date,
                                   valid_to_date,
                                   fare_amount,
                                   short_description,
-                                  onw_return_flag,
+                                  oneway_return_flag,
                                   byps_strt_auth_level,
                                   byps_end_auth_level,
                                   selling_class)

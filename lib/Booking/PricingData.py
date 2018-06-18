@@ -12,6 +12,26 @@ from BarsLog import printlog
 from ReadDateTime import ReadDate
 
 
+class SellingConfig(object):
+
+    def __init__(self, company_code, selling_class, parent_class,
+                   cabin_class, fare_factor, display_priority):
+        self.company_code  = company_code
+        self.selling_class = selling_class
+        self.parent_class = parent_class
+        self.cabin_class = cabin_class
+        self.fare_factor = fare_factor
+        self.display_priority = display_priority
+
+    def display(self):
+        print("Company %s class %s parent %s cabin %s multiplier %.2f"
+                % (self.company_code, self.selling_class, self.parent_class,
+                    self.cabin_class, self.fare_factor))
+
+    def __lt__(self,other):
+        return self.display_priority < other.display_priority
+
+
 class FarePricingData(object):
 
     fare_basis_code = ''
@@ -54,7 +74,7 @@ class FarePricingData(object):
                 pass
 
     def display(self):
-        print("Fare code %s class %s base %.2f total %.2f"
+        print("Fare code %s class %s base %7.2f total %7.2f"
               % (self.fare_basis_code, self.selling_class, self.fare_amount,
                  self.total_amount))
 

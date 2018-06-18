@@ -62,7 +62,7 @@ def ReadFareCodes(conn):
     RfSql = """
         SELECT
         company_code, fare_basis_code, short_description, description,
-        selling_class, fare_category, onw_return_flag
+        selling_class, fare_category, oneway_return_flag
     FROM fare_basis_codes"""
 
     printlog(2, "%s" % RfSql)
