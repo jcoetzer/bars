@@ -1,7 +1,7 @@
 # List of table names used in booking report
-# 
-book;book_no,pax_name_rec,book_type,no_of_seats,group_name,book_category,origin_branch_code,origin_address,record_locator,booking_status,first_segm_date,last_segm_date
-itenary;route_no,itenary_no,itenary_type,flight_number,flight_date,departure_airport,arrival_airport,to_char(trunc(departure_time/60,0),'&&')||':'||to_char(mod(departure_time,60),'&&') departure,to_char(trunc(arrival_time/60,0),'&&')||':'||to_char(mod(arrival_time,60),'&&') arrival,selling_class,itenary_stat_flag,request_nos
+#
+bookings;book_no,pax_name_rec,book_type,no_of_seats,group_name,book_category,origin_branch_code,origin_address,record_locator,status_flag,first_segm_date,last_segm_date
+itinerary;route_no,itinerary_no,itinerary_type,flight_number,flight_date,departure_airport,arrival_airport,to_char(trunc(departure_time/60,0),'&&')||':'||to_char(mod(departure_time,60),'&&') departure,to_char(trunc(arrival_time/60,0),'&&')||':'||to_char(mod(arrival_time,60),'&&') arrival,selling_class,itinerary_stat_flag,request_nos
 passenger;pax_no,pax_name,request_nos,pax_code,processing_flag,request_nos
 pass_remarks;remark_sequence_no,remark_text
 book_crs_index;pax_name_rec,origin_address,book_category,reply_poll_flag,processing_flag,ext_book_numb,codeshare_book_numb

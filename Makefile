@@ -7,10 +7,9 @@ PYTHONS = ./bin/FlightDetailsService.pyc \
 	./bin/BookInfo.pyc \
 	./bin/FlightInfo.pyc \
 	./bin/BarsFlight.pyc \
-	./lib/Booking/ItenaryData.pyc \
+	./lib/Booking/ItineraryData.pyc \
 	./lib/Booking/__init__.pyc \
-	./lib/Booking/BookingSummaryXml.pyc \
-	./lib/Booking/ReadItenary.pyc \
+	./lib/Booking/ReadItinerary.pyc \
 	./lib/Booking/ReadRequests.pyc \
 	./lib/Booking/PricingData.pyc \
 	./lib/Booking/BookingInfo.pyc \
@@ -18,7 +17,6 @@ PYTHONS = ./bin/FlightDetailsService.pyc \
 	./lib/Booking/FareCalcDisplay.pyc \
 	./lib/Booking/ReadBooking.pyc \
 	./lib/Booking/ReadCrossRef.pyc \
-	./lib/Booking/GraphBookings.pyc \
 	./lib/Booking/ReadBookSummary.pyc \
 	./lib/Booking/ReadBookingRef.pyc \
 	./lib/Booking/ReadTimeLimit.pyc \

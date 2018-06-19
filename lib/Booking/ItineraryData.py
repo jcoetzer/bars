@@ -1,5 +1,5 @@
 """
-Itenary data.
+Itinerary data.
 """
 
 
@@ -11,8 +11,8 @@ from BarsLog import printlog
 from ReadDateTime import ReadDate
 
 
-class ItenaryData(object):
-    """Itenary data."""
+class ItineraryData(object):
+    """Itinerary data."""
     flight_number = None
     company_code = None
     flight_integer = 0
@@ -54,7 +54,7 @@ class ItenaryData(object):
 
     def display(self):
         """Display itinerary."""
-        print("Itenary flight %6s date %s from %s to %s status %s"
+        print("Itinerary flight %6s date %s from %s to %s status %s"
               " reserve %s type %s"
               % (self.flight_number, self.board_date_iso,
                  self.departure_airport, self.arrival_airport,

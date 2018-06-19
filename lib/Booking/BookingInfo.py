@@ -125,14 +125,14 @@ def AddBook(conn, aBookNo, aPnr, aSeatQuantity, aOriginAddress,
     printlog(2, "Inserted %d row(s)" % cur.rowcount)
 
 
-def AddItenary(conn, aBookNo,
+def AddItinerary(conn, aBookNo,
                aFlightNumber, aFlightDate,
                aDepart, aArrive,
                aDepartTime, aArriveTime,
                aDepartTerm, aArriveTerm,
                aCityPair, aSellClass, aUser, aGroup):
     """Add entry for itinerary."""
-    printlog(2, "Itenary for booking %d: flight %s date %s depart %s %s (%s) arrive %s %s (%s)"
+    printlog(2, "Itinerary for booking %d: flight %s date %s depart %s %s (%s) arrive %s %s (%s)"
              % (aBookNo, aFlightNumber, aFlightDate,
                 aDepart, aDepartTime, aDepartTerm,
                 aArrive, aArriveTime, aArriveTerm))
@@ -250,13 +250,13 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
     cur.close()
 
 
-def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode,
-                        aDepart, aArrive,
-                        aFlight, aFlightDate,
-                        aStartDate, aEndDate,
-                        aSellClass, aFareBasis,
-                        aCurrency, aAmount,
-                        aUser, aGroup):
+def AddBookingFareSegments(conn, aBookNo, aFareNo, aPaxCode,
+                           aDepart, aArrive,
+                           aFlight, aFlightDate,
+                           aStartDate, aEndDate,
+                           aSellClass, aFareBasis,
+                           aCurrency, aAmount,
+                           aUser, aGroup):
     """
     Add entry for booking fare segment.
 
@@ -276,22 +276,22 @@ def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode,
     W               full-fare Premium Economy class
     Y               full-fare Economy class
 
-    E 	             Second letter
+    E               Second letter
         Excursion Fare: has a minimum and maximum stay requirement to encourage
         use by the holiday market and not business travellers.
-    NUMERALS 	     Latter parts of the fare basis
+    NUMERALS          Latter parts of the fare basis
         Numerals indicate the maximum stay the fare rules will allow at a
         destination. Thus a YE45 is an economy excursion fare with a maximum
         stay of 45 days. Similar patterns could be YE3M indicating a 3-month
         maximum.
     H OR L          Other than first letter
         High or low season
-    W OR X 	    Other than as the first letter
+    W OR X          Other than as the first letter
         These two letters are used to state if a fare is valid on a weekday (X)
         or restricted to weekends (W).
-    OW 	            Follows the initial booking code.
+    OW              Follows the initial booking code.
         One-way fare only
-    RT 	            Follows the initial booking code.
+    RT              Follows the initial booking code.
         Return fare
     COUNTRY CODE    At the end of the code, except for "CH" or "IN"
         Fare bases may end with two-letter country codes. This will be the
@@ -302,7 +302,7 @@ def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode,
         comply with local trade restrictions.
     CH              Last two characters
         Child fare (typically up to 11 years old, but 15 in some cases)
-    IN 	            Last two characters
+    IN              Last two characters
         Infant fare (typically up to 2 years old, but 3 years in some cases)
     """
     abfSql = """
@@ -337,7 +337,7 @@ def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode,
 
     printlog(1, "Add booking fare segment for booking %d:"
              " code %s flight %s date %s amount %s%d"
-             % (aBookNo, aPaxCode, aFlight, aDate, aCurrency, aAmount))
+             % (aBookNo, aPaxCode, aFlight, aFlightDate, aCurrency, aAmount))
     abfSql = """
         INSERT INTO booking_fare_segments(
             book_no, fare_no, pax_code,
@@ -356,7 +356,7 @@ def AddBookFareSegments(conn, aBookNo, aFareNo, aPaxCode,
            '%s', '%s',
            NOW())""" \
         % (aBookNo, aFareNo, aPaxCode,
-           aFlight, aDate,
+           aFlight, aFlightDate,
            aDepart, aArrive,
            aCurrency, aAmount,
            aStartDate, aEndDate,

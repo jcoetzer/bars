@@ -45,7 +45,6 @@ def ReadBookingData(conn, bk_cfg_files, book_no, locator):
     """Read booking data and stuff."""
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
-    cur.execute(bookSql)
     for bk_cfg_file in bk_cfg_files:
 
         printlog(2, "Read config file %s" % bk_cfg_file)

@@ -11,7 +11,7 @@ from BarsLog import set_verbose, get_verbose, printlog
 from Booking.ItenaryData import ItenaryData
 
 
-def ReadItenary(conn, bookno, status_flag, action_codes,
+def ReadItinerary(conn, bookno, status_flag, action_codes,
                 fnumber=None, start_date=None, end_date=None):
     """Read itinerary."""
     itineraryrecs = []
@@ -65,7 +65,7 @@ def ReadItenary(conn, bookno, status_flag, action_codes,
     return itineraryrecs
 
 
-def UpdateItenary(conn, aBookNo, aStatus='A'):
+def UpdateItinerary(conn, aBookNo, aStatus='A'):
     """Activate itinerary."""
     printlog(1, "Set bookings %d itinerary status to %s" % (aBookNo, aStatus))
     UaSql = """UPDATE itineraries

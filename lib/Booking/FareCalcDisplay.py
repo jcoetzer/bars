@@ -114,7 +114,7 @@ def FareCalcDisplay(conn,
                                   oneway_return_flag,
                                   byps_strt_auth_level,
                                   byps_end_auth_level,
-                                  selling_class)
+                                  selling_class[0])
         pricings.append(pricing)
 
     return pricings

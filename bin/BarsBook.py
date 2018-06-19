@@ -27,11 +27,12 @@ from Flight.FlightDetails import GetFlightDetails
 from Booking.FareCalcDisplay import FareCalcDisplay, ReadPayments, \
      ReadSellingConfig
 from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, \
-     AddItenary, AddPassenger, \
-     AddBookFares, AddBookFareSegments, AddBookFarePassengers, \
+     AddItinerary, AddPassenger, \
+     AddBookFares, AddBookFarePassengers, \
      AddBookFaresPayments, AddBookRequest, AddPayment, \
-     GetPreBookingInfo, AddBookTimeLimit, AddContact, UpdateBookPayment
-from Booking.ReadItenary import ReadItenary, UpdateItenary, UpdateBook
+     GetPreBookingInfo, AddBookTimeLimit, AddContact, UpdateBookPayment, \
+     AddBookingFareSegments
+from Booking.ReadItinerary import ReadItinerary, UpdateItinerary, UpdateBook
 from Flight.ReadFlights import ReadDeparture
 from Flight.ReadFlights import ReadFlightDeparture
 from DbConnect import OpenDb, CloseDb
@@ -96,8 +97,8 @@ def GetPrice(conn,
              selling_class, onw_return_ind, fare_category, authority_level):
     """Read and display price information."""
     sellconfigs = ReadSellingConfig(conn, aCompanyCode)
-    for cls in sorted(sellconfigs, key=sellconfigs.get, reverse=False):
-        sellconfigs[cls].display()
+    # for cls in sorted(sellconfigs, key=sellconfigs.get, reverse=False):
+        # sellconfigs[cls].display()
     cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
     printlog(1, "Get price for city pair %d class %s on %s"
              % (cityPairNo, selling_class, dt1))
@@ -105,6 +106,7 @@ def GetPrice(conn,
                       pass_code1='ADULT', pass_code2='CHILD',
                       aState='GP', aNation='ZA',
                       aReturnInd='O')
+    rfares = []
     for cls in sorted(sellconfigs, key=sellconfigs.get, reverse=False):
         fare_factor = float(sellconfigs[cls].fare_factor)
         fares = FareCalcDisplay(conn,
@@ -120,9 +122,11 @@ def GetPrice(conn,
                                 dt2,
                                 fare_factor)
         for fare in fares:
-            fare.apply_taxes(taxes)
-            fare.display()
-    # return fares
+            if fare.selling_class == selling_class:
+                fare.apply_taxes(taxes)
+                fare.display()
+                rfares.append(fare)
+    return rfares
 
 
 def GetPassengers(conn, bn):
@@ -133,9 +137,9 @@ def GetPassengers(conn, bn):
     return paxRecs
 
 
-def GetItenary(conn, aBookNo):
+def GetItinerary(conn, aBookNo):
     """Read and display itenaries for booking."""
-    itenRecs = ReadItenary(conn, aBookNo, '', '')
+    itenRecs = ReadItinerary(conn, aBookNo, '', '')
     for itenRec in itenRecs:
         itenRec.display()
     return itenRecs
@@ -143,12 +147,11 @@ def GetItenary(conn, aBookNo):
 
 def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
             vOriginBranchCode, vAgencyCode,
-            paxRecs, aCurrency,
-            payAmount,
+            paxRecs,
+            aCurrency, payAmount,
             flightNumber, dt1,
-            flightNumber2, dt2,
             departAirport, arriveAirport,
-            sellClass,
+            sellClass, aFareBasis,
             aTimeLimit,
             vUser, vGroup):
     """Make a booking."""
@@ -163,6 +166,8 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
     #if departAirport is None or arriveAirport is None:
         #print("Flight number and date must be specified")
         #return
+    printlog(1, "Book %d seats on flight %s date %s class %s"
+             % (vSeatQuantity, flightNumber, dt1, sellClass))
     n, fd = ReadFlightDeparture(conn, sellClass, flightNumber, dt1)
     if n == 0:
         print("Flight number and date not found")
@@ -178,31 +183,13 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
                                 vUser, vGroup)
     AddBook(conn, bn, pnr, vSeatQuantity, vOriginAddress, vBookCategory,
             vOriginBranchCode, vAgencyCode,
-            dt1.strftime('%Y-%m-%d'), vUser, vGroup)
-    AddItenary(conn, bn, flightNumber, dt1,
+            dt1, vUser, vGroup)
+    AddItinerary(conn, bn, flightNumber, dt1,
                departAirport, arriveAirport,
                departTime, arriveTime,
                departTerm, arriveTerm,
                cityPairNo, sellClass,
                vUser, vGroup)
-    if flightNumber2 is not None and dt2 is not None:
-        n, fd = ReadFlightDeparture(conn, sellClass, flightNumber2, dt2)
-        if n == 0:
-            print("Return flight number and date not found")
-            return 0, ''
-        departAirport = fd.departure_airport
-        arriveAirport = fd.arrival_airport
-        cityPairNo = fd.city_pair
-        departTerm = fd.departure_terminal
-        arriveTerm = fd.arrival_terminal
-        departTime = fd.departure_time
-        arriveTime = fd.arrival_time
-        AddItenary(conn, bn, flightNumber2, dt2,
-                   departAirport, arriveAirport,
-                   departTime, arriveTime,
-                   departTerm, arriveTerm,
-                   cityPairNo, sellClass,
-                   vUser, vGroup)
     AddPassenger(conn, bn, paxRecs, vUser, vGroup)
     AddContact(conn, bn, paxRecs, vUser, vGroup)
     paxRequests = []
@@ -210,6 +197,13 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
         paxRequests.append(paxRec.date_of_birth)
     AddBookRequest(conn, bn, vCompany, 'CKIN', paxRequests, vUser, vGroup)
     AddBookTimeLimit(conn, bn, vAgencyCode, vUser, vGroup)
+    AddBookingFareSegments(conn, bn, 1, paxRecs[0].passenger_code,
+                           departAirport, arriveAirport,
+                           flightNumber, dt1,
+                           dt1, dt1,
+                           sellClass, aFareBasis,
+                           aCurrency, payAmount,
+                           vUser, vGroup)
     return bn, pnr
 
 
@@ -222,9 +216,10 @@ def PutPay(conn, aBookNo, aSellClass,
     if aBookNo is None:
         print("Book number not specified")
         return 1
-    printlog(1, "Process payment for book %d" % (aBookNo))
+    printlog(1, "Process payment of %s%.2f for book %d"
+             % (aCurrency, aPayAmount, aBookNo))
     paxRecs = GetPassengers(conn, aBookNo)
-    # itenRecs = GetItenary(conn, aBookNo)
+    # itenRecs = GetItinerary(conn, aBookNo)
     vPaymentMode = ' '
     vRemark = ' '
     vFareNo = 1
@@ -235,7 +230,7 @@ def PutPay(conn, aBookNo, aSellClass,
                aUser, aGroup)
     # payAmounts = [int(aPayAmount*100), int(aPayAmount2*100)]
     payAmounts = [aPayAmount, aPayAmount2]
-    irecs = ReadItenary(conn, aBookNo, None, None,
+    irecs = ReadItinerary(conn, aBookNo, None, None,
                         fnumber=None, start_date=None, end_date=None)
     if len(irecs) > 2:
         print("Found %d itenaries")
@@ -258,7 +253,7 @@ def PutPay(conn, aBookNo, aSellClass,
                               aCurrency, totalPayment,
                               aUser, aGroup)
     UpdateBookPayment(conn, aBookNo, aCurrency, totalPayment)
-    UpdateItenary(conn, aBookNo, 'A')
+    UpdateItinerary(conn, aBookNo, 'A')
     UpdateBook(conn, aBookNo, 'A')
 
     return 0
@@ -295,12 +290,12 @@ def DoBook(conn, cfg, paxNames, paxDobs, flightNumber, dt1,
         payAmount = 0.0
     bn, pnr = PutBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
                       cfg.OriginBranchCode, cfg.AgencyCode,
-                      paxRecs, cfg.Currency,
-                      payAmount,
+                      paxRecs,
+                      cfg.Currency, payAmount,
                       flightNumber, dt1,
                       departAirport, arriveAirport,
-                      departTime, arriveTime,
-                      sellClass,
+                      # departTime, arriveTime,
+                      sellClass, cfg.FareBasisCode,
                       vTimeLimit,
                       cfg.User, cfg.Group)
     if bn > 0:
@@ -308,30 +303,34 @@ def DoBook(conn, cfg, paxNames, paxDobs, flightNumber, dt1,
     return bn
 
 
-def DoPay(conn, cfg, bn, departAirport, arriveAirport, payAmount, payAmount2, vDocNum, sellClass):
+def DoPay(conn, cfg, bn, departAirport, arriveAirport, payAmount, payAmount2,
+          vDocNum, sellClass):
     if payAmount is None:
-        itens = GetItenary(conn, bn)
+        printlog(1, "Get itinerary for booking %d" % bn)
+        itens = GetItinerary(conn, bn)
         payAmount = 0
         for iten in itens:
+            printlog(1, "Get price for depart %s arrive %s class %s"
+                     % (departAirport, arriveAirport, sellClass))
             fares = GetPrice(conn,
                              cfg.CompanyCode,
                              departAirport, arriveAirport,
                              iten.board_dts, iten.board_dts,
-                             cfg.SellingClass,
+                             sellClass,
                              cfg.OnwReturnIndicator,
                              cfg.FareCategory,
                              cfg.AuthorityLevel)
             for fare in fares:
-                payAmount += fare.fare_amount
+                payAmount += fare.total_amount
         paxRecs = GetPassengers(conn, bn)
         payAmount *= len(paxRecs)
-        print("Payment amount not specified: calculated as %d" % payAmount)
+        printlog(1, "Payment amount not specified: calculated as %.2f" % payAmount)
     vPaymentForm = 'VI'
     vPaymentType = 'CC'
     if vDocNum is None:
         fake = Faker()
         vDocNum = fake.credit_card_number()
-    print("Pay %s%d with card %s" % (cfg.Currency, payAmount, vDocNum))
+    print("Pay %s%.2f with card %s" % (cfg.Currency, payAmount, vDocNum))
     PutPay(conn, bn, sellClass,
             cfg.Currency, payAmount, payAmount2,
             cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareBasisCode,
@@ -415,7 +414,7 @@ def main(argv):
             bn = int(arg)
             printlog(2, "Booking number %d" % bn)
         elif opt in ("-C", "--class"):
-            selling_class = str(arg).upper()
+            sellClass = str(arg).upper()
         elif opt in ("-D", "--date"):
             dt1 = ReadDate(arg)
             printlog(1, "\t flight date %s" % dt1.strftime("%Y-%m-%d"))
@@ -464,6 +463,9 @@ def main(argv):
     # Open connection to database
     conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
 
+    if sellClass is None:
+        sellClass = cfg.SellingClass
+
     if dochk:
         print("Check booking %d" % bn)
         GetPreBookingInfo(conn, bn)
@@ -492,18 +494,10 @@ def main(argv):
                  cfg.CompanyCode,
                  departAirport, arriveAirport,
                  dt1, dt2,
-                 cfg.SellingClass,
+                 sellClass,  # cfg.SellingClass,
                  cfg.OnwReturnIndicator,
                  cfg.FareCategory,
                  cfg.AuthorityLevel)
-        #GetPrice(conn,
-                 #cfg.CompanyCode,
-                 #arriveAirport, departAirport
-                 #dt1, dt2,
-                 #cfg.SellingClass,
-                 #cfg.OnwReturnIndicator,
-                 #cfg.FareCategory,
-                 #cfg.AuthorityLevel)
     elif dobook:
         bn = DoBook(conn, cfg, paxNames, paxDobs, flightNumber, dt1,
                     departAirport, arriveAirport,
@@ -511,12 +505,14 @@ def main(argv):
                     sellClass,
                     vTimeLimit, payAmount)
         if dopay:
-            DoPay(conn, cfg, bn, payAmount, payAmount2, vDocNum, sellClass)
+            DoPay(conn, cfg, bn,departAirport, arriveAirport,
+                  payAmount, payAmount2, vDocNum, sellClass)
     elif dopay:
-        DoPay(conn, cfg, bn, payAmount, payAmount2, vDocNum, sellClass)
+        DoPay(conn, cfg, bn,departAirport, arriveAirport,
+              payAmount, payAmount2, vDocNum, sellClass)
     elif bn is not None:
         GetPassengers(conn, bn)
-        GetItenary(conn, bn)
+        GetItinerary(conn, bn)
         ReadPayments(conn, bn)
     else:
         print("Nothing to do")

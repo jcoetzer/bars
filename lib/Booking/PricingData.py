@@ -72,6 +72,7 @@ class FarePricingData(object):
                 self.total_amount *= 1 + (tax.tax_amount / 100)
             else:
                 pass
+        return self.total_amount
 
     def display(self):
         print("Fare code %s class %s base %7.2f total %7.2f"
