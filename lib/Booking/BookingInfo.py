@@ -358,7 +358,7 @@ def AddBookingFareSegments(conn, aBookNo, aFareNo, aPaxCode,
         % (aBookNo, aFareNo, aPaxCode,
            aFlight, aFlightDate,
            aDepart, aArrive,
-           aCurrency, aAmount,
+           aSellClass, aFareBasis,
            aStartDate, aEndDate,
            aUser, aGroup)
     printlog(2, "%s" % abfSql)

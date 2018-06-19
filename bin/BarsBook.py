@@ -158,6 +158,8 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
     if paxRecs is None:
         print("No passenger names")
         return 0, ''
+    printlog(1, "Book fare basis %s payment %s%.2f flight %s date %s"
+             % (aFareBasis, aCurrency, payAmount, flightNumber, dt1))
     vSeatQuantity = len(paxRecs)
     if payAmount is None:
         payAmount = 0.0
