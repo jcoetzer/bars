@@ -50,8 +50,8 @@ class PassengerData(object):
     def __init__(self, passenger_code, passenger_no=1, paxname=None,
                  date_of_birth=None, contact_phone=None, contact_email=None,
                  processing_flg='Y'):
-        self.passenger_no    = int(passenger_no)
-        self.passenger_code  = passenger_code
+        self.passenger_no = int(passenger_no)
+        self.passenger_code = passenger_code
         if paxname is not None:
             self.passenger_name = paxname
             nameparts = paxname.split(' ')

@@ -136,6 +136,7 @@ def main(argv):
     donew = False
     doeqt = False
     dopax = False
+    dopnl = False
     dotax = False
     docontact = False
     departDate = None
@@ -163,7 +164,7 @@ def main(argv):
                                    "cfhivxyVA:D:E:F:G:I:J:K:N:P:Q:R:T:U:X:Y:",
                                    ["help", "city", "fare", "faredel",
                                     "new", "eqt", "cnl", "tim", "rpl",
-                                    "utc", "pax", "contact", "tax",
+                                    "utc", "pax", "contact", "tax", "pnl",
                                     "date=", "edate=", "flight=",
                                     "depart=", "arrive=", "name=",
                                     "share=", "cfg=",
@@ -194,6 +195,8 @@ def main(argv):
             donew = True
         elif opt == "--pax":
             dopax = True
+        elif opt == "--pnl":
+            dopnl = True
         elif opt == "--tax":
             dotax = True
         elif opt == "--contact":
@@ -301,6 +304,8 @@ def main(argv):
                     cfg.User, cfg.Group)
     elif dopax and flightNumber != '' and departDate is not None:
         ReadFlightBookings(conn, flightNumber, departDate)
+    elif dopnl and flightNumber != '' and departDate is not None:
+        ReadFlightBookings(conn, flightNumber, departDate, "A")
     elif docontact and flightNumber != '' and departDate is not None:
         ReadFlightContacts(conn, flightNumber, departDate)
     elif docity:

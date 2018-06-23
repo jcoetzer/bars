@@ -8,7 +8,7 @@ import psycopg2.extras
 from BarsLog import printlog
 
 
-def ReadFlightBookings(conn, flight_number, board_date):
+def ReadFlightBookings(conn, flight_number, board_date, stat_flag=None):
     """Read bookings for flight."""
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur2 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -24,6 +24,9 @@ def ReadFlightBookings(conn, flight_number, board_date):
              WHERE it.flight_number='%s' AND it.flight_date='%s'
              AND bo.book_no = it.book_no""" \
         % (flight_number, board_date)
+    if stat_flag is not None:
+        FbSql += \
+            " AND bo.status_flag = '%s'" % stat_flag
     printlog(2, FbSql)
     cur.execute(FbSql)
     npax = 0

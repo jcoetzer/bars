@@ -696,8 +696,8 @@ def main(argv):
             print("Found %d passenger records in files" % n_pax_names)
             flight = FlightData('Y', flight_number, dt1,
                                 departure_time, arrival_time,
-                                departure_airport, arrival_airport, 0,
-                                'X', 'X',
+                                departure_airport, arrival_airport,
+                                'X', 'X', 0,
                                 company_code, aircraft_code)
             pax_books = ReadFlightPaxNames(conn, flight)
             n_pax_books = len(pax_books)
