@@ -66,7 +66,6 @@ def AddBookCrossIndex(conn, aBookCategory, aOriginAddress, aUser, aGroup):
     for row in cur:
         vBookNo = int(row[0])
 
-    printlog(1, "New booking number %d" % vBookNo)
     vPnr = int2base20(vBookNo)
     abSql = \
         "UPDATE book_cross_index SET pax_name_rec='%s' WHERE book_no=%d" \
@@ -75,19 +74,23 @@ def AddBookCrossIndex(conn, aBookCategory, aOriginAddress, aUser, aGroup):
     cur.execute(abSql)
     printlog(2, "Updated %d row(s)" % cur.rowcount)
     cur.close()
+    printlog(1, "New booking number %d (%s)" % (vBookNo, vPnr))
     return vBookNo, vPnr
 
 
 def AddBook(conn, aBookNo, aPnr, aSeatQuantity, aOriginAddress,
             aBookCategory,
             aOriginBranchCode, aAgencyCode,
-            aFlightDate,
+            aFlightDate, aGroupName,
             aUser, aGroup):
     """
     Add entry to bookings table.
 
     Return booking number.
     """
+    printlog(1, "Add booking %d (%s) origin %s seats %d date %s group '%s'"
+             % (aBookNo, aPnr, aOriginAddress, aSeatQuantity, aFlightDate,
+                aGroupName))
     abSql = """
         INSERT INTO bookings(
             book_no, pax_name_rec, book_type, group_name,
@@ -102,7 +105,7 @@ def AddBook(conn, aBookNo, aPnr, aSeatQuantity, aOriginAddress,
             create_user, create_group, create_time,
             update_user, update_group, update_time )
         VALUES (
-            %d, '%s', 'R', '',
+            %d, '%s', 'R', '%s',
             %d,
             '%s', 0, 0, 0,
             '%s', '%s',
@@ -112,7 +115,8 @@ def AddBook(conn, aBookNo, aPnr, aSeatQuantity, aOriginAddress,
             'Y', 'Y', 'Y',
             '%s', '%s', NOW(),
             '%s', '%s', NOW() )""" \
-        % (aBookNo, aPnr, aSeatQuantity,
+        % (aBookNo, aPnr, aGroupName,
+           aSeatQuantity,
            aBookCategory,
            aOriginAddress, aOriginBranchCode,
            aAgencyCode, aUser, 0.0,

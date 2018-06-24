@@ -12,6 +12,7 @@ class BarsConfig(object):
     DbName = 'barsdb'
     dbuser = 'postgres'
     dbhost = 'localhost'
+    AirlineNo = 0
     OnwReturnIndicator = 'R'
     AuthorityLevel = 100
     FareCategory = 'ZZOW'
@@ -40,6 +41,7 @@ class BarsConfig(object):
         self.dbname = config.get('Database', 'dbname')
         self.dbuser = config.get('Database', 'dbuser')
         self.dbhost = config.get('Database', 'dbhost')
+        self.AirlineNo = int(config.get('Airline', 'AirlineNo'))
         self.OnwReturnIndicator = config.get('Airline', 'OnwReturnIndicator')
         self.AuthorityLevel = int(config.get('Airline', 'AuthorityLevel'))
         self.FareCategory = config.get('Airline', 'FareCategory')

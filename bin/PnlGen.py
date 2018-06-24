@@ -89,7 +89,8 @@ def main(argv):
         usage()
 
     # Read current passengers
-    paxData = PaxList(conn, flightNumber, boardDate)
+    paxData = PaxList(conn, cfg.AirlineNo, flightNumber, boardDate,
+                        cfg.SellingClasses)
 
     # Process input file
     rv = paxData.ReadDb(flightNumber, boardDate, departAirport)

@@ -47,20 +47,32 @@ def usage(pn):
     """Help message."""
     print_banner()
     print("Availability:")
-    print("\t%s --avail -P <CITY> -Q <CITY> -D <DATE> [-E <DATE>]" % pn)
+    print("\t%s --avail -P <CITY> -Q <CITY> -D <DATE>" % pn)
     print("Pricing:")
-    print("\t%s --price -C <CLASS> -P <CITY> -Q <CITY> -D <DATE> [-E <DATE>]"
+    print("\t%s --price -C <CLASS> -P <CITY> -Q <CITY> -D <DATE>"
           % pn)
     print("Detail:")
-    print("\t%s --detail -F <FLIGHT> -P <CITY> -Q <CITY> -D <DATE> [-E <DATE>]"
+    print("\t%s --detail -F <FLIGHT> -P <CITY> -Q <CITY> -D <DATE>"
           % pn)
     print("Book:")
-    print("\t%s --book -N <PAX> -F <FLIGHT> -N <NAME> -M <MISC> -D <DATE>"
-          " [-E <DATE>]" % pn)
+    print("\t%s --book -N <NAME> -M <DATES> -F <FLIGHT> -D <DATE>" % pn)
+    print("\t%s --book -F <FLIGHT> -D <DATE> [-L <COUNT>] [-K <GROUP>]" % pn)
     print("Check:")
     print("\t%s --pay -B <BOOK> -A <AMOUNT> -N <NAME>" % pn)
     print("Check:")
     print("\t%s --chk -B <BOOK>" % pn)
+    print("where:")
+    print("\t-A <AMOUNT>\t Payment amount")
+    print("\t-B <BOOK>\t Booking number")
+    print("\t-C <CLASS>\t Booking class")
+    print("\t-D <DATE>\t Flight date")
+    print("\t-F <FLIGHT>\t Flight number")
+    print("\t-K <GROUP>\t Group name")
+    print("\t-L <COUNT>\t Number of passengers")
+    print("\t-K <GROUP>\t Group name")
+    print("\t-M <DATES>\t Birth dates, comma seperated")
+    print("\t-N <NAME>\t Passenger names, comma seperated")
+    print("\t")
     sys.exit(1)
 
 
@@ -147,7 +159,7 @@ def GetItinerary(conn, aBookNo):
 
 def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
             vOriginBranchCode, vAgencyCode,
-            paxRecs,
+            groupName, paxRecs,
             aCurrency, payAmount,
             flightNumber, dt1,
             departAirport, arriveAirport,
@@ -185,13 +197,13 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
                                 vUser, vGroup)
     AddBook(conn, bn, pnr, vSeatQuantity, vOriginAddress, vBookCategory,
             vOriginBranchCode, vAgencyCode,
-            dt1, vUser, vGroup)
+            dt1, groupName, vUser, vGroup)
     AddItinerary(conn, bn, flightNumber, dt1,
-               departAirport, arriveAirport,
-               departTime, arriveTime,
-               departTerm, arriveTerm,
-               cityPairNo, sellClass,
-               vUser, vGroup)
+                 departAirport, arriveAirport,
+                 departTime, arriveTime,
+                 departTerm, arriveTerm,
+                 cityPairNo, sellClass,
+                 vUser, vGroup)
     AddPassenger(conn, bn, paxRecs, vUser, vGroup)
     AddContact(conn, bn, paxRecs, vUser, vGroup)
     paxRequests = []
@@ -261,7 +273,7 @@ def PutPay(conn, aBookNo, aSellClass,
     return 0
 
 
-def DoBook(conn, cfg, paxNames, paxDobs, flightNumber, dt1,
+def DoBook(conn, cfg, lnames, groupName, paxNames, paxDobs, flightNumber, dt1,
            departAirport, arriveAirport,
            departTime, arriveTime,
            sellClass,
@@ -269,7 +281,8 @@ def DoBook(conn, cfg, paxNames, paxDobs, flightNumber, dt1,
     """Do the booking thing."""
     paxRecs = []
     if len(paxNames) == 0:
-        lnames = randint(1, 9)
+        if lnames == 0:
+            lnames = randint(1, 9)
         n = 0
         while n < lnames:
             # Make the last pax in group a child
@@ -290,9 +303,11 @@ def DoBook(conn, cfg, paxNames, paxDobs, flightNumber, dt1,
             n += 1
     if payAmount is None:
         payAmount = 0.0
+    if lnames >= 5 and groupName == '':
+        groupName = (paxRecs[0].first_name[0] + paxRecs[0].last_name).upper()
     bn, pnr = PutBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
                       cfg.OriginBranchCode, cfg.AgencyCode,
-                      paxRecs,
+                      groupName, paxRecs,
                       cfg.Currency, payAmount,
                       flightNumber, dt1,
                       departAirport, arriveAirport,
@@ -366,6 +381,8 @@ def main(argv):
     sellClass = None
     vTimeLimit = datetime.now() + timedelta(days=2)
     vDocNum = None
+    paxCount = 0
+    groupName = ''
 
     # Option flags
     doavail = False
@@ -406,12 +423,6 @@ def main(argv):
             doprice = True
         elif opt == '--pay':
             dopay = True
-        elif opt in ("-R", "--amount"):
-            payAmount = float(arg)
-        elif opt in ("-S", "--ramount"):
-            payAmount2 = float(arg)
-        elif opt in ("-T", "--card"):
-            vDocNum = str(arg)
         elif opt in ('-B', '--bn'):
             bn = int(arg)
             printlog(2, "Booking number %d" % bn)
@@ -439,16 +450,26 @@ def main(argv):
             else:
                 flightNumber2 = arg
             printlog(2, "Flight number set to %s" % flightNumber)
-        elif opt in ("-N", "--name"):
-            paxNames = str(arg).upper().split(',')
+        elif opt == "-K":
+            groupName = str(arg)
+        elif opt == "-L":
+            paxCount = int(arg)
         elif opt in ("-M", "--dob"):
             paxDobs = str(arg).upper().split(',')
+        elif opt in ("-N", "--name"):
+            paxNames = str(arg).upper().split(',')
         elif opt in ("-P", "--depart"):
             departAirport = str(arg).upper()
             printlog(1, "\t depart %s" % departAirport)
         elif opt in ("-Q", "--arrive"):
             arriveAirport = str(arg).upper()
             printlog(1, "\t arrive %s" % arriveAirport)
+        elif opt in ("-R", "--amount"):
+            payAmount = float(arg)
+        elif opt in ("-S", "--ramount"):
+            payAmount2 = float(arg)
+        elif opt in ("-T", "--card"):
+            vDocNum = str(arg)
         elif opt == "-X":
             departTime = arg
         elif opt == "-Y":
@@ -501,7 +522,8 @@ def main(argv):
                  cfg.FareCategory,
                  cfg.AuthorityLevel)
     elif dobook:
-        bn = DoBook(conn, cfg, paxNames, paxDobs, flightNumber, dt1,
+        bn = DoBook(conn, cfg, paxCount, groupName, paxNames, paxDobs,
+                    flightNumber, dt1,
                     departAirport, arriveAirport,
                     departTime, arriveTime,
                     sellClass,

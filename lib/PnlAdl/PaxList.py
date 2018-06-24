@@ -20,10 +20,10 @@ def nextGroup():
     n = groupCounter
 
     if n < 26:
-        res[0] = 'A' + n
+        res = str(chr(ord('A') + n))
     else:
-        res[0] = 'A' + (n / 26)
-        res[1] = 'A' + (n % 26)
+        res = str(chr(ord('A') + (n / 26)))
+        res += str(chr(ord('A') + (n % 26)))
 
     return res
 
@@ -34,15 +34,20 @@ class PaxList(object):
     DepartAirport = ''
     FlightNumber = ''
     BoardDate = None
+    AirlineNo = 0
     conn = None
     pg = {}
     paxListEntries = []
+    sellingClasses = ''
 
-    def __init__(self, conn, aAltFlightNumber, aBoardDate):
+    def __init__(self, conn, aAirlineNo, aAltFlightNumber, aBoardDate,
+                 aSellingClasses):
         """Initialize variables to be used later."""
         self.conn = conn
+        self.AirlineNo = aAirlineNo
         self.AltFlightNumber = aAltFlightNumber
         self.BoardDate = aBoardDate
+        self.sellingClasses = aSellingClasses
 
     def PnlHeader(self):
         """Print PNL file header."""
@@ -134,6 +139,8 @@ class PaxList(object):
 
         self.GetClassCount()
         self.paxListEntries.sort()
+
+        # self.paxListEntries[0].SetLocator()
 
         i = 0
         it = self.paxListEntries[0]
@@ -253,7 +260,8 @@ class PaxList(object):
             arrival_airport = row1[2]
             depart = row1[3]
             arrive = row1[4]
-            selling_class = row1[5]
+            selling_class = row1[5][0]
+            selling_class_no = self.sellingClasses.find(selling_class)
             itinerary_req = row1[6]
             pax_name_rec = row1[7]
             no_of_seats = row1[8]
@@ -272,13 +280,13 @@ class PaxList(object):
                 pax_req = row2[1]
                 pax_code = row2[2]
                 pax_no = row2[3]
-                paxListEntry = PaxListEntry(self.conn, book_no,
+                paxListEntry = PaxListEntry(self.conn, self.AirlineNo, book_no,
                                             departure_airport, arrival_airport,
                                             pax_name, selling_class,
                                             itinerary_req, pax_req,
                                             pax_no, pax_code,
                                             no_of_seats, group_name,
-                                            pax_name_rec)
+                                            pax_name_rec, selling_class_no)
                 # paxListEntry.GetLocator(book_no)
                 paxListEntry.GetBookRequests(book_no)
                 if get_verbose() >= 1:

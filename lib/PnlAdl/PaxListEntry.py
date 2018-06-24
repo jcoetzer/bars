@@ -9,8 +9,6 @@ from PnlAdl.PaxData import PaxData
 
 etlp_ticket_number = 0
 ADL_LINE_LENGTH = 64
-AIRLINE_CODE = 99
-COMPANY_CODE = 'ZZAIR'
 
 
 class BookRequestsRec(object):
@@ -30,6 +28,7 @@ class PaxListEntry(object):
 
     book_no = 0
     paxrec = None
+    airline_no = 0
     departure_airport = ''
     arrival_airport = ''
     pax_name = ''
@@ -49,11 +48,13 @@ class PaxListEntry(object):
     SSRs = {}
     pnlSSRs = []
     conn = None
+    selling_class_no = -1
 
     current_line = 0
 
     def __init__(self,
                  conn,
+                 airline_no,
                  a_book_no,
                  a_departure_airport,
                  a_arrival_airport,
@@ -65,9 +66,11 @@ class PaxListEntry(object):
                  a_pass_code,
                  a_no_of_seats,
                  a_group_name,
-                 a_pax_name_rec):
+                 a_pax_name_rec,
+                 a_selling_class_no):
         """Constructor."""
         self.conn = conn
+        self.airline_no = airline_no
         self.book_no = a_book_no
         self.departure_airport = str(a_departure_airport).rstrip()
         self.arrival_airport = str(a_arrival_airport).rstrip()
@@ -78,16 +81,26 @@ class PaxListEntry(object):
         self.passenger_no = a_passenger_no
         self.pass_code = str(a_pass_code).rstrip()
         self.no_of_seats = a_no_of_seats
-        self.group_name = str(a_group_name).rstrip()
+        self.group_name = str(a_group_name).rstrip().replace(' ', '')
         self.locator = a_pax_name_rec
         self.infant = False
         self.etickt = False
         self.etlp_num = ''
         self.paxrec = 'FLY'
+        self.selling_class_no = a_selling_class_no
 
     def __lt__(self, other):
         """Used for sorting."""
-        if self.book_no < other.book_no:
+        if self.selling_class_no == other.selling_class_no \
+                and self.pax_name < other.pax_name:
+            return True
+        elif self.selling_class_no > other.selling_class_no:
+            return True
+        #elif self.book_no < other.book_no:
+            #return True
+        #elif self.book_no == other.book_no and self.pax_name < other.pax_name:
+            #return True
+        elif self.pax_name < other.pax_name:
             return True
         else:
             return False
@@ -116,11 +129,12 @@ class PaxListEntry(object):
         """Display data."""
         self.GetBookRequests(self.book_no)
 
-        print("%d %4s %4s %-55s %2s %-32s %-32s "
+        print("Book %d %4s-%-4s: %-55s class %2s(%2d) %-32s %-32s "
               "%3d %8s %3d %10s %s %s %d"
               % (self.book_no, self.departure_airport, self.arrival_airport,
                  self.pax_name,
-                 self.selling_class, self.itinerary_req, self.pax_req,
+                 self.selling_class, self.selling_class_no,
+                 self.itinerary_req, self.pax_req,
                  self.passenger_no, self.pass_code, self.no_of_seats,
                  self.group_name, self.locator,
                  self.origin_address, len(self.SSRs)))
@@ -159,30 +173,24 @@ class PaxListEntry(object):
         self.current_line = len(self.pnlEntry)
 
         if len(self.group_name) > 0:
-
             entryBuf = "-%s" % self.group_name
             self.Append(entryBuf)
 
         self.pnlEntry += " "
 
         if len(self.locator) > 0:
-
             entryBuf = ".L/%s " % self.locator
             self.Append(entryBuf)
             self.CodeShare(aAltFlightNumber, aBoardDate)
 
         infant = etickt = False
         for ssrk, ssrit in self.SSRs:
-
             if (self.SetRequests(ssrk, ssrit)):
-
                 if (ssrit.rqst_code == "INFT"):
                     infant = True
                 elif (ssrit.rqst_code == "TKNE"):
-
                     ssrit.request_text.replace('C', '/')
                     etickt = True
-
                 entryBuf = ".R/%s %s%d %s " \
                            % (ssrit.rqst_code, ssrit.action_code,
                               ssrit.actn_number,
@@ -192,6 +200,10 @@ class PaxListEntry(object):
 
         self.addETLP()
         self.pnlEntry += ""
+
+    def SetLocator(self, locator):
+        """Set locator."""
+        self.locator = locator
 
     def GetLocator(self, a_book_no):
         """Get locator for passenger booking number."""
@@ -447,7 +459,6 @@ class PaxListEntry(object):
         cur.execute(br_query)
 
         for row in cur:
-
             rqst_seqn_no = row[0]
             indicator = row[1]
             rqst_code = row[2]
@@ -456,16 +467,12 @@ class PaxListEntry(object):
             request_text = row[5]
             all_passenger_flag = row[6]
             all_itinerary_flag = row[7]
-
             book_request.rqst_code = str(rqst_code).rstrip()
-
             if (book_request.action_code == "INFT"):
                 infant = True
             elif (book_request.action_code == "TKNE"):
                 etickt = True
-
             book_request.action_code = str(action_code).rstrip()
-
             if actn_number[0].isdigit():
                 book_request.actn_number = int(actn_number)
             else:
@@ -473,15 +480,12 @@ class PaxListEntry(object):
             book_request.request_text = str(request_text).rstrip()
             book_request.all_passenger_flag = all_passenger_flag[0]
             book_request.all_itinerary_flag = all_itinerary_flag[0]
-
             printlog(2, "\t\t\t%2d : %s %s%d %s"
                      % (rqst_seqn_no, book_request.rqst_code,
                         book_request.action_code, book_request.actn_number,
                         book_request.request_text))
             self.SSRs[rqst_seqn_no] = book_request
-
         cur.close()
-
         return 0
 
     def SetRequests(self, no, ssr):
@@ -595,20 +599,16 @@ class PaxListEntry(object):
 
     def addETLP(self):
         '''Add ETLP remark.'''
-        global etlp_ticket_number
-        global AIRLINE_CODE
         etlp_string = ''
         if (self.etickt):
             return
-        etlp_ticket_number += 1
-        if (etlp_ticket_number > 9000000):
-            etlp_ticket_number = 1
-        etlp_string = ".R/ETLP HK1 %02d%07ld%5s " \
-                      % (AIRLINE_CODE, etlp_ticket_number, COMPANY_CODE)
+
+        etlp_string = ".R/ETLP HK1 %03d%07d%03d " \
+                      % (self.airline_no, self.book_no, self.passenger_no)
         self.Append(etlp_string)
         if (self.infant):
-            etlp_string = " .R/ETLP HK1 INF%02d%07ld%5s " \
-                          % (AIRLINE_CODE, etlp_ticket_number, COMPANY_CODE)
+            etlp_string = " .R/ETLP HK1 INF%03d%07d%03d " \
+                          % (self.airline_no, self.book_no, self.passenger_no)
             self.Append(etlp_string)
         return
 
