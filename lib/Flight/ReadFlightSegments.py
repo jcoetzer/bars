@@ -34,7 +34,7 @@ def ReadFlightPax(conn, aFlightNumber, aFlightDate):
     fpSql = """
         SELECT it.book_no, bo.origin_address, it.departure_airport, it.arrival_airport, it.departure_time, it.arrival_time, pa.pax_name,
         it.selling_class, it.request_nos, pa.request_nos, pa.passenger_no, pa.pax_code, pa.passenger_no, bo.no_of_seats, group_name
-        FROM  flight_segm_date as fsd
+        FROM  flight_segment_dates as fsd
         inner join itineraries as it on it.flight_number = fsd.flight_number AND it.flight_date = fsd.board_date AND it.departure_airport = fsd.departure_airport AND it.arrival_airport = fsd.arrival_airport
         inner join bookings as bo on bo.book_no = it.book_no inner join passenger as pa on pa.book_no = it.book_no
         inner join action_codes as ac on substr(it.reserve_status,1,2) = ac.action_code AND ac.pnl_adl_flag = 'Y'

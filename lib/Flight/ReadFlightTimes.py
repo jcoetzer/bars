@@ -65,7 +65,7 @@ def ReadFlightSegmDateTimes(conn, flight, SchdPerdNo):
         ( flight.flight_number, flight.board_date_iso, SchdPerdNo ))
     FtSql = \
         "SELECT DISTINCT departure_time, arrival_time" \
-        " FROM flight_segm_date" \
+        " FROM flight_segment_dates" \
         " WHERE flight_number = '%s'" \
         " AND schedule_period_no = %d" \
             % ( flight.flight_number, SchdPerdNo )
@@ -86,17 +86,17 @@ def ReadFlightSegmDates(conn, flight, SchdPerdNo):
         ( flight.flight_number, flight.board_date_iso, SchdPerdNo ))
     FtSql = \
         "SELECT DISTINCT flight_date" \
-        " FROM flight_segm_date" \
+        " FROM flight_segment_dates" \
         " WHERE flight_number = '%s'" \
         " AND schedule_period_no = %d" \
             % ( flight.flight_number, SchdPerdNo )
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FtSql)
-    flight_segm_dates = []
+    flight_segment_datess = []
     for row in cur:
-        flight_segm_dates.append(row['flight_date'])
+        flight_segment_datess.append(row['flight_date'])
 
-    return flight_segm_dates
+    return flight_segment_datess
 
 
 def ReadFlightDateLegTimes(conn, flight, flight_dates):
@@ -112,7 +112,7 @@ def ReadFlightDateLegTimes(conn, flight, flight_dates):
             " AND flight_date = '%s'" \
                 % ( flight.flight_number, flight_date.strftime("%Y-%m-%d") )
         cur.execute(FtSql)
-        flight_segm_dates = []
+        flight_segment_datess = []
         for row in cur:
             print("\tDepart %s" \
                 % ( row['departure_time'].time() ))
@@ -131,7 +131,7 @@ def ReadFlightSharedLegTimes(conn, flight, flight_dates):
             " AND flight_date = '%s'" \
                 % ( flight.flight_number, flight.flight_number, flight_date.strftime("%Y-%m-%d") )
         cur.execute(FtSql)
-        flight_segm_dates = []
+        flight_segment_datess = []
         for row in cur:
             departure_time = "%02d:%02d" \
                 % ( int(row['departure_time']/60), int(row['departure_time']%60) )

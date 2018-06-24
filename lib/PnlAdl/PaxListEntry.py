@@ -5,7 +5,7 @@ Passenger list entries.
 """
 
 from BarsLog import printlog, get_verbose
-import PaxData
+from PnlAdl.PaxData import PaxData
 
 etlp_ticket_number = 0
 ADL_LINE_LENGTH = 64
@@ -30,10 +30,10 @@ class PaxListEntry(object):
 
     book_no = 0
     paxrec = None
-    depr_airport = ''
-    arrv_airport = ''
-    passenger_name = ''
-    selling_cls_code = ''
+    departure_airport = ''
+    arrival_airport = ''
+    pax_name = ''
+    selling_class = ''
     itinerary_req = ''
     pax_req = ''
     passenger_no = 0
@@ -48,44 +48,57 @@ class PaxListEntry(object):
     pnlEntry = ''
     SSRs = {}
     pnlSSRs = []
+    conn = None
 
     current_line = 0
 
-    def __init__(self, a_book_no,
-                 a_depr_airport,
-                 a_arrv_airport,
-                 a_passenger_name,
-                 a_selling_cls_code,
+    def __init__(self,
+                 conn,
+                 a_book_no,
+                 a_departure_airport,
+                 a_arrival_airport,
+                 a_pax_name,
+                 a_selling_class,
                  a_itinerary_req,
                  a_pax_req,
                  a_passenger_no,
                  a_pass_code,
                  a_no_of_seats,
-                 a_group_name):
+                 a_group_name,
+                 a_pax_name_rec):
         """Constructor."""
+        self.conn = conn
         self.book_no = a_book_no
-        self.depr_airport = str(a_depr_airport).rstrip()
-        self.arrv_airport = str(a_arrv_airport).rstrip()
-        self.passenger_name = str(a_passenger_name).rstrip()
-        self.selling_cls_code = str(a_selling_cls_code).rstrip()
+        self.departure_airport = str(a_departure_airport).rstrip()
+        self.arrival_airport = str(a_arrival_airport).rstrip()
+        self.pax_name = str(a_pax_name).rstrip()
+        self.selling_class = str(a_selling_class).rstrip()
         self.itinerary_req = str(a_itinerary_req).rstrip()
         self.pax_req = str(a_pax_req).rstrip()
         self.passenger_no = a_passenger_no
         self.pass_code = str(a_pass_code).rstrip()
         self.no_of_seats = a_no_of_seats
         self.group_name = str(a_group_name).rstrip()
+        self.locator = a_pax_name_rec
         self.infant = False
         self.etickt = False
         self.etlp_num = ''
         self.paxrec = 'FLY'
 
+    def __lt__(self, other):
+        """Used for sorting."""
+        if self.book_no < other.book_no:
+            return True
+        else:
+            return False
+
     def Clear(self):
         """Reset this thing."""
         self.book_no = 0
-        self.depr_airport = ''
-        self.arrv_airport = ''
-        self.passenger_name = ''
-        self.selling_cls_code = ''
+        self.departure_airport = ''
+        self.arrival_airport = ''
+        self.pax_name = ''
+        self.selling_class = ''
         self.itinerary_req = ''
         self.pax_req = ''
         self.passenger_no = 0
@@ -105,15 +118,15 @@ class PaxListEntry(object):
 
         print("%d %4s %4s %-55s %2s %-32s %-32s "
               "%3d %8s %3d %10s %s %s %d"
-              % (self.book_no, self.depr_airport, self.arrv_airport,
-                 self.passenger_name,
-                 self.selling_cls_code, self.itinerary_req, self.pax_req,
+              % (self.book_no, self.departure_airport, self.arrival_airport,
+                 self.pax_name,
+                 self.selling_class, self.itinerary_req, self.pax_req,
                  self.passenger_no, self.pass_code, self.no_of_seats,
                  self.group_name, self.locator,
                  self.origin_address, len(self.SSRs)))
 
         for ssrk, ssrit in self.SSRs.items():
-            print("\t%2d (%c %c) : %s %s%d %s\n"
+            print("\t%2d (%c %c) %s %s%d : %s"
                   % (ssrk, ssrit.all_passenger_flag, ssrit.all_itinerary_flag,
                      ssrit.rqst_code, ssrit.action_code, ssrit.actn_number,
                      ssrit.request_text))
@@ -124,7 +137,7 @@ class PaxListEntry(object):
         printlog(2, "\tAdd '%s'" % data)
         if (self.current_line + len(data) > ADL_LINE_LENGTH):
 
-            self.pnlEntry += "\n"
+            self.pnlEntry += ""
             self.current_line = 0
 
         self.pnlEntry += data
@@ -135,13 +148,13 @@ class PaxListEntry(object):
         entryBuf = ''
         pd = PaxData()
 
-        pd.paxname = self.passenger_name
+        pd.paxname = self.pax_name
         pd.locator = self.locator
         pd.grpname = self.group_name
 
         self.GetBookRequests(self.book_no)
 
-        entryBuf = "1%s" % self.passenger_name
+        entryBuf = "1%s" % self.pax_name
         self.pnlEntry = entryBuf
         self.current_line = len(self.pnlEntry)
 
@@ -178,7 +191,7 @@ class PaxListEntry(object):
                 pd.AddRemark(str(entryBuf[3:]))
 
         self.addETLP()
-        self.pnlEntry += "\n"
+        self.pnlEntry += ""
 
     def GetLocator(self, a_book_no):
         """Get locator for passenger booking number."""
@@ -341,7 +354,7 @@ class PaxListEntry(object):
                      "\t\tcrea_date_time     : %s \n"
                      "\t\tupdt_user_code     : %s \n"
                      "\t\tupdt_dest_id       : %s \n"
-                     "\t\tupdt_date_time     : %s \n"
+                     "\t\tupdt_date_time     : %s "
                      % (pnr_book_numb,
                         book_type,
                         group_name,
@@ -388,9 +401,9 @@ class PaxListEntry(object):
         if (self.origin_address == "MUCQSSA"
                 or self.origin_address == "MUCCSSA"):
             codeShareBuf = ".M/%s%c%c%c%s%s " \
-                           % (aAltFlightNumber, self.selling_cls_code[0],
+                           % (aAltFlightNumber, self.selling_class[0],
                               aBoardDate[0], aBoardDate[1],
-                              self.depr_airport, self.arrv_airport)
+                              self.departure_airport, self.arrival_airport)
             self.Append(codeShareBuf)
 
     def GetBookRequests(self, a_book_no):
@@ -410,30 +423,27 @@ class PaxListEntry(object):
         request_nostr = ''
         book_request = BookRequestsRec()
 
-        printlog(1, "Get booking requests for book no %d requests '%s'\n"
-                 % (a_book_no, request_nostr))
+        printlog(2, "Get booking requests for book no %d requests '%s'"
+                 % (self.book_no, request_nostr))
 
         n = 0
-
         book_no = a_book_no
 
-        br_query = """SELECT DISTINCT Book_Requests.Rqst_Seqn_No,
-        Book_Requests.Indicator, Book_Requests.Rqst_Code,
-        Book_Requests.Action_Code, Book_Requests.Actn_Number,
-        Book_Requests.Request_Text,
-        Book_Requests.All_Passenger_Flg, Book_Requests.All_Itenary_Flag
-        FROM Book_Requests, Service_Requests
-        WHERE Book_Requests.Book_No = %d
-        AND Book_Requests.Rqst_Code = Service_Requests.Rqst_Code
-        AND Service_Requests.Company_Code = '%s'
-        AND Book_Requests.Indicator = Service_Requests.Indicator
-        AND Service_Requests.Arpt_Action_Flg = 'Y' """ \
+        br_query = """SELECT DISTINCT br.rqst_sequence_no,
+            br.Indicator, br.Rqst_Code,
+            br.Action_Code, br.Actn_Number,
+            br.Request_Text,
+            br.all_pax_flag, br.all_itinerary_flag
+        FROM Book_Requests br, Service_Requests sr
+        WHERE br.Book_No = %d
+        AND br.Rqst_Code = sr.Rqst_Code
+        AND sr.Company_Code = '%s'
+        AND br.Indicator = sr.Indicator
+        AND sr.Arpt_Action_Flag = 'Y' """ \
             % (book_no, 'ZZ')
 
         printlog(2, "\t%s" % br_query)
-
         cur = self.conn.cursor()
-
         cur.execute(br_query)
 
         for row in cur:
@@ -464,7 +474,7 @@ class PaxListEntry(object):
             book_request.all_passenger_flag = all_passenger_flag[0]
             book_request.all_itinerary_flag = all_itinerary_flag[0]
 
-            printlog(2, "\t\t\t%2d : %s %s%d %s\n"
+            printlog(2, "\t\t\t%2d : %s %s%d %s"
                      % (rqst_seqn_no, book_request.rqst_code,
                         book_request.action_code, book_request.actn_number,
                         book_request.request_text))
@@ -501,13 +511,13 @@ class PaxListEntry(object):
                      % (no, itenflg, paxflg, self.itinerary_req, self.pax_req))
             for paxcp in pax_reqs:
                 paxcpi = int(paxcp)
-                printlog(2, "Check pax number %d\n" % paxcpi)
+                printlog(2, "Check pax number %d" % paxcpi)
                 for itencp in itinerary_reqs:
                     itencpi = int(itencp)
-                    printlog(2, "Check itinerary number %d\n" % itencpi)
+                    printlog(2, "Check itinerary number %d" % itencpi)
                     if (itencpi == paxcpi):
                         if (paxcpi == no):
-                            printlog(2, "Found itinerary/pax number %d\n"
+                            printlog(2, "Found itinerary/pax number %d"
                                      % paxcpi)
                             self.AddSsr(ssr)
                             return(1)
@@ -530,14 +540,14 @@ class PaxListEntry(object):
                      % (no, self.itinerary_req, self.pax_req, itenflg, paxflg))
             for itencp in itinerary_reqs:
                 itencpi = int(itencp)
-                printlog(2, "Check itinerary number %d\n" % itencpi)
+                printlog(2, "Check itinerary number %d" % itencpi)
                 if (itencpi == no):
                     printlog(2, "Found itinerary number %d" % no)
                     self.AddSsr(ssr)
                     return(1)
         else:
             printlog(2, "Skip passenger no[%d] itinerary[%s] pax[%s]"
-                     " itenflg[%c] paxflg[%c]\n"
+                     " itenflg[%c] paxflg[%c]"
                      % (no, self.itinerary_req, self.pax_req, itenflg, paxflg))
             return 0
         printlog(2, "Could not find itinerary/passenger number %d" % no)
@@ -550,15 +560,15 @@ class PaxListEntry(object):
 
     def List(self):
         """Display stuff."""
-        print("%s\t%s\t%s\n"
-              % (self.locator, self.selling_cls_code, self.passenger_name))
+        print("%s\t%s\t%s"
+              % (self.locator, self.selling_class, self.pax_name))
         self.ListRequests()
         return 0
 
     def ListRequests(self):
         """Display SSRs."""
         for bi in self.pnlSSRs:
-            print("\t%s %s %d %s\n"
+            print("\t%s %s %d %s"
                   % (bi.rqst_code, bi.action_code, bi.actn_number,
                      bi.request_text))
         return len(self.pnlSSRs)
@@ -578,7 +588,7 @@ class PaxListEntry(object):
         """Get number of SSRs."""
         if get_verbose() >= 2:
             for bi in self.pnlSSRs:
-                print("%s%d %s %s\n"
+                print("%s%d %s %s"
                       % (bi.action_code, bi.actn_number, bi.rqst_code,
                          bi.request_text))
         return len(self.pnlSSRs)
@@ -607,8 +617,8 @@ class PaxListEntry(object):
         if len(pdata) == 0:
             return 0
         printlog(1, "pax [%s]" % pdata)
-        selling_cls_code = classnam
-        arrv_airport = arrive
+        selling_class = classnam
+        arrival_airport = arrive
         elements = pdata.split('.')
         self.ReadName(elements[0])
         i = 1
@@ -628,8 +638,8 @@ class PaxListEntry(object):
         paxcount = nel[0][0:found]
         no_of_seats = int(paxcount)
         printlog(1, "\tcount %d" % no_of_seats)
-        passenger_name = nel[0][found:].rstrip()
-        printlog(1, "\tname '%s'" % passenger_name)
+        pax_name = nel[0][found:].rstrip()
+        printlog(1, "\tname '%s'" % pax_name)
         if (len(nel) > 1 and len(nel[1]) > 0 and nel[1][1] != '/'):
             group_name = nel[1].rstrip()
             printlog(1, "\tgroup '%s'" % group_name)
@@ -678,7 +688,7 @@ class PaxListEntry(object):
                 infant = True
                 printlog(1, "\tinfant e-ticket '%s'" % rdata)
             elif (rdata[5:8] != "HK1"):
-                print("Action code and number is '%s' and not HK1\n"
+                print("Action code and number is '%s' and not HK1"
                       % rdata.substr(5, 3))
                 return 1
             elif (self.etickt):
@@ -693,7 +703,7 @@ class PaxListEntry(object):
                 infant = True
                 printlog(1, "\tinfant ticket '%s'" % rdata)
             elif (etickt):
-                print("Duplicate ticket\n")
+                print("Duplicate ticket")
                 return 1
             etlp_num = rdata[9:]
             printlog(1, "\tticket '%s'" % etlp_num)
@@ -718,11 +728,11 @@ class PaxListEntry(object):
 
 def sortPaxList(ple1, ple2):
     """Used to sort passenger list."""
-    if (ple1.selling_cls_code < ple2.selling_cls_code):
+    if (ple1.selling_class < ple2.selling_class):
         return True
     elif (ple1.paxrec < ple2.paxrec):
         return True
-    elif (ple1.passenger_name < ple2.passenger_name):
+    elif (ple1.pax_name < ple2.pax_name):
         return True
     else:
         return False

@@ -21,7 +21,7 @@ def ReadSsmFlightData(conn, flight, end_date):
         fsd.aircraft_code acn, fpl.config_table ctn,
         fpl.departure_terminal dtn,
         fpl.arrival_terminal atn
-        FROM flight_perd_legs fpl, flight_periods fp, flight_segm_date fsd,
+        FROM flight_perd_legs fpl, flight_periods fp, flight_segment_dates fsd,
              aircraft_config ac
         WHERE fpl.flight_number='%s'""" \
         % (flight.flight_number)
@@ -84,7 +84,7 @@ def ReadSsmFlightData2(conn, flight, end_date):
         "fsd.aircraft_code acn,fpl.config_table ctn," \
         "fpl.departure_terminal dtn," \
         "fpl.arrival_terminal atn" \
-        " FROM flight_perd_legs fpl, flight_periods fp,flight_segm_date fsd, aircraft_config ac" \
+        " FROM flight_perd_legs fpl, flight_periods fp,flight_segment_dates fsd, aircraft_config ac" \
         " WHERE fpl.flight_number='%s'" \
         " AND fpl.departure_airport='%s'" \
         " AND fpl.arrival_airport='%s'" \
@@ -170,7 +170,7 @@ def ReadAbsoluteRange(conn, flight):
     print("Absolute range for flight %s" % flight.flight_number)
     FbSql = \
         "SELECT DISTINCT MIN(fpa.start_date) sd, MAX(fpb.end_date) ed, COUNT(*) cnt" \
-        " FROM flight_perd_legs fpl, flight_periods fpa, flight_periods fpb, flight_segm_date fsd" \
+        " FROM flight_perd_legs fpl, flight_periods fpa, flight_periods fpb, flight_segment_dates fsd" \
         " WHERE fpl.flight_number = '%s'" \
         " AND fpl.leg_number >= 0" \
         " AND fpa.flgt_sched_status IN ('S', 'A', 'R', 'D', 'M', 'U')" \
@@ -212,7 +212,7 @@ def ReadSsmTim(conn, flight, sdate, edate, frequency_code):
         "fpl.leg_number ln, fp.via_cities vc, fp.flgt_sched_status fss, fp.frequency_code fc," \
         "fpl.departure_time dt, fpl.arrival_time at, fsd.aircraft_code acd, fpl.config_table ctn," \
         "fpl.departure_terminal dtn, fpl.arrival_terminal atn" \
-        " FROM flight_perd_legs fpl, flight_periods fp,flight_segm_date fsd, aircraft_config ac" \
+        " FROM flight_perd_legs fpl, flight_periods fp,flight_segment_dates fsd, aircraft_config ac" \
         " WHERE fpl.flight_number = '%s'" \
         " AND fpl.departure_airport  = '%s'" \
         " AND fpl.arrival_airport  = '%s'" \
@@ -259,7 +259,7 @@ def GetFlightDataSsm(conn, flight, sdate, edate, frequency_code):
         SELECT DISTINCT fpl.schedule_period_no spn, fpl.departure_airport da, fpl.arrival_airport aa, fp.start_date sd, fp.end_date ed, fpl.leg_number ln,
             fp.via_cities vc, fp.flgt_sched_status fss, fp.frequency_code fc, fpl.departure_time dt, fpl.arrival_time at, fps.aircraft_code ac,
             fpl.config_table ctn, fpl.departure_terminal dtn, fpl.arrival_terminal atn
-        FROM flight_perd_legs fpl, flight_periods fp,flight_segm_date fsd, flight_perd_segm fps
+        FROM flight_perd_legs fpl, flight_periods fp,flight_segment_dates fsd, flight_perd_segm fps
         WHERE fpl.flight_number = '%s'
         AND fsd.flight_date BETWEEN '%s' AND '%s'
         AND fpl.leg_number >= 0

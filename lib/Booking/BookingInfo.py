@@ -102,7 +102,7 @@ def AddBook(conn, aBookNo, aPnr, aSeatQuantity, aOriginAddress,
             create_user, create_group, create_time,
             update_user, update_group, update_time )
         VALUES (
-            %d, '%s', 'R', 'NTBA/A',
+            %d, '%s', 'R', '',
             %d,
             '%s', 0, 0, 0,
             '%s', '%s',

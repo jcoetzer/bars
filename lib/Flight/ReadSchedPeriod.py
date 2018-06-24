@@ -38,7 +38,7 @@ def ReadFlightPeriods(conn, flightNumber, dt1, dt2):
         SpSql2 = \
             "SELECT DISTINCT fps.aircraft_code aircraft, fsd.departure_airport departure_city, fsd.arrival_airport arrival_airport," \
             " departure_time, arrival_time" \
-            " FROM flight_perd_segm fps, flight_segm_date fsd" \
+            " FROM flight_perd_segm fps, flight_segment_dates fsd" \
             " WHERE fps.flight_number = '%s' AND fps.schedule_period_no = %d" \
             " AND fps.flight_number = fsd.flight_number" \
             " AND fps.schedule_period_no = fsd.schedule_period_no" \
@@ -111,7 +111,7 @@ def ReadFlightPeriodsLatest(conn, flightNumber, dt1, dt2):
             SpSql2 = \
                 "SELECT DISTINCT fps.aircraft_code aircraft, fsd.departure_airport departure_city, fsd.arrival_airport arrival_airport," \
                 " departure_time, arrival_time" \
-                " FROM flight_perd_segm fps, flight_segm_date fsd" \
+                " FROM flight_perd_segm fps, flight_segment_dates fsd" \
                 " WHERE fps.flight_number = '%s' AND fps.schedule_period_no = %d" \
                 " AND fps.flight_number = fsd.flight_number" \
                 " AND fps.schedule_period_no = fsd.schedule_period_no" \
@@ -143,7 +143,7 @@ def isMarketingOrOperational(conn, flightNumber, dt1, dt2, frequency=None):
     endDate = dt2.strftime("%Y-%m-%d")
     SpSql = \
         "SELECT COUNT(*) mif" \
-        " FROM flight_shared_leg fsl, city_pair cp, flight_segm_date fsd" \
+        " FROM flight_shared_leg fsl, city_pair cp, flight_segment_dates fsd" \
         " WHERE fsl.dup_flight_number = '%s'" \
         "  AND fsl.flight_date BETWEEN '%s' AND '%s'" \
         "  AND fsl.departure_airport = cp.departure_city" \
@@ -244,12 +244,12 @@ def ReadSchedPeriod(conn, dt1, dt2, alteredFrequency,
 
     startDate = dt1.strftime("%Y-%m-%d")
     endDate = dt2.strftime("%Y-%m-%d")
-    printlog(1, "Read schedule period from %s to %s freq %s (alter %s) flight %s via %s aircraft %s [flight_periods, flight_segm_date, flight_perd_legs]" \
+    printlog(1, "Read schedule period from %s to %s freq %s (alter %s) flight %s via %s aircraft %s [flight_periods, flight_segment_dates, flight_perd_legs]" \
         % (startDate, endDate, freqCode, alteredFrequency, flightNumber,
            newViacities, aircraftConfig))
     SpSql = \
          "SELECT FIRST 1 fsd.schedule_period_no spn" \
-         " FROM flight_periods fp, flight_segm_date fsd, flight_perd_legs fpl" \
+         " FROM flight_periods fp, flight_segment_dates fsd, flight_perd_legs fpl" \
          "  GROUP BY fp.flight_number, fp.start_date,fp.end_date," \
          "   fp.frequency_code, fp.schedule_period_no," \
          "   fp.flgt_sched_status, fsd.flight_number," \
@@ -267,7 +267,7 @@ def ReadSchedPeriod(conn, dt1, dt2, alteredFrequency,
          "   AND fpl.schedule_period_no=fsd.schedule_period_no" \
          "   AND fp.flgt_sched_status=fsd.flgt_sched_status" \
          "   AND fsd.flight_date NOT BETWEEN '%s' AND '%s'" \
-         "   AND (SELECT COUNT(flight_date) FROM flight_segm_date WHERE flight_date BETWEEN '%s' AND '%s' AND flight_number = fp.flight_number ) = 0" \
+         "   AND (SELECT COUNT(flight_date) FROM flight_segment_dates WHERE flight_date BETWEEN '%s' AND '%s' AND flight_number = fp.flight_number ) = 0" \
          "   AND fp.end_date + 7 > '%s'" \
          "   AND (WEEKDAY('%s'))::CHAR IN('%s', '%s', '%s', '%s', '%s', '%s', '%s')" \
          "   AND fp.flgt_sched_status IN('A','S')" \

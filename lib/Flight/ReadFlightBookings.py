@@ -13,7 +13,7 @@ def ReadFlightBookings(conn, flight_number, board_date, stat_flag=None):
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur2 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     printlog(1, "Flight %s board %s bookings"
-             " [flight_segm_date,itineraries,bookings,action_codes]"
+             " [flight_segment_dates,itineraries,bookings,action_codes]"
              % (flight_number, board_date))
     FbSql = \
         """SELECT DISTINCT it.book_no itbn, bo.origin_address booa,

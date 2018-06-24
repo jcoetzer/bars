@@ -5864,10 +5864,10 @@ ALTER SEQUENCE flight_seat_reservation_group_flight_seat_reservation_group_seq O
 
 
 --
--- Name: flight_segm_date; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: flight_segment_dates; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE flight_segm_date (
+CREATE TABLE flight_segment_dates (
     flight_number character(7) NOT NULL,
     board_date date NOT NULL,
     city_pair integer NOT NULL,
@@ -5894,7 +5894,7 @@ CREATE TABLE flight_segm_date (
 );
 
 
-ALTER TABLE public.flight_segm_date OWNER TO postgres;
+ALTER TABLE public.flight_segment_dates OWNER TO postgres;
 
 --
 -- Name: flight_segment_overlap; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -15603,10 +15603,10 @@ ALTER TABLE ONLY watch_list
 
 
 --
--- Name: flight_segm_date_fndda; Type: INDEX; Schema: public; Owner: postgres; Tablespace:
+-- Name: flight_segment_dates_fndda; Type: INDEX; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE UNIQUE INDEX flight_segm_date_fndda ON flight_segm_date USING btree (flight_number, flight_date, departure_airport, arrival_airport);
+CREATE UNIQUE INDEX flight_segment_dates_fndda ON flight_segment_dates USING btree (flight_number, flight_date, departure_airport, arrival_airport);
 
 
 --

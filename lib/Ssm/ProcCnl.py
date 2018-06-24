@@ -136,7 +136,7 @@ def DeleteFlightSegmDate(conn,
 
     cur = conn.cursor()
     FsdSql = \
-        "DELETE FROM flight_segm_date WHERE flight_number = '%s' AND flight_date = '%s'" \
+        "DELETE FROM flight_segment_dates WHERE flight_number = '%s' AND flight_date = '%s'" \
             % (aflight_number, aflight_date)
     if acity_pair != 0:
         FsdSql += \

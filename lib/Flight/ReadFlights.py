@@ -28,7 +28,7 @@ def GetFlightDataSsm(conn, flight_number, fd1, fd2, freq=None):
         "fp.flgt_sched_status fss,fp.frequency_code fc,fpl.departure_time dt," \
         "fpl.arrival_time,fps.aircraft_code,fpl.config_table," \
         "fpl.departure_terminal dtn, fpl.arrival_terminal atn" \
-        " FROM flight_perd_legs fpl,flight_periods fp,flight_segm_date fsd," \
+        " FROM flight_perd_legs fpl,flight_periods fp,flight_segment_dates fsd," \
         "flight_perd_segm fps" \
         " WHERE fpl.flight_number = '%s'" \
         " AND fsd.flight_date BETWEEN '%s' AND '%s'" \
@@ -255,7 +255,7 @@ def ReadDeparture(conn, company_code, class_code, flight_number, flight_date):
         """SELECT departure_airport,arrival_airport, city_pair,
                   departure_terminal, arrival_terminal,
                   departure_time, arrival_time
-        FROM flight_segm_date
+        FROM flight_segment_dates
         WHERE flight_number='%s' AND flight_date='%s'""" \
         % (flight_number, flight_date.strftime("%Y-%m-%d"))
     printlog(2, RcSql)
@@ -286,13 +286,13 @@ def ReadDeparture(conn, company_code, class_code, flight_number, flight_date):
 
 def ReadFlightDeparture(conn, class_code, flight_number, flight_date):
     """Read data for flight."""
-    printlog(1, "Read data for flight %s date %s [flight_segm_date]" % (flight_number, flight_date.strftime("%Y-%m-%d")))
+    printlog(1, "Read data for flight %s date %s [flight_segment_dates]" % (flight_number, flight_date.strftime("%Y-%m-%d")))
     RcSql = \
         """SELECT departure_airport,arrival_airport, city_pair,
             departure_time,arrival_time,
             departure_terminal, arrival_terminal,
             flgt_sched_status,schedule_period_no
-        FROM flight_segm_date
+        FROM flight_segment_dates
         WHERE flight_number='%s' AND flight_date='%s'""" \
         % (flight_number, flight_date.strftime("%Y-%m-%d"))
     printlog(2, RcSql)
@@ -327,7 +327,7 @@ def ReadDepartArrive(conn, flight_number, flight_date, delim=' '):
 
     RcSql = \
         "SELECT departure_airport,arrival_airport" \
-        " FROM flight_segm_date" \
+        " FROM flight_segment_dates" \
         " WHERE flight_number='%s' AND flight_date='%s'" \
         % (flight_number, flight_date.strftime("%Y-%m-%d"))
     printlog(RcSql)
@@ -350,7 +350,7 @@ def GetFlights(conn, dt1, departure_airport, arrival_airport, company_code = 'ZZ
     flights = []
 
     RcSql = \
-        "SELECT flight_number FROM flight_segm_date WHERE flight_date='%s' " % \
+        "SELECT flight_number FROM flight_segment_dates WHERE flight_date='%s' " % \
         dt1.strftime("%Y-%m-%d")
     if departure_airport is not None:
         RcSql += " and departure_airport='%s'" % departure_airport
@@ -480,20 +480,20 @@ def ReadFlights(conn, flight_number, dt1, dt2, departure_airport, arrival_airpor
     FsegSql=\
         "SELECT flight_number,flight_date,departure_airport,arrival_airport," \
         "city_pair,departure_time,arrival_time,aircraft_code,schedule_period_no" \
-        " FROM flight_segm_date WHERE 1=1"
+        " FROM flight_segment_dates WHERE 1=1"
     if flight_number is not None:
         printlog(1, "Flight number %s" % flight_number)
         FsegSql += \
             " AND flight_number='%s'" \
                 % (flight_number)
     if dt1 is not None and dt2 is not None:
-        printlog(1, "Read flights from date %s to %s [flight_segm_date]" % \
+        printlog(1, "Read flights from date %s to %s [flight_segment_dates]" % \
             (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d")))
         FsegSql += \
             " AND flight_date BETWEEN '%s' AND '%s'" \
                 % (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d"))
     elif dt1 is not None:
-        printlog(1, "Read flights for date %s [flight_segm_date]" % dt1.strftime("%Y-%m-%d"))
+        printlog(1, "Read flights for date %s [flight_segment_dates]" % dt1.strftime("%Y-%m-%d"))
         FsegSql += \
             " AND flight_date = '%s'" % dt1.strftime("%Y-%m-%d")
     if departure_airport is not None and arrival_airport is not None:
@@ -531,13 +531,13 @@ def ReadFlights(conn, flight_number, dt1, dt2, departure_airport, arrival_airpor
 
 def ReadFlight(conn, flight_number, dts, class_code='Y'):
     """Read flight."""
-    printlog(1, "Read flight %s for date %s [flight_segm_date]" % (flight_number, dts.strftime("%Y-%m-%d")))
+    printlog(1, "Read flight %s for date %s [flight_segment_dates]" % (flight_number, dts.strftime("%Y-%m-%d")))
     fdate=dts.strftime("%Y-%m-%d")
     FsegSql=\
         "SELECT flight_number,flight_date,departure_airport,arrival_airport," \
         "city_pair, departure_time, arrival_time, aircraft_code," \
         "schedule_period_no" \
-        " FROM flight_segm_date" \
+        " FROM flight_segment_dates" \
         " WHERE flight_number = '%s'" \
         " AND flight_date = '%s'" \
         % (flight_number, fdate)
@@ -571,13 +571,13 @@ def ReadFlight(conn, flight_number, dts, class_code='Y'):
 
 def CheckFlight(conn, flight_number, dts, class_code='Y'):
     """Flight segment dates."""
-    print("Flight segment dates for flight %s date %s [flight_segm_date]" % (flight_number, dts.strftime("%Y-%m-%d")))
+    print("Flight segment dates for flight %s date %s [flight_segment_dates]" % (flight_number, dts.strftime("%Y-%m-%d")))
     fdate=dts.strftime("%Y-%m-%d")
     FsegSql=\
         "SELECT flight_number,flight_date,departure_airport,arrival_airport," \
         "city_pair, departure_time, arrival_time, aircraft_code," \
         "schedule_period_no,flgt_sched_status" \
-        " FROM flight_segm_date" \
+        " FROM flight_segment_dates" \
         " WHERE flight_number = '%s'" \
         " AND flight_date = '%s'" \
         % (flight_number, fdate)
@@ -601,14 +601,14 @@ def CheckFlight(conn, flight_number, dts, class_code='Y'):
 
 def ReadFlightsDate(conn, dts, ndays, departure_airport, arrival_airport, code_share=False, class_code='Y', company_code='ZZ'):
     """Flights for date."""
-    printlog(1, "Flights for date %s [flight_segm_date]" % dts.strftime("%Y-%m-%d"))
+    printlog(1, "Flights for date %s [flight_segment_dates]" % dts.strftime("%Y-%m-%d"))
     if code_share:
         printlog(1, "With codeshare")
     fdate=dts.strftime("%Y-%m-%d")
     FsegSql=\
         "SELECT DISTINCT flight_number, flight_date, departure_airport, arrival_airport, city_pair, departure_time, arrival_time, " \
         "aircraft_code, schedule_period_no" \
-        " FROM flight_segm_date" \
+        " FROM flight_segment_dates" \
         " WHERE (substring(flight_number from 1 for 2) = '%s' OR substring(flight_number from 1 for 3) = '%s')" \
         " AND ( (flight_date = '%s' AND %d = 0) OR (flight_date >= DATE('%s') AND flight_date < (DATE('%s') + %d) AND %d > 0 ))" \
         % (company_code, company_code, fdate, ndays, fdate, fdate, ndays, ndays)
@@ -646,7 +646,7 @@ def ReadFlightsDate(conn, dts, ndays, departure_airport, arrival_airport, code_s
 
 def ReadFlightsDateLeg(conn, dts, ndays, departure_airport, arrival_airport, class_code='Y', company_code='ZZ'):
     """Flights for date."""
-    printlog(1, "Flights for date %s [flight_segm_date]" % dts.strftime("%Y-%m-%d"), 1)
+    printlog(1, "Flights for date %s [flight_segment_dates]" % dts.strftime("%Y-%m-%d"), 1)
     fdate=dts.strftime("%Y-%m-%d")
     FsegSql = \
         "SELECT trim(flight_number) fn, flight_date, board_date, departure_time, departure_airport, arrival_airport, leg_number, schedule_period_no" \
@@ -684,10 +684,10 @@ def ReadFlightsDateLeg(conn, dts, ndays, departure_airport, arrival_airport, cla
 def ReadFlightSegmDates(conn, dts, ndays, reconcile_window, company_code='ZZ'):
 
     fdate=dts.strftime("%Y-%m-%d")
-    print("Flight segment dates %s days %d reconcile %s [flight_segm_date]" % (fdate, ndays, reconcile_window))
+    print("Flight segment dates %s days %d reconcile %s [flight_segment_dates]" % (fdate, ndays, reconcile_window))
     FsegSql=\
         "SELECT DISTINCT flight_number, flight_date, departure_airport, arrival_airport, city_pair" \
-        " FROM flight_segm_date" \
+        " FROM flight_segment_dates" \
         " WHERE (flight_number[1,2] = '%s' OR flight_number[1,3] = '%s')" \
         " AND ( (flight_date = '%s' AND %d = 0) OR (flight_date >= DATE('%s') AND flight_date < (DATE('%s') + %d) AND %d > 0 ))" \
         " ORDER BY 1, 2" \
@@ -711,10 +711,10 @@ def ReadFlightSegmDates(conn, dts, ndays, reconcile_window, company_code='ZZ'):
 
 def ReadFlightSegmDate(conn, flight_number, dts, ndays, reconcile_window):
     fdate=dts.strftime("%Y-%m-%d")
-    print("Flight segment dates %s days %d reconcile %s [flight_segm_date]" % (fdate, ndays, reconcile_window))
+    print("Flight segment dates %s days %d reconcile %s [flight_segment_dates]" % (fdate, ndays, reconcile_window))
     FsegSql=\
         "SELECT flight_number, flight_date, departure_airport, arrival_airport, city_pair, flgt_sched_status" \
-        " FROM flight_segm_date" \
+        " FROM flight_segment_dates" \
         " WHERE (flight_number = '%s')" \
         " AND ( (flight_date = '%s' AND %d = 0) OR (flight_date >= DATE('%s') AND flight_date < (DATE('%s') + %d) AND %d > 0 ))" \
         " ORDER BY 1, 2" \

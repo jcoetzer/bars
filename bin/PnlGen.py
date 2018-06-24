@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 """
 Generate passenger name list.
 
@@ -11,7 +12,7 @@ import getopt
 from PnlAdl.PaxList import PaxList
 from ReadDateTime import ReadDate
 from BarsLog import set_verbose, printlog
-import BarsConfig
+from BarsConfig import BarsConfig
 from DbConnect import OpenDb, CloseDb
 from PnlAdl.ReadPnl import PrintPnl
 
@@ -88,10 +89,10 @@ def main(argv):
         usage()
 
     # Read current passengers
-    paxData = PaxList()
+    paxData = PaxList(conn, flightNumber, boardDate)
 
     # Process input file
-    rv = paxData.ReadDb(conn, flightNumber, boardDate, departAirport)
+    rv = paxData.ReadDb(flightNumber, boardDate, departAirport)
 
     PrintPnl(paxData)
 

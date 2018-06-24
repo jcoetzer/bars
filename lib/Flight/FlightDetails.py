@@ -31,7 +31,7 @@ def GetFlightDetails(conn, aflight_number, aboard_date,
         fsd.aircraft_code, air.description as aircraft_description, fp.start_date, fp.end_date,
         fsd.date_change_ind as date_change_indicator,
         fsd.flight_path_code
-        FROM flight_segm_date as fsd
+        FROM flight_segment_dates as fsd
         INNER JOIN city_pairs as cp on cp.city_pair = fsd.city_pair
         INNER JOIN flight_periods as fp on fp.flight_number = fsd.flight_number and fp.schedule_period_no = fsd.schedule_period_no
         LEFT JOIN terminal as dt on dt.airport_code = fsd.departure_airport and dt.terminal_no = fsd.departure_terminal

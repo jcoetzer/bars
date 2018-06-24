@@ -5,8 +5,7 @@ Passenger name list (PNL) messages.
 """
 
 from BarsLog import printlog, get_verbose
-from PaxListEntry import ReadAltFlightNumber
-import PaxListEntry
+from PnlAdl.PaxListEntry import PaxListEntry, ReadAltFlightNumber
 
 groupCounter = 0
 
@@ -35,10 +34,13 @@ class PaxList(object):
     DepartAirport = ''
     FlightNumber = ''
     BoardDate = None
+    conn = None
     pg = {}
+    paxListEntries = []
 
-    def __init__(self, aAltFlightNumber, aBoardDate):
+    def __init__(self, conn, aAltFlightNumber, aBoardDate):
         """Initialize variables to be used later."""
+        self.conn = conn
         self.AltFlightNumber = aAltFlightNumber
         self.BoardDate = aBoardDate
 
@@ -84,16 +86,18 @@ class PaxList(object):
             return
 
         for it in self.paxListEntries:
-            booking_class = it.selling_cls_code[0]
+            booking_class = it.selling_class[0]
             mapit = self.booking_classes.get(booking_class)
             if mapit is None:
                 self.booking_classes[booking_class] = 1
             else:
                 self.booking_classes[booking_class] += 1
+            printlog(2, "Booking class %c : %d"
+                     % (booking_class, self.booking_classes[booking_class]))
 
         if get_verbose():
-            for mapit in self.booking_classes:
-                print("Class %c : %d passengers" % mapit.first, mapit.second)
+            for k, v in self.booking_classes.items():
+                print("Class %c : %d passengers" % (k, v))
 
     def List(self):
         """Display the whole lot."""
@@ -118,116 +122,172 @@ class PaxList(object):
                 if len(previt.group_name) == 0:
                     previt.group_name = str(nextGroup())
                 printlog(2, "Set group name for %s to %s"
-                            % previt.passenger_name, previt.group_name)
+                         % (previt.pax_name, previt.group_name))
                 it.locator = str("")
                 it.group_name = previt.group_name
                 printlog(2, "Set group name for %s to %s and locator to '%s'"
-                         % (it.passenger_name, it.group_name, it.locator))
+                         % (it.pax_name, it.group_name, it.locator))
             previt.SetEntry(self.AltFlightNumber, self.BoardDate)
             previt = it
             i += 1
         previt.SetEntry(self.AltFlightNumber, self.BoardDate)
 
         self.GetClassCount()
-
         self.paxListEntries.sort()
 
+        i = 0
         it = self.paxListEntries[0]
-        booking_class = it.selling_cls_code[0]
+        booking_class = it.selling_class[0]
         class_count = self.booking_classes.get(booking_class)
         if class_count is None:
             class_count = 0
-        print("-%3s%03d%c" % it.arrv_airport, class_count, booking_class)
+        print("-%3s%03d%c" % (it.arrival_airport, class_count, booking_class))
         previt = it
         i += 1
         while i < n:
             it = self.paxListEntries[i]
             print("%s" % previt.pnlEntry)
-            if previt.selling_cls_code != it.selling_cls_code:
-                booking_class = it.selling_cls_code[0]
+            if previt.selling_class != it.selling_class:
+                booking_class = it.selling_class[0]
                 class_count = self.booking_classes.get(booking_class)
                 if class_count is None:
                     class_count = 0
-                print("-%3s%03d%c" % it.arrv_airport, class_count,
-                      booking_class)
+                print("-%3s%03d%c" % (it.arrival_airport, class_count,
+                      booking_class))
             previt = it
-            it += 1
+            i += 1
         print("%s" % previt.pnlEntry)
 
     def ReadDb(self, aFlightNumber, aBoardDate, aDepartAirport):
-        """Read and process booked passengers for flight."""
+        """
+        Read and process booked passengers for flight.
+
+        SELECT it.book_no, it.departure_airport, it.arrival_airport,
+                it.departure_time depart,
+                it.arrival_time arrive,
+                pa.pax_name, it.selling_class,
+                it.request_nos itinerary_req, pa.request_nos pax_req,
+                pa.pax_code, pa.pax_no, bo.no_of_seats, group_name
+        FROM (
+            SELECT distinct fsd2.*
+            FROM flight_segment_dates AS fsd
+            INNER JOIN flight_segment_dates AS fsd2
+                ON fsd2.flight_number = fsd.flight_number
+                AND fsd2.flight_date = fsd.flight_date
+                AND fsd2.leg_number <= fsd.leg_number
+                AND fsd2.arrival_airport <> fsd.departure_airport
+            WHERE fsd.flight_number= '%s' AND fsd.board_date = '%s' )
+        AS fsd3 INNER JOIN itineraries AS it
+            ON it.flight_number = fsd3.flight_number
+            AND it.flight_date = fsd3.board_date
+            AND it.departure_airport = fsd3.departure_airport
+            AND it.arrival_airport = fsd3.arrival_airport
+        INNER JOIN bookings AS bo ON bo.book_no = it.book_no
+        INNER JOIN passenger AS pa ON pa.book_no = it.book_no
+        INNER JOIN action_codes AS ac
+            ON it.reserve_status = ac.action_code
+            AND ac.pnl_adl_flag = 'Y'
+        WHERE it.itinerary_type <> 'I'
+        AND pa.pax_no > 0
+        AND pa.pax_code <> 'INF'
+        AND it.status_flag <> 'X'
+        AND bo.status_flag <> 'X'
+        ORDER BY it.book_no, pa.pax_name
+        """
         # cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur = self.conn.cursor()
-        iNoOfRecords = 0
+        cur1 = self.conn.cursor()
+        cur2 = self.conn.cursor()
         self.FlightNumber = aFlightNumber
         self.DepartAirport = aDepartAirport
         self.AltFlightNumber = ReadAltFlightNumber(self.conn,
                                                    self.FlightNumber,
-                                                   self.BoardDateMdy)
-        printlog(1, "Get pax data for flight number '%s' and board date '%s'"
-                 % (self.FlightNumber, self.BoardDateMdy))
-        sqlStr = """SELECT it.book_no, it.depr_airport, it.arrv_airport,
+                                                   self.BoardDate)
+        printlog(1, "Get pax data for flight '%s' date '%s'"
+                 % (self.FlightNumber, self.BoardDate))
+        sqlStr1 = """SELECT it.book_no, it.departure_airport, it.arrival_airport,
                 it.departure_time depart,
                 it.arrival_time arrive,
-                pa.passenger_name, it.selling_cls_code,
-                it.request_nos itenary_req, pa.request_nos pax_req,
-                pa.pass_code, pa.passenger_no, bo.no_of_seats, group_name
-                FROM TABLE(MULTISET( SELECT distinct fsd2.*
-                FROM flight_segm_date AS fsd
-                INNER JOIN flight_segm_date AS fsd2
-                    ON fsd2.flight_number = fsd.flight_number
-                    AND fsd2.flight_date = fsd.flight_date
-                    AND fsd2.leg_number <= fsd.leg_number
-                    AND fsd2.arrv_airport <> fsd.depr_airport
-                WHERE fsd.flight_number= '%s' AND fsd.board_date = '%s'))
-                AS fsd3 INNER JOIN itenary AS it
+                it.selling_class,
+                it.request_nos itinerary_req,
+                bo.pax_name_rec, bo.no_of_seats, bo.group_name
+                FROM itineraries AS it, bookings AS bo
+                WHERE it.flight_number = '%s'
+                AND it.flight_date = '%s'
+                AND it.book_no = bo.book_no
+                """ \
+                % (aFlightNumber, aBoardDate)
+
+        """
+                    SELECT distinct fsd2.*
+                    FROM flight_segment_dates AS fsd
+                    INNER JOIN flight_segment_dates AS fsd2
+                        ON fsd2.flight_number = fsd.flight_number
+                        AND fsd2.flight_date = fsd.flight_date
+                        AND fsd2.leg_number <= fsd.leg_number
+                        AND fsd2.arrival_airport <> fsd.departure_airport
+                    WHERE fsd.flight_number= '%s' AND fsd.board_date = '%s' )
+                AS fsd3 INNER JOIN itineraries AS it
                     ON it.flight_number = fsd3.flight_number
                     AND it.flight_date = fsd3.board_date
-                    AND it.depr_airport = fsd3.depr_airport
-                    AND it.arrv_airport = fsd3.arrv_airport
-                INNER JOIN book AS bo ON bo.book_no = it.book_no
+                    AND it.departure_airport = fsd3.departure_airport
+                    AND it.arrival_airport = fsd3.arrival_airport
+                INNER JOIN bookings AS bo ON bo.book_no = it.book_no
                 INNER JOIN passenger AS pa ON pa.book_no = it.book_no
                 INNER JOIN action_codes AS ac
                     ON it.reserve_status = ac.action_code
                     AND ac.pnl_adl_flag = 'Y'
-                WHERE it.itenary_type <> 'I'
-                AND pa.passenger_no > 0
-                AND pa.pass_code <> 'INF'
-                AND it.itenary_stat_flag <> 'X'
-                AND bo.booking_status <> 'X'
-                ORDER BY it.book_no, pa.passenger_name""" \
-                % (self.FlightNumber, aBoardDate)
-        printlog(2, "\t%s" % sqlStr)
-        cur.execute(sqlStr)
-        for row in cur:
-            book_no = row[0]
-            depr_airport = row[1]
-            arrv_airport = row[2]
-            depart = row[3]
-            arrive = row[4]
-            passenger_name = row[5]
-            selling_cls_code = row[6]
-            itenary_req = row[7]
-            pax_req = row[8]
-            pass_code = row[9]
-            passenger_no = row[10]
-            no_of_seats = row[11]
-            group_name = row[12]
+                WHERE it.itinerary_type <> 'I'
+                AND pa.pax_no > 0
+                AND pa.pax_code <> 'INF'
+                AND it.status_flag <> 'X'
+                AND bo.status_flag <> 'X'
+                ORDER BY it.book_no, pa.pax_name
+        """
+        printlog(2, "\t%s" % sqlStr1)
+
+        iNoOfRecords = 0
+        cur1.execute(sqlStr1)
+        for row1 in cur1:
+            book_no = row1[0]
+            departure_airport = row1[1]
+            arrival_airport = row1[2]
+            depart = row1[3]
+            arrive = row1[4]
+            selling_class = row1[5]
+            itinerary_req = row1[6]
+            pax_name_rec = row1[7]
+            no_of_seats = row1[8]
+            group_name = row1[9]
             if self.DepartAirport == '':
-                self.DepartAirport = str(depr_airport).trim()
-            paxListEntry = PaxListEntry(book_no,
-                                        depr_airport, arrv_airport,
-                                        passenger_name, selling_cls_code,
-                                        itenary_req, pax_req,
-                                        passenger_no, pass_code,
-                                        no_of_seats, group_name)
-            paxListEntry.GetLocator(book_no)
-            paxListEntry.GetBookRequests(book_no)
-            if get_verbose():
-                paxListEntry.Show()
-            self.Add(paxListEntry)
-            iNoOfRecords += 1
-        cur.close()
+                self.DepartAirport = str(departure_airport).rstrip()
+            sqlStr2 = """
+                SELECT pa.pax_name, pa.request_nos pax_req, pa.pax_code,
+                    pa.pax_no
+                FROM passenger AS pa
+                WHERE pa.book_no = %d""" % book_no
+            printlog(2, "\t%s" % sqlStr2)
+            cur2.execute(sqlStr2)
+            for row2 in cur2:
+                pax_name = row2[0]
+                pax_req = row2[1]
+                pax_code = row2[2]
+                pax_no = row2[3]
+                paxListEntry = PaxListEntry(self.conn, book_no,
+                                            departure_airport, arrival_airport,
+                                            pax_name, selling_class,
+                                            itinerary_req, pax_req,
+                                            pax_no, pax_code,
+                                            no_of_seats, group_name,
+                                            pax_name_rec)
+                # paxListEntry.GetLocator(book_no)
+                paxListEntry.GetBookRequests(book_no)
+                if get_verbose() >= 1:
+                    paxListEntry.Show()
+                self.Add(paxListEntry)
+                iNoOfRecords += 1
+
+        cur2.close()
+        cur1.close()
         return 0
 
     def ReadFile(self, aFlightNumber, aBoardDate, aDepartAirport):
@@ -238,7 +298,7 @@ class PaxList(object):
                                                    self.FlightNumber,
                                                    aBoardDate)
         # Read existing PNL from database
-        pnlBuf = self.ReadPnl(self.FlightNumber, self.BoardDateMdy)
+        pnlBuf = self.ReadPnl(self.FlightNumber, self.BoardDate)
         printlog(1, "%s" % pnlBuf)
         return self.ReadBuf(pnlBuf, True)
 

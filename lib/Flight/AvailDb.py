@@ -55,7 +55,7 @@ def get_avail_flights(conn, fdate1, fdate2, city_pair,
             isg.segment_closed_flag, fsd.flight_closed_flag,
             fsd.flight_brdng_flag,   isg.ob_profile_no,
             fp.via_cities,          fp.schedule_period_no
-        FROM flight_segm_date fsd, flight_periods fp, inventry_segment isg, selling_conf sc
+        FROM flight_segment_dates fsd, flight_periods fp, inventry_segment isg, selling_conf sc
         WHERE fsd.board_date >= '%s'
         AND fsd.board_date <= '%s'
         AND isg.flight_number = fsd.flight_number
@@ -133,7 +133,7 @@ def OldAvailSvc(conn, company_code, lboard_date, city_pair_no,
         fsd.flgt_sched_status, isg.segment_closed_flag,
         fsd.flight_closed_flag, fsd.flight_brdng_flag,
         isg.ob_profile_no, fsd.schedule_period_no
-        FROM flight_segm_date fsd, inventry_segment isg, selling_conf sc
+        FROM flight_segment_dates fsd, inventry_segment isg, selling_conf sc
         WHERE fsd.board_date = '%s'
         AND isg.flight_number = fsd.flight_number
         AND isg.flight_date = fsd.flight_date

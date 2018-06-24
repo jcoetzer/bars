@@ -77,6 +77,8 @@ install: $(PYTHONS)
 	find ./lib/Flight -maxdepth 1 -name "*.py" -print -exec cp {} $(BARSDIR)/lib/Flight \;
 	mkdir -p $(BARSDIR)/lib/Ssm
 	find ./lib/Ssm -maxdepth 1 -name "*.py" -print -exec cp {} $(BARSDIR)/lib/Ssm \;
+	mkdir -p $(BARSDIR)/lib/PnlAdl
+	find ./lib/PnlAdl -maxdepth 1 -name "*.py" -print -exec cp {} $(BARSDIR)/lib/PnlAdl \;
 	find ./etc/ -name "*.lst" -print -exec cp {} $(BARSDIR)/etc/ \;
 	find ./etc/ -name "*.cfg" -print -exec cp {} $(BARSDIR)/etc/ \;
 	mkdir -p $(BARSDIR)/sql

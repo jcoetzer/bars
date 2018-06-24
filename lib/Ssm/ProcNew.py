@@ -173,7 +173,7 @@ def AddFlightSegmDate(conn,
                 adeparture_airport, adeparture_time.strftime("H:%M"),
                 aarrival_airport, aarrival_time.strftime("H:%M")))
     cur = conn.cursor()
-    fsdSql = "INSERT INTO flight_segm_date (" \
+    fsdSql = "INSERT INTO flight_segment_dates (" \
         "flight_number, board_date," \
         "city_pair, flight_date," \
         "departure_airport, arrival_airport," \
@@ -294,7 +294,7 @@ def IsPeriodToBeExtended(conn, startDate, endDate, startDateMinusOne,
         d += 1
     print("Frequency %s" % alteredFrequency)
     spnSql = "SELECT fsd.schedule_period_no" \
-        " FROM flight_periods fp,flight_segm_date fsd,flight_perd_legs fpl" \
+        " FROM flight_periods fp,flight_segment_dates fsd,flight_perd_legs fpl" \
         " GROUP BY fp.flight_number, fp.start_date,fp.end_date," \
         "fp.frequency_code, fp.schedule_period_no," \
         "fp.flgt_sched_status, fsd.flight_number," \
@@ -312,7 +312,7 @@ def IsPeriodToBeExtended(conn, startDate, endDate, startDateMinusOne,
         " AND fpl.schedule_period_no = fsd.schedule_period_no" \
         " AND fp.flgt_sched_status = fsd.flgt_sched_status" \
         " AND fsd.flight_date NOT BETWEEN '%s' AND '%s'" \
-        " AND ( SELECT COUNT(flight_date) FROM flight_segm_date" \
+        " AND ( SELECT COUNT(flight_date) FROM flight_segment_dates" \
         " WHERE flight_date BETWEEN '%s' AND '%s'" \
         " AND flight_number = fp.flight_number ) = 0" \
         " AND fp.end_date + 7 > '%s'" \
