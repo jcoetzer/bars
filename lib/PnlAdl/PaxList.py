@@ -5,6 +5,8 @@ Passenger name list (PNL) messages.
 """
 
 from BarsLog import printlog, get_verbose
+from PaxListEntry import ReadAltFlightNumber
+import PaxListEntry
 
 groupCounter = 0
 
@@ -146,8 +148,6 @@ class PaxList(object):
                 class_count = self.booking_classes.get(booking_class)
                 if class_count is None:
                     class_count = 0
-                else:
-                    class_count = mapit.second
                 print("-%3s%03d%c" % it.arrv_airport, class_count,
                       booking_class)
             previt = it
@@ -158,18 +158,14 @@ class PaxList(object):
         """Read and process booked passengers for flight."""
         # cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur = self.conn.cursor()
-
         iNoOfRecords = 0
-
         self.FlightNumber = aFlightNumber
         self.DepartAirport = aDepartAirport
-
-        ReadAltFlightNumber(self.conn, self.FlightNumber, self.BoardDateMdy,
-                            self.AltFlightNumber)
-
+        self.AltFlightNumber = ReadAltFlightNumber(self.conn,
+                                                   self.FlightNumber,
+                                                   self.BoardDateMdy)
         printlog(1, "Get pax data for flight number '%s' and board date '%s'"
                  % (self.FlightNumber, self.BoardDateMdy))
-
         sqlStr = """SELECT it.book_no, it.depr_airport, it.arrv_airport,
                 it.departure_time depart,
                 it.arrival_time arrive,
@@ -201,10 +197,8 @@ class PaxList(object):
                 AND bo.booking_status <> 'X'
                 ORDER BY it.book_no, pa.passenger_name""" \
                 % (self.FlightNumber, aBoardDate)
-
         printlog(2, "\t%s" % sqlStr)
         cur.execute(sqlStr)
-
         for row in cur:
             book_no = row[0]
             depr_airport = row[1]
@@ -219,20 +213,20 @@ class PaxList(object):
             passenger_no = row[10]
             no_of_seats = row[11]
             group_name = row[12]
-
             if self.DepartAirport == '':
                 self.DepartAirport = str(depr_airport).trim()
-            paxListEntry = self.PaxListEntry(book_no, depr_airport, arrv_airport,
-                                             passenger_name, selling_cls_code,
-                                             itenary_req, pax_req, passenger_no,
-                                             pass_code, no_of_seats, group_name)
+            paxListEntry = PaxListEntry(book_no,
+                                        depr_airport, arrv_airport,
+                                        passenger_name, selling_cls_code,
+                                        itenary_req, pax_req,
+                                        passenger_no, pass_code,
+                                        no_of_seats, group_name)
             paxListEntry.GetLocator(book_no)
             paxListEntry.GetBookRequests(book_no)
             if get_verbose():
                 paxListEntry.Show()
             self.Add(paxListEntry)
             iNoOfRecords += 1
-
         cur.close()
         return 0
 
@@ -240,17 +234,16 @@ class PaxList(object):
         """Read PNL message."""
         self.FlightNumber = aFlightNumber
         self.DepartAirport = aDepartAirport
-
-        self.AltFlightNumber = ReadAltFlightNumber(self.FlightNumber,
+        self.AltFlightNumber = ReadAltFlightNumber(self.conn,
+                                                   self.FlightNumber,
                                                    aBoardDate)
-
         # Read existing PNL from database
-        pnlBuf = ReadPnl(self.FlightNumber, self.BoardDateMdy)
+        pnlBuf = self.ReadPnl(self.FlightNumber, self.BoardDateMdy)
         printlog(1, "%s" % pnlBuf)
-
         return self.ReadBuf(pnlBuf, True)
 
     def ReadBuf(self, inBuf, doPnl):
+        """Read the buffer thing."""
         n = 0
         classcnt = 0
         classnam = '?'
@@ -260,7 +253,6 @@ class PaxList(object):
         arrive = ''
         fdata = ''
         pd = PaxListEntry()
-
         pd.Clear()
 
         # Remove backslashes
@@ -377,7 +369,7 @@ class PaxList(object):
             return 1
 
         if boardDate != self.BoardDate:
-            print("Board date %s should be %s" % boardDate,self.BoardDate)
+            print("Board date %s should be %s" % (boardDate, self.BoardDate))
             return 1
 
         if departAirport != self.DepartAirport:

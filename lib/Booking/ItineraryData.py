@@ -2,7 +2,6 @@
 Itinerary data.
 """
 
-
 import os
 import sys
 import time
@@ -59,4 +58,3 @@ class ItineraryData(object):
               % (self.flight_number, self.board_date_iso,
                  self.departure_airport, self.arrival_airport,
                  self.status_flag, self.reserve_status, self.itinerary_type))
-

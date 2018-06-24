@@ -5,9 +5,12 @@ Passenger list entries.
 """
 
 from BarsLog import printlog, get_verbose
+import PaxData
 
 etlp_ticket_number = 0
 ADL_LINE_LENGTH = 64
+AIRLINE_CODE = 99
+COMPANY_CODE = 'ZZAIR'
 
 
 class BookRequestsRec(object):
@@ -118,7 +121,7 @@ class PaxListEntry(object):
     def Append(self, data):
         """Append element to PNL entry."""
         global ADL_LINE_LENGTH
-        printlog(2, "\tAdd '%s'\n", data)
+        printlog(2, "\tAdd '%s'" % data)
         if (self.current_line + len(data) > ADL_LINE_LENGTH):
 
             self.pnlEntry += "\n"
@@ -136,7 +139,7 @@ class PaxListEntry(object):
         pd.locator = self.locator
         pd.grpname = self.group_name
 
-        GetBookRequests(self.book_no)
+        self.GetBookRequests(self.book_no)
 
         entryBuf = "1%s" % self.passenger_name
         self.pnlEntry = entryBuf
@@ -149,16 +152,16 @@ class PaxListEntry(object):
 
         self.pnlEntry += " "
 
-        if (self.locator.length()):
+        if len(self.locator) > 0:
 
-            entryBuf = ".L/%s " % locator
+            entryBuf = ".L/%s " % self.locator
             self.Append(entryBuf)
             self.CodeShare(aAltFlightNumber, aBoardDate)
 
         infant = etickt = False
-        for ssrk, ssrit in SSRs.items():
+        for ssrk, ssrit in self.SSRs:
 
-            if (SetRequests(ssrk, ssrit)):
+            if (self.SetRequests(ssrk, ssrit)):
 
                 if (ssrit.rqst_code == "INFT"):
                     infant = True
@@ -222,7 +225,7 @@ class PaxListEntry(object):
 
         cur = self.conn.cursor()
 
-        printlog(1, "Get book data for number %d\n", a_book_no)
+        printlog(1, "Get book data for number %d" % a_book_no)
 
         bn_stmt = """
             SELECT pnr_book_numb,
@@ -376,20 +379,12 @@ class PaxListEntry(object):
                         updt_date_time))
             self.locator = str(pnr_book_numb).rstrip()
             self.origin_address = str(db_origin_address).rstrip()
-
-        else:
-
-            print("Error %s : %d\n", SQLSTATE, SQLCODE)
-            rval = 1
-
         cur.close()
-
         return rval
 
     def CodeShare(self, aAltFlightNumber, aBoardDate):
         """Add marketing element."""
-        printlog(1, "Check origin_address '%s'" % origin_address)
-
+        printlog(1, "Check origin_address '%s'" % self.origin_address)
         if (self.origin_address == "MUCQSSA"
                 or self.origin_address == "MUCCSSA"):
             codeShareBuf = ".M/%s%c%c%c%s%s " \
@@ -435,9 +430,9 @@ class PaxListEntry(object):
         AND Service_Requests.Arpt_Action_Flg = 'Y' """ \
             % (book_no, 'ZZ')
 
-        printlog(2, "\t%s\n", br_query)
+        printlog(2, "\t%s" % br_query)
 
-        cur = this.conn.cursor()
+        cur = self.conn.cursor()
 
         cur.execute(br_query)
 
@@ -537,15 +532,15 @@ class PaxListEntry(object):
                 itencpi = int(itencp)
                 printlog(2, "Check itinerary number %d\n" % itencpi)
                 if (itencpi == no):
-                    printlog(2, "Found itinerary number %d\n", no)
+                    printlog(2, "Found itinerary number %d" % no)
                     self.AddSsr(ssr)
                     return(1)
         else:
             printlog(2, "Skip passenger no[%d] itinerary[%s] pax[%s]"
                      " itenflg[%c] paxflg[%c]\n"
-                     % (no, itinerary_req, pax_req, itenflg, paxflg))
+                     % (no, self.itinerary_req, self.pax_req, itenflg, paxflg))
             return 0
-        printlog(2, "Could not find itinerary/passenger number %d\n", no)
+        printlog(2, "Could not find itinerary/passenger number %d" % no)
         return(0)
 
     def AddSsr(self, ssr):
@@ -591,17 +586,19 @@ class PaxListEntry(object):
     def addETLP(self):
         '''Add ETLP remark.'''
         global etlp_ticket_number
+        global AIRLINE_CODE
         etlp_string = ''
         if (self.etickt):
             return
         etlp_ticket_number += 1
         if (etlp_ticket_number > 9000000):
             etlp_ticket_number = 1
-        etlp_string = ".R/ETLP HK1 42%07ldMANGO " % (etlp_ticket_number)
+        etlp_string = ".R/ETLP HK1 %02d%07ld%5s " \
+                      % (AIRLINE_CODE, etlp_ticket_number, COMPANY_CODE)
         self.Append(etlp_string)
         if (self.infant):
-            etlp_string = " .R/ETLP HK1 INF42%07ldMANGO " \
-                          % (etlp_ticket_number)
+            etlp_string = " .R/ETLP HK1 INF%02d%07ld%5s " \
+                          % (AIRLINE_CODE, etlp_ticket_number, COMPANY_CODE)
             self.Append(etlp_string)
         return
 
@@ -613,7 +610,7 @@ class PaxListEntry(object):
         selling_cls_code = classnam
         arrv_airport = arrive
         elements = pdata.split('.')
-        ReadName(elements[0])
+        self.ReadName(elements[0])
         i = 1
         while i < len(elements):
             self.ReadElement(elements[i])
@@ -624,122 +621,97 @@ class PaxListEntry(object):
         """Read passenger name."""
         nel = ndata.split('-')
         paxcount = ''
-
         found = nel[0].find_first_not_of("1234567890")
-
         if found is None:
             print("Invalid name '%s'", nel[0])
             return 1
-
         paxcount = nel[0][0:found]
         no_of_seats = int(paxcount)
-        printlog(1, "\tcount %d\n", no_of_seats)
-
-        passenger_name = nel[0].substr(found)
-        rtrim(passenger_name)
-        printlog(1, "\tname '%s'\n", passenger_name)
-
+        printlog(1, "\tcount %d" % no_of_seats)
+        passenger_name = nel[0][found:].rstrip()
+        printlog(1, "\tname '%s'" % passenger_name)
         if (len(nel) > 1 and len(nel[1]) > 0 and nel[1][1] != '/'):
             group_name = nel[1].rstrip()
-            printlog(1, "\tgroup '%s'\n", group_name)
-
+            printlog(1, "\tgroup '%s'" % group_name)
         return 0
 
     def ReadElement(self, edata):
-
+        """Read marketing element."""
         indata = ''
         marketflt = ''
         incomingflt = ''
         outgoingflt = ''
-
         if (edata[0] == "L"):
-            locator = edata[2:]
-            rtrim(locator)
-            printlog(1, "\tlocator '%s'\n", locator)
+            locator = edata[2:].rstrip()
+            printlog(1, "\tlocator '%s'" % locator)
         elif (edata[0] == "R"):
-            ReadRemarks(edata[2:])
+            self.ReadRemarks(edata[2:])
         elif (edata[0] == "M"):
-            marketflt = edata[2:]
-            rtrim(marketflt)
+            marketflt = edata[2:].rstrip()
             if (len(marketflt) <= 9):
-
-                print("Marketing element '%s' not valid\n", marketflt)
+                print("Marketing element '%s' not valid" % marketflt)
                 return 1
-
             else:
-
                 indata = marketflt.substr(0, marketflt.length()-9)
-                printlog(1, "\tmarketing '%s' for %s\n", marketflt, indata)
+                printlog(1, "\tmarketing '%s' for %s" % (marketflt, indata))
         elif (edata[0] == "I"):
-
-            incomingflt = edata[2:]
-            rtrim(incomingflt)
-            printlog(1, "\tincoming flight %s\n", incomingflt)
-
+            incomingflt = edata[2:].rstrip()
+            printlog(1, "\tincoming flight %s" % incomingflt)
         elif (edata[0] == "O"):
-
-            outgoingflt = edata[2:]
-            rtrim(outgoingflt)
-            printlog(1, "\toutgoing flight %s\n", outgoingflt)
-
+            outgoingflt = edata[2:].rstrip()
+            printlog(1, "\toutgoing flight %s" % outgoingflt)
         else:
-            printlog(1, "\tother '%s'\n", edata)
+            printlog(1, "\tother '%s'" % edata)
         return 0
 
     def ReadRemarks(self, rdata):
-
+        """Read SSRs."""
         ssr = BookRequestsRec()
         chekin = ''
         inft = ''
-
         ssr.rqst_code = rdata[0:4]
-
         if (ssr.rqst_code == "TKNE"):
             if (len(rdata) < 9):
-                print("Invalid e-ticket %s\n", rdata)
+                print("Invalid e-ticket %s" % rdata)
                 return 1
             elif (rdata[9:12] == "INF"):
                 infant = True
-                printlog(1, "\tinfant e-ticket '%s'\n", rdata)
+                printlog(1, "\tinfant e-ticket '%s'" % rdata)
             elif (rdata[5:8] != "HK1"):
                 print("Action code and number is '%s' and not HK1\n"
                       % rdata.substr(5, 3))
                 return 1
             elif (self.etickt):
-                print("Duplicate e-ticket '%s'\n", rdata)
+                print("Duplicate e-ticket '%s'" % rdata)
                 return 1
             etickt = True
         elif (ssr.rqst_code == "ETLP"):
             if (len(rdata) < 9):
-                print("Invalid ticket %s\n", rdata)
+                print("Invalid ticket %s" % rdata)
                 return 1
             elif (rdata[9:12] == "INF"):
                 infant = True
-                printlog(1, "\tinfant ticket '%s'\n", rdata)
+                printlog(1, "\tinfant ticket '%s'" % rdata)
             elif (etickt):
                 print("Duplicate ticket\n")
                 return 1
             etlp_num = rdata[9:]
-            printlog(1, "\tticket '%s'\n", etlp_num)
+            printlog(1, "\tticket '%s'" % etlp_num)
             etickt = False
         elif (ssr.rqst_code == "CKIN"):
             chekin = rdata[5:].rstrip()
-            printlog(1, "\tcheckin '%s'\n", chekin)
+            printlog(1, "\tcheckin '%s'" % chekin)
         elif (ssr.rqst_code == "INFT"):
             infant = True
             inft = rdata[5:].rstrip()
-            printlog(1, "\tinfant '%s'\n", inft)
+            printlog(1, "\tinfant '%s'" % inft)
         else:
-            printlog(1, "\tremark '%s'\n", rdata)
-
+            printlog(1, "\tremark '%s'" % rdata)
         ssr.action_code = rdata[5:7]
-
         ssr.actn_number = int(rdata[7])
-
         ssr.request_text = rdata[9:]
-
         if (ssr.rqst_code != "ETLP"):
-            pnlSSRs.push_back(ssr)
+            self.pnlSSRs.append(ssr)
 
         return 0
 
@@ -756,25 +728,18 @@ def sortPaxList(ple1, ple2):
         return False
 
 
-def ReadAltFlightNumber(aFlightNumber, aBoardDate):
+def ReadAltFlightNumber(conn, aFlightNumber, aBoardDate):
     """Read code share flight number."""
     sqlAltFlightNumberStr = ''
     altFlightNumber = ''
-
     sqlAltFlightNumberStr = \
         "SELECT dup_flight_number FROM flight_shared_leg" \
         " WHERE flight_date='%s' AND flight_number='%s'" \
         % (aBoardDate, aFlightNumber)
-
-    printlog(2, "\t%s\n", sqlAltFlightNumberStr)
-    cur = this.conn.cursor()
+    printlog(2, "\t%s" % sqlAltFlightNumberStr)
+    cur = conn.cursor()
     cur.execute(sqlAltFlightNumberStr)
-
     altFlightNumber = None
     for row in cur:
         altFlightNumber = str(row[0]).rstrip()
-
     return altFlightNumber
-
-
-
