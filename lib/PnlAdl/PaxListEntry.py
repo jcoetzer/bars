@@ -91,17 +91,17 @@ class PaxListEntry(object):
 
     def __lt__(self, other):
         """Used for sorting."""
-        if self.selling_class_no == other.selling_class_no \
-                and self.pax_name < other.pax_name:
+        if self.selling_class_no > other.selling_class_no:
             return True
-        elif self.selling_class_no > other.selling_class_no:
+        #elif self.book_no == other.book_no:
+            #return True
+        elif self.selling_class_no == other.selling_class_no \
+                and self.pax_name < other.pax_name:
             return True
         #elif self.book_no < other.book_no:
             #return True
-        #elif self.book_no == other.book_no and self.pax_name < other.pax_name:
+        #elif self.pax_name < other.pax_name:
             #return True
-        elif self.pax_name < other.pax_name:
-            return True
         else:
             return False
 
@@ -130,7 +130,7 @@ class PaxListEntry(object):
         self.GetBookRequests(self.book_no)
 
         print("Book %d %4s-%-4s: %-55s class %2s(%2d) %-32s %-32s "
-              "%3d %8s %3d %10s %s %s %d"
+              "no %3d %8s %3d %10s %s %s %d"
               % (self.book_no, self.departure_airport, self.arrival_airport,
                  self.pax_name,
                  self.selling_class, self.selling_class_no,
@@ -178,10 +178,10 @@ class PaxListEntry(object):
 
         self.pnlEntry += " "
 
-        if len(self.locator) > 0:
-            entryBuf = ".L/%s " % self.locator
-            self.Append(entryBuf)
-            self.CodeShare(aAltFlightNumber, aBoardDate)
+        #if len(self.locator) > 0:
+            #entryBuf = ".L/%s " % self.locator
+            #self.Append(entryBuf)
+            #self.CodeShare(aAltFlightNumber, aBoardDate)
 
         infant = etickt = False
         for ssrk, ssrit in self.SSRs:

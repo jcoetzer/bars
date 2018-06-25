@@ -153,7 +153,11 @@ class PaxList(object):
         i += 1
         while i < n:
             it = self.paxListEntries[i]
-            print("%s" % previt.pnlEntry)
+            print("%s" % previt.pnlEntry, end='')
+            if previt.book_no != it.book_no:
+                print(" .L/%s" % previt.locator)
+            else:
+                print("")
             if previt.selling_class != it.selling_class:
                 booking_class = it.selling_class[0]
                 class_count = self.booking_classes.get(booking_class)
