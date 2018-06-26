@@ -128,7 +128,7 @@ class PaxList(object):
                     previt.group_name = str(nextGroup())
                 printlog(2, "Set group name for %s to %s"
                          % (previt.pax_name, previt.group_name))
-                it.locator = str("")
+                # it.locator = str("")
                 it.group_name = previt.group_name
                 printlog(2, "Set group name for %s to %s and locator to '%s'"
                          % (it.pax_name, it.group_name, it.locator))
@@ -139,6 +139,8 @@ class PaxList(object):
 
         self.GetClassCount()
         self.paxListEntries.sort()
+
+        locators = []
 
         # self.paxListEntries[0].SetLocator()
 
@@ -154,8 +156,9 @@ class PaxList(object):
         while i < n:
             it = self.paxListEntries[i]
             print("%s" % previt.pnlEntry, end='')
-            if previt.book_no != it.book_no:
-                print(" .L/%s" % previt.locator)
+            if previt.locator not in locators:
+                print(".L/%s" % previt.locator)
+                locators.append(previt.locator)
             else:
                 print("")
             if previt.selling_class != it.selling_class:

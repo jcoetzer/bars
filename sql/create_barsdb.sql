@@ -5229,8 +5229,20 @@ ALTER TABLE public.fare_segm_rule OWNER TO postgres;
 -- Name: fee; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE fee (
-    fee_id bigint NOT NULL,
+
+--
+-- Name: book_no_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE fee_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE fees (
+    fee_id integer DEFAULT nextval('fee_id_seq'::regclass) NOT NULL,
     company_code character(3),
     fee_type_rcd character(10) NOT NULL,
     fee_code character(5) NOT NULL,
@@ -5274,13 +5286,13 @@ CREATE TABLE fee (
 );
 
 
-ALTER TABLE public.fee OWNER TO postgres;
+ALTER TABLE public.fees OWNER TO postgres;
 
 --
 -- Name: fee_branch; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE fee_branch (
+CREATE TABLE fee_branches (
     fee_id bigint NOT NULL,
     branch_code character varying(20) NOT NULL,
     update_user character(5) NOT NULL,
@@ -5289,13 +5301,13 @@ CREATE TABLE fee_branch (
 );
 
 
-ALTER TABLE public.fee_branch OWNER TO postgres;
+ALTER TABLE public.fee_branches OWNER TO postgres;
 
 --
 -- Name: fee_class; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE fee_class (
+CREATE TABLE fee_classes (
     fee_id bigint NOT NULL,
     class_code character varying(20) NOT NULL,
     update_user character(5) NOT NULL,
@@ -5304,13 +5316,13 @@ CREATE TABLE fee_class (
 );
 
 
-ALTER TABLE public.fee_class OWNER TO postgres;
+ALTER TABLE public.fee_classes OWNER TO postgres;
 
 --
 -- Name: fee_fare; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE fee_fare (
+CREATE TABLE fee_fares (
     fee_id bigint NOT NULL,
     fare_basis_code character varying(20) NOT NULL,
     update_user character(5) NOT NULL,
@@ -5319,7 +5331,7 @@ CREATE TABLE fee_fare (
 );
 
 
-ALTER TABLE public.fee_fare OWNER TO postgres;
+ALTER TABLE public.fee_fares OWNER TO postgres;
 
 --
 -- Name: fee_passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
