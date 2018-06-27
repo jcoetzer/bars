@@ -463,6 +463,7 @@ def AddBookRequest(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup):
     """Add booking request."""
     # Value for request sequence number
     cur = conn.cursor()
+    cur2 = conn.cursor()
     abrSql = """SELECT MAX(rqst_sequence_no)
         FROM book_requests WHERE book_no = %d""" % aBookNo
     printlog(2, "%s" % abrSql)
@@ -497,7 +498,15 @@ def AddBookRequest(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup):
         printlog(2, "%s" % abrSql)
         cur.execute(abrSql)
         printlog(2, "Inserted %d row(s)" % cur.rowcount)
+        abrSql2 = """UPDATE passengers SET request_nos = request_nos || '%d#'
+                     WHERE book_no = %d AND pax_no = '%d'""" \
+                  % (vRequestSeq, aBookNo, vRequestSeq)
+        printlog(2, "%s" % abrSql2)
+        cur.execute(abrSql2)
+        printlog(2, "Updated %d row(s)" % cur2.rowcount)
+
     cur.close()
+    cur2.close()
 
 
 def AddPassenger(conn, aBookNo, aPaxRecs,
@@ -515,7 +524,7 @@ def AddPassenger(conn, aBookNo, aPaxRecs,
     cur = conn.cursor()
     for paxRec in aPaxRecs:
         apSql = """
-            INSERT INTO passenger(
+            INSERT INTO passengers(
                 book_no, pax_no, pax_name, birth_date,
                 client_prfl_no, request_nos, remark_nos, fare_nos,
                 contact_nos, timelmt_nos, ticket_nos, name_incl_type, pax_code,
@@ -615,7 +624,7 @@ def GetPreBookingInfo(conn, book_no):
             bo.pax_name_rec,
             bo.group_name,
             ( SELECT pax.pax_name
-              FROM passenger AS pax
+              FROM passengers AS pax
               WHERE pax.book_no=bo.book_no AND pax.passenger_no=1),
             bo.agency_code,
             bo.create_time,

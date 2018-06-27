@@ -276,14 +276,18 @@ def main(argv):
                             fnumber=None, start_date=None, end_date=None)
         for irec in irecs:
             irec.display()
-            n, departure_airport, arrival_airport, city_pair = \
-                ReadDeparture(conn, irec.flight_number, dt1)
-            if n == 0:
+            flights = \
+                ReadDeparture(conn, cfg.CompanyCode, 'Y',
+                              irec.flight_number, dt1)
+            if len(flights) == 0:
                 print("Could not find flight %s on %s"
                       % (irec.flight_number, dt1.strftime("%Y-%m-%d")))
                 return 1
-            ReadRequestsPnl(conn, bookno, cfg.CompanyCode, departure_airport,
-                            dt1, PassengerName)
+            ssrs = ReadRequestsPnl(conn, bookno, cfg.CompanyCode,
+                                   flights[0].departure_airport,
+                                   dt1, PassengerName)
+            for ssr in ssrs:
+                ssr.display()
     elif bci_new and origin_address is not None and ext_book_numb is not None \
             and locator is not None:
         check_bci_new(conn, origin_address, ext_book_numb, locator, bci_msk)

@@ -121,7 +121,7 @@ def ReadPassengers(conn, book_no):
     cur = conn.cursor()
     RpSql = """SELECT pa.pax_name papn, pa.request_nos parn, pa.pax_no papr,
             pa.pax_code papc, pa.birth_date pb, pa.processing_flag pf
-            FROM passenger pa
+            FROM passengers pa
             WHERE pa.book_no = %d
             AND pa.pax_no > 0""" % book_no
     cur.execute(RpSql)

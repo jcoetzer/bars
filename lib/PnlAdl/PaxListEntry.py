@@ -93,15 +93,9 @@ class PaxListEntry(object):
         """Used for sorting."""
         if self.selling_class_no > other.selling_class_no:
             return True
-        #elif self.book_no == other.book_no:
-            #return True
         elif self.selling_class_no == other.selling_class_no \
                 and self.pax_name < other.pax_name:
             return True
-        #elif self.book_no < other.book_no:
-            #return True
-        #elif self.pax_name < other.pax_name:
-            #return True
         else:
             return False
 
@@ -122,8 +116,8 @@ class PaxListEntry(object):
         self.etickt = False
         self.etlp_num = ''
         self.paxrec = 'FLY'
-        self.SSRs = ''
-        self.pnlSSRs = ''
+        self.SSRs = {}
+        self.pnlSSRs[:] = []
 
     def Show(self):
         """Display data."""
@@ -178,13 +172,8 @@ class PaxListEntry(object):
 
         self.pnlEntry += " "
 
-        #if len(self.locator) > 0:
-            #entryBuf = ".L/%s " % self.locator
-            #self.Append(entryBuf)
-            #self.CodeShare(aAltFlightNumber, aBoardDate)
-
         infant = etickt = False
-        for ssrk, ssrit in self.SSRs:
+        for ssrk, ssrit in self.SSRs.items():
             if (self.SetRequests(ssrk, ssrit)):
                 if (ssrit.rqst_code == "INFT"):
                     infant = True
@@ -531,6 +520,8 @@ class PaxListEntry(object):
                      " itenflg[%c] paxflg[%c]"
                      % (no, self.itinerary_req, self.pax_req, itenflg, paxflg))
             for paxcp in pax_reqs:
+                if paxcp == '':
+                    continue
                 paxcpi = int(paxcp)
                 printlog(2, "Check pax number %d" % paxcpi)
                 if (paxcpi == no):
@@ -560,7 +551,7 @@ class PaxListEntry(object):
     def AddSsr(self, ssr):
         """Add an SSR."""
         if (ssr.rqst_code != "ETLP"):
-            self.pnlSSRs.push_back(ssr)
+            self.pnlSSRs.append(ssr)
 
     def List(self):
         """Display stuff."""

@@ -197,7 +197,7 @@ class PaxList(object):
             AND it.departure_airport = fsd3.departure_airport
             AND it.arrival_airport = fsd3.arrival_airport
         INNER JOIN bookings AS bo ON bo.book_no = it.book_no
-        INNER JOIN passenger AS pa ON pa.book_no = it.book_no
+        INNER JOIN passengers AS pa ON pa.book_no = it.book_no
         INNER JOIN action_codes AS ac
             ON it.reserve_status = ac.action_code
             AND ac.pnl_adl_flag = 'Y'
@@ -246,7 +246,7 @@ class PaxList(object):
                     AND it.departure_airport = fsd3.departure_airport
                     AND it.arrival_airport = fsd3.arrival_airport
                 INNER JOIN bookings AS bo ON bo.book_no = it.book_no
-                INNER JOIN passenger AS pa ON pa.book_no = it.book_no
+                INNER JOIN passengers AS pa ON pa.book_no = it.book_no
                 INNER JOIN action_codes AS ac
                     ON it.reserve_status = ac.action_code
                     AND ac.pnl_adl_flag = 'Y'
@@ -259,6 +259,7 @@ class PaxList(object):
         """
         printlog(2, "\t%s" % sqlStr1)
 
+        ssrs = {}
         iNoOfRecords = 0
         cur1.execute(sqlStr1)
         for row1 in cur1:
@@ -278,7 +279,7 @@ class PaxList(object):
             sqlStr2 = """
                 SELECT pa.pax_name, pa.request_nos pax_req, pa.pax_code,
                     pa.pax_no
-                FROM passenger AS pa
+                FROM passengers AS pa
                 WHERE pa.book_no = %d""" % book_no
             printlog(2, "\t%s" % sqlStr2)
             cur2.execute(sqlStr2)

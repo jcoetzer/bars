@@ -8,17 +8,18 @@ import sys
 import operator
 import psycopg2  # the Informix DB module
 from BarsLog import set_verbose, get_verbose, printlog
+from Booking.SsrData import SsrData
 
 
 def ReadRequestsPnl(conn, book_no, Company, DeprAirport, FlightDate,
                     PassengerName=None):
 
     ssrSql = """
-        "SELECT DISTINCT book_requests.rqst_sequence_no seq,
+        SELECT DISTINCT book_requests.rqst_sequence_no seq,
         book_requests.indicator ind, book_requests.rqst_code rq,
         book_requests.action_code acc, book_requests.actn_number acn,
         book_requests.request_text req, book_requests.all_itinerary_flag alli,
-        book_requests.all_passenger_flag allp
+        book_requests.all_pax_flag allp
          FROM book_requests, service_requests
          WHERE book_requests.book_no = %d
          AND book_requests.rqst_code = service_requests.rqst_code
@@ -27,15 +28,15 @@ def ReadRequestsPnl(conn, book_no, Company, DeprAirport, FlightDate,
          AND service_requests.arpt_action_flag = 'Y'""" \
         % (book_no, Company)
     ssrSql += """
-        UNION SELECT 0 AS rqst_sequence_no , 'F' AS indicator,
+        UNION SELECT 0 AS rqst_sequence_no, 'F' AS indicator,
         f.pnl_adl_identifier AS rqst_code,
         'HK' AS action_code, '1' AS actn_number,
          (trim(p.payment_form) || ' ' || abs(round(p.payment_amount, 2)*100)::integer)::varchar(60) AS request_text,
          'Y' AS all_itinerary_flag, 'Y' AS all_passenger_flag
         FROM payments AS p
-        INNER JOIN FEE AS f ON f.fee_code = p.payment_form
+        INNER JOIN fees AS f ON f.fee_code = p.payment_form
         AND p.payment_type = 'BC'
-        AND p.book_no = %d"
+        AND p.book_no = %d
         AND p.document_date = '%s'""" \
         % (book_no, FlightDate.strftime("%Y-%m-%d"))
     if DeprAirport is not None:
@@ -58,14 +59,18 @@ def ReadRequestsPnl(conn, book_no, Company, DeprAirport, FlightDate,
     cur.execute(ssrSql)
     rval = ""
     n = 0
+    serviceReqs = []
     for row in cur:
         n += 1
-        print("%s %s %s %s %s %s %s %s"
+        printlog(2, "%s %s %s %s %s %s %s %s"
               % (row['seq'], row['ind'], row['rq'], row['acc'], row['acn'],
                  row['req'], row['alli'], row['allp']))
+        serviceReq = SsrData(row['seq'], row['ind'], row['rq'], row['acc'],
+                             row['acn'], row['req'], row['alli'], row['allp'])
+        serviceReqs.append(serviceReq)
     cur.close()
 
-    return n
+    return serviceReqs
 
 
 def ReadRequests(conn, book_no, rqst_code, delim=" ", status_flag='A'):

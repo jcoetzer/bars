@@ -7700,10 +7700,10 @@ CREATE TABLE pax_remarks (
 ALTER TABLE public.pax_remarks OWNER TO postgres;
 
 --
--- Name: passenger; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+-- Name: passengers; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE passenger (
+CREATE TABLE passengers (
     book_no integer NOT NULL,
     pax_no smallint NOT NULL,
     pax_name character(53) NOT NULL,
@@ -7727,7 +7727,7 @@ CREATE TABLE passenger (
 );
 
 
-ALTER TABLE public.passenger OWNER TO postgres;
+ALTER TABLE public.passengers OWNER TO postgres;
 
 --
 -- Name: pax_refund; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -15066,7 +15066,7 @@ ALTER TABLE ONLY pax_remarks
 -- Name: pax_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
-ALTER TABLE ONLY passenger
+ALTER TABLE ONLY passengers
     ADD CONSTRAINT pax_pkey PRIMARY KEY (book_no, pax_no);
 
 

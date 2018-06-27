@@ -116,7 +116,7 @@ class PassengerData(object):
                     self.passenger_code,
                     self.passenger_name), end=' ')
         if self.date_of_birth is not None:
-            dob = self.date_of_birth.strftime("%Y-%m-%d")
+            dob = self.date_of_birth.strftime("%d%b%Y")
             print(": born %s" \
                    % (dob), end=' ')
         if self.contact_phone is not None \

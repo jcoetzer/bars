@@ -42,7 +42,7 @@ def ReadFlightBookings(conn, flight_number, board_date, stat_flag=None):
         FbSql2 = \
             """SELECT pa.pax_name papn,
             pa.request_nos parn, pa.pax_no papr, pa.pax_code papc
-            FROM passenger pa
+            FROM passengers pa
             WHERE pa.book_no = %d
             AND pa.pax_no > 0
             AND pa.pax_code <> 'INF'

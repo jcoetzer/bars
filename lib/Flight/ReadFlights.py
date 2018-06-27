@@ -281,7 +281,7 @@ def ReadDeparture(conn, company_code, class_code, flight_number, flight_date):
                  % (fltinfo.departure_airport, fltinfo.arrival_airport,
                     fltinfo.city_pair))
 
-    return n, flights
+    return flights
 
 
 def ReadFlightDeparture(conn, class_code, flight_number, flight_date):

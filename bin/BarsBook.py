@@ -208,7 +208,7 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
     AddContact(conn, bn, paxRecs, vUser, vGroup)
     paxRequests = []
     for paxRec in paxRecs:
-        paxRequests.append(paxRec.date_of_birth)
+        paxRequests.append(paxRec.date_of_birth.strftime("%d%b%Y").upper())
     AddBookRequest(conn, bn, vCompany, 'CKIN', paxRequests, vUser, vGroup)
     AddBookTimeLimit(conn, bn, vAgencyCode, vUser, vGroup)
     AddBookingFareSegments(conn, bn, 1, paxRecs[0].passenger_code,
@@ -322,6 +322,7 @@ def DoBook(conn, cfg, lnames, groupName, paxNames, paxDobs, flightNumber, dt1,
 
 def DoPay(conn, cfg, bn, departAirport, arriveAirport, payAmount, payAmount2,
           vDocNum, sellClass):
+    """Process payment for booking."""
     if payAmount is None:
         printlog(1, "Get itinerary for booking %d" % bn)
         itens = GetItinerary(conn, bn)
@@ -355,6 +356,14 @@ def DoPay(conn, cfg, bn, departAirport, arriveAirport, payAmount, payAmount2,
             cfg.User, cfg.Group)
 
 
+def DoRequest(conn, cfg, bn, reqCode, reqText):
+    """Add SSR to booking."""
+    paxRequests = [reqText]
+    AddBookRequest(conn, bn, cfg.CompanyCode, reqCode, paxRequests,
+                   cfg.User, cfg.Group)
+    return
+
+
 # TODO Cyclomatic complexity too high
 def main(argv):
     """Pythonic entry point."""
@@ -383,6 +392,8 @@ def main(argv):
     vDocNum = None
     paxCount = 0
     groupName = ''
+    reqCode = None
+    reqText = None
 
     # Option flags
     doavail = False
@@ -391,16 +402,17 @@ def main(argv):
     doprice = False
     dobook = False
     dopay = False
+    dossr = False
 
     if len(argv) < 1:
         usage(os.path.basename(sys.argv[0]))
 
     opts, args = getopt.getopt(argv,
-                               "cfhivyVB:C:D:E:F:G:I:K:L:M:N:P:Q:R:S:T:X:Y:",
+                               "cfhivyVB:C:D:E:F:G:I:K:L:M:N:P:Q:R:S:T:U:X:Y:",
                                ["help",
                                 "avail", "book", "detail", "price", "pay",
-                                "chk",
-                                "bn=", "dob=", "card=",
+                                "chk", "ssr",
+                                "bn=", "dob=", "card=", "req=",
                                 "date=", "edate=", "flight=", "rflight="])
 
     for opt, arg in opts:
@@ -423,6 +435,8 @@ def main(argv):
             doprice = True
         elif opt == '--pay':
             dopay = True
+        elif opt == '--ssr':
+            dossr = True
         elif opt in ('-B', '--bn'):
             bn = int(arg)
             printlog(2, "Booking number %d" % bn)
@@ -470,6 +484,10 @@ def main(argv):
             payAmount2 = float(arg)
         elif opt in ("-T", "--card"):
             vDocNum = str(arg)
+        elif opt in ("-U", "--req"):
+            vSsr = str(arg).split(':')
+            reqCode =  vSsr[0]
+            reqText = vSsr[1]
         elif opt == "-X":
             departTime = arg
         elif opt == "-Y":
@@ -534,6 +552,8 @@ def main(argv):
     elif dopay:
         DoPay(conn, cfg, bn,departAirport, arriveAirport,
               payAmount, payAmount2, vDocNum, sellClass)
+    elif dossr:
+        DoRequest(conn, cfg, bn, reqCode, reqText)
     elif bn is not None:
         GetPassengers(conn, bn)
         GetItinerary(conn, bn)

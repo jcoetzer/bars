@@ -287,6 +287,7 @@ def main(argv):
     recCount = 0
     seat_map_id = None
     flight_date_leg_id = 0
+    flights = []
 
     chkit = False
     fare_route = False
@@ -633,13 +634,13 @@ def main(argv):
                         dt2.strftime("%Y-%m-%d")))
             n = 0
             for single_date in daterange(dt1, dt2):
-                n, flights = \
+                flights = \
                     ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
                                   flight_number, single_date)
                 departure_airport = flights[0].departure_airport
                 arrival_airport = flights[0].departure_airport
                 city_pair = flights[0].city_pair
-            if n != 1:
+            if len(flights) != 1:
                 print("Could not read departures and arrivals" \
                       " for flight %s board %s" \
                       % (flight_number, dt1.strftime("%Y-%m-%d")))
@@ -647,10 +648,10 @@ def main(argv):
                     conn.close()
                     return 1
         elif not fare_route and dt1 is not None:
-            n, flights = \
+            flights = \
                 ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
                               flight_number, dt1)
-            if n != 1:
+            if len(flights) != 1:
                 print("Could not read departures and arrivals" \
                       " for flight %s board %s" \
                       % (flight_number, dt1.strftime("%Y-%m-%d")))
@@ -722,7 +723,7 @@ def main(argv):
                               % (pax_book, pax_books[pax_book]))
             print("Matched %d records" % n)
         elif ssm_tim and dt1 is not None and dt2 is not None:
-            n, flights = \
+            flights = \
                 ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
                               flight_number, dt1)
             if n != 1:
@@ -738,22 +739,22 @@ def main(argv):
         elif flt_recon and dt1 is not None:
             AsrReconcile(conn, flight_number, dt1)
         elif pax_book and dt1 is not None:
-            n, flights = \
+            flights = \
                 ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
                               flight_number, dt1)
             ReadFlightBookings(conn, flights[0].flight_number, flights[0].board_dts)
         elif contact_pax and dt1 is not None:
-            n, flights = \
+            flights = \
                 ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
                               flight_number, dt1)
             ReadFlightContacts(conn, flights[0])
         elif ssm_data and dt1 is not None:
-            n, flights = \
+            flights = \
                 ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
                               flight_number, dt1)
             ReadSsmFlightData(conn, flights[0], dt1)
         elif ssm_book and schedule_period_no is not None and dt1 is not None:
-            n, flights = \
+            flights = \
                 ReadDeparture(conn, cfg.CompanyCode, cfg.SellingClasses[0],
                               flight_number, dt1)
             ReadSsmBookData(conn, flights[0], schedule_period_no)

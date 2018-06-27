@@ -9,6 +9,24 @@ from BarsLog import get_verbose, printlog
 
 class PaxData(object):
 
+    paxno = 0
+    paxcount = ''
+    paxname = ''
+    grpname = ''
+    locator = ''
+    etickt = ''
+    eticktinf = ''
+    etlp = ''
+    etlpinf = ''
+    chekin = ''
+    inft = ''
+    marketflt = ''
+    incomingflt = ''
+    outgoingflt = ''
+    pnladlerr = 0
+    paxrec = 'FLY'
+    Requests = []
+
     def __init__(self, pnladlrep=''):
         """Get this show on the road."""
         self.paxrep = pnladlrep
