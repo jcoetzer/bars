@@ -350,8 +350,7 @@ def DoPay(conn, cfg, bn, departAirport, arriveAirport, payAmount, payAmount2,
     if vDocNum is None:
         fake = Faker()
         vDocNum = fake.credit_card_number()
-    print("Pay %s%.2f with card %s" % (cfg.Currency, payAmount, payAmount,
-                                       vDocNum))
+    print("Pay %s%.2f with card %s" % (cfg.Currency, payAmount, vDocNum))
     PutPay(conn, bn, sellClass,
             cfg.Currency, payAmount, payAmount2,
             cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareBasisCode,
