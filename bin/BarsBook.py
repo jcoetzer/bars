@@ -25,11 +25,11 @@ from Ssm.SsmDb import GetCityPair
 from Flight.AvailDb import get_selling_conf, get_avail_flights, OldAvailSvc
 from Flight.FlightDetails import GetFlightDetails
 from Booking.FareCalcDisplay import FareCalcDisplay, ReadPayments, \
-     ReadSellingConfig
+     ReadSellingConfig, GetPriceSsr
 from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, \
      AddItinerary, AddPassenger, \
      AddBookFares, AddBookFarePassengers, \
-     AddBookFaresPayments, AddBookRequest, AddPayment, \
+     AddBookFaresPayments, AddBookRequests, AddBookRequest, AddPayment, \
      GetPreBookingInfo, AddBookTimeLimit, AddContact, UpdateBookPayment, \
      AddBookingFareSegments
 from Booking.ReadItinerary import ReadItinerary, UpdateItinerary, UpdateBook
@@ -57,8 +57,10 @@ def usage(pn):
     print("Book:")
     print("\t%s --book -N <NAME> -M <DATES> -F <FLIGHT> -D <DATE>" % pn)
     print("\t%s --book -F <FLIGHT> -D <DATE> [-L <COUNT>] [-K <GROUP>]" % pn)
-    print("Check:")
+    print("Pay:")
     print("\t%s --pay -B <BOOK> -A <AMOUNT> -N <NAME>" % pn)
+    print("Service request:")
+    print("\t%s --ssr -B <BOOK> -L <NUM> -U <CODE>:<TEXT>" % pn)
     print("Check:")
     print("\t%s --chk -B <BOOK>" % pn)
     print("where:")
@@ -209,7 +211,7 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
     paxRequests = []
     for paxRec in paxRecs:
         paxRequests.append(paxRec.date_of_birth.strftime("%d%b%Y").upper())
-    AddBookRequest(conn, bn, vCompany, 'CKIN', paxRequests, vUser, vGroup)
+    AddBookRequests(conn, bn, vCompany, 'CKIN', paxRequests, vUser, vGroup)
     AddBookTimeLimit(conn, bn, vAgencyCode, vUser, vGroup)
     AddBookingFareSegments(conn, bn, 1, paxRecs[0].passenger_code,
                            departAirport, arriveAirport,
@@ -245,7 +247,7 @@ def PutPay(conn, aBookNo, aSellClass,
     # payAmounts = [int(aPayAmount*100), int(aPayAmount2*100)]
     payAmounts = [aPayAmount, aPayAmount2]
     irecs = ReadItinerary(conn, aBookNo, None, None,
-                        fnumber=None, start_date=None, end_date=None)
+                          fnumber=None, start_date=None, end_date=None)
     if len(irecs) > 2:
         print("Found %d itenaries")
         return 1
@@ -348,7 +350,8 @@ def DoPay(conn, cfg, bn, departAirport, arriveAirport, payAmount, payAmount2,
     if vDocNum is None:
         fake = Faker()
         vDocNum = fake.credit_card_number()
-    print("Pay %s%.2f with card %s" % (cfg.Currency, payAmount, vDocNum))
+    print("Pay %s%.2f with card %s" % (cfg.Currency, payAmount, payAmount,
+                                       vDocNum))
     PutPay(conn, bn, sellClass,
             cfg.Currency, payAmount, payAmount2,
             cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareBasisCode,
@@ -356,11 +359,27 @@ def DoPay(conn, cfg, bn, departAirport, arriveAirport, payAmount, payAmount2,
             cfg.User, cfg.Group)
 
 
-def DoRequest(conn, cfg, bn, reqCode, reqText):
+def DoRequest(conn, cfg, aBookNo, pn, reqCode, reqText, payAmount, vDocNum):
     """Add SSR to booking."""
-    paxRequests = [reqText]
-    AddBookRequest(conn, bn, cfg.CompanyCode, reqCode, paxRequests,
+    if payAmount is None:
+        fcode, fcurr, payAmount = GetPriceSsr(conn, reqCode)
+    vPaymentForm = 'VI'
+    vPaymentType = 'CC'
+    vPaymentMode = ' '
+    vRemark = ' '
+    vFareNo = 1
+    if vDocNum is None:
+        fake = Faker()
+        vDocNum = fake.credit_card_number()
+    paxRecs = ReadPassengers(conn, aBookNo)
+    AddBookRequest(conn, aBookNo, pn, cfg.CompanyCode, reqCode, reqText,
                    cfg.User, cfg.Group)
+    AddPayment(conn, fcode, vPaymentType, fcurr, int(payAmount),
+               vDocNum, vPaymentMode,
+               aBookNo, paxRecs[pn-1].passenger_name,
+               paxRecs[pn-1].passenger_code,
+               cfg.OriginBranchCode, vRemark,
+               cfg.User, cfg.Group)
     return
 
 
@@ -553,7 +572,7 @@ def main(argv):
         DoPay(conn, cfg, bn,departAirport, arriveAirport,
               payAmount, payAmount2, vDocNum, sellClass)
     elif dossr:
-        DoRequest(conn, cfg, bn, reqCode, reqText)
+        DoRequest(conn, cfg, bn, paxCount, reqCode, reqText, None, None)
     elif bn is not None:
         GetPassengers(conn, bn)
         GetItinerary(conn, bn)

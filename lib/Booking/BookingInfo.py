@@ -459,7 +459,7 @@ def AddBookFaresPayments(conn, aBookNo, aFareNo, aPaxCode, aFareBasisCode,
     cur.close()
 
 
-def AddBookRequest(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup):
+def AddBookRequests(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup):
     """Add booking request."""
     # Value for request sequence number
     cur = conn.cursor()
@@ -502,11 +502,58 @@ def AddBookRequest(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup):
                      WHERE book_no = %d AND pax_no = '%d'""" \
                   % (vRequestSeq, aBookNo, vRequestSeq)
         printlog(2, "%s" % abrSql2)
-        cur.execute(abrSql2)
+        cur2.execute(abrSql2)
         printlog(2, "Updated %d row(s)" % cur2.rowcount)
 
     cur.close()
     cur2.close()
+
+
+def AddBookRequest(conn, aBookNo, aPaxNo, aCompany, aReqCode, aReqText,
+                   aUser, aGroup):
+    """Add booking request."""
+    # Value for request sequence number
+    cur = conn.cursor()
+    abrSql = """SELECT MAX(rqst_sequence_no)
+        FROM book_requests WHERE book_no = %d""" % aBookNo
+    printlog(2, "%s" % abrSql)
+    cur.execute(abrSql)
+    vRequestSeq = 0
+    for row in cur:
+        vRequestSeq = row[0]
+
+    vRequestSeq += 1
+    abrSql = """
+    INSERT INTO book_requests (
+            book_no, rqst_sequence_no,
+            item_no, indicator, rqst_code,
+            carrier_code,
+            action_code, actn_number,
+            processing_flag, rqr_count,
+            request_text,
+            all_pax_flag, all_itinerary_flag,
+            update_user, update_group,
+            update_time )
+        VALUES ( %d, %d,
+                    1, 'S', '%s',
+                    '%s',
+                    'HK', '1', 'Y', 1,
+                    '%s',
+                    'N', 'Y',
+                    '%s', '%s', NOW() )""" \
+        % (aBookNo, vRequestSeq, aReqCode, aCompany, aReqText,
+            aUser, aGroup)
+    printlog(2, "%s" % abrSql)
+    cur.execute(abrSql)
+    printlog(2, "Inserted %d row(s)" % cur.rowcount)
+    abrSql = """UPDATE passengers SET request_nos = request_nos || '%d#'
+                    WHERE book_no = %d AND pax_no = '%d'""" \
+                % (vRequestSeq, aBookNo, aPaxNo)
+    printlog(2, "%s" % abrSql)
+    cur.execute(abrSql)
+    printlog(2, "Updated %d row(s)" % cur.rowcount)
+
+    cur.close()
 
 
 def AddPassenger(conn, aBookNo, aPaxRecs,

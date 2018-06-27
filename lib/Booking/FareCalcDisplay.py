@@ -36,7 +36,7 @@ def FareCalcDisplay(conn,
                     acompany_code,
                     acity_pair,
                     taxes,
-                    aflight_date,
+                    flightDate,
                     areturn_date,
                     aselling_class,
                     aoneway_return_flag,
@@ -45,6 +45,8 @@ def FareCalcDisplay(conn,
                     aTargetDate,
                     fare_factor=1.0):
     """Fare calculation."""
+    printlog(1, "Calculate fare for city pair %d date %s"
+             % (acity_pair, flightDate))
     fcdSql = """
     SELECT fs.fare_basis_code,
             fs.city_pair, fs.valid_from_date,
@@ -73,16 +75,15 @@ def FareCalcDisplay(conn,
        OR ( fs.eff_from_date IS NULL )
        OR ( fs.eff_to_date IS NULL ) )
     ORDER BY fs.company_code, fs.city_pair, fs.fare_amount, fs.fare_basis_code
-    """ % (
-    acompany_code,
-    acity_pair,
-    aflight_date.strftime('%Y-%m-%d'), aflight_date.strftime('%Y-%m-%d'),
-    aflight_date.strftime('%Y-%m-%d'), aflight_date.strftime('%Y-%m-%d'),
-    aselling_class,
-    aoneway_return_flag,
-    afare_category,
-    aauthority_level, aauthority_level,
-    aTargetDate.strftime('%Y-%m-%d'), aTargetDate.strftime('%Y-%m-%d'))
+    """ % (acompany_code,
+           acity_pair,
+           flightDate.strftime('%Y-%m-%d'), flightDate.strftime('%Y-%m-%d'),
+           flightDate.strftime('%Y-%m-%d'), flightDate.strftime('%Y-%m-%d'),
+           aselling_class,
+           aoneway_return_flag,
+           afare_category,
+           aauthority_level, aauthority_level,
+           aTargetDate.strftime('%Y-%m-%d'), aTargetDate.strftime('%Y-%m-%d'))
     printlog(2, "%s" % fcdSql)
     cur = conn.cursor()
     cur.execute(fcdSql)
@@ -122,6 +123,7 @@ def FareCalcDisplay(conn,
 
 def ReadPayments(conn, book_no):
     """Read payments for booking."""
+    printlog(1, "Read payments for booking %d" % book_no)
     RpSql = """
         SELECT payment_form, payment_type, currency_code, payment_amount,
         payment_date,
@@ -144,4 +146,27 @@ def ReadPayments(conn, book_no):
                              row['update_time'])
         payRec.display()
 
+
+def GetPriceSsr(conn, ssr_code):
+    """Get price e.a. for SSR."""
+    gpsSql = """SELECT fee_type_rcd, fee_code, description,
+             fee_currency, fee_amount,
+             payment_type, payment_form
+             FROM fees
+             WHERE ssr_code = '%s'""" % ssr_code
+    printlog(2, gpsSql)
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute(gpsSql)
+    famount = 0.0
+    fcurr = ''
+    fcode = ''
+    for row in cur:
+        printlog(1, "SSR %s : fee %s %s%f : %s"
+                 % (ssr_code, row['fee_code'], row['fee_currency'],
+                    row['fee_amount'], row['description']))
+        famount = float(row['fee_amount'])
+        fcurr = str(row['fee_currency'])
+        fcode = str(row['fee_code'])
+    printlog(1, "Price for SSR %s : %s%.2f" % (ssr_code, fcurr, famount))
+    return fcode, fcurr, famount
 
