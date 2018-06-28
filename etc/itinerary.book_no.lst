@@ -1,7 +1,7 @@
 # List of table names used in booking report
 #
-bookings;book_no,pax_name_rec,book_type,no_of_seats,group_name,book_category,origin_branch_code,origin_address,status_flag,first_segm_date,last_segm_date,scrutiny_flag,record_locator
-#book_crs_index;pax_name_rec,origin_address,book_category,reply_poll_flag,processing_flag,ext_book_numb,codeshare_book_numb
+bookings;book_no,locator,book_type,no_of_seats,group_name,book_category,origin_branch_code,origin_address,status_flag,first_segm_date,last_segm_date,scrutiny_flag,record_locator
+#book_crs_index;locator,origin_address,book_category,reply_poll_flag,processing_flag,ext_locator,codeshare_book_numb
 itineraries;route_no,itinerary_no,itinerary_type,flight_number,flight_date,departure_airport,arrival_airport,departure_time,arrival_time,selling_class,status_flag,request_nos,reserve_status
 #pass_contact;pax_no,home_phone_no,buss_phone_no
 #book_requests;rqst_sequence_no,rqst_code,carrier_code,action_code,request_text,processing_flag,all_pax_flag,all_itinerary_flag
@@ -18,7 +18,7 @@ book_fares;fare_no,pax_code,departure_airport,arrival_airport,total_amount_curr,
 payments;payment_no,payment_form,payment_type,paid_flag,payment_amount,payment_date,pax_name,remarks_text,voucher_no
 #hist_booking_fare_segments;fare_no,pax_code,flight_number,departure_airport,arrival_airport,selling_class,fare_basis
 #employee_buddy_pass;employee_id,buddy_pass_no,active_flag
-#queues;queue_code,notify_code,processing_flag,flight_number,flight_date,pax_name,pax_name_rec,queue_text,pass_name_dupe
+#queues;queue_code,notify_code,processing_flag,flight_number,flight_date,pax_name,locator,queue_text,pass_name_dupe
 #pnl_adl_book
 #pnl_adl_pax
 #pnl_adl_rem

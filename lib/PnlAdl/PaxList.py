@@ -223,7 +223,7 @@ class PaxList(object):
                 it.arrival_time arrive,
                 it.selling_class,
                 it.request_nos itinerary_req,
-                bo.pax_name_rec, bo.no_of_seats, bo.group_name
+                bo.locator, bo.no_of_seats, bo.group_name
                 FROM itineraries AS it, bookings AS bo
                 WHERE it.flight_number = '%s'
                 AND it.flight_date = '%s'
@@ -271,7 +271,7 @@ class PaxList(object):
             selling_class = row1[5][0]
             selling_class_no = self.sellingClasses.find(selling_class)
             itinerary_req = row1[6]
-            pax_name_rec = row1[7]
+            locator = row1[7]
             no_of_seats = row1[8]
             group_name = row1[9]
             if self.DepartAirport == '':
@@ -294,7 +294,7 @@ class PaxList(object):
                                             itinerary_req, pax_req,
                                             pax_no, pax_code,
                                             no_of_seats, group_name,
-                                            pax_name_rec, selling_class_no)
+                                            locator, selling_class_no)
                 # paxListEntry.GetLocator(book_no)
                 paxListEntry.GetBookRequests(book_no)
                 if get_verbose() >= 1:

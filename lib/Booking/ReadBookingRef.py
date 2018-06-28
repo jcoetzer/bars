@@ -16,13 +16,13 @@ def ReadBookNo(conn, bno):
         return None
     locator = None
     bookSql = \
-        "SELECT pax_name_rec" \
+        "SELECT locator" \
         " FROM bookings WHERE book_no=%d" % bno
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
     cur.execute(bookSql)
     for row in cur:
-        locator = str(row['pax_name_rec'] or '')
+        locator = str(row['locator'] or '')
     cur.close()
     return locator
 
@@ -34,7 +34,7 @@ def ReadLocator(conn, locator):
     bno = int(0)
     bookSql = \
         "SELECT b.book_no bookno" \
-        " FROM bookings b WHERE pax_name_rec='%s'" % locator
+        " FROM bookings b WHERE locator='%s'" % locator
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
     cur.execute(bookSql)

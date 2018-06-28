@@ -1,6 +1,6 @@
 # List of table names used in booking report
 #
-bookings;book_no,pax_name_rec,book_type,no_of_seats,group_name,book_category,origin_branch_code,origin_address,status_flag,first_segm_date,last_segm_date
+bookings;book_no,locator,book_type,no_of_seats,group_name,book_category,origin_branch_code,origin_address,status_flag,first_segm_date,last_segm_date
 passengers;pax_no,pax_code,pax_name,request_nos,processing_flag,request_nos
 payments;payment_no,payment_form,payment_type,paid_flag,payment_amount,payment_date,pax_name,remarks_text,voucher_no
 book_requests;rqst_sequence_no,rqst_code,carrier_code,action_code,request_text,processing_flag,all_pax_flag,all_itinerary_flag

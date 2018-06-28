@@ -51,7 +51,7 @@ def AddBookCrossIndex(conn, aBookCategory, aOriginAddress, aUser, aGroup):
     """Add booking cross reference."""
     abSql = """
         INSERT INTO book_cross_index (
-            pax_name_rec, origin_address, book_category,
+            locator, origin_address, book_category,
             processing_flag, update_user, update_group, update_time)
         VALUES (
             '------', '%s', '%s', 'A', '%s', '%s', NOW() )
@@ -68,7 +68,7 @@ def AddBookCrossIndex(conn, aBookCategory, aOriginAddress, aUser, aGroup):
 
     vPnr = int2base20(vBookNo)
     abSql = \
-        "UPDATE book_cross_index SET pax_name_rec='%s' WHERE book_no=%d" \
+        "UPDATE book_cross_index SET locator='%s' WHERE book_no=%d" \
         % (vPnr, vBookNo)
     printlog(2, "%s" % abSql)
     cur.execute(abSql)
@@ -93,7 +93,7 @@ def AddBook(conn, aBookNo, aPnr, aSeatQuantity, aOriginAddress,
                 aGroupName))
     abSql = """
         INSERT INTO bookings(
-            book_no, pax_name_rec, book_type, group_name,
+            book_no, locator, book_type, group_name,
             no_of_seats,
             book_category, group_wait_seats, group_request_seats,
             group_realtn_pcnt,
@@ -668,7 +668,7 @@ def GetPreBookingInfo(conn, book_no):
     printlog(2, "Pre booking %d info" % book_no)
     preBookingInfoSql = """
         SELECT bo.book_no,
-            bo.pax_name_rec,
+            bo.locator,
             bo.group_name,
             ( SELECT pax.pax_name
               FROM passengers AS pax
@@ -706,13 +706,13 @@ def GetPreBookingInfo(conn, book_no):
         # for val in row:
             # print("%s" % str(val), end=' ')
         book_no = row[0]
-        pax_name_rec = row[1]
+        locator = row[1]
         group_name = row[2]
         agency_code = row[4]
         create_time = row[5]
         status_flag = row[6]
         print("Book %d PNR %s group %s agency %s time %s status %s"
-              % (book_no, pax_name_rec, group_name.strip(), agency_code,
+              % (book_no, locator, group_name.strip(), agency_code,
                  create_time, status_flag))
     cur.close()
 

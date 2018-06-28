@@ -33,8 +33,8 @@ class PaxListEntry(object):
     arrival_airport = ''
     pax_name = ''
     selling_class = ''
-    itinerary_req = ''
-    pax_req = ''
+    itinerary_reqs = []
+    pax_reqs = []
     passenger_no = 0
     pass_code = ''
     no_of_seats = 0
@@ -76,8 +76,8 @@ class PaxListEntry(object):
         self.arrival_airport = str(a_arrival_airport).rstrip()
         self.pax_name = str(a_pax_name).rstrip()
         self.selling_class = str(a_selling_class).rstrip()
-        self.itinerary_req = str(a_itinerary_req).rstrip()
-        self.pax_req = str(a_pax_req).rstrip()
+        self.itinerary_reqs = str(a_itinerary_req).rstrip().split('#')
+        self.pax_reqs = str(a_pax_req).rstrip().split('#')
         self.passenger_no = a_passenger_no
         self.pass_code = str(a_pass_code).rstrip()
         self.no_of_seats = a_no_of_seats
@@ -106,8 +106,8 @@ class PaxListEntry(object):
         self.arrival_airport = ''
         self.pax_name = ''
         self.selling_class = ''
-        self.itinerary_req = ''
-        self.pax_req = ''
+        self.itinerary_reqs[:] = []
+        self.pax_reqs[:] = []
         self.passenger_no = 0
         self.pass_code = ''
         self.no_of_seats = 0
@@ -116,7 +116,7 @@ class PaxListEntry(object):
         self.etickt = False
         self.etlp_num = ''
         self.paxrec = 'FLY'
-        self.SSRs = {}
+        self.SSRs.clear()
         self.pnlSSRs[:] = []
 
     def Show(self):
@@ -128,7 +128,7 @@ class PaxListEntry(object):
               % (self.book_no, self.departure_airport, self.arrival_airport,
                  self.pax_name,
                  self.selling_class, self.selling_class_no,
-                 self.itinerary_req, self.pax_req,
+                 self.itinerary_reqs, self.pax_reqs,
                  self.passenger_no, self.pass_code, self.no_of_seats,
                  self.group_name, self.locator,
                  self.origin_address, len(self.SSRs)))
@@ -422,7 +422,6 @@ class PaxListEntry(object):
         all_itinerary_flag = ''
         n = 0
         request_nostr = ''
-        book_request = BookRequestsRec()
 
         printlog(2, "Get booking requests for book no %d requests '%s'"
                  % (self.book_no, request_nostr))
@@ -431,16 +430,16 @@ class PaxListEntry(object):
         book_no = a_book_no
 
         br_query = """SELECT DISTINCT br.rqst_sequence_no,
-            br.Indicator, br.Rqst_Code,
-            br.Action_Code, br.Actn_Number,
-            br.Request_Text,
+            br.indicator, br.rqst_code,
+            br.action_code, br.actn_number,
+            br.request_text,
             br.all_pax_flag, br.all_itinerary_flag
-        FROM Book_Requests br, Service_Requests sr
-        WHERE br.Book_No = %d
-        AND br.Rqst_Code = sr.Rqst_Code
-        AND sr.Company_Code = '%s'
-        AND br.Indicator = sr.Indicator
-        AND sr.Arpt_Action_Flag = 'Y' """ \
+        FROM book_requests br, service_requests sr
+        WHERE br.book_no = %d
+        AND br.rqst_code = sr.rqst_code
+        AND sr.company_Code = '%s'
+        AND br.indicator = sr.indicator
+        AND sr.arpt_action_flag = 'Y' """ \
             % (book_no, 'ZZ')
 
         printlog(2, "\t%s" % br_query)
@@ -448,6 +447,7 @@ class PaxListEntry(object):
         cur.execute(br_query)
 
         for row in cur:
+            book_request = BookRequestsRec()
             rqst_seqn_no = row[0]
             indicator = row[1]
             rqst_code = row[2]
@@ -493,19 +493,21 @@ class PaxListEntry(object):
         paxflg = ssr.all_passenger_flag
 
         # Break up itinerary into tokens seperated by '#'
-        pax_reqs = self.pax_req.split('#')
-        itinerary_reqs = self.itinerary_req.split('#')
+        printlog(2, "Passenger requests %s itinerary requests %s"
+                 % (self.pax_reqs, self.itinerary_reqs))
 
         if (itenflg == 'N' and paxflg == 'N'):
             # Check itinerary and passenger
             printlog(2,
                      "Check itinerary and passenger no[%d] itinerary[%c]"
                      " pax[%c] itenflg[%s] paxflg[%s]"
-                     % (no, itenflg, paxflg, self.itinerary_req, self.pax_req))
-            for paxcp in pax_reqs:
+                     % (no, itenflg, paxflg, self.itinerary_reqs, self.pax_reqs))
+            for paxcp in self.pax_reqs:
+                if paxcp == '':
+                    continue
                 paxcpi = int(paxcp)
                 printlog(2, "Check pax number %d" % paxcpi)
-                for itencp in itinerary_reqs:
+                for itencp in self.itinerary_reqs:
                     itencpi = int(itencp)
                     printlog(2, "Check itinerary number %d" % itencpi)
                     if (itencpi == paxcpi):
@@ -513,13 +515,13 @@ class PaxListEntry(object):
                             printlog(2, "Found itinerary/pax number %d"
                                      % paxcpi)
                             self.AddSsr(ssr)
-                            return(1)
+                            return 1
         elif (itenflg == 'Y' and paxflg == 'N'):
             # Check itinerary only
             printlog(2, "Check itinerary no[%d] itinerary[%s] pax[%s]"
                      " itenflg[%c] paxflg[%c]"
-                     % (no, self.itinerary_req, self.pax_req, itenflg, paxflg))
-            for paxcp in pax_reqs:
+                     % (no, self.itinerary_reqs, self.pax_reqs, itenflg, paxflg))
+            for paxcp in self.pax_reqs:
                 if paxcp == '':
                     continue
                 paxcpi = int(paxcp)
@@ -532,25 +534,27 @@ class PaxListEntry(object):
             # Check passenger only
             printlog(2, "Check passenger no[%d] itinerary[%s] pax[%s]"
                      " itenflg[%c] paxflg[%c]"
-                     % (no, self.itinerary_req, self.pax_req, itenflg, paxflg))
-            for itencp in itinerary_reqs:
+                     % (no, self.itinerary_reqs, self.pax_reqs, itenflg, paxflg))
+            for itencp in self.itinerary_reqs:
+                if itencp == '':
+                    continue
                 itencpi = int(itencp)
                 printlog(2, "Check itinerary number %d" % itencpi)
                 if (itencpi == no):
                     printlog(2, "Found itinerary number %d" % no)
                     self.AddSsr(ssr)
-                    return(1)
+                    return 1
         else:
             printlog(2, "Skip passenger no[%d] itinerary[%s] pax[%s]"
                      " itenflg[%c] paxflg[%c]"
-                     % (no, self.itinerary_req, self.pax_req, itenflg, paxflg))
+                     % (no, self.itinerary_reqs, self.pax_reqs, itenflg, paxflg))
             return 0
         printlog(2, "Could not find itinerary/passenger number %d" % no)
-        return(0)
+        return 0
 
     def AddSsr(self, ssr):
         """Add an SSR."""
-        if (ssr.rqst_code != "ETLP"):
+        if (ssr.rqst_code != "TKNE"):
             self.pnlSSRs.append(ssr)
 
     def List(self):
@@ -589,16 +593,16 @@ class PaxListEntry(object):
         return len(self.pnlSSRs)
 
     def addETLP(self):
-        '''Add ETLP remark.'''
+        '''Add TKNE remark.'''
         etlp_string = ''
         if (self.etickt):
             return
 
-        etlp_string = ".R/ETLP HK1 %03d%07d%03d " \
+        etlp_string = ".R/TKNE HK1 %03d%07d%03d " \
                       % (self.airline_no, self.book_no, self.passenger_no)
         self.Append(etlp_string)
         if (self.infant):
-            etlp_string = " .R/ETLP HK1 INF%03d%07d%03d " \
+            etlp_string = " .R/TKNE HK1 INF%03d%07d%03d " \
                           % (self.airline_no, self.book_no, self.passenger_no)
             self.Append(etlp_string)
         return
@@ -686,7 +690,7 @@ class PaxListEntry(object):
                 print("Duplicate e-ticket '%s'" % rdata)
                 return 1
             etickt = True
-        elif (ssr.rqst_code == "ETLP"):
+        elif (ssr.rqst_code == "TKNE"):
             if (len(rdata) < 9):
                 print("Invalid ticket %s" % rdata)
                 return 1
@@ -711,7 +715,7 @@ class PaxListEntry(object):
         ssr.action_code = rdata[5:7]
         ssr.actn_number = int(rdata[7])
         ssr.request_text = rdata[9:]
-        if (ssr.rqst_code != "ETLP"):
+        if (ssr.rqst_code != "TKNE"):
             self.pnlSSRs.append(ssr)
 
         return 0

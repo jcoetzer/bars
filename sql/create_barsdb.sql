@@ -92,7 +92,7 @@ CREATE TABLE acc_sales_revenue (
     document_number character(20) NOT NULL,
     ticket_type character(1),
     valid_void_flag character(1) NOT NULL,
-    pax_name_rec character(6) NOT NULL,
+    locator character(6) NOT NULL,
     pax_name character(38) NOT NULL,
     pax_code character(5) NOT NULL,
     tour_code character(20),
@@ -385,20 +385,6 @@ CREATE TABLE agency_user (
 
 ALTER TABLE public.agency_user OWNER TO postgres;
 
---
--- Name: aig_ezy_policies; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
---
-
-CREATE TABLE aig_ezy_policies (
-    ezy_tran_id integer NOT NULL,
-    ezy_tran_type character varying(20),
-    ezy_policy_nr character varying(20),
-    ezy_timestamp character varying(25),
-    ezy_locator character varying(10)
-);
-
-
-ALTER TABLE public.aig_ezy_policies OWNER TO postgres;
 
 --
 -- Name: aig_transaction; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
@@ -969,7 +955,7 @@ ALTER SEQUENCE avs_history_avs_history_id_seq OWNED BY avs_history.avs_history_i
 
 CREATE TABLE bbl_transaction (
     bbl_transaction_id integer NOT NULL,
-    pax_name_rec character varying(10),
+    locator character varying(10),
     approved character(1) DEFAULT 'N'::bpchar NOT NULL,
     request text,
     request_data text,
@@ -1089,7 +1075,7 @@ ALTER SEQUENCE boarding_control_number_boarding_control_number_id_seq OWNED BY b
 
 CREATE TABLE bookings (
     book_no integer DEFAULT 0 NOT NULL,
-    pax_name_rec character(6),
+    locator character(6),
     book_type character(2) NOT NULL,
     group_name character(53),
     no_of_seats smallint NOT NULL,
@@ -1306,7 +1292,7 @@ ALTER TABLE public.book_no_seq OWNER TO postgres;
 --
 
 CREATE TABLE book_cross_index (
-    pax_name_rec character(6) NOT NULL,
+    locator character(6) NOT NULL,
     origin_address character(7) NOT NULL,
     book_no integer DEFAULT nextval('book_no_seq'::regclass) NOT NULL,
     book_category character(1) NOT NULL,
@@ -1955,7 +1941,7 @@ CREATE TABLE booking_cleanup_log (
     action_id integer NOT NULL,
     action_type character(1),
     book_no integer,
-    pax_name_rec character(6),
+    locator character(6),
     action_reason character varying(100),
     create_time timestamp WITH time zone,
     create_user character(5)
@@ -3013,7 +2999,7 @@ ALTER SEQUENCE client_serial_nos_client_id_seq OWNED BY client_serial_nos.client
 CREATE TABLE client_travel (
     client_prfl_no character(15) NOT NULL,
     travel_sequence_no smallint NOT NULL,
-    pax_name_rec character(6) DEFAULT ''::bpchar NOT NULL,
+    locator character(6) DEFAULT ''::bpchar NOT NULL,
     book_no integer NOT NULL,
     flight_number character(7),
     board_date character(19),
@@ -4538,7 +4524,7 @@ ALTER SEQUENCE eticket_transaction_transaction_id_seq OWNED BY eticket_transacti
 
 CREATE TABLE euroline_transaction (
     transaction_id integer NOT NULL,
-    pax_name_rec character varying(10),
+    locator character varying(10),
     approved character(1) DEFAULT 'N'::bpchar NOT NULL,
     request text,
     request_data text,
@@ -6337,7 +6323,7 @@ ALTER TABLE public.grp_queue_codes OWNER TO postgres;
 
 CREATE TABLE hist_book (
     book_no integer NOT NULL,
-    pax_name_rec character(6),
+    locator character(6),
     book_type character(2) NOT NULL,
     group_name character(53),
     no_of_seats smallint NOT NULL,
@@ -6671,7 +6657,7 @@ ALTER TABLE public.hist_ticket OWNER TO postgres;
 
 CREATE TABLE hsbc_transaction (
     hsbc_transaction_id integer NOT NULL,
-    pax_name_rec character varying(10),
+    locator character varying(10),
     request text,
     request_data text,
     reply text,
@@ -7219,7 +7205,7 @@ ALTER TABLE public.itinerary_pass OWNER TO postgres;
 
 CREATE TABLE k2_transaction (
     k2_transaction_id integer NOT NULL,
-    pax_name_rec character varying(10),
+    locator character varying(10),
     approved character(1) DEFAULT 'N'::bpchar NOT NULL,
     request text,
     request_data text,
@@ -8094,7 +8080,7 @@ CREATE TABLE payments_uplift_detail (
     pax_no smallint,
     posting_flag character(1) DEFAULT 'N'::bpchar NOT NULL,
     payment_no_ref integer,
-    pax_name_rec character(6),
+    locator character(6),
     ins_upd_flag character(1),
     payment_no_diff_ref integer,
     update_user character(5) NOT NULL,
@@ -8134,7 +8120,7 @@ CREATE TABLE pnl_adl_book (
     pnl_adl_id integer NOT NULL,
     record_id integer NOT NULL,
     book_no integer NOT NULL,
-    pax_name_rec character(12) NOT NULL,
+    locator character(12) NOT NULL,
     party_ind character(8),
     reserve_status character(5),
     grp_name character(64),
@@ -8581,7 +8567,7 @@ ALTER TABLE public.post_departure_ref OWNER TO postgres;
 
 CREATE TABLE post_hist_book (
     book_no integer NOT NULL,
-    pax_name_rec character(6),
+    locator character(6),
     book_type character(2) NOT NULL,
     group_name character(53),
     no_of_seats smallint NOT NULL,
@@ -9232,7 +9218,7 @@ CREATE TABLE queues (
     notify_code character(3),
     rqst_code character(4),
     agent_code character varying(10),
-    pax_name_rec character varying(13),
+    locator character varying(13),
     flgt_numb_dupe character(7),
     flgt_date_dupe date,
     city_prno_dupe integer,

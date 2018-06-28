@@ -152,7 +152,7 @@ class PaxData(object):
                     print("Duplicate e-ticket '%s'" % self.etickt)
                 self.etickt = rdata[9:].rstrip()
                 printlog(1, "\te-ticket '%s'", self.etickt)
-        elif (rdata[0:4] == "ETLP"):
+        elif (rdata[0:4] == "TKNE"):
             if (rdata.length() < 9):
                 self.pnladlerr += 1
                 self.paxrep += "Invalid ticket "
