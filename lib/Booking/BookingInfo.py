@@ -679,7 +679,7 @@ def GetPreBookingInfo(conn, book_no):
             bo.no_of_seats,
             bo.book_category,
             ta.trade_name,
-            bci.ext_book_numb,
+            bci.ext_locator,
             bo.origin_address,
             bo.scrutiny_flag,
             ( SELECT min(btl.limit_time)

@@ -95,7 +95,7 @@ def main(argv):
     action_codes_arg = None
     locator = None
     recCount = None
-    ext_book_numb = None
+    ext_locator = None
     bci_new = False
     bci_trl = False
     chk_paid = False
@@ -236,7 +236,7 @@ def main(argv):
         elif opt in ("-P", "--pax"):
             PassengerName = arg
         elif opt in ("-X", "--ext"):
-            ext_book_numb = str(arg)
+            ext_locator = str(arg)
         elif opt == "--tty":
             showTty = True
         else:
@@ -288,15 +288,15 @@ def main(argv):
                                    dt1, PassengerName)
             for ssr in ssrs:
                 ssr.display()
-    elif bci_new and origin_address is not None and ext_book_numb is not None \
+    elif bci_new and origin_address is not None and ext_locator is not None \
             and locator is not None:
-        check_bci_new(conn, origin_address, ext_book_numb, locator, bci_msk)
-    elif bci_trl and origin_address is not None and ext_book_numb is not None \
+        check_bci_new(conn, origin_address, ext_locator, locator, bci_msk)
+    elif bci_trl and origin_address is not None and ext_locator is not None \
             and locator is not None:
-        check_bci_trl(conn, origin_address, ext_book_numb, locator)
-    elif origin_address is not None and ext_book_numb is not None \
+        check_bci_trl(conn, origin_address, ext_locator, locator)
+    elif origin_address is not None and ext_locator is not None \
             and locator is not None:
-        check_bci(conn, origin_address, ext_book_numb, locator, bci_msk)
+        check_bci(conn, origin_address, ext_locator, locator, bci_msk)
     elif chk_paid and bookno is not None:
         ReadBooking(conn, bookno)
         rv = BookingIsPaid(conn, bookno)

@@ -15,35 +15,35 @@ def check_bci_new(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb, msk):
     print("Check booking cross index for origin %s external %s locator %s :"
           % (ExtOriginAddress, ExtBookNumb, PnrBookNumb))
     ChkSql = \
-        "SELECT bci.book_no bno, bci.ext_book_numb ext, bci.locator pnr," \
+        "SELECT bci.book_no bno, bci.ext_locator ext, bci.locator pnr," \
         " bci.book_category bcat, bci.origin_address bor" \
         " FROM book_crs_index bci \n" \
         " WHERE \n(\n  1=0\n"
     if msk & 1:
         ChkSql += \
-            "  OR ( 1=1 AND len(bci.ext_book_numb) > 2" \
+            "  OR ( 1=1 AND len(bci.ext_locator) > 2" \
             " AND bci.origin_address = '%s'" \
-            " AND bci.ext_book_numb = '%s')\n" \
+            " AND bci.ext_locator = '%s')\n" \
                 % (ExtOriginAddress, ExtBookNumb)
     if msk & 2:
         ChkSql += \
-            "  OR ( 2=2 AND bci.ext_book_numb IS NULL" \
+            "  OR ( 2=2 AND bci.ext_locator IS NULL" \
             " AND bci.locator = '%s' AND len(bci.locator) > 2 ) \n" \
                 % PnrBookNumb
     if msk & 4:
         ChkSql += \
             "  OR ( 3=3 AND len(bci.locator)>2" \
-            " AND bci.ext_book_numb != '%s'" \
+            " AND bci.ext_locator != '%s'" \
             " AND bci.origin_address != '%s'\n" \
             "       AND bci.locator = (SELECT b.locator FROM bookings b, book_crs_index bc" \
-            " WHERE bc.book_no=b.book_no AND bc.ext_book_numb = '%s'" \
+            " WHERE bc.book_no=b.book_no AND bc.ext_locator = '%s'" \
             " AND bc.origin_address != '%s' ) ) \n" \
                 % (ExtBookNumb, ExtOriginAddress, ExtBookNumb, ExtOriginAddress)
     if msk & 8:
         ChkSql += \
             "  OR ( 4=4 AND len(bci.locator) > 2" \
             " AND bci.locator != ''" \
-            " AND bci.ext_book_numb = '%s'" \
+            " AND bci.ext_locator = '%s'" \
             " AND bci.origin_address = '%s'" \
             " AND (bci.origin_address LIKE '%%1G' OR bci.origin_address LIKE '%%1P') )\n" \
                 % (ExtBookNumb, ExtOriginAddress)
@@ -63,12 +63,12 @@ def check_bci_trl(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb):
           % (ExtOriginAddress, ExtBookNumb, PnrBookNumb))
 
     ChkSql = \
-        "SELECT bci.book_no bno, bci.ext_book_numb ext, b.locator pnr, b.book_category bcat, b.no_of_seats n" \
+        "SELECT bci.book_no bno, bci.ext_locator ext, b.locator pnr, b.book_category bcat, b.no_of_seats n" \
         " FROM book_crs_index bci, bookings b " \
-        " WHERE ( ( bci.ext_book_numb IS NOT NULL " \
+        " WHERE ( ( bci.ext_locator IS NOT NULL " \
         "          AND bci.origin_address = \"%s\" " \
-        "          AND bci.ext_book_numb = \"%s\" ) OR " \
-        "        ( bci.ext_book_numb IS NULL " \
+        "          AND bci.ext_locator = \"%s\" ) OR " \
+        "        ( bci.ext_locator IS NULL " \
         "          AND bci.locator = \"%s\" ) ) " \
         " AND bci.book_no = b.book_no" \
             % (ExtOriginAddress, ExtBookNumb, PnrBookNumb)
@@ -85,33 +85,33 @@ def check_bci(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb, msk):
     print("Check booking cross index for origin %s external %s locator %s :"
           % (ExtOriginAddress, ExtBookNumb, PnrBookNumb))
     ChkSql = \
-        "SELECT bci.book_no bno, bci.ext_book_numb ext, bci.locator pnr, bci.book_category bcat" \
+        "SELECT bci.book_no bno, bci.ext_locator ext, bci.locator pnr, bci.book_category bcat" \
         " FROM book_crs_index bci\n" \
         " WHERE (\n  1=0\n"
     if msk & 1:
         ChkSql += \
-            "  OR ( bci.ext_book_numb IS NOT NULL" \
+            "  OR ( bci.ext_locator IS NOT NULL" \
             " AND bci.origin_address = '%s'" \
-            " AND bci.ext_book_numb = '%s' )\n" \
+            " AND bci.ext_locator = '%s' )\n" \
                 % (ExtOriginAddress, ExtBookNumb)
     if msk & 2:
         ChkSql += \
-            "  OR ( bci.ext_book_numb IS NULL" \
+            "  OR ( bci.ext_locator IS NULL" \
             "          AND bci.locator = '%s' AND len(bci.locator) > 2 ) \n" \
                 % PnrBookNumb
     if msk & 4:
         ChkSql += \
             "  OR ( bci.locator IS NOT NULL" \
-            " AND bci.ext_book_numb != '%s'" \
+            " AND bci.ext_locator != '%s'" \
             " AND bci.origin_address != '%s'\n" \
             "       AND bci.locator = (SELECT b.locator FROM bookings b, book_crs_index bc" \
-            " WHERE bc.book_no=b.book_no AND bc.ext_book_numb = '%s'" \
+            " WHERE bc.book_no=b.book_no AND bc.ext_locator = '%s'" \
             " AND bc.origin_address != '%s' ) ) \n" \
                 % (ExtBookNumb, ExtOriginAddress, ExtBookNumb, ExtOriginAddress)
     if msk & 8:
         ChkSql += \
             "  OR ( bci.locator IS NOT NULL" \
-            " AND bci.ext_book_numb = '%s'" \
+            " AND bci.ext_locator = '%s'" \
             " AND bci.origin_address != '%s'" \
             " AND (bci.origin_address LIKE '%%1G' OR bci.origin_address LIKE '%%1P'))\n" \
                 % (ExtBookNumb, ExtOriginAddress)

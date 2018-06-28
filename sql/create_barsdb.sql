@@ -1298,7 +1298,7 @@ CREATE TABLE book_cross_index (
     book_category character(1) NOT NULL,
     reply_poll_flag character(1),
     processing_flag character(1) NOT NULL,
-    ext_book_numb character(6),
+    ext_locator character(6),
     codeshare_book_numb character(6),
     update_user character(5) NOT NULL,
     update_group character(12) NOT NULL,
