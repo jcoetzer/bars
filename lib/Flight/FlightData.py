@@ -164,6 +164,21 @@ class FlightData(object):
         if eol:
             print("")
 
+    def html(self):
+        rbuf = "<tr><td>%6s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>" \
+               % (self.flight_number, self.board_dow,
+                  self.board_date_iso,
+                  self.departure_airport, self.arrival_airport,
+                  self.class_code)
+        if self.departure_time is not None and self.arrival_time is not None:
+            rbuf += "<td>%s</td><td>%s</td>" \
+                    % (self.departure_time.strftime("%H:%M"),
+                       self.arrival_time.strftime("%H:%M"))
+        else:
+            rbuf += "<td>&nbsp;</td><td>&nbsp;</td>"
+        rbuf += "</tr>"
+        return rbuf
+
 
 def FindFlight(flights, flight_number):
     """Find flight number in data."""

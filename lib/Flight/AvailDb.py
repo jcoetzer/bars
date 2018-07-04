@@ -39,7 +39,7 @@ def get_avail_flights(conn, fdate1, fdate2, city_pair,
         SELECT DISTINCT fsd.flight_number,   fsd.board_date,
             fsd.departure_time,     fsd.city_pair,
             isg.departure_city,     isg.arrival_city,
-            fsd.departure_airport,       fsd.arrival_airport,
+            fsd.departure_airport,  fsd.arrival_airport,
             fsd.flight_path_code,   fsd.arrival_time,
             fsd.date_change_ind,    fsd.departure_terminal,
             fsd.arrival_terminal,   fsd.no_of_stops,
@@ -89,8 +89,8 @@ def get_avail_flights(conn, fdate1, fdate2, city_pair,
         departure_date      = row[1]
         departure_time      = row[2]
         arrival_time        = row[9]
-        departure_airport   = row[4]
-        arrival_airport     = row[5]
+        departure_airport   = row[6]
+        arrival_airport     = row[7]
         city_pair_number    = int(row[3])
         schedule_period_no  = int(row[37])
 
@@ -157,8 +157,8 @@ def OldAvailSvc(conn, company_code, lboard_date, city_pair_no,
         departure_date      = row[0]
         departure_time      = row[12]
         arrival_time        = row[13]
-        departure_airport   = row[8]
-        arrival_airport     = row[9]
+        departure_airport   = row[9]
+        arrival_airport     = row[10]
         departure_terminal = row[15]
         arrival_terminal = row[16]
         aircraft_code = row[18]
