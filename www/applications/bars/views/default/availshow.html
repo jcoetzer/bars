@@ -1,0 +1,6 @@
+{{extend 'layout.html'}}
+<h1>Itinerary</h1>
+<p/>Depart {{=request.vars.depart or "departure"}}
+<p/>Arrive {{=request.vars.arrive or "arrival"}}
+<p/>Date {{=request.vars.date or "today"}}
+<p/>{{=message}}

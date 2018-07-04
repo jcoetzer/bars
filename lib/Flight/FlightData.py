@@ -164,7 +164,7 @@ class FlightData(object):
         if eol:
             print("")
 
-    def html(self):
+    def html(self, form=None):
         rbuf = "<tr><td>%6s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>" \
                % (self.flight_number, self.board_dow,
                   self.board_date_iso,
@@ -176,6 +176,14 @@ class FlightData(object):
                        self.arrival_time.strftime("%H:%M"))
         else:
             rbuf += "<td>&nbsp;</td><td>&nbsp;</td>"
+        if form is not None:
+            rbuf += """
+                <td><form action='%s'>
+                    <input type='hidden' name='depart' value='%s'/>
+                    <input type='hidden' name='depart' value='%s'/>
+                    <input type='submit' name='sendprice' value='Price'/>
+                </form></td>
+                   """ % (form, self.departure_airport, self.arrival_airport)
         rbuf += "</tr>"
         return rbuf
 
