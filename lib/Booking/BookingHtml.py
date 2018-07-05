@@ -6,6 +6,7 @@ from Flight.AvailDb import get_selling_conf, get_avail_flights, OldAvailSvc
 from Flight.ReadTaxes import ReadTaxes, ApplyTaxes
 from Booking.FareCalcDisplay import FareCalcDisplay, ReadPayments, \
      ReadSellingConfig, GetPriceSsr
+from Ssm.SsmDb import GetCityPair
 
 
 def GetAvailHtml(conn, dt1, dt2, cityPairNo,

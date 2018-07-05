@@ -1,4 +1,5 @@
 BARSDIR = /opt/bars
+WEB2PYDIR = /opt/web2py
 
 PYTHONS = \
 	./bin/BarsBook.pyc \
@@ -67,24 +68,12 @@ PYTHONS = \
 all: $(PYTHONS)
 
 install: $(PYTHONS)
-	mkdir -p $(BARSDIR)/bin
-	find ./bin/ -name "*.py" -print -exec cp {} $(BARSDIR)/bin/ \;
-	mkdir -p $(BARSDIR)/lib
-	find ./lib/ -maxdepth 1 -name "*.py" -print -exec cp {} $(BARSDIR)/lib/ \;
-	mkdir -p $(BARSDIR)/lib/Booking
-	find ./lib/Booking -maxdepth 1 -name "*.py" -print -exec cp {} $(BARSDIR)/lib/Booking \;
-	mkdir -p $(BARSDIR)/lib/Flight
-	find ./lib/Flight -maxdepth 1 -name "*.py" -print -exec cp {} $(BARSDIR)/lib/Flight \;
-	mkdir -p $(BARSDIR)/lib/Ssm
-	find ./lib/Ssm -maxdepth 1 -name "*.py" -print -exec cp {} $(BARSDIR)/lib/Ssm \;
-	mkdir -p $(BARSDIR)/lib/PnlAdl
-	find ./lib/PnlAdl -maxdepth 1 -name "*.py" -print -exec cp {} $(BARSDIR)/lib/PnlAdl \;
-	find ./etc/ -name "*.lst" -print -exec cp {} $(BARSDIR)/etc/ \;
-	find ./etc/ -name "*.cfg" -print -exec cp {} $(BARSDIR)/etc/ \;
-	mkdir -p $(BARSDIR)/sql
-	find ./sql -name "*.sql" -print -exec cp {} $(BARSDIR)/sql/ \;
-	mkdir -p $(BARSDIR)/etc
-	find ./etc -type f -print -exec cp {} $(BARSDIR)/etc/ \;
+	@mkdir -p $(BARSDIR)
+	rsync --exclude=__pycache__ -avq bin $(BARSDIR)/bin
+	rsync --exclude=__pycache__ -avq lib $(BARSDIR)/lib
+	rsync --exclude=__pycache__ -avq sql $(BARSDIR)/sql
+	rsync --exclude=__pycache__ -avq etc $(BARSDIR)/etc
+	rsync --exclude=--pycache__ -avq www/applications/bars $(WEB2PYDIR)/applications/bars
 
 uninstall:
 	find $(BARSDIR)/bin/ -name "*.py" -print -delete
