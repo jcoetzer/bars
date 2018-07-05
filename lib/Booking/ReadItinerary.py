@@ -6,9 +6,10 @@ Read itinerary.
 import sys
 import operator
 import psycopg2
+from psycopg2 import extras
 import datetime
 from BarsLog import set_verbose, get_verbose, printlog
-from Booking.ItenaryData import ItenaryData
+from Booking.ItineraryData import ItineraryData
 
 
 def ReadItinerary(conn, bookno, status_flag, action_codes,
@@ -52,7 +53,7 @@ def ReadItinerary(conn, bookno, status_flag, action_codes,
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(itenSql)
     for row in cur:
-        itineraryrecs.append(ItenaryData(row['flight_number'],
+        itineraryrecs.append(ItineraryData(row['flight_number'],
                                        row['flight_date'],
                                        row['selling_class'],
                                        row['departure_airport'],

@@ -4,7 +4,7 @@ Read booking e.a. for flights.
 """
 
 import psycopg2
-import psycopg2.extras
+from psycopg2 import extras
 from BarsLog import printlog
 
 

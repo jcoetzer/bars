@@ -17,6 +17,7 @@ sid_no is for NoFlySelecteePassengerId (not used)
 import sys
 import operator
 import psycopg2  # Informix DB module
+from psycopg2 import extras
 from BarsLog import set_verbose, get_verbose, printlog
 
 

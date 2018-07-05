@@ -2,7 +2,7 @@
 
 import sys
 import psycopg2
-import psycopg2.extras
+from psycopg2 import extras
 from BarsLog import set_verbose, get_verbose, printlog
 from ReadDateTime import ReadDate
 from Flight.FlightData import FlightData

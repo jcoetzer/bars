@@ -14,6 +14,7 @@ import getopt
 from configobj import ConfigObj
 from xml.dom import minidom
 import psycopg2
+from psycopg2 import extras
 from datetime import datetime, timedelta, datetime
 
 from BarsConfig import BarsConfig

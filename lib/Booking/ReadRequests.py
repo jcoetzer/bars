@@ -7,6 +7,7 @@ Read requests and stuff.
 import sys
 import operator
 import psycopg2  # the Informix DB module
+from psycopg2 import extras
 from BarsLog import set_verbose, get_verbose, printlog
 from Booking.SsrData import SsrData
 

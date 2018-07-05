@@ -7,6 +7,7 @@ Read booking references.
 import sys
 import operator
 import psycopg2
+from psycopg2 import extras
 
 from BarsLog import printlog
 

@@ -69,11 +69,11 @@ all: $(PYTHONS)
 
 install: $(PYTHONS)
 	@mkdir -p $(BARSDIR)
-	rsync --exclude=__pycache__ -avq bin $(BARSDIR)/bin
-	rsync --exclude=__pycache__ -avq lib $(BARSDIR)/lib
-	rsync --exclude=__pycache__ -avq sql $(BARSDIR)/sql
-	rsync --exclude=__pycache__ -avq etc $(BARSDIR)/etc
-	rsync --exclude=--pycache__ -avq www/applications/bars $(WEB2PYDIR)/applications/bars
+	rsync --exclude=__pycache__ -av bin $(BARSDIR)/bin
+	rsync --exclude=__pycache__ -av lib $(BARSDIR)/lib
+	rsync --exclude=__pycache__ -av sql $(BARSDIR)/sql
+	rsync --exclude=__pycache__ -av etc $(BARSDIR)/etc
+	rsync --exclude=--pycache__ -av www/applications/bars $(WEB2PYDIR)/applications/bars
 
 uninstall:
 	find $(BARSDIR)/bin/ -name "*.py" -print -delete

@@ -79,6 +79,12 @@ class FarePricingData(object):
               % (self.fare_basis_code, self.selling_class, self.fare_amount,
                  self.total_amount))
 
+    def html(self):
+        rbuf = "<tr><td>%s</td><td>%s</td><td>%7.2f</td><td>%7.2f</td></tr>\n" \
+               % (self.fare_basis_code, self.selling_class, self.fare_amount,
+                  self.total_amount)
+        return rbuf
+
 
 class PricingData(object):
 

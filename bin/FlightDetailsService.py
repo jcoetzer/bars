@@ -11,6 +11,7 @@ import sys
 import getopt
 
 import psycopg2
+from psycopg2 import extras
 
 from BarsLog import printlog, set_verbose
 from ReadDateTime import ReadDate, DateRange

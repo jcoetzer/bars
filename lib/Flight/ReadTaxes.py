@@ -4,6 +4,7 @@ Read taxes.
 """
 
 import psycopg2
+from psycopg2 import extras
 
 from BarsLog import printlog
 from datetime import datetime, date

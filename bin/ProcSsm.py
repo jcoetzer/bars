@@ -17,13 +17,13 @@ from Ssm.SsmData import SsmData, read_ssm_data
 from Ssm.SsmYacc import YaccFile
 
 import psycopg2
+from psycopg2 import extras
 from BarsLog import printlog, set_verbose
 from ReadDateTime import ReadDate, DateRange
 from Ssm.ProcNew import ProcNew
 from Ssm.ProcCnl import ProcCnl
 from Ssm.SsmDb import CheckCityPair, CheckFlightPeriod
 
-import psycopg2
 from BarsConfig import BarsConfig
 from DbConnect import OpenDb, CloseDb
 from BarsBanner import print_banner

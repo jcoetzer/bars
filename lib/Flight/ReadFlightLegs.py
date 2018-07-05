@@ -6,6 +6,7 @@ Read Flight Legs.
 
 import sys
 import psycopg2
+from psycopg2 import extras
 from BarsLog import set_verbose, get_verbose, printlog
 from ReadDateTime import ReadDate
 from Flight.FlightData import FlightData

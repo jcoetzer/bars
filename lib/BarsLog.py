@@ -27,7 +27,7 @@ def printlog(lvl, msg):
     global verbose
 
     if verbose >= lvl:
-        if lvl >= 2:
-            print("\t", end=" ")
+        #if lvl >= 2:
+            #print("\t", end=" ")
         print("%s" % msg)
         sys.stdout.flush()

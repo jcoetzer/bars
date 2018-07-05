@@ -7,6 +7,7 @@ from Flight.ReadTaxes import ReadTaxes, ApplyTaxes
 from Booking.FareCalcDisplay import FareCalcDisplay, ReadPayments, \
      ReadSellingConfig, GetPriceSsr
 from Ssm.SsmDb import GetCityPair
+from BarsLog import printlog
 
 
 def GetAvailHtml(conn, dt1, dt2, cityPairNo,
@@ -34,7 +35,7 @@ def GetPriceHtml(conn,
                  dt1, dt2,
                  selling_class, onw_return_ind, fare_category, authority_level):
     """Read and display price information."""
-    rbuf = "<table>"
+    rbuf = "<table>\n"
     sellconfigs = ReadSellingConfig(conn, aCompanyCode)
     # for cls in sorted(sellconfigs, key=sellconfigs.get, reverse=False):
         # sellconfigs[cls].display()
@@ -63,5 +64,5 @@ def GetPriceHtml(conn,
             if fare.selling_class == selling_class:
                 fare.apply_taxes(taxes)
                 rbuf += fare.html()
-    rbuf += "</table>"
+    rbuf += "</table>\n"
     return rbuf

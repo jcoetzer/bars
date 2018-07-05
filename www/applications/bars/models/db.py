@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+import psycopg2
+from psycopg2 import extras
 
 from DbConnect import OpenDb, CloseDb
 from BarsConfig import BarsConfig
+from BarsLog import printlog, set_verbose
 
 # -------------------------------------------------------------------------
 # AppConfig configuration made easy. Look inside private/appconfig.ini
@@ -164,6 +167,7 @@ db = DAL('postgres://postgres@localhost/barsdb')
     #Field('last_name', requires=IS_NOT_EMPTY()),
     #Field('email', requires=IS_NOT_EMPTY()))g
 
+set_verbose(2)
 
 barsdir = os.environ['BARSDIR']
 etcdir = "%s/etc" % barsdir
@@ -172,4 +176,5 @@ cfg = BarsConfig('%s/bars.cfg' % etcdir)
 
 # Open connection to database
 conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
+printlog(1, "Rock and roll!")
 

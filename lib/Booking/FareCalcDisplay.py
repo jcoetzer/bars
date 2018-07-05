@@ -4,6 +4,7 @@ Calculate and display fares.
 """
 
 import psycopg2
+from psycopg2 import extras
 
 from BarsLog import printlog
 from Booking.PricingData import SellingConfig, PricingData, FarePricingData
@@ -12,21 +13,24 @@ from Booking.PaymentData import PaymentData
 
 def ReadSellingConfig(conn, acompany_code):
     """Read selling classes."""
-    rscSql = """SELECT company_code, selling_class, cabin_code,
+    rscSql = """SELECT selling_class, cabin_code,
                 parent_sell_cls, ffp_fact_mult,display_priority
                 FROM selling_conf
                 WHERE company_code = '%s'""" \
              % acompany_code
     printlog(2, rscSql)
-    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur = conn.cursor()
     cur.execute(rscSql)
     sellconfigs = {}
     for row in cur:
-        selling_class = row['selling_class']
+        selling_class = row[0]
+        cabin_code = row[1]
+        parent_sell_cls = row[2]
+        ffp_fact_mult = row[3]
+        display_priority = row[4]
         sellconf = SellingConfig(acompany_code, selling_class,
-                                 row['parent_sell_cls'], row['cabin_code'],
-                                 row['ffp_fact_mult'], row['display_priority'])
-        #sellconf.display()
+                                 parent_sell_cls, cabin_code,
+                                 ffp_fact_mult, display_priority)
         sellconfigs[selling_class] = sellconf
 
     return sellconfigs
@@ -120,53 +124,4 @@ def FareCalcDisplay(conn,
 
     return pricings
 
-
-def ReadPayments(conn, book_no):
-    """Read payments for booking."""
-    printlog(1, "Read payments for booking %d" % book_no)
-    RpSql = """
-        SELECT payment_form, payment_type, currency_code, payment_amount,
-        payment_date,
-        document_no, payment_mode, pax_name, pax_code,
-        contact_phone_no,
-        paid_flag, pay_stat_flag,
-        update_time
-        FROM payments
-        WHERE book_no = %d""" % book_no
-    printlog(2, RpSql)
-    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cur.execute(RpSql)
-    for row in cur:
-        payRec = PaymentData(row['payment_form'], row['payment_type'],
-                             row['currency_code'], row['payment_amount'],
-                             row['payment_date'],
-                             row['document_no'], row['payment_mode'],
-                             row['pax_name'], row['pax_code'],
-                             row['paid_flag'], row['pay_stat_flag'],
-                             row['update_time'])
-        payRec.display()
-
-
-def GetPriceSsr(conn, ssr_code):
-    """Get price e.a. for SSR."""
-    gpsSql = """SELECT fee_type_rcd, fee_code, description,
-             fee_currency, fee_amount,
-             payment_type, payment_form
-             FROM fees
-             WHERE ssr_code = '%s'""" % ssr_code
-    printlog(2, gpsSql)
-    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cur.execute(gpsSql)
-    famount = 0.0
-    fcurr = ''
-    fcode = ''
-    for row in cur:
-        printlog(1, "SSR %s : fee %s %s%f : %s"
-                 % (ssr_code, row['fee_code'], row['fee_currency'],
-                    row['fee_amount'], row['description']))
-        famount = float(row['fee_amount'])
-        fcurr = str(row['fee_currency'])
-        fcode = str(row['fee_code'])
-    printlog(1, "Price for SSR %s : %s%.2f" % (ssr_code, fcurr, famount))
-    return fcode, fcurr, famount
 

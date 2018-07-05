@@ -3,6 +3,8 @@ Passenger name list (PNL) messages.
 
 @file PaxList.py
 """
+import psycopg2
+from psycopg2 import extras
 
 from BarsLog import printlog, get_verbose
 from PnlAdl.PaxListEntry import PaxListEntry, ReadAltFlightNumber

@@ -2,6 +2,7 @@
 
 import sys
 import psycopg2
+from psycopg2 import extras
 from BarsLog import printlog
 from Flight.ReadFlightPeriods import ReadFlightPeriods, ReadFlightPerdLegs
 from Flight.ReadFlights import CheckFlight

@@ -2,6 +2,7 @@
 
 import sys
 import psycopg2
+from psycopg2 import extras
 from BarsLog import set_verbose, get_verbose, printlog
 from ReadDateTime import ReadDate
 from Ssm.AircraftData import AircraftData
@@ -105,7 +106,7 @@ def ReadEquipmentConfig(conn, tailNumber):
         tailNumber = row[3]
         cabinClasses.append(row[4])
         seatCapacities.append(row[5])
-        
+
     if len(cabinClasses) == 0:
         printlog("Equipment %s not found" % tailNumber)
         return None

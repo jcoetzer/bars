@@ -24,8 +24,9 @@ from ReadDateTime import ReadDate
 from Ssm.SsmDb import GetCityPair
 from Flight.AvailDb import get_selling_conf, get_avail_flights, OldAvailSvc
 from Flight.FlightDetails import GetFlightDetails
-from Booking.FareCalcDisplay import FareCalcDisplay, ReadPayments, \
-     ReadSellingConfig, GetPriceSsr
+from Booking.ReadPayments import ReadPayments, GetPriceSsr
+from Booking.FareCalcDisplay import FareCalcDisplay, \
+     ReadSellingConfig
 from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, \
      AddItinerary, AddPassenger, \
      AddBookFares, AddBookFarePassengers, \
@@ -41,6 +42,7 @@ from BarsBanner import print_banner
 from Booking.ReadBooking import ReadPassengers
 from Booking.PassengerData import PassengerData
 from Flight.ReadTaxes import ReadTaxes, ApplyTaxes
+from Booking.BookingHtml import GetAvailHtml, GetPriceHtml
 
 
 def usage(pn):
@@ -421,6 +423,7 @@ def main(argv):
     dobook = False
     dopay = False
     dossr = False
+    dohtml = False
 
     if len(argv) < 1:
         usage(os.path.basename(sys.argv[0]))
@@ -429,7 +432,7 @@ def main(argv):
                                "cfhivyVB:C:D:E:F:G:I:K:L:M:N:P:Q:R:S:T:U:X:Y:",
                                ["help",
                                 "avail", "book", "detail", "price", "pay",
-                                "chk", "ssr",
+                                "chk", "ssr", "html",
                                 "bn=", "dob=", "card=", "req=",
                                 "date=", "edate=", "flight=", "rflight="])
 
@@ -440,6 +443,8 @@ def main(argv):
             set_verbose(1)
         elif opt == '-V':
             set_verbose(2)
+        elif opt == '--html':
+            dohtml = True
         elif opt == '--avail':
             doavail = True
         elif opt == '--book':
@@ -549,14 +554,25 @@ def main(argv):
             GetFlightDetails(conn, flightNumber2, dt2, departAirport,
                              arriveAirport)
     elif doprice:
-        GetPrice(conn,
-                 cfg.CompanyCode,
-                 departAirport, arriveAirport,
-                 dt1, dt2,
-                 sellClass,  # cfg.SellingClass,
-                 cfg.OnwReturnIndicator,
-                 cfg.FareCategory,
-                 cfg.AuthorityLevel)
+        if dohtml:
+            msg = GetPriceHtml(conn,
+                               cfg.CompanyCode,
+                               departAirport, arriveAirport,
+                               dt1, dt1,
+                               sellClass,
+                               cfg.OnwReturnIndicator,
+                               cfg.FareCategory,
+                               cfg.AuthorityLevel)
+            print("%s\n" % msg)
+        else:
+            GetPrice(conn,
+                    cfg.CompanyCode,
+                    departAirport, arriveAirport,
+                    dt1, dt2,
+                    sellClass,  # cfg.SellingClass,
+                    cfg.OnwReturnIndicator,
+                    cfg.FareCategory,
+                    cfg.AuthorityLevel)
     elif dobook:
         bn = DoBook(conn, cfg, paxCount, groupName, paxNames, paxDobs,
                     flightNumber, dt1,

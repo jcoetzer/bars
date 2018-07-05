@@ -6,6 +6,7 @@ Read Flight Periods.
 import sys
 import getopt
 import psycopg2
+from psycopg2 import extras
 from datetime import datetime, timedelta, datetime
 from BarsLog import set_verbose, printlog
 from ReadDateTime import ReadDate
