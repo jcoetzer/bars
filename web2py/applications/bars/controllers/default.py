@@ -5,14 +5,15 @@
 ## -------------------------------------------------------------------------
 
 import os
-import psycopg2
-from psycopg2 import extras
 
 from Ssm.SsmDb import GetCityPair
-from Booking.BookingHtml import GetAvailHtml   #, GetPriceHtml
+from Booking.BookingHtml import GetAvailHtml, GetPriceHtml
+from DbConnect import OpenDb, CloseDb
+from BarsConfig import BarsConfig
 from ReadDateTime import ReadDate
-from Flight.AvailDb import OldAvailSvc
-from BarsLog import printlog, set_verbose
+from Flight.AvailDb import get_selling_conf, get_avail_flights, OldAvailSvc
+from Booking.FareCalcDisplay import FareCalcDisplay, ReadPayments, \
+     ReadSellingConfig, GetPriceSsr
 
 
 #barsdir = os.environ['BARSDIR']
@@ -85,15 +86,14 @@ def priceshow():
     fdate = ReadDate(request.vars.date or "today")
     sellClass = 'Y'
 
-    msg = "<p/>fubar\n"
-    #msg = GetPriceHtml(conn,
-                       #cfg.CompanyCode,
-                       #departAirport, arriveAirport,
-                       #fdate, fdate,
-                       #sellClass,  # cfg.SellingClass,
-                       #cfg.OnwReturnIndicator,
-                       #cfg.FareCategory,
-                       #cfg.AuthorityLevel)
+    msg = GetPriceHtml(conn,
+                       cfg.CompanyCode,
+                       departAirport, arriveAirport,
+                       fdate, fdate,
+                       sellClass,  # cfg.SellingClass,
+                       cfg.OnwReturnIndicator,
+                       cfg.FareCategory,
+                       cfg.AuthorityLevel)
     return dict(message=XML(msg))
 
 
@@ -149,3 +149,7 @@ def priceshow():
     #"""
     #return response.download(request, db)
 
+
+def display_your_form():
+    form = SQLFORM(db.register)
+    return dict(form=form)

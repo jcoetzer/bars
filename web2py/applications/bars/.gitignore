@@ -1,0 +1,6 @@
+cron/
+databases/
+errors/
+progress.log
+sessions/
+*.bak
