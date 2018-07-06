@@ -1,6 +1,7 @@
 ## -*- coding: utf-8 -*-
 ## -------------------------------------------------------------------------
-## This is a sample controller
+## BARS Airline Reservation Simulator
+##
 ## this file is released under public domain and you can use without limitations
 ## -------------------------------------------------------------------------
 
@@ -12,8 +13,8 @@ from DbConnect import OpenDb, CloseDb
 from BarsConfig import BarsConfig
 from ReadDateTime import ReadDate
 from Flight.AvailDb import get_selling_conf, get_avail_flights, OldAvailSvc
-from Booking.FareCalcDisplay import FareCalcDisplay, ReadPayments, \
-     ReadSellingConfig, GetPriceSsr
+from Booking.FareCalcDisplay import FareCalcDisplay, \
+     ReadSellingConfig
 
 
 #barsdir = os.environ['BARSDIR']
@@ -27,7 +28,6 @@ from Booking.FareCalcDisplay import FareCalcDisplay, ReadPayments, \
 ## ---- example index page ----
 def index():
     response.flash = T("BARS Airline Reservation Simulator")
-    ## return dict(message=T('BARS Airline Reservation Simulator'))
     form = FORM(INPUT(_name='depart', requires=IS_NOT_EMPTY()),
                 INPUT(_name='arrive', requires=IS_NOT_EMPTY()),
                 INPUT(_name='date', requires=IS_NOT_EMPTY()),
@@ -47,15 +47,8 @@ def index():
 
 
 def availability():
-    return dict() # message=T('BARS Airline Reservation Simulator'))
-
-
-def first():
-    return dict()
-
-
-def second():
-    return dict()
+    """Flight availability query."""
+    return dict() # message=T(''))
 
 
 def availshow():
@@ -149,7 +142,3 @@ def priceshow():
     #"""
     #return response.download(request, db)
 
-
-def display_your_form():
-    form = SQLFORM(db.register)
-    return dict(form=form)
