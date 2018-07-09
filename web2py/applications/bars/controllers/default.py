@@ -9,21 +9,11 @@ import os
 
 from BarsConfig import BarsConfig
 from Booking.BookingHtml import GetAvailHtml, GetPriceHtml
-from Flight.FlightData import FlightData
-#from DbConnect import CloseDb, OpenDb
-#from Flight.AvailDb import OldAvailSvc
 from ReadDateTime import ReadDate
 
-#barsdir = os.environ['BARSDIR']
-#etcdir = "%s/etc" % barsdir
 
-#cfg = BarsConfig('%s/bars.cfg' % etcdir)
-
-## Open connection to database
-#conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
-
-## ---- example index page ----
 def index():
+    """ Index page."""
     response.flash = T("BARS Airline Reservation Simulator")
     form = FORM(INPUT(_name='depart', requires=IS_NOT_EMPTY()),
                 INPUT(_name='arrive', requires=IS_NOT_EMPTY()),
@@ -73,6 +63,7 @@ def availshow():
 
 
 def priceshow():
+    """Display flight prices."""
     departAirport = str(request.vars.depart or "JNB")
     arriveAirport = str(request.vars.arrive or "GRJ")
     fdate = ReadDate(request.vars.date or "today")

@@ -2,13 +2,6 @@
 Itinerary data.
 """
 
-import os
-import sys
-import time
-from datetime import datetime, timedelta, date
-from BarsLog import printlog
-from ReadDateTime import ReadDate
-
 
 class ItineraryData(object):
     """Itinerary data."""
@@ -39,7 +32,6 @@ class ItineraryData(object):
         self.flight_number = str(flight_number).replace(' ', '')
         self.company_code = flight_number[0:2]
         self.flight_integer = int(flight_number[2:])
-        # self.board_dts = ReadDate(str(departure_date))
         self.board_dts = departure_date
         self.board_date_mdy = self.board_dts.strftime("%m/%d/%Y")
         self.board_date_iso = self.board_dts.strftime("%Y-%m-%d")

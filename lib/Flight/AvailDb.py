@@ -2,8 +2,8 @@
 Availability queries.
 """
 
-# from Flight.FlightData import FlightData
-import Flight.FlightData
+from Flight.FlightData import FlightData
+# import Flight.FlightData
 from BarsLog import printlog
 from Ssm.SsmDb import GetCityPair
 

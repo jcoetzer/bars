@@ -3,13 +3,11 @@
 Passenger name, date of birth and contact details.
 """
 
-import os
-import sys
 from random import randint
 
-from BarsLog import printlog, get_verbose
-from ReadDateTime import ReadDate
 from faker import Faker
+
+from BarsLog import get_verbose, printlog
 
 fake = Faker()
 
