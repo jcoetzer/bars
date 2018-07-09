@@ -46,7 +46,7 @@ def availshow():
     fdate = ReadDate(request.vars.date or "today")
     msg = GetAvailHtml(conn, fdate, fdate,
                        departAirport, arriveAirport,
-                       vCompany)
+                       vCompany, '/bars/default/priceshow')
     #flights = OldAvailSvc(conn, vCompany, fdate, cityPairNo,
                           #departAirport, arriveAirport)
     #msg = "<table>"
@@ -68,7 +68,7 @@ def priceshow():
     arriveAirport = str(request.vars.arrive or "GRJ")
     fdate = ReadDate(request.vars.date or "today")
     sellClass = 'Y'
-
+    #msg = "<p/>Price from <%s> to <%s>\n" % (departAirport, arriveAirport)
     msg = GetPriceHtml(conn,
                        cfg.CompanyCode,
                        departAirport, arriveAirport,

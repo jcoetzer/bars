@@ -11,7 +11,7 @@ from Ssm.SsmDb import GetCityPair
 
 def GetAvailHtml(conn, dt1, dt2,
                  departAirport, arriveAirport,
-                 vCompany):
+                 vCompany, flightUrl=None):
     """Get availability information."""
     cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
     flights = OldAvailSvc(conn, vCompany, dt1, cityPairNo,
@@ -25,7 +25,7 @@ def GetAvailHtml(conn, dt1, dt2,
                                     departAirport, arriveAirport,
                                     selling_class[0], vCompany)
         for flight in flights:
-            rbuf += flight.html()
+            rbuf += flight.html(flightUrl)
     rbuf += "</table>"
     return rbuf
 

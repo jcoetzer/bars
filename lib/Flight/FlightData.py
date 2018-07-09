@@ -173,7 +173,7 @@ class FlightData(object):
             rbuf += """
                 <td><form action='%s'>
                     <input type='hidden' name='depart' value='%s'/>
-                    <input type='hidden' name='depart' value='%s'/>
+                    <input type='hidden' name='arrive' value='%s'/>
                     <input type='submit' name='sendprice' value='Price'/>
                 </form></td>
                    """ % (form, self.departure_airport, self.arrival_airport)
