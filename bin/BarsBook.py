@@ -6,43 +6,38 @@
 Main for booking.
 """
 
+import configparser
+import getopt
 import os
 import sys
-import getopt
-from datetime import date
-from datetime import time
-from datetime import datetime
-from datetime import timedelta
-from random import randrange
-import configparser
+from datetime import date, datetime, time, timedelta
+from random import randint, randrange
+
 from faker import Faker
-from random import randint
 
-from BarsLog import printlog, set_verbose
-from ReadDateTime import ReadDate
-
-from Ssm.SsmDb import GetCityPair
-from Flight.AvailDb import get_selling_conf, get_avail_flights, OldAvailSvc
-from Flight.FlightDetails import GetFlightDetails
-from Booking.ReadPayments import ReadPayments, GetPriceSsr
-from Booking.FareCalcDisplay import FareCalcDisplay, \
-     ReadSellingConfig
-from Booking.BookingInfo import AddBookCrossIndex, AddBook, int2base20, \
-     AddItinerary, AddPassenger, \
-     AddBookFares, AddBookFarePassengers, \
-     AddBookFaresPayments, AddBookRequests, AddBookRequest, AddPayment, \
-     GetPreBookingInfo, AddBookTimeLimit, AddContact, UpdateBookPayment, \
-     AddBookingFareSegments
-from Booking.ReadItinerary import ReadItinerary, UpdateItinerary, UpdateBook
-from Flight.ReadFlights import ReadDeparture
-from Flight.ReadFlights import ReadFlightDeparture
-from DbConnect import OpenDb, CloseDb
-from BarsConfig import BarsConfig
 from BarsBanner import print_banner
-from Booking.ReadBooking import ReadPassengers
-from Booking.PassengerData import PassengerData
-from Flight.ReadTaxes import ReadTaxes, ApplyTaxes
+from BarsConfig import BarsConfig
+from BarsLog import printlog, set_verbose
 from Booking.BookingHtml import GetAvailHtml, GetPriceHtml
+from Booking.BookingInfo import (AddBook, AddBookCrossIndex,
+                                 AddBookFarePassengers, AddBookFares,
+                                 AddBookFaresPayments, AddBookingFareSegments,
+                                 AddBookRequest, AddBookRequests,
+                                 AddBookTimeLimit, AddContact, AddItinerary,
+                                 AddPassenger, AddPayment, GetPreBookingInfo,
+                                 UpdateBookPayment, int2base20)
+from Booking.FareCalcDisplay import FareCalcDisplay, ReadSellingConfig
+from Booking.PassengerData import PassengerData
+from Booking.ReadBooking import ReadPassengers
+from Booking.ReadItinerary import ReadItinerary, UpdateBook, UpdateItinerary
+from Booking.ReadPayments import GetPriceSsr, ReadPayments
+from DbConnect import CloseDb, OpenDb
+from Flight.AvailDb import OldAvailSvc, get_avail_flights, get_selling_conf
+from Flight.FlightDetails import GetFlightDetails
+from Flight.ReadFlights import ReadDeparture, ReadFlightDeparture
+from Flight.ReadTaxes import ApplyTaxes, ReadTaxes
+from ReadDateTime import ReadDate
+from Ssm.SsmDb import GetCityPair
 
 
 def usage(pn):
@@ -542,12 +537,12 @@ def main(argv):
     if dt2 is None:
         dt2 = dt1
 
-    selling_classs = get_selling_conf(conn, cfg.CompanyCode)
+    selling_classes = get_selling_conf(conn, cfg.CompanyCode)
     if doavail:
         cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
         GetAvail(conn, dt1, dt2, cityPairNo,
                  departAirport, arriveAirport,
-                 selling_classs, cfg.CompanyCode)
+                 selling_classes, cfg.CompanyCode)
     elif dodetail:
         GetFlightDetails(conn, flightNumber, dt1, departAirport, arriveAirport)
         if flightNumber2 is not None and dt2 is not None:

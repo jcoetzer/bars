@@ -2,10 +2,14 @@
 Availability queries.
 """
 
-from Flight.FlightData import FlightData
+# from Flight.FlightData import FlightData
+import Flight.FlightData
 from BarsLog import printlog
+from Ssm.SsmDb import GetCityPair
+
 
 def get_selling_conf(conn, aCompanyCode):
+    """Get selling configuration for company."""
     printlog(1, "Selling configuration for company %s" % aCompanyCode)
     AvlSql = \
     "SELECT selling_class, cabin_code " \
@@ -114,6 +118,8 @@ def OldAvailSvc(conn, company_code, lboard_date, city_pair_no,
                 depr_airport, arrv_airport):
     printlog(1, "Available flights depart %s arrive %s date %s"
              % (depr_airport, arrv_airport, lboard_date))
+    if city_pair_no is None:
+        city_pair_no = GetCityPair(conn, departAirport, arriveAirport)
     AvlSql = """
     SELECT fsd.board_date, fsd.flight_number,
         fsd.city_pair, sc.cabin_code,

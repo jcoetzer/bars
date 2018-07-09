@@ -7,15 +7,12 @@
 
 import os
 
-from Ssm.SsmDb import GetCityPair
-from Booking.BookingHtml import GetAvailHtml, GetPriceHtml
-from DbConnect import OpenDb, CloseDb
 from BarsConfig import BarsConfig
+from Booking.BookingHtml import GetAvailHtml, GetPriceHtml
+from Flight.FlightData import FlightData
+#from DbConnect import CloseDb, OpenDb
+#from Flight.AvailDb import OldAvailSvc
 from ReadDateTime import ReadDate
-from Flight.AvailDb import get_selling_conf, get_avail_flights, OldAvailSvc
-from Booking.FareCalcDisplay import FareCalcDisplay, \
-     ReadSellingConfig
-
 
 #barsdir = os.environ['BARSDIR']
 #etcdir = "%s/etc" % barsdir
@@ -43,12 +40,12 @@ def index():
     #else:
         #print("Form not quite right")
     redirect(URL('availability'))
-    return dict()
+    #return dict()
 
 
 def availability():
     """Flight availability query."""
-    return dict() # message=T(''))
+    return dict()
 
 
 def availshow():
@@ -57,13 +54,15 @@ def availshow():
     departAirport = str(request.vars.depart or "JNB")
     arriveAirport = str(request.vars.arrive or "GRJ")
     fdate = ReadDate(request.vars.date or "today")
-    cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
-    flights = OldAvailSvc(conn, vCompany, fdate, cityPairNo,
-                          departAirport, arriveAirport)
-    msg = "<table>"
-    for flight in flights:
-        msg += flight.html('/bars/default/priceshow')
-    msg += "<table>"
+    msg = GetAvailHtml(conn, fdate, fdate,
+                       departAirport, arriveAirport,
+                       vCompany)
+    #flights = OldAvailSvc(conn, vCompany, fdate, cityPairNo,
+                          #departAirport, arriveAirport)
+    #msg = "<table>"
+    #for flight in flights:
+        #msg += flight.html('/bars/default/priceshow')
+    #msg += "<table>"
     #for selling_class in selling_classes:
         #flights = get_avail_flights(conn, dt1, dt2, cityPairNo,
                                     #departAirport, arriveAirport,
@@ -141,4 +140,3 @@ def priceshow():
     #http://..../[app]/default/download/[filename]
     #"""
     #return response.download(request, db)
-

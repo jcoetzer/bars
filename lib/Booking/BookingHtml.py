@@ -2,22 +2,24 @@
 Display booking in HTML format.
 """
 
-from Flight.AvailDb import get_selling_conf, get_avail_flights, OldAvailSvc
-from Flight.ReadTaxes import ReadTaxes, ApplyTaxes
-from Booking.FareCalcDisplay import FareCalcDisplay, ReadPayments, \
-     ReadSellingConfig, GetPriceSsr
-from Ssm.SsmDb import GetCityPair
 from BarsLog import printlog
+from Booking.FareCalcDisplay import FareCalcDisplay, ReadSellingConfig
+from Flight.AvailDb import OldAvailSvc, get_avail_flights, get_selling_conf
+from Flight.FlightData import FlightData
+from Flight.ReadTaxes import ApplyTaxes, ReadTaxes
+from Ssm.SsmDb import GetCityPair
 
 
-def GetAvailHtml(conn, dt1, dt2, cityPairNo,
+def GetAvailHtml(conn, dt1, dt2,
                  departAirport, arriveAirport,
-                 selling_classes, vCompany):
+                 vCompany):
     """Get availability information."""
+    cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
     flights = OldAvailSvc(conn, vCompany, dt1, cityPairNo,
-                          departAirport, arriveAirport)
-    for flight in flights:
-        flight.display()
+                          departAirport, arriveAirport)    
+    selling_classes = get_selling_conf(conn, vCompany)
+    # for flight in flights:
+        #flight.display()
     rbuf = "<table>"
     for selling_class in selling_classes:
         flights = get_avail_flights(conn, dt1, dt2, cityPairNo,
@@ -46,15 +48,15 @@ def GetPriceHtml(conn,
                       pass_code1='ADULT', pass_code2='CHILD',
                       aState='GP', aNation='ZA',
                       aReturnInd='O')
-    for cls in sorted(sellconfigs, key=sellconfigs.get, reverse=False):
-        fare_factor = float(sellconfigs[cls].fare_factor)
+    for clas in sorted(sellconfigs, key=sellconfigs.get, reverse=False):
+        fare_factor = float(sellconfigs[clas].fare_factor)
         fares = FareCalcDisplay(conn,
                                 aCompanyCode,
                                 cityPairNo,
                                 taxes,
                                 dt1,
                                 dt2,
-                                cls,
+                                clas,
                                 onw_return_ind,
                                 fare_category,
                                 authority_level,
