@@ -6,6 +6,7 @@ gluon/
 handlers/
 httpserver.log
 parameters_8000.py
+parameters_8001.py
 scripts/
 site-packages/
 web2py.py

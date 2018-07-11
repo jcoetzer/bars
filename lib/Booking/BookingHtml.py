@@ -7,6 +7,10 @@ from Booking.FareCalcDisplay import FareCalcDisplay, ReadSellingConfig
 from Flight.AvailDb import ReadAvailDb, get_avail_flights, get_selling_conf
 from Flight.ReadTaxes import ApplyTaxes, ReadTaxes
 from Ssm.SsmDb import GetCityPair
+from Flight.ReadFlights import ReadFlightDeparture
+from Booking.BookingInfo import AddBook, AddBookCrossIndex, AddItinerary, \
+    AddPassenger, AddContact, AddBookRequests, AddBookTimeLimit, \
+    AddBookingFareSegments
 
 
 def GetAvailHtml(conn, dt1, dt2,
@@ -69,3 +73,68 @@ def GetPriceHtml(conn,
                 rbuf += fare.html()
     rbuf += "</table>\n"
     return rbuf
+
+
+def PutBookHtml(conn, vCompany, vBookCategory, vOriginAddress,
+                vOriginBranchCode, vAgencyCode,
+                groupName, paxRecs,
+                aCurrency, payAmount,
+                flightNumber, dt1,
+                departAirport, arriveAirport,
+                sellClass, aFareBasis,
+                aTimeLimit,
+                vUser, vGroup):
+    """Make a booking."""
+    if paxRecs is None:
+        msg = "No passenger names"
+        return msg
+    printlog(1, "Book fare basis %s payment %s%.2f flight %s date %s"
+             % (aFareBasis, aCurrency, payAmount, flightNumber, dt1))
+    vSeatQuantity = len(paxRecs)
+    if payAmount is None:
+        payAmount = 0.0
+    if sellClass is None:
+        sellClass = 'Y'
+    #if departAirport is None or arriveAirport is None:
+        #print("Flight number and date must be specified")
+        #return
+    printlog(1, "Book %d seats on flight %s date %s class %s"
+             % (vSeatQuantity, flightNumber, dt1, sellClass))
+    n, fd = ReadFlightDeparture(conn, sellClass, flightNumber, dt1)
+    if n == 0:
+        msg = "Flight number and date not found"
+        return msg
+    departAirport = fd.departure_airport
+    arriveAirport = fd.arrival_airport
+    cityPairNo = fd.city_pair
+    departTerm = fd.departure_terminal
+    arriveTerm = fd.arrival_terminal
+    departTime = fd.departure_time
+    arriveTime = fd.arrival_time
+    bn, pnr = AddBookCrossIndex(conn, vBookCategory, vOriginAddress,
+                                vUser, vGroup)
+    AddBook(conn, bn, pnr, vSeatQuantity, vOriginAddress, vBookCategory,
+            vOriginBranchCode, vAgencyCode,
+            dt1, groupName, vUser, vGroup)
+    AddItinerary(conn, bn, flightNumber, dt1,
+                 departAirport, arriveAirport,
+                 departTime, arriveTime,
+                 departTerm, arriveTerm,
+                 cityPairNo, sellClass,
+                 vUser, vGroup)
+    AddPassenger(conn, bn, paxRecs, vUser, vGroup)
+    AddContact(conn, bn, paxRecs, vUser, vGroup)
+    paxRequests = []
+    for paxRec in paxRecs:
+        paxRequests.append(paxRec.date_of_birth.strftime("%d%b%Y").upper())
+    AddBookRequests(conn, bn, vCompany, 'CKIN', paxRequests, vUser, vGroup)
+    AddBookTimeLimit(conn, bn, vAgencyCode, vUser, vGroup)
+    AddBookingFareSegments(conn, bn, 1, paxRecs[0].passenger_code,
+                           departAirport, arriveAirport,
+                           flightNumber, dt1,
+                           dt1, dt1,
+                           sellClass, aFareBasis,
+                           aCurrency, payAmount,
+                           vUser, vGroup)
+    msg = "<p/>Booking reference %s" % pnr
+    return bn, pnr

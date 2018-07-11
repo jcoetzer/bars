@@ -6,9 +6,10 @@
 ## -------------------------------------------------------------------------
 
 import os
+from datetime import date, datetime, time, timedelta
 
 from BarsConfig import BarsConfig
-from Booking.BookingHtml import GetAvailHtml, GetPriceHtml
+from Booking.BookingHtml import GetAvailHtml, GetPriceHtml, PutBookHtml
 from ReadDateTime import ReadDate
 
 
@@ -68,9 +69,59 @@ def priceshow():
     return dict(message=XML(msg))
 
 
-def booking()
+def booking():
+    """Input number of seats e.a. for booking."""
+    msg = "<p/>Book flight"
+    return dict(message=XML(msg))
+
+
+def bookingnames():
     """Input names e.a. for booking."""
-    return dict()
+    flightNumber = str(request.vars.fnumber)
+    flightDate = ReadDate(request.vars.fdate)
+    departAirport = str(request.vars.depart)
+    arriveAirport = str(request.vars.arrive)
+    seatCount = int(request.vars.fseats)
+    sellClass = request.vars.fclass
+    groupName = ''
+    msg = "<p/>Book flight"
+    return dict(message=XML(msg))
+
+
+def bookingshow():
+    """Process booking."""
+    flightNumber = str(request.vars.fnumber)
+    flightDate = ReadDate(request.vars.fdate)
+    departAirport = str(request.vars.depart)
+    arriveAirport = str(request.vars.arrive)
+    seatCount = int(request.vars.fseats)
+    sellClass = request.vars.fclass
+    groupName = ''
+    payAmount = 0.0
+    paxRecs = []
+    timeLimit = datetime.now() + timedelta(days=2)
+    passenger_code = 'ADULT'
+    passenger_no = 1
+    paxname = '%s/%s %s' % (request.vars.paxlname1,
+                            request.vars.paxfname1.replace(' ', ''),
+                            request.vars.paxtitle1)
+    date_of_birth = request.vars.paxdob1
+    contact_phone = request.vars.bkcell
+    contact_email = request.vars.bkemail
+    pax = PassengerData(passenger_code, passenger_no, paxname,
+                        date_of_birth, contact_phone, contact_email)
+    paxRecs.append(pax)
+    msg = "<p/>Booked flight"
+    msg += PutBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
+                   cfg.OriginBranchCode, cfg.AgencyCode,
+                   groupName, paxRecs,
+                   cfg.Currency, payAmount,
+                   flightNumber, flightDate,
+                   departAirport, arriveAirport,
+                   sellClass, cfg.FareBasisCode,
+                   timeLimit,
+                   cfg.User, cfg.Group)
+    return dict(message=XML(msg))
 
 
 ## ---- API (example) -----

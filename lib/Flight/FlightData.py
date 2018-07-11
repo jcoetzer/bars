@@ -176,10 +176,12 @@ class FlightData(object):
                     <input type='hidden' name='fdate' value='%s'/>
                     <input type='hidden' name='depart' value='%s'/>
                     <input type='hidden' name='arrive' value='%s'/>
+                    <input type='hidden' name='fclass' value='%s'/>
                     <input type='submit' name='sendprice' value='Price'/>
                 </form></td>
                    """ % (form, self.flight_number, self.board_date_iso,
-                          self.departure_airport, self.arrival_airport)
+                          self.departure_airport, self.arrival_airport,
+                          self.class_code)
         rbuf += "</tr>"
         return rbuf
 

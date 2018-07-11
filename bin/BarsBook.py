@@ -274,7 +274,6 @@ def PutPay(conn, aBookNo, aSellClass,
 
 def DoBook(conn, cfg, lnames, groupName, paxNames, paxDobs, flightNumber, dt1,
            departAirport, arriveAirport,
-           departTime, arriveTime,
            sellClass,
            vTimeLimit, payAmount):
     """Do the booking thing."""
@@ -310,7 +309,6 @@ def DoBook(conn, cfg, lnames, groupName, paxNames, paxDobs, flightNumber, dt1,
                       cfg.Currency, payAmount,
                       flightNumber, dt1,
                       departAirport, arriveAirport,
-                      # departTime, arriveTime,
                       sellClass, cfg.FareBasisCode,
                       vTimeLimit,
                       cfg.User, cfg.Group)
@@ -572,7 +570,6 @@ def main(argv):
         bn = DoBook(conn, cfg, paxCount, groupName, paxNames, paxDobs,
                     flightNumber, dt1,
                     departAirport, arriveAirport,
-                    departTime, arriveTime,
                     sellClass,
                     vTimeLimit, payAmount)
         if dopay:

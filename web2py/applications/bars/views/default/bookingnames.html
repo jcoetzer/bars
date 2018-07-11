@@ -3,19 +3,23 @@
 <p/>Depart {{=request.vars.depart}}
 <p/>Arrive {{=request.vars.arrive}}
 <p/>Date {{=request.vars.fdate}}
+<p/>Seats {{=request.vars.fseats}}
 <p/>{{=message}}
-<form action="bookingnames">
-<p/>Seats: <select name="fseats">
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
+<form action="bookingshow">
+<p>Title <select name="paxtitle1">
+<option value="MR">MR</option>
+<option value="MS">MS>/option>
+<option value="MRS">MRS</option>
+<option value="MISS">MISS</option>
+<option value="DR">DR</option>
+<option value="PROF">PROF</option>
 </select>
+First Names <input name="paxfname1" type="text" size="40" />
+Last Name <input name="paxlname1" type="text" size="20" />
+Date of Birth <input name="paxdob1" type="text" />
+</p>
+<p/>Cellphone Number <input name="bkcell" type="text" />
+<p/>Email Address <input name="bkemail" type="text" />
 <input name="fnumber" type="hidden" value="{{=request.vars.fnumber}}"/>
 <input name="fdate" type="hidden" value="{{=request.vars.fdate}}"/>
 <input name="depart" type="hidden" value="{{=request.vars.depart}}"/>

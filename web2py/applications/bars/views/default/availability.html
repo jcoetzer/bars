@@ -1,16 +1,16 @@
 {{extend 'layout.html'}}
 Where do you want to go?
 <form action="availshow">
-<p/>Depart<select name="depart" />
+<p/>Depart<select name="depart">
 <option value="JNB" selected="selected">Johannesburg</option>
 <option value="DUR">Durban</option>
 <option value="CPT">Cape Town</option>
 </select>
-<p/>Arrive<select name="arrive" />
+<p/>Arrive<select name="arrive">
 <option value="JNB">Johannesburg</option>
 <option value="DUR" selected="selected">Durban</option>
 <option value="CPT">Cape Town</option>
 </select>
-<p/>Date<input name="fdate" />
-<p/><input type="submit" />
+<p/>Date<input type="text" name="fdate" value="tomorrow" />
+<p/><input type="submit" value="Submit" />
 </form>
