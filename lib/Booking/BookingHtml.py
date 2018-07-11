@@ -4,7 +4,7 @@ Display booking in HTML format.
 
 from BarsLog import printlog
 from Booking.FareCalcDisplay import FareCalcDisplay, ReadSellingConfig
-from Flight.AvailDb import OldAvailSvc, get_avail_flights, get_selling_conf
+from Flight.AvailDb import ReadAvailDb, get_avail_flights, get_selling_conf
 from Flight.ReadTaxes import ApplyTaxes, ReadTaxes
 from Ssm.SsmDb import GetCityPair
 
@@ -14,7 +14,7 @@ def GetAvailHtml(conn, dt1, dt2,
                  vCompany, flightUrl=None):
     """Get availability information."""
     cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
-    flights = OldAvailSvc(conn, vCompany, dt1, cityPairNo,
+    flights = ReadAvailDb(conn, vCompany, dt1, cityPairNo,
                           departAirport, arriveAirport)
     selling_classes = get_selling_conf(conn, vCompany)
     # for flight in flights:

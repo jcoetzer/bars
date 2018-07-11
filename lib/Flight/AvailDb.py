@@ -114,7 +114,7 @@ def get_avail_flights(conn, fdate1, fdate2, city_pair,
     return flights
 
 
-def OldAvailSvc(conn, company_code, lboard_date, city_pair_no,
+def ReadAvailDb(conn, company_code, lboard_date, city_pair_no,
                 depr_airport, arrv_airport):
     printlog(1, "Available flights depart %s arrive %s date %s"
              % (depr_airport, arrv_airport, lboard_date))

@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -B
+#!/usr/bin/python2 -B
 #
 # Python won't try to write .pyc or .pyo files on the import of source modules
 #

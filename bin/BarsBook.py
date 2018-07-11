@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -B
 #
 # BarsBook.py
 #
@@ -32,7 +32,7 @@ from Booking.ReadBooking import ReadPassengers
 from Booking.ReadItinerary import ReadItinerary, UpdateBook, UpdateItinerary
 from Booking.ReadPayments import GetPriceSsr, ReadPayments
 from DbConnect import CloseDb, OpenDb
-from Flight.AvailDb import OldAvailSvc, get_avail_flights, get_selling_conf
+from Flight.AvailDb import ReadAvailDb, get_avail_flights, get_selling_conf
 from Flight.FlightDetails import GetFlightDetails
 from Flight.ReadFlights import ReadDeparture, ReadFlightDeparture
 from Flight.ReadTaxes import ApplyTaxes, ReadTaxes
@@ -89,7 +89,7 @@ def GetAvail(conn, dt1, dt2, cityPairNo,
              departAirport, arriveAirport,
              selling_classes, vCompany):
     """Get availability information."""
-    flights = OldAvailSvc(conn, vCompany, dt1, cityPairNo,
+    flights = ReadAvailDb(conn, vCompany, dt1, cityPairNo,
                           departAirport, arriveAirport)
     for flight in flights:
         flight.display()

@@ -62,12 +62,8 @@ def FareCalcDisplay(conn,
     WHERE fs.company_code = '%s'
     AND fs.active_flag = 'A'
     AND fs.city_pair = %d
-    AND ( ( fs.valid_from_date <= '%s'
-            AND fs.valid_to_date >= '%s'
-            AND fc.oneway_return_flag = 'O' )
-       OR ( fs.valid_from_date <= '%s'
-            AND fs.valid_to_date >= '%s'
-            AND fc.oneway_return_flag = 'R' ) )
+    AND fs.valid_from_date <= '%s'
+    AND fs.valid_to_date >= '%s'
     AND fc.company_code = fs.company_code
     AND fc.fare_basis_code = fs.fare_basis_code
     AND fc.selling_class = '%s'
@@ -81,7 +77,6 @@ def FareCalcDisplay(conn,
     ORDER BY fs.company_code, fs.city_pair, fs.fare_amount, fs.fare_basis_code
     """ % (acompany_code,
            acity_pair,
-           flightDate.strftime('%Y-%m-%d'), flightDate.strftime('%Y-%m-%d'),
            flightDate.strftime('%Y-%m-%d'), flightDate.strftime('%Y-%m-%d'),
            aselling_class,
            aoneway_return_flag,

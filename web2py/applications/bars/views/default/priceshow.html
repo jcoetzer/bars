@@ -1,6 +1,14 @@
 {{extend 'layout.html'}}
 <h1>Pricing</h1>
-<p/>Depart {{=request.vars.depart or "departure"}}
-<p/>Arrive {{=request.vars.arrive or "arrival"}}
-<p/>Date {{=request.vars.date or "today"}}
+<p/>Depart {{=request.vars.depart}}
+<p/>Arrive {{=request.vars.arrive}}
+<p/>Date {{=request.vars.fdate}}
 <p/>{{=message}}
+<p/>
+<form action="booking">
+<input name="fnumber" type="hidden" value="{{=request.vars.fnumber}}"/>
+<input name="fdate" type="hidden" value="{{=request.vars.fdate}}"/>
+<input name="depart" type="hidden" value="{{=request.vars.depart}}"/>
+<input name="arrive" type="hidden" value="{{=request.vars.arrive}}"/>
+<input type="submit" />
+</form>

@@ -15,10 +15,10 @@ from ReadDateTime import ReadDate
 def index():
     """ Index page."""
     response.flash = T("BARS Airline Reservation Simulator")
-    form = FORM(INPUT(_name='depart', requires=IS_NOT_EMPTY()),
-                INPUT(_name='arrive', requires=IS_NOT_EMPTY()),
-                INPUT(_name='date', requires=IS_NOT_EMPTY()),
-                INPUT(_type='submit'))
+    #form = FORM(INPUT(_name='depart', requires=IS_NOT_EMPTY()),
+                #INPUT(_name='arrive', requires=IS_NOT_EMPTY()),
+                #INPUT(_name='fdate', requires=IS_NOT_EMPTY()),
+                #INPUT(_type='submit'))
     ## if form.process().accepted:
     #if form.vars.depart is not None:
         #print("Form accepted")
@@ -41,43 +41,36 @@ def availability():
 def availshow():
     """Get availability information."""
     vCompany = 'ZZ'
-    departAirport = str(request.vars.depart or "JNB")
-    arriveAirport = str(request.vars.arrive or "GRJ")
-    fdate = ReadDate(request.vars.date or "today")
+    departAirport = str(request.vars.depart)
+    arriveAirport = str(request.vars.arrive)
+    fdate = ReadDate(request.vars.fdate)
     msg = GetAvailHtml(conn, fdate, fdate,
                        departAirport, arriveAirport,
                        vCompany, '/bars/default/priceshow')
-    #flights = OldAvailSvc(conn, vCompany, fdate, cityPairNo,
-                          #departAirport, arriveAirport)
-    #msg = "<table>"
-    #for flight in flights:
-        #msg += flight.html('/bars/default/priceshow')
-    #msg += "<table>"
-    #for selling_class in selling_classes:
-        #flights = get_avail_flights(conn, dt1, dt2, cityPairNo,
-                                    #departAirport, arriveAirport,
-                                    #selling_class[0], vCompany)
-        #for flight in flights:
-            #flight.display()
     return dict(message=XML(msg))
 
 
 def priceshow():
     """Display flight prices."""
-    departAirport = str(request.vars.depart or "JNB")
-    arriveAirport = str(request.vars.arrive or "GRJ")
-    fdate = ReadDate(request.vars.date or "today")
+    flightNumber = str(request.vars.fnumber)
+    flightDate = ReadDate(request.vars.fdate)
+    departAirport = str(request.vars.depart)
+    arriveAirport = str(request.vars.arrive)
     sellClass = 'Y'
-    #msg = "<p/>Price from <%s> to <%s>\n" % (departAirport, arriveAirport)
     msg = GetPriceHtml(conn,
                        cfg.CompanyCode,
                        departAirport, arriveAirport,
-                       fdate, fdate,
+                       flightDate, flightDate,
                        sellClass,  # cfg.SellingClass,
                        cfg.OnwReturnIndicator,
                        cfg.FareCategory,
                        cfg.AuthorityLevel)
     return dict(message=XML(msg))
+
+
+def booking()
+    """Input names e.a. for booking."""
+    return dict()
 
 
 ## ---- API (example) -----

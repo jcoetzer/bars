@@ -53,9 +53,9 @@ class FlightData(object):
                     departure_time, arrival_time,
                     departure_airport, arrival_airport, city_pair,
                     aircraft_code))
-        self.class_code = class_code
+        self.class_code = class_code.strip()
         # self.company_code = company_code
-        self.flight_number = flight_number
+        self.flight_number = str(flight_number).strip()
         if flight_number is None:
             self.company_code = ''
             self.flight_integer = 0
@@ -172,11 +172,14 @@ class FlightData(object):
         if form is not None:
             rbuf += """
                 <td><form action='%s'>
+                    <input type='hidden' name='fnumber' value='%s'/>
+                    <input type='hidden' name='fdate' value='%s'/>
                     <input type='hidden' name='depart' value='%s'/>
                     <input type='hidden' name='arrive' value='%s'/>
                     <input type='submit' name='sendprice' value='Price'/>
                 </form></td>
-                   """ % (form, self.departure_airport, self.arrival_airport)
+                   """ % (form, self.flight_number, self.board_date_iso,
+                          self.departure_airport, self.arrival_airport)
         rbuf += "</tr>"
         return rbuf
 
