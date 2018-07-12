@@ -3,7 +3,7 @@
 <p/>Depart {{=request.vars.depart}}
 <p/>Arrive {{=request.vars.arrive}}
 <p/>Date {{=request.vars.fdate}}
-<p/>Seats {{=request.vars.fseats}}
+<p/>Seats {{=request.vars.fseats[0]}}
 <p/>{{=message}}
 <form action="bookingshow">
 <p>Title <select name="paxtitle1">
@@ -24,7 +24,8 @@ Date of Birth <input name="paxdob1" type="text" />
 <input name="fdate" type="hidden" value="{{=request.vars.fdate}}"/>
 <input name="depart" type="hidden" value="{{=request.vars.depart}}"/>
 <input name="arrive" type="hidden" value="{{=request.vars.arrive}}"/>
-<input name="fseats" type="hidden" value="{{=request.vars.fseats}}"/>
+<input name="fseats" type="hidden" value="{{=request.vars.fseats[0]}}"/>
 <input name="fclass" type="hidden" value="{{=request.vars.fclass}}"/>
+<input name="fprice" type="hidden" value="{{=request.vars.fprice}}"/>
 <input type="submit" value="Submit" />
 </form>

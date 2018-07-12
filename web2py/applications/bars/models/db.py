@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import os
+import logging
 
 from DbConnect import OpenDb, CloseDb
 from BarsConfig import BarsConfig
+from BarsLog import init_blogger
 
 # -------------------------------------------------------------------------
 # AppConfig configuration made easy. Look inside private/appconfig.ini
@@ -158,12 +160,18 @@ if configuration.get('scheduler.enabled'):
 # -------------------------------------------------------------------------
 # auth.enable_record_versioning(db)
 
+init_blogger("bars")
+
+#blogger.info("Start")
+
 db = DAL('postgres://postgres@localhost/barsdb')
+
 #db.define_table('register',
     #Field('first_name', requires=IS_NOT_EMPTY()),
     #Field('last_name', requires=IS_NOT_EMPTY()),
     #Field('email', requires=IS_NOT_EMPTY()))g
 
+#blogger = logging.getLogger("bars")
 
 barsdir = os.environ['BARSDIR']
 etcdir = "%s/etc" % barsdir
@@ -172,4 +180,6 @@ cfg = BarsConfig('%s/bars.cfg' % etcdir)
 
 # Open connection to database
 conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
+
+
 

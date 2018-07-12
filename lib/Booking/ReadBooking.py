@@ -11,7 +11,7 @@ from psycopg2 import extras
 
 from datetime import datetime, timedelta, date
 
-from BarsLog import set_verbose, get_verbose, printlog
+from BarsLog import blogger
 from Booking.PassengerData import PassengerData
 # from ReadBookings import GetBookColumns
 
@@ -48,7 +48,7 @@ def ReadBookingData(conn, bk_cfg_files, book_no, locator):
     # Run query
     for bk_cfg_file in bk_cfg_files:
 
-        printlog(2, "Read config file %s" % bk_cfg_file)
+        blogger.debug("Read config file %s" % bk_cfg_file)
         f = open(bk_cfg_file, "r")
 
         fnames = os.path.basename(bk_cfg_file).split('.')
@@ -81,7 +81,7 @@ def ReadBookingData(conn, bk_cfg_files, book_no, locator):
                 print("Unknown field [%s]" % fname)
                 return
             print("%s:" % tabname)
-            printlog(2, "%s" % bookSql)
+            blogger.debug("%s" % bookSql)
 
             cur = conn.cursor()
             # Run query
@@ -125,6 +125,7 @@ def ReadPassengers(conn, book_no):
             FROM passengers pa
             WHERE pa.book_no = %d
             AND pa.pax_no > 0""" % book_no
+    blogger.debug(RpSql)
     cur.execute(RpSql)
     paxRecs = []
     for row in cur:

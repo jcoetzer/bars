@@ -6,7 +6,7 @@ Read taxes.
 import psycopg2
 from psycopg2 import extras
 
-from BarsLog import printlog
+from BarsLog import blogger
 from datetime import datetime, date
 
 class TaxData(object):
@@ -79,12 +79,12 @@ def ReadTaxes(conn, aCompanyCode, aFlightDate, aReturnDate, aAirport,
        flightDate, returnDate, aReturnInd,
        flightDate, returnDate, aReturnInd,
        flightDate, returnDate, returnDate, returnDate)
-    printlog(2, "%s" % RtSql)
+    blogger.debug("%s" % RtSql)
     cur = conn.cursor()
     cur.execute(RtSql)
 
     taxes = []
-    printlog(2, "Selected %d row(s)" % cur.rowcount)
+    blogger.debug("Selected %d row(s)" % cur.rowcount)
     for row in cur:
         tax = TaxData(row[0], row[1], row[2], row[3], row[4], row[5], row[6],
                       row[7], row[8], row[9])

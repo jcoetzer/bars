@@ -8,7 +8,7 @@ import operator
 import psycopg2
 from psycopg2 import extras
 import datetime
-from BarsLog import set_verbose, get_verbose, printlog
+from BarsLog import blogger
 from Booking.ItineraryData import ItineraryData
 
 
@@ -47,7 +47,7 @@ def ReadItinerary(conn, bookno, status_flag, action_codes,
             " AND flight_number like '%s'" % fnumber
     itenSql += \
         " ORDER BY flight_date,departure_time ASC"
-    printlog(2, itenSql)
+    blogger.debug(itenSql)
     sys.stdout.flush()
     n_itens = 0
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -68,24 +68,24 @@ def ReadItinerary(conn, bookno, status_flag, action_codes,
 
 def UpdateItinerary(conn, aBookNo, aStatus='A'):
     """Activate itinerary."""
-    printlog(1, "Set bookings %d itinerary status to %s" % (aBookNo, aStatus))
+    blogger.info("Set bookings %d itinerary status to %s" % (aBookNo, aStatus))
     UaSql = """UPDATE itineraries
                SET (status_flag, processing_flag)
                  = ('%s', 'Y')
                WHERE book_no = %d""" \
             % (aStatus, aBookNo)
     cur = conn.cursor()
-    printlog(2, UaSql)
+    blogger.debug(UaSql)
     cur.execute(UaSql)
-    printlog(2, "Updated %d rows" % cur.rowcount)
+    blogger.debug("Updated %d rows" % cur.rowcount)
 
 
 def UpdateBook(conn, aBookNo, aStatus='A'):
     """Activate itinerary."""
-    printlog(1, "Set bookings %d status to %s" % (aBookNo, aStatus))
+    blogger.info("Set bookings %d status to %s" % (aBookNo, aStatus))
     UaSql = """UPDATE bookings SET status_flag='%s'
             WHERE book_no = %d""" % (aStatus, aBookNo)
     cur = conn.cursor()
-    printlog(2, UaSql)
+    blogger.debug(UaSql)
     cur.execute(UaSql)
-    printlog(2, "Updated %d rows" % cur.rowcount)
+    blogger.debug("Updated %d rows" % cur.rowcount)

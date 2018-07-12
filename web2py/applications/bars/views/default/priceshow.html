@@ -3,6 +3,7 @@
 <p/>Depart {{=request.vars.depart}}
 <p/>Arrive {{=request.vars.arrive}}
 <p/>Date {{=request.vars.fdate}}
+<p/>Price {{=amount}}
 <p/>{{=message}}
 <p/>
 <form action="booking">
@@ -11,5 +12,6 @@
 <input name="depart" type="hidden" value="{{=request.vars.depart}}"/>
 <input name="arrive" type="hidden" value="{{=request.vars.arrive}}"/>
 <input name="fclass" type="hidden" value="{{=request.vars.fclass}}"/>
+<input name="fprice" type="hidden" value="{{=amount}}"/>
 <input type="submit" value="Submit" />
 </form>

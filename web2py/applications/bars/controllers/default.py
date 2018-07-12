@@ -6,16 +6,20 @@
 ## -------------------------------------------------------------------------
 
 import os
+import logging
 from datetime import date, datetime, time, timedelta
 
 from BarsConfig import BarsConfig
-from Booking.BookingHtml import GetAvailHtml, GetPriceHtml, PutBookHtml
+from Booking.BookingHtml import GetAvailHtml, GetPriceHtml, PutBookHtml, \
+    PutPayHtml
 from ReadDateTime import ReadDate
 from Booking.PassengerData import PassengerData
+from BarsLog import blogger
 
 
 def index():
     """ Index page."""
+    blogger.debug("Start")
     response.flash = T("BARS Airline Reservation Simulator")
     #form = FORM(INPUT(_name='depart', requires=IS_NOT_EMPTY()),
                 #INPUT(_name='arrive', requires=IS_NOT_EMPTY()),
@@ -37,6 +41,7 @@ def index():
 
 def availability():
     """Flight availability query."""
+    blogger.debug("Availability")
     return dict()
 
 
@@ -45,8 +50,10 @@ def availshow():
     vCompany = 'ZZ'
     departAirport = str(request.vars.depart)
     arriveAirport = str(request.vars.arrive)
-    fdate = ReadDate(request.vars.fdate)
-    msg = GetAvailHtml(conn, fdate, fdate,
+    flightDate = ReadDate(request.vars.fdate)
+    blogger.debug("Get availability for date %s depart %s arrive %s"
+                  % (flightDate, departAirport, arriveAirport))
+    msg = GetAvailHtml(conn, flightDate, flightDate,
                        departAirport, arriveAirport,
                        vCompany, '/bars/default/priceshow')
     return dict(message=XML(msg))
@@ -59,15 +66,17 @@ def priceshow():
     departAirport = str(request.vars.depart)
     arriveAirport = str(request.vars.arrive)
     sellClass = 'Y'
-    msg = GetPriceHtml(conn,
-                       cfg.CompanyCode,
-                       departAirport, arriveAirport,
-                       flightDate, flightDate,
-                       sellClass,  # cfg.SellingClass,
-                       cfg.OnwReturnIndicator,
-                       cfg.FareCategory,
-                       cfg.AuthorityLevel)
-    return dict(message=XML(msg))
+    blogger.debug("Get price for date %s depart %s arrive %s"
+                  % (flightDate, departAirport, arriveAirport))
+    msg, amt = GetPriceHtml(conn,
+                            cfg.CompanyCode,
+                            departAirport, arriveAirport,
+                            flightDate, flightDate,
+                            sellClass,  # cfg.SellingClass,
+                            cfg.OnwReturnIndicator,
+                            cfg.FareCategory,
+                            cfg.AuthorityLevel)
+    return dict(message=XML(msg), amount=amt)
 
 
 def booking():
@@ -82,23 +91,29 @@ def bookingnames():
     flightDate = ReadDate(request.vars.fdate)
     departAirport = str(request.vars.depart)
     arriveAirport = str(request.vars.arrive)
-    seatCount = str(request.vars.fseats)
+    seatCount = int(request.vars.fseats[0])
     sellClass = request.vars.fclass
     groupName = ''
+    blogger.debug("Get %s names for flight %s date %s depart %s arrive %s"
+                 % (seatCount, flightNumber, flightDate, departAirport, arriveAirport))
     msg = "<p/>Book flight"
     return dict(message=XML(msg))
 
 
 def bookingshow():
     """Process booking."""
+    blogger.debug("New booking")
     flightNumber = str(request.vars.fnumber)
     flightDate = ReadDate(request.vars.fdate)
     departAirport = str(request.vars.depart)
     arriveAirport = str(request.vars.arrive)
-    seatCount = str(request.vars.fseats)
+    seatCount = int(request.vars.fseats)
+    payAmount = float(request.vars.fprice)
     sellClass = request.vars.fclass
+    blogger.debug("Book %s seats for flight %s date %s depart %s arrive %s"
+                  % (seatCount, flightNumber, flightDate,
+                     departAirport, arriveAirport))
     groupName = ''
-    payAmount = 0.0
     paxRecs = []
     timeLimit = datetime.now() + timedelta(days=2)
     passenger_code = 'ADULT'
@@ -106,22 +121,40 @@ def bookingshow():
     paxname = '%s/%s %s' % (request.vars.paxlname1,
                             request.vars.paxfname1.replace(' ', ''),
                             request.vars.paxtitle1)
-    date_of_birth = request.vars.paxdob1
+    date_of_birth = ReadDate(request.vars.paxdob1)
     contact_phone = request.vars.bkcell
     contact_email = request.vars.bkemail
     pax = PassengerData(passenger_code, passenger_no, paxname,
                         date_of_birth, contact_phone, contact_email)
+    blogger.debug("Pax %s (born %s)" % (paxname, date_of_birth))
     paxRecs.append(pax)
-    msg = "<p/>Booked flight"
-    msg += PutBookHtml(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
-                       cfg.OriginBranchCode, cfg.AgencyCode,
-                       groupName, paxRecs,
-                       cfg.Currency, payAmount,
-                       flightNumber, flightDate,
-                       departAirport, arriveAirport,
-                       sellClass, cfg.FareBasisCode,
-                       timeLimit,
-                       cfg.User, cfg.Group)
+    blogger.debug("Process booking")
+    bn, pnr, msg = PutBookHtml(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
+                               cfg.OriginBranchCode, cfg.AgencyCode,
+                               groupName, paxRecs,
+                               cfg.Currency, payAmount,
+                               flightNumber, flightDate,
+                               departAirport, arriveAirport,
+                               sellClass, cfg.FareBasisCode,
+                               timeLimit,
+                               cfg.User, cfg.Group)
+    #msg += "<p/>Booked flight"
+    return dict(message=XML(msg), bookno=bn, locator=pnr)
+
+
+def bookingpay():
+    """Show booking."""
+    bookNo = int(request.vars.bookno)
+    sellClass = request.vars.fclass
+    payAmount = float(request.vars.fprice)
+    docNum = request.vars.cardnum
+    paymentType = 'CC'
+    paymentForm = 'VI'
+    msg = PutPayHtml(conn, bookNo, sellClass,
+                     cfg.Currency, payAmount, 0.0,
+                     cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareBasisCode,
+                     paymentType, paymentForm, docNum,
+                     cfg.User, cfg.Group)
     return dict(message=XML(msg))
 
 
