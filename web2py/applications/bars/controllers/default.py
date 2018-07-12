@@ -11,6 +11,7 @@ from datetime import date, datetime, time, timedelta
 from BarsConfig import BarsConfig
 from Booking.BookingHtml import GetAvailHtml, GetPriceHtml, PutBookHtml
 from ReadDateTime import ReadDate
+from Booking.PassengerData import PassengerData
 
 
 def index():
@@ -81,7 +82,7 @@ def bookingnames():
     flightDate = ReadDate(request.vars.fdate)
     departAirport = str(request.vars.depart)
     arriveAirport = str(request.vars.arrive)
-    seatCount = int(request.vars.fseats)
+    seatCount = str(request.vars.fseats)
     sellClass = request.vars.fclass
     groupName = ''
     msg = "<p/>Book flight"
@@ -94,7 +95,7 @@ def bookingshow():
     flightDate = ReadDate(request.vars.fdate)
     departAirport = str(request.vars.depart)
     arriveAirport = str(request.vars.arrive)
-    seatCount = int(request.vars.fseats)
+    seatCount = str(request.vars.fseats)
     sellClass = request.vars.fclass
     groupName = ''
     payAmount = 0.0
@@ -112,15 +113,15 @@ def bookingshow():
                         date_of_birth, contact_phone, contact_email)
     paxRecs.append(pax)
     msg = "<p/>Booked flight"
-    msg += PutBook(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
-                   cfg.OriginBranchCode, cfg.AgencyCode,
-                   groupName, paxRecs,
-                   cfg.Currency, payAmount,
-                   flightNumber, flightDate,
-                   departAirport, arriveAirport,
-                   sellClass, cfg.FareBasisCode,
-                   timeLimit,
-                   cfg.User, cfg.Group)
+    msg += PutBookHtml(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
+                       cfg.OriginBranchCode, cfg.AgencyCode,
+                       groupName, paxRecs,
+                       cfg.Currency, payAmount,
+                       flightNumber, flightDate,
+                       departAirport, arriveAirport,
+                       sellClass, cfg.FareBasisCode,
+                       timeLimit,
+                       cfg.User, cfg.Group)
     return dict(message=XML(msg))
 
 

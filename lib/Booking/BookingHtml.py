@@ -46,7 +46,7 @@ def GetPriceHtml(conn,
     # for clas in sorted(sellconfigs, key=sellconfigs.get, reverse=False):
         # sellconfigs[clas].display()
     cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
-    printlog(1, "Get price for city pair %d class %s on %s"
+    logger.debug("Get price for city pair %d class %s on %s"
              % (cityPairNo, selling_class, dt1))
     taxes = ReadTaxes(conn, aCompanyCode, dt1, dt2, departAirport,
                       pass_code1='ADULT', pass_code2='CHILD',
@@ -88,7 +88,7 @@ def PutBookHtml(conn, vCompany, vBookCategory, vOriginAddress,
     if paxRecs is None:
         msg = "No passenger names"
         return msg
-    printlog(1, "Book fare basis %s payment %s%.2f flight %s date %s"
+    logger.debug("Book fare basis %s payment %s%.2f flight %s date %s"
              % (aFareBasis, aCurrency, payAmount, flightNumber, dt1))
     vSeatQuantity = len(paxRecs)
     if payAmount is None:
@@ -98,7 +98,7 @@ def PutBookHtml(conn, vCompany, vBookCategory, vOriginAddress,
     #if departAirport is None or arriveAirport is None:
         #print("Flight number and date must be specified")
         #return
-    printlog(1, "Book %d seats on flight %s date %s class %s"
+    logger.debug("Book %d seats on flight %s date %s class %s"
              % (vSeatQuantity, flightNumber, dt1, sellClass))
     n, fd = ReadFlightDeparture(conn, sellClass, flightNumber, dt1)
     if n == 0:
