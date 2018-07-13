@@ -8,7 +8,7 @@ import getopt
 import psycopg2
 from psycopg2 import extras
 from datetime import datetime, timedelta, datetime
-from BarsLog import set_verbose, printlog
+from BarsLog import blogger
 from ReadDateTime import ReadDate
 
 
@@ -27,7 +27,7 @@ def ReadFlightPeriodsGui(conn, flight_number, schedule_period_no):
         "  WHERE flight_number = '%s' AND schedule_period_no = %d GROUP BY 3 ORDER BY 1" \
             % (flight_number, schedule_period_no, flight_number, schedule_period_no,
                flight_number, schedule_period_no, flight_number, schedule_period_no)
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -57,7 +57,7 @@ def ReadFlightPeriods(conn, flight_number, schedule_period_no=None):
             " AND schedule_period_no = %d" % schedule_period_no
     print
 
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -96,7 +96,7 @@ def ReadFlightPeriodsDate(conn, flight_number, dts):
         " WHERE flight_number = '%s' AND start_date<='%s' AND end_date>='%s'" \
         " AND frequency_code LIKE '%%%d%%'" \
         % (flight_number, flight_date, flight_date, flight_dow)
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -140,7 +140,7 @@ def ReadTestPeriods(conn, flight_number, schedule_period_no=None, dts=None):
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -176,7 +176,7 @@ def ReadTestInventrySegm(conn, flight_number, schedule_period_no=None,
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute("\n%s"% AdSql)
@@ -211,7 +211,7 @@ def ReadFlightPerdLegs(conn, flight_number, schedule_period_no=None):
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute("\n%s"% AdSql)
@@ -242,7 +242,7 @@ def ReadFlightPerdSegm(conn, flight_number, schedule_period_no=None):
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute("\n%s"% AdSql)
@@ -274,7 +274,7 @@ def ReadTestPerdSegm(conn, flight_number, schedule_period_no=None):
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute("\n%s"% AdSql)
@@ -310,7 +310,7 @@ def ReadFlightPerdCls(conn, flight_number, schedule_period_no=None,
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -343,7 +343,7 @@ def ReadTestPerdCls(conn, flight_number, schedule_period_no=None,
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -375,7 +375,7 @@ def ReadFlightPerdSegCls(conn, flight_number, schedule_period_no=None,
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -408,7 +408,7 @@ def ReadFlightPerdPrnt(conn, flight_number, schedule_period_no=None,
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -441,7 +441,7 @@ def ReadTestPerdPrnt(conn, flight_number, schedule_period_no=None,
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -475,7 +475,7 @@ def read_inventry_realloc(conn, flight_number, schedule_period_no=None,
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -511,7 +511,7 @@ def ReadSchdChngAction(conn, flight_number, schedule_period_no=None,
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    printlog(2, AdSql)
+    blogger.debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)

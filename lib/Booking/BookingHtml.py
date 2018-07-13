@@ -107,7 +107,7 @@ def PutBookHtml(conn, vCompany, vBookCategory, vOriginAddress,
     if sellClass is None:
         sellClass = 'Y'
     #if departAirport is None or arriveAirport is None:
-        #print("Flight number and date must be specified")
+        #blogger.info("Flight number and date must be specified")
         #return
     blogger.debug("Book %d seats on flight %s date %s class %s"
                   % (vSeatQuantity, flightNumber, flightDate, sellClass))
@@ -147,6 +147,7 @@ def PutBookHtml(conn, vCompany, vBookCategory, vOriginAddress,
                            sellClass, aFareBasis,
                            aCurrency, payAmount,
                            vUser, vGroup)
+    conn.commit()
     msg = "<p/>Booking reference %s" % pnr
     return bn, pnr, msg
 
@@ -158,7 +159,7 @@ def PutPayHtml(conn, aBookNo, aSellClass,
                aUser, aGroup):
     """Process payment."""
     if aBookNo is None:
-        print("Book number not specified")
+        blogger.error("Book number not specified")
         return 1
     blogger.info("Process payment of %s%.2f for book %d"
              % (aCurrency, aPayAmount, aBookNo))
@@ -178,7 +179,7 @@ def PutPayHtml(conn, aBookNo, aSellClass,
     irecs = ReadItinerary(conn, aBookNo, None, None,
                           fnumber=None, start_date=None, end_date=None)
     if len(irecs) > 2:
-        print("Found %d itenaries")
+        blogger.info("Found %d itenaries")
         return 1
     else:
         n = 0
@@ -200,5 +201,5 @@ def PutPayHtml(conn, aBookNo, aSellClass,
     UpdateBookPayment(conn, aBookNo, aCurrency, totalPayment)
     UpdateItinerary(conn, aBookNo, 'A')
     UpdateBook(conn, aBookNo, 'A')
-
+    conn.commit()
     return 0

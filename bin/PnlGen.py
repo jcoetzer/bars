@@ -8,10 +8,10 @@ Generate passenger name list.
 import os
 import sys
 import getopt
-
+import logging
 from PnlAdl.PaxList import PaxList
 from ReadDateTime import ReadDate
-from BarsLog import set_verbose, printlog
+from BarsLog import blogger, init_blogger
 from BarsConfig import BarsConfig
 from DbConnect import OpenDb, CloseDb
 from PnlAdl.ReadPnl import PrintPnl
@@ -43,6 +43,7 @@ def main(argv):
     if len(argv) < 1:
         usage()
 
+    init_blogger("bars")
     try:
         opts, args = getopt.getopt(argv,
                                    "ahvVD:F:P:",
@@ -56,21 +57,21 @@ def main(argv):
             usage()
         elif opt == '-v':
             # Debug output
-            set_verbose(1)
+            blogger.setLevel(logging.INFO)
         elif opt == '-V':
             # Debug output
-            set_verbose(2)
+            blogger.setLevel(logging.DEBUG)
         elif opt == "-a":
             showPnl = False
         elif opt == "-D":
             boardDate = ReadDate(arg)
-            printlog(2, "Board date set to %s" % boardDate)
+            blogger.debug("Board date set to %s" % boardDate)
         elif opt == "-F":
             flightNumber = arg
-            printlog(2, "Flight number set to %s" % flightNumber)
+            blogger.debug("Flight number set to %s" % flightNumber)
         elif opt == "-P":
             departAirport = arg
-            printlog(2, "Departure airport set to %s" % departAirport)
+            blogger.debug("Departure airport set to %s" % departAirport)
         else:
             print("Unknown input '%s'" % arg)
             usage()

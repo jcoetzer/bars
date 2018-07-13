@@ -4,7 +4,7 @@ Passenger list entries.
 @file PaxListEntry.h
 """
 
-from BarsLog import printlog, get_verbose
+from BarsLog import blogger, get_verbose
 from PnlAdl.PaxData import PaxData
 
 etlp_ticket_number = 0
@@ -142,7 +142,7 @@ class PaxListEntry(object):
     def Append(self, data):
         """Append element to PNL entry."""
         global ADL_LINE_LENGTH
-        printlog(2, "\tAdd '%s'" % data)
+        blogger.debug("\tAdd '%s'" % data)
         if (self.current_line + len(data) > ADL_LINE_LENGTH):
 
             self.pnlEntry += ""
@@ -239,7 +239,7 @@ class PaxListEntry(object):
 
         cur = self.conn.cursor()
 
-        printlog(1, "Get book data for number %d" % a_book_no)
+        blogger.info("Get book data for number %d" % a_book_no)
 
         bn_stmt = """
             SELECT pnr_book_numb,
@@ -281,7 +281,7 @@ class PaxListEntry(object):
                     update_time
             FROM bookings
             WHERE book_no = %s""" % book_no
-        printlog(2, bn_stmt)
+        blogger.debug(bn_stmt)
         cur.execute(bn_stmt)
 
         for row in cur:
@@ -321,7 +321,7 @@ class PaxListEntry(object):
             updt_dest_id = row[33]
             updt_date_time = row[34]
 
-            printlog(2, "\t\tpnr_book_numb      : %s \n"
+            blogger.debug("\t\tpnr_book_numb      : %s \n"
                      "\t\tbook_type          : %s \n"
                      "\t\tgroup_name         : %s \n"
                      "\t\tno_of_seats        : %d \n"
@@ -398,7 +398,7 @@ class PaxListEntry(object):
 
     def CodeShare(self, aAltFlightNumber, aBoardDate):
         """Add marketing element."""
-        printlog(1, "Check origin_address '%s'" % self.origin_address)
+        blogger.info("Check origin_address '%s'" % self.origin_address)
         if (self.origin_address == "MUCQSSA"
                 or self.origin_address == "MUCCSSA"):
             codeShareBuf = ".M/%s%c%c%c%s%s " \
@@ -423,7 +423,7 @@ class PaxListEntry(object):
         n = 0
         request_nostr = ''
 
-        printlog(2, "Get booking requests for book no %d requests '%s'"
+        blogger.debug("Get booking requests for book no %d requests '%s'"
                  % (self.book_no, request_nostr))
 
         n = 0
@@ -442,7 +442,7 @@ class PaxListEntry(object):
         AND sr.arpt_action_flag = 'Y' """ \
             % (book_no, 'ZZ')
 
-        printlog(2, "\t%s" % br_query)
+        blogger.debug("\t%s" % br_query)
         cur = self.conn.cursor()
         cur.execute(br_query)
 
@@ -469,7 +469,7 @@ class PaxListEntry(object):
             book_request.request_text = str(request_text).rstrip()
             book_request.all_passenger_flag = all_passenger_flag[0]
             book_request.all_itinerary_flag = all_itinerary_flag[0]
-            printlog(2, "\t\t\t%2d : %s %s%d %s"
+            blogger.debug("\t\t\t%2d : %s %s%d %s"
                      % (rqst_seqn_no, book_request.rqst_code,
                         book_request.action_code, book_request.actn_number,
                         book_request.request_text))
@@ -493,63 +493,62 @@ class PaxListEntry(object):
         paxflg = ssr.all_passenger_flag
 
         # Break up itinerary into tokens seperated by '#'
-        printlog(2, "Passenger requests %s itinerary requests %s"
+        blogger.debug("Passenger requests %s itinerary requests %s"
                  % (self.pax_reqs, self.itinerary_reqs))
 
         if (itenflg == 'N' and paxflg == 'N'):
             # Check itinerary and passenger
-            printlog(2,
-                     "Check itinerary and passenger no[%d] itinerary[%c]"
-                     " pax[%c] itenflg[%s] paxflg[%s]"
-                     % (no, itenflg, paxflg, self.itinerary_reqs, self.pax_reqs))
+            blogger.debug("Check itinerary and passenger no[%d] itinerary[%c]"
+                          " pax[%c] itenflg[%s] paxflg[%s]"
+                          % (no, itenflg, paxflg, self.itinerary_reqs, self.pax_reqs))
             for paxcp in self.pax_reqs:
                 if paxcp == '':
                     continue
                 paxcpi = int(paxcp)
-                printlog(2, "Check pax number %d" % paxcpi)
+                blogger.debug("Check pax number %d" % paxcpi)
                 for itencp in self.itinerary_reqs:
                     itencpi = int(itencp)
-                    printlog(2, "Check itinerary number %d" % itencpi)
+                    blogger.debug("Check itinerary number %d" % itencpi)
                     if (itencpi == paxcpi):
                         if (paxcpi == no):
-                            printlog(2, "Found itinerary/pax number %d"
+                            blogger.debug("Found itinerary/pax number %d"
                                      % paxcpi)
                             self.AddSsr(ssr)
                             return 1
         elif (itenflg == 'Y' and paxflg == 'N'):
             # Check itinerary only
-            printlog(2, "Check itinerary no[%d] itinerary[%s] pax[%s]"
+            blogger.debug("Check itinerary no[%d] itinerary[%s] pax[%s]"
                      " itenflg[%c] paxflg[%c]"
                      % (no, self.itinerary_reqs, self.pax_reqs, itenflg, paxflg))
             for paxcp in self.pax_reqs:
                 if paxcp == '':
                     continue
                 paxcpi = int(paxcp)
-                printlog(2, "Check pax number %d" % paxcpi)
+                blogger.debug("Check pax number %d" % paxcpi)
                 if (paxcpi == no):
-                    printlog(2, "Found pax number %d" % no)
+                    blogger.debug("Found pax number %d" % no)
                     self.AddSsr(ssr)
                     return 1
         elif (itenflg == 'N' and paxflg == 'Y'):
             # Check passenger only
-            printlog(2, "Check passenger no[%d] itinerary[%s] pax[%s]"
+            blogger.debug("Check passenger no[%d] itinerary[%s] pax[%s]"
                      " itenflg[%c] paxflg[%c]"
                      % (no, self.itinerary_reqs, self.pax_reqs, itenflg, paxflg))
             for itencp in self.itinerary_reqs:
                 if itencp == '':
                     continue
                 itencpi = int(itencp)
-                printlog(2, "Check itinerary number %d" % itencpi)
+                blogger.debug("Check itinerary number %d" % itencpi)
                 if (itencpi == no):
-                    printlog(2, "Found itinerary number %d" % no)
+                    blogger.debug("Found itinerary number %d" % no)
                     self.AddSsr(ssr)
                     return 1
         else:
-            printlog(2, "Skip passenger no[%d] itinerary[%s] pax[%s]"
+            blogger.debug("Skip passenger no[%d] itinerary[%s] pax[%s]"
                      " itenflg[%c] paxflg[%c]"
                      % (no, self.itinerary_reqs, self.pax_reqs, itenflg, paxflg))
             return 0
-        printlog(2, "Could not find itinerary/passenger number %d" % no)
+        blogger.debug("Could not find itinerary/passenger number %d" % no)
         return 0
 
     def AddSsr(self, ssr):
@@ -611,7 +610,7 @@ class PaxListEntry(object):
         """Read buffer thing."""
         if len(pdata) == 0:
             return 0
-        printlog(1, "pax [%s]" % pdata)
+        blogger.info("pax [%s]" % pdata)
         selling_class = classnam
         arrival_airport = arrive
         elements = pdata.split('.')
@@ -632,12 +631,12 @@ class PaxListEntry(object):
             return 1
         paxcount = nel[0][0:found]
         no_of_seats = int(paxcount)
-        printlog(1, "\tcount %d" % no_of_seats)
+        blogger.info("\tcount %d" % no_of_seats)
         pax_name = nel[0][found:].rstrip()
-        printlog(1, "\tname '%s'" % pax_name)
+        blogger.info("\tname '%s'" % pax_name)
         if (len(nel) > 1 and len(nel[1]) > 0 and nel[1][1] != '/'):
             group_name = nel[1].rstrip()
-            printlog(1, "\tgroup '%s'" % group_name)
+            blogger.info("\tgroup '%s'" % group_name)
         return 0
 
     def ReadElement(self, edata):
@@ -648,7 +647,7 @@ class PaxListEntry(object):
         outgoingflt = ''
         if (edata[0] == "L"):
             locator = edata[2:].rstrip()
-            printlog(1, "\tlocator '%s'" % locator)
+            blogger.info("\tlocator '%s'" % locator)
         elif (edata[0] == "R"):
             self.ReadRemarks(edata[2:])
         elif (edata[0] == "M"):
@@ -658,15 +657,15 @@ class PaxListEntry(object):
                 return 1
             else:
                 indata = marketflt.substr(0, marketflt.length()-9)
-                printlog(1, "\tmarketing '%s' for %s" % (marketflt, indata))
+                blogger.info("\tmarketing '%s' for %s" % (marketflt, indata))
         elif (edata[0] == "I"):
             incomingflt = edata[2:].rstrip()
-            printlog(1, "\tincoming flight %s" % incomingflt)
+            blogger.info("\tincoming flight %s" % incomingflt)
         elif (edata[0] == "O"):
             outgoingflt = edata[2:].rstrip()
-            printlog(1, "\toutgoing flight %s" % outgoingflt)
+            blogger.info("\toutgoing flight %s" % outgoingflt)
         else:
-            printlog(1, "\tother '%s'" % edata)
+            blogger.info("\tother '%s'" % edata)
         return 0
 
     def ReadRemarks(self, rdata):
@@ -681,7 +680,7 @@ class PaxListEntry(object):
                 return 1
             elif (rdata[9:12] == "INF"):
                 infant = True
-                printlog(1, "\tinfant e-ticket '%s'" % rdata)
+                blogger.info("\tinfant e-ticket '%s'" % rdata)
             elif (rdata[5:8] != "HK1"):
                 print("Action code and number is '%s' and not HK1"
                       % rdata.substr(5, 3))
@@ -696,22 +695,22 @@ class PaxListEntry(object):
                 return 1
             elif (rdata[9:12] == "INF"):
                 infant = True
-                printlog(1, "\tinfant ticket '%s'" % rdata)
+                blogger.info("\tinfant ticket '%s'" % rdata)
             elif (etickt):
                 print("Duplicate ticket")
                 return 1
             etlp_num = rdata[9:]
-            printlog(1, "\tticket '%s'" % etlp_num)
+            blogger.info("\tticket '%s'" % etlp_num)
             etickt = False
         elif (ssr.rqst_code == "CKIN"):
             chekin = rdata[5:].rstrip()
-            printlog(1, "\tcheckin '%s'" % chekin)
+            blogger.info("\tcheckin '%s'" % chekin)
         elif (ssr.rqst_code == "INFT"):
             infant = True
             inft = rdata[5:].rstrip()
-            printlog(1, "\tinfant '%s'" % inft)
+            blogger.info("\tinfant '%s'" % inft)
         else:
-            printlog(1, "\tremark '%s'" % rdata)
+            blogger.info("\tremark '%s'" % rdata)
         ssr.action_code = rdata[5:7]
         ssr.actn_number = int(rdata[7])
         ssr.request_text = rdata[9:]
@@ -741,7 +740,7 @@ def ReadAltFlightNumber(conn, aFlightNumber, aBoardDate):
         "SELECT dup_flight_number FROM flight_shared_leg" \
         " WHERE flight_date='%s' AND flight_number='%s'" \
         % (aBoardDate, aFlightNumber)
-    printlog(2, "\t%s" % sqlAltFlightNumberStr)
+    blogger.debug("\t%s" % sqlAltFlightNumberStr)
     cur = conn.cursor()
     cur.execute(sqlAltFlightNumberStr)
     altFlightNumber = None

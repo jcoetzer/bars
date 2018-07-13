@@ -6,6 +6,7 @@
 Main for booking.
 """
 
+import logging
 import configparser
 import getopt
 import os
@@ -17,7 +18,7 @@ from faker import Faker
 
 from BarsBanner import print_banner
 from BarsConfig import BarsConfig
-from BarsLog import blogger, init_blogger, set_verbose
+from BarsLog import blogger, init_blogger
 from Booking.BookingHtml import GetAvailHtml, GetPriceHtml
 from Booking.BookingInfo import (AddBook, AddBookCrossIndex,
                                  AddBookFarePassengers, AddBookFares,
@@ -435,9 +436,9 @@ def main(argv):
         if opt == '-h' or opt == '--help':
             usage(os.path.basename(sys.argv[0]))
         elif opt == '-v':
-            set_verbose(1)
+            blogger.setLevel(logging.INFO)
         elif opt == '-V':
-            set_verbose(2)
+            blogger.setLevel(logging.DEBUG)
         elif opt == '--html':
             dohtml = True
         elif opt == '--avail':

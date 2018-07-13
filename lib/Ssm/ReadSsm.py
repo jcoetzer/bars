@@ -2,8 +2,9 @@
 
 
 import sys
+import logging
 import getopt
-from BarsLog import printlog, set_verbose
+from BarsLog import blogger, init_blogger
 
 import ply.lex as lex
 from Ssm.SsmLex import *
@@ -161,14 +162,14 @@ def main(argv):
 
     if len(argv) < 1:
         usage()
-
+    init_blogger("bars")
     for opt in argv:
         if opt == '-h' or opt == '--help':
             usage()
         elif opt == '-v':
-            set_verbose(1)
+            blogger.setLevel(logging.INFO)
         elif opt == '-V':
-            set_verbose(2)
+            blogger.setLevel(logging.DEBUG)
         #elif opt == '-I' or opt == '--input':
             #fname = str(arg)
         else:

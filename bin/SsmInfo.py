@@ -16,8 +16,8 @@ import re
 import datetime
 import psycopg2
 from psycopg2 import extras
-
-from BarsLog import set_verbose, get_verbose, printlog
+import logging
+from BarsLog import blogger, init_blogger
 from ReadDateTime import ReadDate
 from FlightData import FlightData
 from ReadSchedPeriod import ReadSchedPeriod, ReadConfigNumberOfSeats
@@ -31,9 +31,9 @@ def check_ssm_file(procssm, fname):
     """Check SSM file syntax."""
     dtm = os.path.getmtime(fname)
     dts = datetime.datetime.fromtimestamp(dtm).strftime('%Y-%m-%d %H:%M:%S')
-    printlog(1, "Check %s %s (%f)" % (fname, dts, dtm))
+    blogger.info("Check %s %s (%f)" % (fname, dts, dtm))
     procf = "%s -c %s" % (procssm, fname)
-    printlog(1, "%s" % procf)
+    blogger.info("%s" % procf)
     tmp = None
     try:
         pfile = os.popen(procf)
@@ -47,7 +47,7 @@ def check_ssm_file(procssm, fname):
         return -1
     except IOError:
         pass
-    printlog(1, "%s" % tmp)
+    blogger.info("%s" % tmp)
     if "FAIL" in tmp:
         print("[FAIL] %s %s" % (fname, dts))
         if get_verbose() == 0:
@@ -74,7 +74,7 @@ def check_ssm_file(procssm, fname):
 
 def check_ssm_files(ssmdir, procssm):
     """Read directory and check SSM files found."""
-    printlog(1, "Read directory %s" % ssmdir)
+    blogger.info("Read directory %s" % ssmdir)
     fnames = []
     nerr = 0
     for f in os.listdir(ssmdir):
@@ -86,11 +86,11 @@ def check_ssm_files(ssmdir, procssm):
             lines = open(fname, "r")
             for line in lines:
                 if re.match("^SSM", line):
-                    printlog(1, "\t%s SSM" % f)
+                    blogger.info("\t%s SSM" % f)
                     ssm_file = True
                     break
                 elif re.match("^ASM", line):
-                    printlog(1, "\t%s ASM" % f)
+                    blogger.info("\t%s ASM" % f)
                     sasm_file = True
                     break
                 else:
@@ -101,12 +101,12 @@ def check_ssm_files(ssmdir, procssm):
             elif asm_file:
                 pass
             else:
-                printlog(1, "\t %s not SSM" % f)
+                blogger.info("\t %s not SSM" % f)
         else:
-            printlog(1, "\t%s ignore" % f)
+            blogger.info("\t%s ignore" % f)
     fnames.sort()
     for fname in fnames:
-        printlog(1, "Read %s" % fname)
+        blogger.info("Read %s" % fname)
         rv = check_ssm_file(procssm, fname)
         if rv > 0:
             nerr += 1
@@ -122,9 +122,9 @@ def read_ssm_file(procssm, fname):
     """Read SSM file."""
     t = os.path.getmtime(fname)
     dt = datetime.datetime.fromtimestamp(t).strftime('%Y-%m-%d %H:%M:%S')
-    printlog(1, "Read %s %s" % (fname, dt))
+    blogger.info("Read %s %s" % (fname, dt))
     procf = "%s -X %s" % (procssm, fname)
-    printlog(1, "%s" % procf)
+    blogger.info("%s" % procf)
     tmp = os.popen(procf).read()
     ssm_lines = tmp.split('\n')
     tzone = ''
@@ -139,20 +139,20 @@ def read_ssm_file(procssm, fname):
     cabin_class = '?'
     cabin_seats = 0
     for ssm_line in ssm_lines:
-        printlog(2, "%s" % ssm_line)
+        blogger.debug("%s" % ssm_line)
         ssm_datas = ssm_line.split(':')
         ssmi = ssm_datas[0]
         if ssmi == "Z":
             tzone = ssm_datas[1]
-            printlog(1, "Time zone %s" % tzone)
+            blogger.info("Time zone %s" % tzone)
         elif ssmi == "F":
             flight_number = ssm_datas[1]
-            printlog(1, "Flight %s" % flight_number)
+            blogger.info("Flight %s" % flight_number)
         elif ssmi == "D":
             date_data = ssm_datas[1].split(" ")
             dt1 = ReadDate(date_data[0])
             dt2 = ReadDate(date_data[1])
-            printlog(1, "From %s to %s"
+            blogger.info("From %s to %s"
                      % (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d")))
         elif ssmi == "L":
             legs = ssm_datas[1].split(" ")
@@ -163,21 +163,21 @@ def read_ssm_file(procssm, fname):
             if tzone == 'UTC':
                 tdep += 200
                 tarr += 200
-            printlog(1, "Depart %s %04d arrive %s %d"
+            blogger.info("Depart %s %04d arrive %s %d"
                      % (depart, tdep, arrive, tarr))
         elif ssmi == "T":
             configs = ssm_datas[1].split(" ")
             aircraft_code = configs[0]
-            printlog(1, "Aircraft code %s" % aircraft_code)
+            blogger.info("Aircraft code %s" % aircraft_code)
         elif ssmi == "C":
             # cabins = ssm_datas[1].split(" ")
             cabins = ssm_datas[1]
             cabin_class = cabins[0]
             cabin_seats = int(cabins[1:])
-            printlog(1, "Cabin class %s seats %d" % (cabin_class, cabin_seats))
+            blogger.info("Cabin class %s seats %d" % (cabin_class, cabin_seats))
         elif ssmi == "S10":
             codeshare = ssm_datas[1]
-            printlog(1, "Codeshare %s" % codeshare)
+            blogger.info("Codeshare %s" % codeshare)
         else:
             pass
 
@@ -225,6 +225,7 @@ def main(argv):
     if len(argv) < 1:
         usage()
 
+    init_blogger("bars")
     try:
         opts, args = getopt.getopt(argv,
                                    "cfhivyV"
@@ -256,7 +257,7 @@ def main(argv):
             aircraft_code = str(arg)
         elif opt in ("-D", "--date"):
             dt1 = ReadDate(arg)
-            printlog(1, "\t flight date %s" % dt1.strftime("%Y-%m-%d"))
+            blogger.info("\t flight date %s" % dt1.strftime("%Y-%m-%d"))
         elif opt in ("-E", "--edate"):
             dt2 = ReadDate(arg)
         elif opt in ("-F", "--flight"):
@@ -269,20 +270,20 @@ def main(argv):
             ssm_data = True
         elif opt in ("-P", "--depart"):
             departure_airport = str(arg).upper()
-            printlog(1, "\t depart %s" % departure_airport)
+            blogger.info("\t depart %s" % departure_airport)
         elif opt in ("-Q", "--arrive"):
             arrival_airport = str(arg).upper()
-            printlog(1, "\t arrive %s" % arrival_airport)
+            blogger.info("\t arrive %s" % arrival_airport)
         elif opt == '-S':
             ssmfile = arg
         elif opt == '-T':
             ssmdir = arg
         elif opt == '-v':
             # Debug output
-            set_verbose(1)
+            blogger.setLevel(logging.INFO)
         elif opt == '-V':
             # Debug output
-            set_verbose(2)
+            blogger.setLevel(logging.DEBUG)
         elif opt == '-X':
             departure_time = str(arg)
         elif opt == '-Y':
@@ -318,7 +319,8 @@ def main(argv):
                                 departure_airport, arrival_airport,
                                 0, company_code, aircraft_code)
             ReadSsmFlightData(conn, flight, dt2)
-        elif ssm_book and schedule_period_no is not None and dt1 is not None:
+        elif ssm_book and
+        is not None and dt1 is not None:
             flight = FlightData(cfg.SellingClass, flight_number, dt1,
                                 departure_time, arrival_time,
                                 departure_airport, arrival_airport,

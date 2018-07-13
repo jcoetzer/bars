@@ -18,7 +18,7 @@ import sys
 import operator
 import psycopg2  # Informix DB module
 from psycopg2 import extras
-from BarsLog import set_verbose, get_verbose, printlog
+from BarsLog import blogger
 
 
 def ReadBookSummary(conn, book_no, report_code=None):
@@ -32,22 +32,22 @@ def ReadBookSummary(conn, book_no, report_code=None):
 
     @return number of entries found
     """
-    printlog(2, "Find bookings summary"),
+    blogger.debug("Find bookings summary"),
     bk_summ = \
         "SELECT booking_number,booking_summary_type_rcd,pax_name" \
         " FROM booking_summary" \
         " WHERE 1=1"
     if book_no is not None:
-        printlog(2, "booking %d" % book_no),
+        blogger.debug("booking %d" % book_no),
         bk_summ += \
             " AND booking_number=%d" \
             % (book_no)
     if report_code is not None:
-        printlog(2, "message type %s" % report_code),
+        blogger.debug("message type %s" % report_code),
         bk_summ += \
             " AND booking_summary_type_rcd='%s'" \
             % report_code
-    printlog(2, bk_summ)
+    blogger.debug(bk_summ)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
     cur.execute(bk_summ)
@@ -72,28 +72,28 @@ def ReadBookSummaryHistory(conn, book_no, hist_code=None, email_date=None):
 
     @return number of entries found
     """
-    printlog(2, "Find bookings summary history")
+    blogger.debug("Find bookings summary history")
     bk_summ = \
         "SELECT book_no,book_summary_history_rcd,sent_date_time" \
         " FROM book_summary_history" \
         " WHERE 1=1"
     if book_no is not None:
-        printlog(2, "booking %d" % book_no)
+        blogger.debug("booking %d" % book_no)
         bk_summ += \
             " AND book_no=%d" \
             % (book_no)
     if hist_code is not None:
-        printlog(2, "message type %s" % hist_code)
+        blogger.debug("message type %s" % hist_code)
         bk_summ += \
             " AND book_summary_history_rcd='%s'" \
             % (hist_code)
     if email_date is not None:
-        printlog(2, "after %s" % email_date.strftime("%Y-%m-%d %H:%M:%S"))
+        blogger.debug("after %s" % email_date.strftime("%Y-%m-%d %H:%M:%S"))
         bk_summ += \
             " AND sent_date_time>'%s'" \
             % email_date.strftime("%Y-%m-%d %H:%M:%S")
-    printlog(2, " ")
-    printlog(2, bk_summ)
+    blogger.debug(" ")
+    blogger.debug(bk_summ)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
     cur.execute(bk_summ)

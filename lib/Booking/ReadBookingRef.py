@@ -9,7 +9,7 @@ import operator
 import psycopg2
 from psycopg2 import extras
 
-from BarsLog import printlog
+from BarsLog import blogger
 
 def ReadBookNo(conn, bno):
     """Read booking number."""
@@ -58,7 +58,8 @@ def ReadBookSummaryHistory(conn, bno, bs_date=None):
     for row in cur:
         rcd = row['book_summary_history_rcd']
         sdt = row['sent_date_time']
-        printlog("Booking %d summary history received %s on %s" % (bno, rcd, sdt), 1)
+        blogger.info("Booking %d summary history received %s on %s"
+                     % (bno, rcd, sdt))
     cur.close()
     return rcd, sdt
 
@@ -74,7 +75,7 @@ def ReadBookSummary(conn, bno):
     rcd = ''
     for row in cur:
         rcd = row['booking_summary_type_rcd']
-        printlog("Booking %d summary received %s" % (bno, rcd), 1)
+        blogger.info("Booking %d summary received %s" % (bno, rcd), 1)
     cur.close()
     return rcd
 

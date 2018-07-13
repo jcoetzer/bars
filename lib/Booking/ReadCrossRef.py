@@ -50,7 +50,7 @@ def check_bci_new(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb, msk):
                 % (ExtBookNumb, ExtOriginAddress)
     ChkSql += \
         ") "
-    printlog("%s" % ChkSql, 2)
+    blogger.debug("%s" % ChkSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
     cur.execute(ChkSql)
@@ -73,7 +73,7 @@ def check_bci_trl(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb):
         "          AND bci.locator = \"%s\" ) ) " \
         " AND bci.book_no = b.book_no" \
             % (ExtOriginAddress, ExtBookNumb, PnrBookNumb)
-    printlog("%s" % ChkSql, 2)
+    blogger.debug("%s" % ChkSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
     cur.execute(ChkSql)
@@ -118,7 +118,7 @@ def check_bci(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb, msk):
                 % (ExtBookNumb, ExtOriginAddress)
     ChkSql += \
         ")"
-    printlog("%s" % ChkSql, 2)
+    blogger.debug("%s" % ChkSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
     cur.execute(ChkSql)

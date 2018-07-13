@@ -5,7 +5,7 @@ Read fares and stuff.
 import psycopg2
 from psycopg2 import extras
 
-from BarsLog import printlog
+from BarsLog import blogger
 
 
 def ReadCityPairs(conn, departure_airport=None, arrival_airport=None):
@@ -20,11 +20,11 @@ def ReadCityPairs(conn, departure_airport=None, arrival_airport=None):
             AND arrival_airport = '%s'""" \
             % (departure_airport, arrival_airport)
 
-    printlog(2, "%s" % RcpSql)
+    blogger.debug("%s" % RcpSql)
     cur = conn.cursor()
     cur.execute(RcpSql)
 
-    printlog(2, "Selected %d row(s)" % cur.rowcount)
+    blogger.debug("Selected %d row(s)" % cur.rowcount)
     flights = []
     for row in cur:
         for item in row:
@@ -36,17 +36,17 @@ def ReadCityPairs(conn, departure_airport=None, arrival_airport=None):
 
 def ReadFareSegments(conn):
     """Read fare segments."""
-    printlog(1, "Fare segments:")
+    blogger.info("Fare segments:")
     RfSql = """
     SELECT company_code, fare_basis_code, city_pair, valid_from_date, valid_to_date,
         fare_amount, active_flag
     FROM fare_segments"""
 
-    printlog(2, "%s" % RfSql)
+    blogger.debug("%s" % RfSql)
     cur = conn.cursor()
     cur.execute(RfSql)
 
-    printlog(2, "Selected %d row(s)" % cur.rowcount)
+    blogger.debug("Selected %d row(s)" % cur.rowcount)
     flights = []
     for row in cur:
         for item in row:
@@ -59,18 +59,18 @@ def ReadFareSegments(conn):
 def ReadFareCodes(conn):
     """Read fare codes."""
     """Read fare segments."""
-    printlog(1, "Fare codes:")
+    blogger.info("Fare codes:")
     RfSql = """
         SELECT
         company_code, fare_basis_code, short_description, description,
         selling_class, fare_category, oneway_return_flag
     FROM fare_basis_codes"""
 
-    printlog(2, "%s" % RfSql)
+    blogger.debug("%s" % RfSql)
     cur = conn.cursor()
     cur.execute(RfSql)
 
-    printlog(2, "Selected %d row(s)" % cur.rowcount)
+    blogger.debug("Selected %d row(s)" % cur.rowcount)
     flights = []
     for row in cur:
         for item in row:

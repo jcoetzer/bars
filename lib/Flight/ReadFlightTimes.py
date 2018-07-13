@@ -3,7 +3,7 @@
 import sys
 import psycopg2
 from psycopg2 import extras
-from BarsLog import set_verbose, get_verbose, printlog
+from BarsLog import blogger
 from ReadDateTime import ReadDate
 
 
@@ -19,7 +19,7 @@ def ReadFlightTimes(conn, flight):
         #" AND start_date = '%s'" \
         #" AND end_date = '%s'" \
         #" AND frequency_code = '%s'" \
-    printlog(FtSql, 2)
+    blogger.info(FtSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FtSql)
     schedule_period_no = 0
@@ -28,8 +28,8 @@ def ReadFlightTimes(conn, flight):
     for row in cur:
         start_date = row['start_date']
         end_date = row['end_date']
-        printlog("Start %s end %s schedule period %d"
-            % ( start_date, end_date, row['schedule_period_no'] ), 2)
+        blogger.info("Start %s end %s schedule period %d"
+                     % (start_date, end_date, row['schedule_period_no']))
         if flight.board_dts.date() >= start_date and flight.board_dts.date() <= end_date:
             schedule_period_no = row['schedule_period_no']
             print("Schedule period %d start %s end %s" \
@@ -40,15 +40,15 @@ def ReadFlightTimes(conn, flight):
 
 def ReadFlightPerdLegsTimes(conn, flight, SchdPerdNo):
 
-    print("Flight period legs for flight %s date %s (schedule period %d)" %
-        ( flight.flight_number, flight.board_date_iso, SchdPerdNo ))
+    print("Flight period legs for flight %s date %s (schedule period %d)"
+          % (flight.flight_number, flight.board_date_iso, SchdPerdNo))
     FtSql = \
         "SELECT departure_time, arrival_time" \
         " FROM flight_perd_legs" \
         " WHERE flight_number = '%s'" \
         " AND schedule_period_no = %d" \
             % ( flight.flight_number, SchdPerdNo )
-    printlog(FtSql, 2)
+    blogger.info(FtSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FtSql)
     for row in cur:
@@ -77,7 +77,7 @@ def ReadFlightSegmDateTimes(conn, flight, SchdPerdNo):
         arrival_time = "%02d:%02d" \
             % ( int(row['arrival_time']/60), int(row['arrival_time']%60) )
         print("\tDepart %s arrive %s" \
-            % ( departure_time, arrival_time ))
+            % (departure_time, arrival_time))
 
 
 def ReadFlightSegmDates(conn, flight, SchdPerdNo):

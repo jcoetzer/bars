@@ -1,4 +1,4 @@
-#!/usr/bin/python2 -B
+#!/usr/bin/python3 -B
 #
 # Python won't try to write .pyc or .pyo files on the import of source modules
 #
@@ -13,7 +13,7 @@ import sys
 import getopt
 from datetime import datetime, timedelta, date
 
-from BarsLog import set_verbose, printlog
+from BarsLog import blogger, init_blogger
 from ReadDateTime import ReadDate
 from BarsBanner import print_banner
 from Booking.ReadBookingRef import ReadLocator, ReadBookNo
@@ -21,15 +21,14 @@ from Booking.ReadBooking import ReadBooking, ReadBookingData
 from Booking.ReadBookSummary import ReadBookSummary, ReadBookSummaryHistory
 from Booking.BookingPayment import BookingIsPaid
 from Booking.ReadRequests import ReadRequestsPnl
-from Booking.GraphBookings import GraphBookings
 from Flight.ReadFlights import ReadDeparture
 from Booking.ReadCrossRef import check_bci, check_bci_trl, check_bci_new
-from Booking.BookingSummaryXml import ReadBsItinerary, ReadBsFaresPayment, \
-    ReadBsPassengerFares, ReadBsOldFares, \
-    ReadBsOldPassengerFares, ReadBsOldFaresPayment, \
-    ReadBsFares, ReadBsSummary, \
-    ReadBsRetailer
-from Booking.ReadItenary import ReadItenary
+#from Booking.BookingSummaryXml import ReadBsItinerary, ReadBsFaresPayment, \
+    #ReadBsPassengerFares, ReadBsOldFares, \
+    #ReadBsOldPassengerFares, ReadBsOldFaresPayment, \
+    #ReadBsFares, ReadBsSummary, \
+    #ReadBsRetailer
+from Booking.ReadItinerary import ReadItinerary
 from DbConnect import OpenDb, CloseDb
 from BarsConfig import BarsConfig
 
@@ -104,7 +103,6 @@ def main(argv):
     summ_code = None
     hist_code = None
     chk_rem = False
-    doGraph = False
     doSsr = False
     doPay = False
     doSeat = False
@@ -115,15 +113,16 @@ def main(argv):
     doFaresPayment = False
     payment_form = None
 
+    init_blogger("bars")
     if len(argv) < 1:
         usage()
 
     try:
         opts, args = getopt.getopt(argv,
-                                   "1234ghlnprtvV"
+                                   "1234ghnprtvV"
                                    "A:B:C:D:E:F:G:I:J:K:L:N:P:T:U:X:",
                                    ["help", "ssr", "tty"
-                                    "book", "pay", "seat", "itinerary", "bs",
+                                    "book", "pay", "seat", "itinerary",
                                     "origin=", "bookno=", "end=",
                                     "start=", "create=", "action=", "flight=",
                                     "ext=", "pax=", "pay=",
@@ -150,16 +149,6 @@ def main(argv):
     for opt, arg in opts:
         if opt == '-h' or opt == '--help':
             usage()
-        elif opt in ("-g", "--graph"):
-            doGraph = True
-        elif opt == "-l":
-            doGraph = True
-            try:
-                recCount = int(os.environ['LINES'] or 30)
-                if recCount > 11:
-                    recCount -= 11
-            except KeyError:
-                recCount = 30
         elif opt == '-n':
             bci_new = True
         elif opt == '-p':
@@ -168,8 +157,6 @@ def main(argv):
             chk_rem = True
         elif opt == "--book":
             doBook = True
-        elif opt == "--bs":
-            doBsXml = True
         elif opt == "--itinerary":
             doItenary = True
         elif opt == "--pay":
@@ -178,7 +165,7 @@ def main(argv):
             doSeat = True
         elif opt == "--ssr":
             doSsr = True
-            printlog(2, "Check SSR")
+            blogger.debug("Check SSR")
         elif opt == '-t':
             bci_trl = True
         elif opt == '-1':
@@ -191,48 +178,48 @@ def main(argv):
             bci_msk += 8
         elif opt == '-v':
             # Debug output
-            set_verbose(1)
+            blogger.setLevel(logging.INFO)
         elif opt == '-V':
             # Debug output
-            set_verbose(2)
+            blogger.setLevel(logging.DEBUG)
         elif opt in ("-A", "--origin"):
             origin_address = arg
-            printlog(2, "origin %s" % origin_address)
+            blogger.debug("origin %s" % origin_address)
         elif opt in ("-B", "--bookno"):
             bookno = int(arg)
-            printlog(2, "\t bookno %d" % bookno)
+            blogger.debug("\t bookno %d" % bookno)
         elif opt in ("-C", "--create"):
             # Create date
             dt1 = ReadDate(arg)
-            printlog(2, "\t start %s" % dt1.strftime("%Y-%m-%d"))
+            blogger.debug("\t start %s" % dt1.strftime("%Y-%m-%d"))
         elif opt in ("-D", "--start", "--depart"):
             # Depart date
             dt1 = ReadDate(arg)
-            printlog(2, "\t start %s" % dt1.strftime("%Y-%m-%d"))
+            blogger.debug("\t start %s" % dt1.strftime("%Y-%m-%d"))
         elif opt in ("-E", "--end"):
             dt2 = ReadDate(arg)
-            printlog(2, "end %s" % dt2.strftime("%Y-%m-%d"))
+            blogger.debug("end %s" % dt2.strftime("%Y-%m-%d"))
         elif opt in ("-F", "--flight"):
             if '%' in arg or '_' in arg or len(arg) == 0:
                 flight_pattrn = arg
-                printlog(2, "\t flight wildcard %s" % flight_number)
+                blogger.debug("\t flight wildcard %s" % flight_number)
             else:
                 flight_number = arg
-                printlog(2, "flight number %s" % flight_number)
+                blogger.debug("flight number %s" % flight_number)
         elif opt in ("-G", "--agency"):
             agency_code = arg
-            printlog(2, "agency %s" % agency_code)
+            blogger.debug("agency %s" % agency_code)
         elif opt in ("-I", "--dest"):
             dest_id = str(arg)
-            printlog(2, "dest id %s" % dest_id)
+            blogger.debug("dest id %s" % dest_id)
         elif opt in ("-K", "--pay"):
             payment_form = arg
         elif opt in ("-L", "--locator"):
             locator = arg
-            printlog(2, "locator %s" % locator)
+            blogger.debug("locator %s" % locator)
         elif opt in ("-N", "--count"):
             recCount = int(arg)
-            printlog(2, "count %d" % recCount)
+            blogger.debug("count %d" % recCount)
         elif opt in ("-P", "--pax"):
             PassengerName = arg
         elif opt in ("-X", "--ext"):
@@ -248,31 +235,19 @@ def main(argv):
     conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
 
     if locator is not None:
-        printlog(2, "Read locator %s" % locator)
+        blogger.debug("Read locator %s" % locator)
         bookno = ReadLocator(conn, locator)
     elif bookno is not None:
-        printlog(2, "Read booking number %d" % bookno)
+        blogger.debug("Read booking number %d" % bookno)
         locator = ReadBookNo(conn, bookno)
 
     if bci_msk == 0:
         bci_msk = 0xf
 
-    if doGraph:
-        GraphBookings(conn, recCount, dt1, dt2)
-    elif doBsXml:
-        ReadBsRetailer(conn, bookno, agency_code, payment_form)
-        ReadBsItinerary(conn, bookno)
-        ReadBsFares(conn, bookno, cfg.Currency)
-        ReadBsOldFares(conn, bookno, cfg.Currency)
-        ReadBsPassengerFares(conn, bookno, cfg.Currency)
-        ReadBsOldPassengerFares(conn, bookno, cfg.Currency)
-        ReadBsFaresPayment(conn, bookno, cfg.Currency)
-        ReadBsOldFaresPayment(conn, bookno, cfg.Currency)
-        ReadBsSummary(conn, bookno, cfg.Currency)
-    elif doSsr and bookno is not None:
+    if doSsr and bookno is not None:
         if dt1 is None:
             pnr, dt1 = ReadBooking(conn, bookno)
-        irecs = ReadItenary(conn, bookno, None, None,
+        irecs = ReadItinerary(conn, bookno, None, None,
                             fnumber=None, start_date=None, end_date=None)
         for irec in irecs:
             irec.display()

@@ -8,7 +8,6 @@ Various inserts.
 import psycopg2
 from psycopg2 import extras
 import string
-from BarsLog import printlog
 from BarsLog import blogger
 
 digs = string.ascii_uppercase + string.digits
@@ -227,8 +226,8 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
            aUser, aGroup, aBookNo, aFareNo, aPaxCode)
     cur.execute(abfSql)
     if cur.rowcount > 0:
-        printlog(0, "Payment for booking %d fare %d code %s has been processed"
-                 % (aBookNo, aFareNo, aPaxCode))
+        blogger.warn("Payment for booking %d fare %d code %s has been processed"
+                     % (aBookNo, aFareNo, aPaxCode))
         cur.close()
         return
 
@@ -251,8 +250,8 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
         cur.execute(abfSql)
         blogger.debug("Inserted %d row(s)" % cur.rowcount)
     except psycopg2.IntegrityError:
-        printlog(0, "Payment for booking %d fare %d code %s has been processed before"
-                 % (aBookNo, aFareNo, aPaxCode))
+        blogger.error("Payment for booking %d fare %d code %s has been processed before"
+                      % (aBookNo, aFareNo, aPaxCode))
     cur.close()
 
 

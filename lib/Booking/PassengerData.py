@@ -7,7 +7,7 @@ from random import randint
 
 from faker import Faker
 
-from BarsLog import get_verbose, printlog
+from BarsLog import blogger
 
 fake = Faker()
 

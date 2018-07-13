@@ -2,6 +2,7 @@
 
 import os
 import sys
+import logging
 import getopt
 from configobj import ConfigObj
 from xml.dom import minidom
@@ -9,7 +10,7 @@ import psycopg2
 from psycopg2 import extras
 from datetime import datetime, timedelta, datetime
 from ReadDateTime import ReadDate, ReadTime
-from BarsLog import set_verbose, printlog
+from BarsLog import blogger, init_blogger
 from Ssm.SsmDb import CheckCityPair, GetCityPair
 from ScheduleData import SsmData
 from Ssm.ProcNew import ProcNew, AddAircraftConfig, CheckAircraftConfig, \
@@ -160,6 +161,7 @@ def main(argv):
     if len(argv) < 1:
         usage()
 
+    init_blogger("bars")
     try:
         opts, args = getopt.getopt(argv,
                                    "cfhivxyVA:D:E:F:G:I:J:K:N:P:Q:R:T:U:X:Y:",
@@ -180,10 +182,10 @@ def main(argv):
             usage()
         elif opt == '-v':
             # Debug output
-            set_verbose(1)
+            blogger.setLevel(logging.INFO)
         elif opt == '-V':
             # Debug output
-            set_verbose(2)
+            blogger.setLevel(logging.DEBUG)
         elif opt == "--city":
             docity = True
         elif opt == "--fare":
@@ -204,48 +206,48 @@ def main(argv):
             docontact = True
         elif opt == "-A" or opt == "--aircraft":
             aircraftCode = str(arg).upper()
-            printlog(2, "aircraft code %s" % aircraftCode)
+            blogger.debug("aircraft code %s" % aircraftCode)
         elif opt in ("-D", "--date"):
             departDate = ReadDate(arg)
-            printlog(2, "start date %s" % departDate.strftime("%Y-%m-%d"))
+            blogger.debug("start date %s" % departDate.strftime("%Y-%m-%d"))
         elif opt in ("-E", "--edate"):
             arriveDate = ReadDate(arg)
-            printlog(2, "end date %s" % departDate.strftime("%Y-%m-%d"))
+            blogger.debug("end date %s" % departDate.strftime("%Y-%m-%d"))
         elif opt in ("-F", "--flight"):
             flightNumber = arg
         elif opt in ("-G", "--share"):
             codeShare = arg
         elif opt in ("-I", "--cabin"):
             cabinClasses = str(arg).split(',')
-            printlog(2, "classes %s" % cabinClasses)
+            blogger.debug("classes %s" % cabinClasses)
         elif opt in ("-J", "--seat"):
             seatCapacities = str(arg).split(',')
-            printlog(2, "seats %s" % seatCapacities)
+            blogger.debug("seats %s" % seatCapacities)
         elif opt in ("-K", "--freq"):
             frequencyCode = str(arg)
         elif opt in ("-N", "--name"):
             aircraftName = str(arg)
         elif opt in ("-P", "--depart"):
             departAirport = str(arg).upper()
-            printlog(2, "depart %s" % departAirport)
+            blogger.debug("depart %s" % departAirport)
         elif opt in ("-Q", "--arrive"):
             arriveAirport = str(arg).upper()
-            printlog(2, "arrive %s" % arriveAirport)
+            blogger.debug("arrive %s" % arriveAirport)
         elif opt in ("-R", "--amount"):
             payAmount = int(arg)
-            printlog(2, "payment %d" % payAmount)
+            blogger.debug("payment %d" % payAmount)
         elif opt in ("-T", "--tail"):
             tailNumber = str(arg)
-            printlog(2, "tail number %s" % tailNumber)
+            blogger.debug("tail number %s" % tailNumber)
         elif opt in ("-U", "--cfg"):
             configTable = str(arg)
-            printlog(2, "configuration %s" % configTable)
+            blogger.debug("configuration %s" % configTable)
         elif opt == "-X":
             departTime = ReadTime(arg)
-            printlog(2, "depart time %s" % departTime)
+            blogger.debug("depart time %s" % departTime)
         elif opt == "-Y":
             arriveTime = ReadTime(arg)
-            printlog(2, "arrive time %s" % arriveTime)
+            blogger.debug("arrive time %s" % arriveTime)
         else:
             print("Unknown option '%s'" % opt)
             return 1

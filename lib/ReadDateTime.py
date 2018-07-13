@@ -3,7 +3,7 @@
 import sys
 import time
 from datetime import datetime, timedelta, date
-from BarsLog import printlog
+from BarsLog import blogger
 
 
 def DateRange(start_date, end_date):
@@ -82,7 +82,7 @@ def ReadDateTime(arg):
 
 def ReadDate(arg):
     """Convert date."""
-    printlog(2, "Convert date '%s'" % (str(arg)))
+    blogger.debug("Convert date '%s'" % (str(arg)))
     try:
         if arg is None:
             print("Empty date")
@@ -150,13 +150,13 @@ def ReadTime(arg):
     """Convert time."""
     try:
         atime = None
-        printlog(2, "Convert time '%s'" % (str(arg)))
+        blogger.debug("Convert time '%s'" % (str(arg)))
 
         if type(arg) is str:
             atime = arg[0:5]
         else:
             atime = "%02d:%02d" % (int(arg/100), int(arg % 100))
-        printlog(2, "Time is %s" % atime)
+        blogger.debug("Time is %s" % atime)
         return time.strptime(atime, "%H:%M")
     except:
         print("Could not convert time %s (%s)" % (arg, atime))

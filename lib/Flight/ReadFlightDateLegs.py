@@ -4,7 +4,7 @@ Check flight date leg.
 import sys
 import psycopg2
 from psycopg2 import extras
-from BarsLog import set_verbose, get_verbose, printlog
+from BarsLog import blogger
 from ReadDateTime import ReadDate
 
 
@@ -18,7 +18,7 @@ def ReadFlightDateLegId(conn, fli):
         " departure_airport,arrival_airport,leg_number,update_user,update_time" \
         " FROM flight_date_leg WHERE flight_date_leg_id=%d"  \
         % (fli)
-    printlog(RcSql, 2)
+    blogger.info(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0

@@ -3,7 +3,7 @@
 import sys
 import psycopg2
 from psycopg2 import extras
-from BarsLog import set_verbose, get_verbose, printlog
+from BarsLog import blogger
 from ReadDateTime import ReadDate
 from Flight.ReadFlightDateLegs import ReadFlightDateLegId
 from Flight.ReadFlights import ReadFlight
@@ -34,7 +34,7 @@ def ReadSeatMapConfiguration(conn, seat_map_id=None, config_table=None):
         return
     print("[seat_map_configuration]")
 
-    printlog(2, SmcSql)
+    blogger.debug(SmcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(SmcSql)
     seat_map_id = 0
@@ -60,7 +60,7 @@ def ReadFlightSeatMap(conn, flight_date_leg_id):
         "SELECT seat_map_id,update_user,update_time" \
         " FROM flight_seat_map WHERE flight_date_leg_id=%d" \
             % flight_date_leg_id
-    printlog(2, SmcSql)
+    blogger.debug(SmcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(SmcSql)
     seat_map_id = 0
@@ -78,7 +78,7 @@ def ReadFlightSeatMap(conn, flight_date_leg_id):
 
 def CheckForDuplicateSeatMaps(conn, acode=None):
 
-    printlog("Flights with duplicate seat maps")
+    blogger.info("Flights with duplicate seat maps")
 
     SmcSql = \
         "SELECT " \
@@ -89,13 +89,13 @@ def CheckForDuplicateSeatMaps(conn, acode=None):
         " GROUP BY fdl.flight_number, fdl.flight_date" \
         " HAVING count(*) > 1"
 
-    printlog(2, SmcSql)
+    blogger.debug(SmcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(SmcSql)
 
     flights = []
     for row in cur:
-        printlog("\t%s %s %s" % (row['fn'], row['fd'], row['smc']))
+        blogger.info("\t%s %s %s" % (row['fn'], row['fd'], row['smc']))
         flight_number = str(row['fn'])
         flight_date = ReadDate(str(row['fd']))
         flight = ReadFlight(conn, flight_number, flight_date)
@@ -118,8 +118,8 @@ def CheckFlightForDuplicateSeatMaps(conn, flight, aircraft_desc, seat_map_id=Non
     fltDate = flight.board_dts
     aircraft_code = flight.aircraft_code
 
-    printlog("Check seat maps for flight %s date %s aircraft description %s" \
-        % (flightNum, fltDate.strftime("%Y-%m-%d"), aircraft_code), 1)
+    blogger.info("Check seat maps for flight %s date %s aircraft description %s" \
+        % (flightNum, fltDate.strftime("%Y-%m-%d"), aircraft_code))
 
     SmcSql = \
         "SELECT count(*) smcount FROM flight_seat_map fsm" \
@@ -129,7 +129,7 @@ def CheckFlightForDuplicateSeatMaps(conn, flight, aircraft_desc, seat_map_id=Non
         "  AND fdl.flight_date = '%s'" \
             % (flightNum, fltDate.strftime("%Y-%m-%d"))
 
-    printlog(2, SmcSql)
+    blogger.debug(SmcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     cur.execute(SmcSql)
@@ -141,8 +141,8 @@ def CheckFlightForDuplicateSeatMaps(conn, flight, aircraft_desc, seat_map_id=Non
         SeatMapCount = int(row['smcount'])
 
     if SeatMapCount is None:
-        printlog("Could not read seat maps for flight %s date %s" \
-            % (flightNum, fltDate.strftime("%Y-%m-%d")), 1)
+        blogger.info("Could not read seat maps for flight %s date %s" \
+            % (flightNum, fltDate.strftime("%Y-%m-%d")))
         SeatMapCount = 0
     elif SeatMapCount > 1:
         Smc2Sql = \
@@ -155,17 +155,17 @@ def CheckFlightForDuplicateSeatMaps(conn, flight, aircraft_desc, seat_map_id=Non
             "  JOIN seat_map sm ON fsm.seat_map_id = sm.seat_map_id" \
             " WHERE fdl.flight_number = '%s' AND fdl.flight_date = '%s'" \
                 % (flightNum, fltDate.strftime("%Y-%m-%d"))
-        printlog(Smc2Sql, 2)
+        blogger.debug(Smc2Sql)
         cur2 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur2.execute("set isolation dirty read")
         cur2.execute(Smc2Sql)
         for row in cur2:
             fdlid = int(row['fldid'] or 0)
             smid = int(row['fsmid'] or 0)
-            printlog("\nFlight  %s date %s" \
-                % (flightNum, fltDate.strftime("%Y-%m-%d")), 1)
-            printlog("\tflight date leg %s seat map %d aircraft code description '%s'" \
-                % (fdlid, smid, row['fdesc']), 1)
+            blogger.info("\nFlight  %s date %s" \
+                % (flightNum, fltDate.strftime("%Y-%m-%d")))
+            blogger.info("\tflight date leg %s seat map %d aircraft code description '%s'" \
+                % (fdlid, smid, row['fdesc']))
             if aircraft_desc is not None:
                 if row['fdesc'] == aircraft_desc:
                     FlightDateLegId = fdlid
@@ -180,10 +180,10 @@ def CheckFlightForDuplicateSeatMaps(conn, flight, aircraft_desc, seat_map_id=Non
                 # Nothing to do
                 pass
 
-        printlog("Found %d seat maps for flight %s date %s" \
-            % (SeatMapCount, flightNum, fltDate.strftime("%Y-%m-%d")), 1)
+        blogger.info("Found %d seat maps for flight %s date %s" \
+            % (SeatMapCount, flightNum, fltDate.strftime("%Y-%m-%d")))
         if FlightDateLegId:
-            printlog("\t matched aircraft description %s" % aircraft_desc, 1)
+            blogger.info("\t matched aircraft description %s" % aircraft_desc)
     elif SeatMapCount == 1:
         pass
     elif SeatMapCount == 0:
@@ -205,7 +205,7 @@ def CheckSeatMaps(conn, flight):
     except AttributeError:
         return 0
 
-    printlog("Check flight %s seat maps for date %s aircraft code %s" \
+    blogger.info("Check flight %s seat maps for date %s aircraft code %s" \
         % (flightNum, fltDate.strftime("%Y-%m-%d"), aircraft_code))
 
     SmcSql = \
@@ -216,7 +216,7 @@ def CheckSeatMaps(conn, flight):
         "  AND fdl.flight_date = '%s'" \
             % (flightNum, fltDate.strftime("%Y-%m-%d"))
 
-    printlog(2, SmcSql)
+    blogger.debug(SmcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     cur.execute(SmcSql)
@@ -241,7 +241,7 @@ def CheckSeatMaps(conn, flight):
             "  JOIN seat_map sm ON fsm.seat_map_id = sm.seat_map_id" \
             " WHERE fdl.flight_number = '%s' AND fdl.flight_date = '%s'" \
                 % (flightNum, fltDate.strftime("%Y-%m-%d"))
-        printlog(Smc2Sql, 2)
+        blogger.debug(Smc2Sql)
         cur2 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur2.execute("set isolation dirty read")
         cur2.execute(Smc2Sql)
@@ -258,7 +258,7 @@ def CheckSeatMaps(conn, flight):
             "  JOIN seat_map sm on fsm.seat_map_id = sm.seat_map_id" \
             " WHERE fdl.flight_number = '%s' and fdl.flight_date = '%s'" \
                 % (flightNum, fltDate.strftime("%Y-%m-%d"))
-        printlog(Smc2Sql, 2)
+        blogger.debug(Smc2Sql)
         cur2 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur2.execute("set isolation dirty read")
         cur2.execute(Smc2Sql)
@@ -295,9 +295,9 @@ def CheckSeatMaps(conn, flight):
 
 def DeleteSeatMap(conn, flight, FlightLegId, MapId, do_del=False):
 
-    printlog("Delete seat map entry for flight %6s depart %s" \
+    blogger.info("Delete seat map entry for flight %6s depart %s" \
           " (flight date leg %d and seat map %d)" \
-        % (flight.flight_number, flight.board_date_iso, FlightLegId , MapId), 1)
+        % (flight.flight_number, flight.board_date_iso, FlightLegId , MapId))
     SmcSql = \
         "SELECT count(*) fsm FROM flight_seat_map" \
         " WHERE flight_date_leg_id = %d AND seat_map_id = %d" \
@@ -378,7 +378,7 @@ def RemoveDuplicateSeatMaps(conn, flight, do_del=False):
         "  JOIN seat_map sm on fsm.seat_map_id = sm.seat_map_id" \
         " WHERE fdl.flight_number = '%s' AND fdl.flight_date = '%s'" \
             % (flightNum, fltDate)
-    printlog(SmcSql, 2)
+    blogger.debug(SmcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     cur.execute(SmcSql)
@@ -428,7 +428,7 @@ def ReadAircraftConfig(conn, config_table):
         " FROM aircraft_config " \
         " WHERE config_table = '%s'" \
             % config_table
-    printlog(2, SmcSql)
+    blogger.debug(SmcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     cur.execute(SmcSql)
@@ -452,7 +452,7 @@ def GetConfigTableNo(conn, aircraft_code):
         " FROM aircraft_config " \
         " WHERE aircraft_code = '%s'" \
             % aircraft_code
-    printlog(2, SmcSql)
+    blogger.debug(SmcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     cur.execute(SmcSql)
@@ -473,7 +473,7 @@ def ReadFLightSeatMapId(conn, seat_map_id):
     print("Seat map for seat map ID %d [seat_map]" % seat_map_id)
     FdSql = "select description,update_time,update_user from seat_map where seat_map_id='%d'" \
         % (seat_map_id)
-    printlog(2, FdSql)
+    blogger.debug(FdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     cur.execute(FdSql)
@@ -495,7 +495,7 @@ def ReadSeatMapClass(conn, seat_map_id):
     print("Seat map class for seat map ID %d [seat_map_class]" % seat_map_id)
     FdSql = "select selling_class,update_time,update_user from seat_map_class where seat_map_id='%d'" \
         % (seat_map_id)
-    printlog(2, FdSql)
+    blogger.debug(FdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     cur.execute(FdSql)
@@ -520,7 +520,7 @@ def ReadSeatDefinition(conn, seat_map_id):
         "SELECT seat_definition_id,seat_code,update_time,update_user" \
         " FROM seat_definition WHERE seat_map_id=%d" \
             % (seat_map_id)
-    printlog(2, FdSql)
+    blogger.debug(FdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     cur.execute(FdSql)
@@ -548,7 +548,7 @@ def ReadSeatMapId(conn, seatnum):
         "SELECT seat_definition_id FROM seat_definition" \
         " WHERE row_number=%d AND seat_code='%s'" \
             % (row_number, seat_code)
-    printlog(2, FdSql)
+    blogger.debug(FdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     cur.execute(FdSql)

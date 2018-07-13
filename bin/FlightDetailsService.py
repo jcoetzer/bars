@@ -9,11 +9,11 @@ Provide flight details.
 import os
 import sys
 import getopt
-
+import logging
 import psycopg2
 from psycopg2 import extras
 
-from BarsLog import printlog, set_verbose
+from BarsLog import blogger, init_blogger
 from ReadDateTime import ReadDate, DateRange
 
 from Ssm.SsmDb import GetCityPair
@@ -38,6 +38,7 @@ def main(argv):
     if len(argv) < 1:
         usage()
 
+    init_blogger("bars")
     opts, args = getopt.getopt(argv,
                                "cfhivyVA:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
                                ["help", "date=", "edate=", "flight="])
@@ -51,14 +52,14 @@ def main(argv):
         if opt == '-h' or opt == '--help':
             usage()
         elif opt == '-v':
-            set_verbose(1)
+            blogger.setLevel(logging.INFO)
         elif opt == '-V':
-            set_verbose(2)
+            blogger.setLevel(logging.DEBUG)
         # elif opt in ("-C", "--class"):
             # selling_cls = str(arg).upper()
         elif opt in ("-D", "--date"):
             dt1 = ReadDate(arg)
-            printlog(1, "\t flight date %s" % dt1.strftime("%Y-%m-%d"))
+            blogger.info("\t flight date %s" % dt1.strftime("%Y-%m-%d"))
         # elif opt in ("-E", "--edate"):
             # dt2 = ReadDate(arg)
         elif opt in ("-F", "--flight"):
@@ -68,13 +69,13 @@ def main(argv):
                 dt1 = ReadDate(fndata[1])
             else:
                 flight_number = arg
-            printlog(2, "Flight number set to %s" % flight_number)
+            blogger.debug("Flight number set to %s" % flight_number)
         # elif opt in ("-P", "--depart"):
             # depart_airport = str(arg).upper()
-            # printlog(1, "\t depart %s" % depart_airport)
+            # blogger.info("\t depart %s" % depart_airport)
         # elif opt in ("-Q", "--arrive"):
             # arrive_airport = str(arg).upper()
-            # printlog(1, "\t arrive %s" % arrive_airport)
+            # blogger.info("\t arrive %s" % arrive_airport)
         else:
             pass
 
@@ -94,7 +95,7 @@ def main(argv):
 
     conn.commit()
     conn.close()
-    printlog(1, "Disconnected")
+    blogger.info("Disconnected")
 
     return 0
 

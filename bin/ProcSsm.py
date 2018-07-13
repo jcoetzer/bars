@@ -18,7 +18,7 @@ from Ssm.SsmYacc import YaccFile
 
 import psycopg2
 from psycopg2 import extras
-from BarsLog import printlog, set_verbose
+from BarsLog import blogger, init_blogger
 from ReadDateTime import ReadDate, DateRange
 from Ssm.ProcNew import ProcNew
 from Ssm.ProcCnl import ProcCnl
@@ -60,13 +60,14 @@ def main(argv):
     if len(argv) < 1:
         usage()
 
+    init_blogger("bars")
     for opt in argv:
         if opt == '-h' or opt == '--help':
             usage()
         elif opt == '-v':
-            set_verbose(1)
+            blogger.setLevel(logging.INFO)
         elif opt == '-V':
-            set_verbose(2)
+            blogger.setLevel(logging.DEBUG)
         else:
             fname = str(opt)
 
@@ -88,7 +89,7 @@ def main(argv):
 
     conn.commit()
     conn.close()
-    printlog(1, "Disconnected")
+    blogger.info("Disconnected")
 
     return rv
 

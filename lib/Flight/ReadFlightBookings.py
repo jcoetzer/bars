@@ -5,14 +5,14 @@ Read booking e.a. for flights.
 
 import psycopg2
 from psycopg2 import extras
-from BarsLog import printlog
+from BarsLog import blogger
 
 
 def ReadFlightBookings(conn, flight_number, board_date, stat_flag=None):
     """Read bookings for flight."""
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur2 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    printlog(1, "Flight %s board %s bookings"
+    blogger.info("Flight %s board %s bookings"
              " [flight_segment_dates,itineraries,bookings,action_codes]"
              % (flight_number, board_date))
     FbSql = \
@@ -27,7 +27,7 @@ def ReadFlightBookings(conn, flight_number, board_date, stat_flag=None):
     if stat_flag is not None:
         FbSql += \
             " AND bo.status_flag = '%s'" % stat_flag
-    printlog(2, FbSql)
+    blogger.debug(FbSql)
     cur.execute(FbSql)
     npax = 0
     for row in cur:
@@ -47,7 +47,7 @@ def ReadFlightBookings(conn, flight_number, board_date, stat_flag=None):
             AND pa.pax_no > 0
             AND pa.pax_code <> 'INF'
             """ % book_no
-        printlog(2, FbSql2)
+        blogger.debug(FbSql2)
         cur2.execute(FbSql2)
         for row2 in cur2:
             print("\t %3s %s %s %s"
@@ -70,7 +70,7 @@ def ReadFlightContacts(conn, flight_number, board_date):
             (SELECT DISTINCT book_no FROM itineraries
              WHERE flight_number='%s' AND flight_date='%s')""" \
         % (flight_number, board_date)
-    printlog(2, FbSql)
+    blogger.debug(FbSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FbSql)
     for row in cur:

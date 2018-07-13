@@ -3,7 +3,7 @@
 import sys
 import psycopg2
 from psycopg2 import extras
-from BarsLog import printlog
+from BarsLog import blogger
 
 
 def OpenDb(dbname, dbuser, dbhost):
@@ -15,7 +15,7 @@ def OpenDb(dbname, dbuser, dbhost):
     except:
         print("Could not connect to database: %s" % (connstr))
         sys.exit(1)
-    printlog(1, "Connected to database %s" % dbname)
+    blogger.info("Connected to database %s" % dbname)
     return conn
 
 
@@ -23,4 +23,4 @@ def CloseDb(conn):
     """Close connection to database."""
     conn.commit()
     conn.close()
-    printlog(1, "Disconnected")
+    blogger.info("Disconnected")

@@ -3,7 +3,7 @@
 Flight data class.
 """
 
-from BarsLog import get_verbose, printlog
+from BarsLog import blogger
 
 
 class FlightData(object):
@@ -46,7 +46,7 @@ class FlightData(object):
                  schedule_period_no=0,
                  codeshare=None):
         """New flight."""
-        printlog(2, "New flight %s date %s class %s depart %s arrive %s"
+        blogger.debug("New flight %s date %s class %s depart %s arrive %s"
                  " from %s to %s (pair %d) aircraft %s"
                  % (flight_number, departure_date.strftime("%Y-%m-%d"),
                     class_code,
@@ -97,7 +97,7 @@ class FlightData(object):
 
     def update_times(self, departure_time, arrival_time, journey_time=0):
         """Update departure and arrival times."""
-        printlog(2, "Update flight depart %s arrive %s"
+        blogger.debug("Update flight depart %s arrive %s"
                  % (departure_time, arrival_time))
         self.departure_time = ReadTime(departure_time, self.board_date_iso)
         self.departure_ts = str("%02d:%02d"
@@ -121,7 +121,7 @@ class FlightData(object):
     def update_codeshare(self, codeshare):
         """Update codeshare flight number."""
         self.codeshare = codeshare
-        printlog(2, "Codeshare set to %s" % self.codeshare)
+        blogger.debug("Codeshare set to %s" % self.codeshare)
 
     def display(self, eol=True, prefix=''):
         """Display flight data."""

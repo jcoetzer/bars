@@ -3,7 +3,7 @@
 SSM data stuff.
 """
 import re
-from BarsLog import printlog
+from BarsLog import blogger
 from ReadDateTime import ReadDate, ReadTime
 from ScheduleData import SsmData
 
@@ -32,21 +32,21 @@ class_seats = []
 def set_action(atype):
     global action
     action = atype
-    printlog(2, "Action %s" % (action))
+    blogger.debug("Action %s" % (action))
 
 
 # Set time zone
 def set_time_zone(atz):
     global time_zone
     time_zone = atz
-    printlog(2, "Time zone %s" % (time_zone))
+    blogger.debug("Time zone %s" % (time_zone))
 
 
 # Add flight number
 def add_flight_number(afnum, airline, fd1=None, fd2=None, fd3=None):
     global flight_number
     flight_number = afnum
-    printlog(2, "Flight %s" % (flight_number))
+    blogger.debug("Flight %s" % (flight_number))
 
 
 def add_leg(depart, arrive, days):
@@ -58,7 +58,7 @@ def add_leg(depart, arrive, days):
     arrival_airport = arrive[0:3]
     atime = ReadTime(int(arrive[3:]))
     arrival_time = "%02d:%02d" % (atime.tm_hour, atime.tm_min)
-    printlog(2, "Leg depart %s %s arrive %s %s (%s)"
+    blogger.debug("Leg depart %s %s arrive %s %s (%s)"
              % (departure_airport, departure_time,
                 arrival_airport, arrival_time, days))
 
@@ -75,29 +75,29 @@ def add_dates_freq(sdate, edate, freq):
     while n < ln:
         frequency_codes.append(int(fstr[n]))
         n += 1
-    printlog(2, "Start %s end %s frequency %d"
+    blogger.debug("Start %s end %s frequency %d"
              % (sdate, edate, frequency_code))
-    printlog(2, "Frequency codes %s" % frequency_codes)
+    blogger.debug("Frequency codes %s" % frequency_codes)
 
 
 # Add segment
 def add_segment(deparr, adata1):
     global segments, class_codes, class_seats
-    printlog(2, "Depart/arrive %s data %s" % (deparr, adata1))
+    blogger.debug("Depart/arrive %s data %s" % (deparr, adata1))
     segments[deparr] = adata1
     if '/' in adata1:
         fndata = adata1.split('/')
         if fndata[0] == '106':
             cdata = fndata[1]
             class_codes = re.findall('\D+', cdata)
-            printlog(2, "Class codes %s" % class_codes)
+            blogger.debug("Class codes %s" % class_codes)
             class_seats = re.findall('\d+', cdata)
-            printlog(2, "Class seats %s" % class_seats)
+            blogger.debug("Class seats %s" % class_seats)
 
 
 # Add configuration
 def add_config(adata):
-    printlog(2, "Configuration %s" % (adata))
+    blogger.debug("Configuration %s" % (adata))
 
 
 # Add equipment
@@ -108,7 +108,7 @@ def add_equipment(atype, abook, atail, cdata, cdata2=None):
     if cdata2 is not None:
         aircraft_conf.append(cdata2)
     aircraft_tail = atail
-    printlog(2, "Type %s booking %s cabin %s tail %s"
+    blogger.debug("Type %s booking %s cabin %s tail %s"
              % (aircraft_code, abook, aircraft_conf, aircraft_tail))
 
 

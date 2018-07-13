@@ -1,7 +1,7 @@
 """
 Itinerary data.
 """
-
+from BarsLog import blogger
 
 class ItineraryData(object):
     """Itinerary data."""
@@ -24,11 +24,11 @@ class ItineraryData(object):
                  departure_airport, arrival_airport, city_pair,
                  status_flag, reserve_status, itinerary_type=None):
         """New itinerary for flight."""
-        printlog(2, "New itinerary flight %s date %s class %s"
-                 " from %s to %s status %s reserve %s"
-                 % (flight_number, departure_date, class_code,
-                    departure_airport, arrival_airport,
-                    status_flag, reserve_status))
+        blogger.debug("New itinerary flight %s date %s class %s"
+                      " from %s to %s status %s reserve %s"
+                      % (flight_number, departure_date, class_code,
+                         departure_airport, arrival_airport,
+                         status_flag, reserve_status))
         self.flight_number = str(flight_number).replace(' ', '')
         self.company_code = flight_number[0:2]
         self.flight_integer = int(flight_number[2:])

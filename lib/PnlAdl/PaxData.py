@@ -4,7 +4,7 @@ Passenger data.
 @file PaxData.cpp
 """
 
-from BarsLog import get_verbose, printlog
+from BarsLog import blogger
 
 
 class PaxData(object):
@@ -33,7 +33,7 @@ class PaxData(object):
 
     def Clear(self):
         """Constructor."""
-        printlog(2, "\tReset pax data")
+        blogger.debug("\tReset pax data")
         self.paxno = 0
         self.paxcount = ''
         self.paxname = ''
@@ -57,7 +57,7 @@ class PaxData(object):
             return 0
         self.Requests = ''
         self.codeShare = aCodeShare
-        printlog(1, "pax [%s]" % pdata)
+        blogger.info("pax [%s]" % pdata)
         elements = pdata.split('.')
         self.CheckName(elements[0])
         i = 1
@@ -76,14 +76,14 @@ class PaxData(object):
             return 1
 
         self.paxcount = nel[0].substr(0, found)
-        printlog(1, "\tcount '%s'" % self.paxcount)
+        blogger.info("\tcount '%s'" % self.paxcount)
 
         self.paxname = nel[0][found:].rstrip()
-        printlog(1, "\tname '%s'" % self.paxname)
+        blogger.info("\tname '%s'" % self.paxname)
 
         if (len(nel) > 1 and len(nel[1]) > 0 and nel[1][1] != '/'):
             self.grpname = nel[1].strip()
-            printlog(1, "\tgroup '%s'" % self.grpname)
+            blogger.info("\tgroup '%s'" % self.grpname)
         return 0
 
     def CheckElement(self, edata):
@@ -91,7 +91,7 @@ class PaxData(object):
         indata = ''
         if (edata[0:1] == "L"):
             locator = edata.substr(2).strip()
-            printlog(1, "\tlocator '%s'" % locator)
+            blogger.info("\tlocator '%s'" % locator)
         elif (edata[0] == "R"):
             self.CheckRemark(edata[2])
         elif (edata.substr[0] == "M"):
@@ -101,7 +101,7 @@ class PaxData(object):
                 self.pnladlerr += 1
             else:
                 indata = marketflt.substr(0, marketflt.length()-9)
-                printlog(1, "\tmarketing '%s' for %s" % (marketflt, indata))
+                blogger.info("\tmarketing '%s' for %s" % (marketflt, indata))
                 if len(self.codeShare) == 0:
                     print("Marketing element for non-codeshare flight")
                     self.pnladlerr += 1
@@ -111,12 +111,12 @@ class PaxData(object):
                     self.pnladlerr += 1
         elif (edata[0] == "I"):
             incomingflt = edata.substr(2).rstrip()
-            printlog(1, "\tincoming flight %s" % incomingflt)
+            blogger.info("\tincoming flight %s" % incomingflt)
         elif (edata[0] == "O"):
             outgoingflt = edata[2:].rstrip()
-            printlog(1, "\toutgoing flight %s" % outgoingflt)
+            blogger.info("\toutgoing flight %s" % outgoingflt)
         else:
-            printlog(1, "\tother '%s'" % edata)
+            blogger.info("\tother '%s'" % edata)
         return 0
 
     def AddRemark(self, rdata):
@@ -138,7 +138,7 @@ class PaxData(object):
                     self.pnladlerr += 1
                     print("Duplicate infant e-ticket")
                 eticktinf = rdata[9:].rstrip()
-                printlog(1, "\tinfant e-ticket '%s'", eticktinf)
+                blogger.info("\tinfant e-ticket '%s'", eticktinf)
             elif (rdata.substr(5, 3) != "HK1"):
                 self.paxrep += "Invalid e-ticket action code "
                 self.paxrep += rdata
@@ -151,7 +151,7 @@ class PaxData(object):
                     self.pnladlerr += 1
                     print("Duplicate e-ticket '%s'" % self.etickt)
                 self.etickt = rdata[9:].rstrip()
-                printlog(1, "\te-ticket '%s'", self.etickt)
+                blogger.info("\te-ticket '%s'", self.etickt)
         elif (rdata[0:4] == "TKNE"):
             if (rdata.length() < 9):
                 self.pnladlerr += 1
@@ -164,21 +164,21 @@ class PaxData(object):
                     self.pnladlerr += 1
                     print("Duplicate infant ticket")
                 self.etlpinf = rdata[9:].rstrip()
-                printlog(1, "\tinfant ticket '%s'", self.etlpinf)
+                blogger.info("\tinfant ticket '%s'", self.etlpinf)
             else:
                 if len(self.etlp) > 0:
                     self.pnladlerr += 1
                     print("Duplicate ticket")
                 self.etlp = rdata[9:].rstrip()
-                printlog(1, "\tticket '%s'", self.etlp)
+                blogger.info("\tticket '%s'", self.etlp)
         elif (rdata[0:4] == "CKIN"):
             self.chekin = rdata[5:].rstrip()
-            printlog(1, "\tcheckin '%s'", self.chekin)
+            blogger.info("\tcheckin '%s'", self.chekin)
         elif (rdata[0:4] == "INFT"):
             self.inft = rdata[5:].rstrip()
-            printlog(1, "\tinfant '%s'", self.inft)
+            blogger.info("\tinfant '%s'", self.inft)
         else:
-            printlog(1, "\tremark '%s'", self.rdata)
+            blogger.info("\tremark '%s'", self.rdata)
         return 0
 
     def Check(self):
