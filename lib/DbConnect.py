@@ -13,9 +13,9 @@ def OpenDb(dbname, dbuser, dbhost):
             % (dbname, dbuser, dbhost)
         conn = psycopg2.connect(connstr)
     except:
-        print("Could not connect to database: %s" % (connstr))
+        blogger.error("Could not connect to database: %s" % (connstr))
         sys.exit(1)
-    blogger.info("Connected to database %s" % dbname)
+    #blogger.info("Connected to database %s" % dbname)
     return conn
 
 

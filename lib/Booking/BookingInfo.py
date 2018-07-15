@@ -718,14 +718,14 @@ def GetPreBookingInfo(conn, book_no):
     cur.close()
 
 
-def UpdateBookPayment(conn, aBookNo, aCurrency, aPayment):
+def UpdateBookPayment(conn, aBookNo, aCurrency, aPayment, aStatus='A'):
     """Update payment amount in bookings table."""
     blogger.info("Update booking %d payment %s%f" % (aBookNo, aCurrency, aPayment))
     UbpSql = """UPDATE bookings
                 SET (payment_amount, status_flag)
-                  = (payment_amount+%f, 'A')
+                  = (payment_amount+%f, '%s')
                 WHERE book_no=%d""" \
-             % (aPayment, aBookNo)
+             % (aPayment, aBookNo, aStatus)
     blogger.debug("%s" % UbpSql)
     cur = conn.cursor()
     cur.execute(UbpSql)

@@ -160,7 +160,8 @@ def PutPayHtml(conn, aBookNo, aSellClass,
     """Process payment."""
     if aBookNo is None:
         blogger.error("Book number not specified")
-        return 1
+        msg = "<p/>Book number not specified")
+        return 1, msg
     blogger.info("Process payment of %s%.2f for book %d"
              % (aCurrency, aPayAmount, aBookNo))
     paxRecs = ReadPassengers(conn, aBookNo)
@@ -179,8 +180,9 @@ def PutPayHtml(conn, aBookNo, aSellClass,
     irecs = ReadItinerary(conn, aBookNo, None, None,
                           fnumber=None, start_date=None, end_date=None)
     if len(irecs) > 2:
-        blogger.info("Found %d itenaries")
-        return 1
+        blogger.info("Found %d itenaries" % len(irecs))
+        msg = "<p/>Found %d itenaries" % len(irecs))
+        return 1, msg
     else:
         n = 0
         totalPayment = 0
@@ -202,4 +204,5 @@ def PutPayHtml(conn, aBookNo, aSellClass,
     UpdateItinerary(conn, aBookNo, 'A')
     UpdateBook(conn, aBookNo, 'A')
     conn.commit()
-    return 0
+    msg = "<p/>Payment approved."
+    return 0, msg

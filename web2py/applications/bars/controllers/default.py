@@ -7,6 +7,7 @@
 
 import os
 import logging
+import random
 from datetime import date, datetime, time, timedelta
 
 from BarsConfig import BarsConfig
@@ -143,18 +144,34 @@ def bookingshow():
 
 
 def bookingpay():
-    """Show booking."""
+    """Do payment for booking."""
+    n = random.randint(0,100)
+    if n < 5:  # cfg.PaymentFail:
+        redirect(URL('bookingpayfail'))
+    redirect(URL('bookingpayshow'))
+
+
+def bookingpayfail():
+    """Do payment for booking."""
+    msg = "Payment declined."
+    return dict(message=XML(msg))
+
+
+def bookingpayshow():
+    """Show payment for booking."""
     bookNo = int(request.vars.bookno)
     sellClass = request.vars.fclass
     payAmount = float(request.vars.fprice)
     docNum = request.vars.cardnum
     paymentType = 'CC'
     paymentForm = 'VI'
-    msg = PutPayHtml(conn, bookNo, sellClass,
-                     cfg.Currency, payAmount, 0.0,
-                     cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareBasisCode,
-                     paymentType, paymentForm, docNum,
-                     cfg.User, cfg.Group)
+    rv, msg = PutPayHtml(conn, bookNo, sellClass,
+                         cfg.Currency, payAmount, 0.0,
+                         cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareBasisCode,
+                         paymentType, paymentForm, docNum,
+                         cfg.User, cfg.Group)
+    if rv == 0:
+        msg = "<p/>Payment approved."
     return dict(message=XML(msg))
 
 

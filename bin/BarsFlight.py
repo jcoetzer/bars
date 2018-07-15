@@ -9,8 +9,8 @@ from xml.dom import minidom
 import psycopg2
 from psycopg2 import extras
 from datetime import datetime, timedelta, datetime
+from BarsLog import blogger
 from ReadDateTime import ReadDate, ReadTime
-from BarsLog import blogger, init_blogger
 from Ssm.SsmDb import CheckCityPair, GetCityPair
 from ScheduleData import SsmData
 from Ssm.ProcNew import ProcNew, AddAircraftConfig, CheckAircraftConfig, \

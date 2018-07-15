@@ -5,17 +5,8 @@
 <p/>Arrive : {{=request.vars.arrive}}
 <p/>Date : {{=request.vars.fdate}}
 <p/>Seats : {{=request.vars.fseats}}
+<p/>Price: {{=request.vars.fprice}}
+<p>Passenger 1 : {{=request.vars.paxtitle1}} {{=request.vars.paxfname1.upper()}} {{=request.vars.paxlname1.upper()}} {{=request.vars.paxdob1}}</p>
+<!-- class {{=request.vars.fclass}} -->
 <p/>{{=message}}
-<form action="bookingpayshow">
-<p>Passenger 1 : {{=request.vars.paxtitle1}} {{=request.vars.paxfname1.upper()}} {{=request.vars.paxlname1.upper()}}</p>
-<input name="paxtitle1" type="hidden" value="{{=request.vars.paxtitle1}}" />
-<input name="paxfname1" type="hidden" value="{{=request.vars.paxfname1.upper()}}" />
-<input name="paxlname1" type="hidden" value="{{=request.vars.paxlname1.upper()}}" />
-<input name="fnumber" type="hidden" value="{{=request.vars.fnumber}}" />
-<input name="fdate" type="hidden" value="{{=request.vars.fdate}}" />
-<input name="depart" type="hidden" value="{{=request.vars.depart}}" />
-<input name="arrive" type="hidden" value="{{=request.vars.arrive}}" />
-<input name="fclass" type="hidden" value="{{=request.vars.fclass}}"/>
-<input name="fprice" type="hidden" value="{{=request.vars.fprice}}"/>
-<p/><input type="submit" value="Submit" />
 </form>

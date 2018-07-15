@@ -5,7 +5,7 @@
 <p/>Date {{=request.vars.fdate}}
 <p/>Seats {{=request.vars.fseats[0]}}
 <p/>{{=message}}
-<form action="bookingshow">
+<form action="bookingpayshow">
 <p>Title <select name="paxtitle1">
 <option value="MR">MR</option>
 <option value="MS">MS>/option>
@@ -20,12 +20,12 @@ Date of Birth <input name="paxdob1" type="text" />
 </p>
 <p/>Cellphone Number <input name="bkcell" type="text" />
 <p/>Email Address <input name="bkemail" type="text" />
-<input name="fnumber" type="hidden" value="{{=request.vars.fnumber}}"/>
-<input name="fdate" type="hidden" value="{{=request.vars.fdate}}"/>
-<input name="depart" type="hidden" value="{{=request.vars.depart}}"/>
-<input name="arrive" type="hidden" value="{{=request.vars.arrive}}"/>
-<input name="fseats" type="hidden" value="{{=request.vars.fseats[0]}}"/>
-<input name="fclass" type="hidden" value="{{=request.vars.fclass}}"/>
-<input name="fprice" type="hidden" value="{{=request.vars.fprice}}"/>
+<input name="fnumber" type="hidden" value="{{=request.vars.fnumber}}" />
+<input name="fdate" type="hidden" value="{{=request.vars.fdate}}" />
+<input name="depart" type="hidden" value="{{=request.vars.depart}}" />
+<input name="arrive" type="hidden" value="{{=request.vars.arrive}}" />
+<input name="fseats" type="hidden" value="{{=request.vars.fseats[0]}}" />
+<input name="fclass" type="hidden" value="{{=request.vars.fclass}}" />
+<input name="fprice" type="hidden" value="{{=request.vars.fprice}}" />
 <input type="submit" value="Submit" />
 </form>

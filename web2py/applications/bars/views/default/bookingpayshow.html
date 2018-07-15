@@ -1,17 +1,14 @@
 {{extend 'layout.html'}}
-<h1>Booking</h1>
+<h1>Payment</h1>
 <p/>Flight : {{=request.vars.fnumber}}
 <p/>Depart : {{=request.vars.depart}}
 <p/>Arrive : {{=request.vars.arrive}}
 <p/>Date : {{=request.vars.fdate}}
 <p/>Seats : {{=request.vars.fseats}}
-<p/>Locator: {{=locator}}
-<form action="bookingpay">
-<p>Amount<input name="amount" type="text" size="12" value="{{=request.vars.fprice}}"/></p>
+<p/>Amount : {{=request.vars.fprice}}
+<p/>{{=message}}
+<form action="bookingpayshow">
 <p>Passenger 1 : {{=request.vars.paxtitle1}} {{=request.vars.paxfname1.upper()}} {{=request.vars.paxlname1.upper()}}</p>
-<p>Card number<input name="cardnum" type="text" size="16" /></p>
-<p>Card CVV<input name="cardcvv" type="text" size="3" /></p>
-<p>Card expiry<input name="cardexp1" type="text" size="2" />&nbsp;<input name="cardexp2" type="text" size="2" /></p>
 <input name="paxtitle1" type="hidden" value="{{=request.vars.paxtitle1}}" />
 <input name="paxfname1" type="hidden" value="{{=request.vars.paxfname1.upper()}}" />
 <input name="paxlname1" type="hidden" value="{{=request.vars.paxlname1.upper()}}" />
@@ -22,7 +19,5 @@
 <input name="fclass" type="hidden" value="{{=request.vars.fclass}}"/>
 <input name="fprice" type="hidden" value="{{=request.vars.fprice}}"/>
 <input name="fseats" type="hidden" value="{{=request.vars.fseats}}"/>
-<input name="locator" type="hidden" value="{{=locator}}"/>
-<input name="bookno" type="hidden" value="{{=bookno}}"/>
 <p/><input type="submit" value="Submit" />
 </form>

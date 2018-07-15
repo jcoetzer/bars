@@ -31,6 +31,7 @@ class BarsConfig(object):
     Sender = 'JNB0AZZ'
     TimeMode = 'LT'
     DialCode = '+27'
+    PaymentFail = 0
 
     def __init__(self, cfgfile):
         """Initialize this thing."""
@@ -61,3 +62,4 @@ class BarsConfig(object):
         self.Address = config.get('Tty', 'Sender')
         self.Sender = config.get('Tty', 'Sender')
 
+        self.PaymentFail = int(config.get('Payment', 'PaymentFail'))
