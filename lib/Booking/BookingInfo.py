@@ -725,7 +725,7 @@ def UpdateBookPayment(conn, aBookNo, aCurrency, aPayment, aStatus='A'):
                 SET (payment_amount, status_flag)
                   = (payment_amount+%f, '%s')
                 WHERE book_no=%d""" \
-             % (aPayment, aBookNo, aStatus)
+             % (aPayment, aStatus, aBookNo)
     blogger.debug("%s" % UbpSql)
     cur = conn.cursor()
     cur.execute(UbpSql)

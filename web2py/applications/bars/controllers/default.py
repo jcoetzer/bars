@@ -108,7 +108,7 @@ def bookingshow():
     flightDate = ReadDate(request.vars.fdate)
     departAirport = str(request.vars.depart)
     arriveAirport = str(request.vars.arrive)
-    seatCount = int(request.vars.fseats)
+    seatCount = int(request.vars.fseats or 1)
     payAmount = float(request.vars.fprice)
     sellClass = request.vars.fclass
     blogger.debug("Book %s seats for flight %s date %s depart %s arrive %s"
@@ -129,7 +129,8 @@ def bookingshow():
                         date_of_birth, contact_phone, contact_email)
     blogger.debug("Pax %s (born %s)" % (paxname, date_of_birth))
     paxRecs.append(pax)
-    blogger.debug("Process booking")
+    blogger.debug("Process booking flight %s date %s"
+                  % (flightNumber, flightDate))
     bn, pnr, msg = PutBookHtml(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
                                cfg.OriginBranchCode, cfg.AgencyCode,
                                groupName, paxRecs,
@@ -165,6 +166,9 @@ def bookingpayshow():
     docNum = request.vars.cardnum
     paymentType = 'CC'
     paymentForm = 'VI'
+    blogger.debug("Payment for booking %d class %s %s%.2f %s card %s"
+                  % (bookNo, sellClass, cfg.Currency, payAmount, paymentForm,
+                     docNum))
     rv, msg = PutPayHtml(conn, bookNo, sellClass,
                          cfg.Currency, payAmount, 0.0,
                          cfg.CompanyCode, cfg.OriginBranchCode, cfg.FareBasisCode,
