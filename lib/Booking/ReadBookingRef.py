@@ -58,7 +58,7 @@ def ReadBookSummaryHistory(conn, bno, bs_date=None):
     for row in cur:
         rcd = row['book_summary_history_rcd']
         sdt = row['sent_date_time']
-        blogger.info("Booking %d summary history received %s on %s"
+        blogger().info("Booking %d summary history received %s on %s"
                      % (bno, rcd, sdt))
     cur.close()
     return rcd, sdt
@@ -75,7 +75,7 @@ def ReadBookSummary(conn, bno):
     rcd = ''
     for row in cur:
         rcd = row['booking_summary_type_rcd']
-        blogger.info("Booking %d summary received %s" % (bno, rcd), 1)
+        blogger().info("Booking %d summary received %s" % (bno, rcd), 1)
     cur.close()
     return rcd
 

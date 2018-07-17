@@ -97,9 +97,9 @@ class SsmData(object):
             print("class seats not specified")
             return False
         else:
-            blogger.info("Flight data is OK")
+            blogger().info("Flight data is OK")
 
-        blogger.info("Flight %s start %s end %s"
+        blogger().info("Flight %s start %s end %s"
                  % (self.flight_number,
                     self.start_date.strftime("%Y-%m-%d"),
                     self.end_date.strftime("%Y-%m-%d")))

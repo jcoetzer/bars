@@ -46,7 +46,7 @@ class FlightData(object):
                  schedule_period_no=0,
                  codeshare=None):
         """New flight."""
-        blogger.debug("New flight %s date %s class %s depart %s arrive %s"
+        blogger().debug("New flight %s date %s class %s depart %s arrive %s"
                  " from %s to %s (pair %d) aircraft %s"
                  % (flight_number, departure_date.strftime("%Y-%m-%d"),
                     class_code,
@@ -97,7 +97,7 @@ class FlightData(object):
 
     def update_times(self, departure_time, arrival_time, journey_time=0):
         """Update departure and arrival times."""
-        blogger.debug("Update flight depart %s arrive %s"
+        blogger().debug("Update flight depart %s arrive %s"
                  % (departure_time, arrival_time))
         self.departure_time = ReadTime(departure_time, self.board_date_iso)
         self.departure_ts = str("%02d:%02d"
@@ -121,7 +121,7 @@ class FlightData(object):
     def update_codeshare(self, codeshare):
         """Update codeshare flight number."""
         self.codeshare = codeshare
-        blogger.debug("Codeshare set to %s" % self.codeshare)
+        blogger().debug("Codeshare set to %s" % self.codeshare)
 
     def display(self, eol=True, prefix=''):
         """Display flight data."""
@@ -129,31 +129,30 @@ class FlightData(object):
               % (prefix, self.flight_number, self.board_dow,
                  self.board_date_iso,
                  self.departure_airport, self.arrival_airport,
-                 self.class_code),
-              end=' ')
+                 self.class_code)),
         if self.city_pair != 0:
-            print(" (city pair %4d)" % self.city_pair, end=' ')
+            print(" (city pair %4d)" % self.city_pair),
         if self.departure_time is not None and self.arrival_time is not None:
             print("departs %s arrives %s"
                   % (self.departure_time.strftime("%H:%M"),
-                     self.arrival_time.strftime("%H:%M")), end=' ')
+                     self.arrival_time.strftime("%H:%M"))),
         elif self.departure_time is not None:
             print("departs %s"
-                  % (self.departure_time.strftime("%H:%M")), end=' ')
+                  % (self.departure_time.strftime("%H:%M"))),
         if self.journey_time is not None and self.journey_time > 0:
-            print("(%-3d minutes)" % self.journey_time, end=' ')
+            print("(%-3d minutes)" % self.journey_time),
         if len(self.aircraft_code) > 0:
-            print("aircraft code %4s" % self.aircraft_code, end=' ')
+            print("aircraft code %4s" % self.aircraft_code),
         if self.seat_capacity > 0:
-            print("(%-3d seats)" % self.seat_capacity, end=' ')
-        print("%s" % self.reserve_status, end=' ')
+            print("(%-3d seats)" % self.seat_capacity),
+        print("%s" % self.reserve_status),
         if len(self.reserve_status):
             if 'X' in self.reserve_status:
-                print("(inactive)", end=' ')
+                print("(inactive)"),
         if self.codeshare is not None:
-            print("codeshare %6s" % self.codeshare, end=' ')
+            print("codeshare %6s" % self.codeshare),
         if self.schedule_period_no != 0:
-            print("schedule period %6d" % self.schedule_period_no, end=' ')
+            print("schedule period %6d" % self.schedule_period_no),
         if eol:
             print("")
 
@@ -236,9 +235,9 @@ class FlightPeriod(object):
                  self.arrival_airport,
                  self.arrival_time / 60, self.arrival_time % 60,
                  self.aircraft_code,
-                 self.schedule_period_no), end=' ')
+                 self.schedule_period_no)),
         for codeshare in self.codeshares:
-            print("%s" % codeshare, end=' ')
+            print("%s" % codeshare),
         print
 
     def displaycsv(self):

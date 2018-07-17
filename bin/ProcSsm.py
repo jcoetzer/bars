@@ -65,9 +65,9 @@ def main(argv):
         if opt == '-h' or opt == '--help':
             usage()
         elif opt == '-v':
-            blogger.setLevel(logging.INFO)
+            _levelsetLevel(logging.INFO)
         elif opt == '-V':
-            blogger.setLevel(logging.DEBUG)
+            _levelsetLevel(logging.DEBUG)
         else:
             fname = str(opt)
 
@@ -89,7 +89,7 @@ def main(argv):
 
     conn.commit()
     conn.close()
-    blogger.info("Disconnected")
+    blogger().info("Disconnected")
 
     return rv
 

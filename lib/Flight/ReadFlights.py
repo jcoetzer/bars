@@ -48,7 +48,7 @@ def GetFlightDataSsm(conn, flight_number, fd1, fd2, freq=None):
         " AND fp.frequency_code LIKE '%s'" \
         " ORDER BY fp.start_date, fpl.schedule_period_no, fpl.leg_number" \
         % (flight_number, fd1.strftime("%Y-%m-%d"), fd2.strftime("%Y-%m-%d"), freq)
-    blogger.debug(RcSql)
+    blogger().debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
@@ -72,7 +72,7 @@ def ReadFlightInformation(conn, flight_number, flight_date):
         " WHERE flight_number = '%s'" \
         " AND board_date = '%s'" \
             % (flight_number, flight_date.strftime("%Y-%m-%d"))
-    blogger.debug(RcSql)
+    blogger().debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
@@ -89,14 +89,14 @@ def ReadFlightInformation(conn, flight_number, flight_date):
 
 def ReadCodeShare(conn, flight_number, board_date_mdy):
 
-    blogger.info("Codeshares for flight %6s on %s:" % (flight_number, board_date_mdy))
+    blogger().info("Codeshares for flight %6s on %s:" % (flight_number, board_date_mdy))
     RcSql = \
         "SELECT flight_number, dup_flight_number" \
         " FROM flight_shared_leg fsl" \
         " WHERE (fsl.flight_number = '%s' OR fsl.dup_flight_number = '%s')" \
         " AND fsl.board_date = '%s'" \
             % (flight_number, flight_number, board_date_mdy)
-    blogger.debug(RcSql)
+    blogger().debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
@@ -106,7 +106,7 @@ def ReadCodeShare(conn, flight_number, board_date_mdy):
             cs = row['flight_number']
         if flight_number != row['dup_flight_number'] :
             cs = row['dup_flight_number'],
-    blogger.info("Codeshare %s" % cs)
+    blogger().info("Codeshare %s" % cs)
     return cs
 
 
@@ -121,7 +121,7 @@ def SetCodeShare(conn, flight):
         " WHERE (fsl.flight_number = '%s' OR fsl.dup_flight_number = '%s')" \
         " AND fsl.board_date = '%s'            " \
             % (flight.flight_number, flight.flight_number, flight.board_date_mdy)
-    blogger.debug(RcSql)
+    blogger().debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     codeshares = []
@@ -158,16 +158,16 @@ def ReadFlightDateClassSeatMaps(conn, flight):
         "  AND fdl.arrival_airport = '%s'" \
         "  AND smc.selling_class = '%s'" \
         % (flight_number, flight_date.strftime("%Y-%m-%d"), departureAirport, arrivalAirport, classCode)
-    blogger.debug(RcSql)
+    blogger().debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
-    print("Flight %6s on %10s from %3s to %3s : " % (flight_number, flight_date.strftime("%Y-%m-%d"), departureAirport, arrivalAirport), end=' ')
+    print("Flight %6s on %10s from %3s to %3s : " % (flight_number, flight_date.strftime("%Y-%m-%d"), departureAirport, arrivalAirport)),
     n = 0
     for row in cur:
         n += 1
-        if n > 1: print("\n       %6s    %10s      %3s    %3s   " % ('', '', '', ''), end=' ')
-        print("seat map %s (%s)" % (row['smid'], row['desc']), end=' ')
-    if n == 0: print("seat map not found", end=' ')
+        if n > 1: print("\n       %6s    %10s      %3s    %3s   " % ('', '', '', '')),
+        print("seat map %s (%s)" % (row['smid'], row['desc'])),
+    if n == 0: print("seat map not found"),
     print
 
 
@@ -187,7 +187,7 @@ def CheckFlightDateClassSeatMaps(conn, flight):
         " WHERE flight_number = '%s'" \
         "  AND board_date = '%s'" \
             % (flight_number, flight_date.strftime("%Y-%m-%d"))
-    blogger.debug(RcSql)
+    blogger().debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
@@ -200,7 +200,7 @@ def CheckFlightDateClassSeatMaps(conn, flight):
             "SELECT sm.seat_map_id smi" \
             " FROM flight_seat_map sm WHERE flight_date_leg_id=%d" \
                 % (flight_date_leg_id)
-        blogger.debug(RcSql2)
+        blogger().debug(RcSql2)
         cur2 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur2.execute(RcSql2)
         n = 0
@@ -226,7 +226,7 @@ def CheckFlightDateClassSeatMaps(conn, flight):
             "SELECT description" \
             " FROM seat_map sm WHERE seat_map_id=%d" \
                 % (seat_map_id)
-        blogger.debug(RcSql2)
+        blogger().debug(RcSql2)
         cur2 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur2.execute(RcSql2)
         for row2 in cur2:
@@ -237,7 +237,7 @@ def CheckFlightDateClassSeatMaps(conn, flight):
             "SELECT selling_class" \
             " FROM seat_map_class sm WHERE seat_map_id=%d" \
                 % (seat_map_id)
-        blogger.debug(RcSql2)
+        blogger().debug(RcSql2)
         cur2 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur2.execute(RcSql2)
         for row2 in cur2:
@@ -258,7 +258,7 @@ def ReadDeparture(conn, company_code, class_code, flight_number, flight_date):
         FROM flight_segment_dates
         WHERE flight_number='%s' AND flight_date='%s'""" \
         % (flight_number, flight_date.strftime("%Y-%m-%d"))
-    blogger.debug(RcSql)
+    blogger().debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
@@ -277,7 +277,7 @@ def ReadDeparture(conn, company_code, class_code, flight_number, flight_date):
                              company_code)
         flights.append(fltinfo)
         n += 1
-        blogger.info("\tDepart %s arrive %s city pair %d"
+        blogger().info("\tDepart %s arrive %s city pair %d"
                  % (fltinfo.departure_airport, fltinfo.arrival_airport,
                     fltinfo.city_pair))
 
@@ -286,7 +286,7 @@ def ReadDeparture(conn, company_code, class_code, flight_number, flight_date):
 
 def ReadFlightDeparture(conn, class_code, flight_number, flight_date):
     """Read data for flight."""
-    blogger.info("Read data for flight %s date %s [flight_segment_dates]" % (flight_number, flight_date.strftime("%Y-%m-%d")))
+    blogger().info("Read data for flight %s date %s [flight_segment_dates]" % (flight_number, flight_date.strftime("%Y-%m-%d")))
     RcSql = \
         """SELECT departure_airport,arrival_airport, city_pair,
             departure_time,arrival_time,
@@ -295,7 +295,7 @@ def ReadFlightDeparture(conn, class_code, flight_number, flight_date):
         FROM flight_segment_dates
         WHERE flight_number='%s' AND flight_date='%s'""" \
         % (flight_number, flight_date.strftime("%Y-%m-%d"))
-    blogger.debug(RcSql)
+    blogger().debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
@@ -309,7 +309,7 @@ def ReadFlightDeparture(conn, class_code, flight_number, flight_date):
         departure_time = row['departure_time']
         arrival_time = row['arrival_time']
         n += 1
-        blogger.info("Flight %s date %s depart %s %s arrive %s %s status %s" \
+        blogger().info("Flight %s date %s depart %s %s arrive %s %s status %s" \
                  % (flight_number, flight_date.strftime("%Y-%m-%d"), \
                     departure_airport, departure_time, arrival_airport, arrival_time,
                     str(row['flgt_sched_status'] or '?')))
@@ -330,7 +330,7 @@ def ReadDepartArrive(conn, flight_number, flight_date, delim=' '):
         " FROM flight_segment_dates" \
         " WHERE flight_number='%s' AND flight_date='%s'" \
         % (flight_number, flight_date.strftime("%Y-%m-%d"))
-    blogger.debug(RcSql)
+    blogger().debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
@@ -357,7 +357,7 @@ def GetFlights(conn, dt1, departure_airport, arrival_airport, company_code = 'ZZ
     if arrival_airport is not None:
         RcSql += " and arrival_airport='%s'" % arrival_airport
     RcSql += " and flight_number like '%s___'" % company_code
-    blogger.debug(RcSql)
+    blogger().debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
@@ -398,7 +398,7 @@ def get_special_service_request_inventory(conn, flight_number, flight_date, city
         " FROM special_service_request_inventory" \
         " WHERE flight_number='%s' AND flight_date='%s' AND city_pair='%s' AND inactivated_date_time IS NULL" \
         % (flight_number, flight_date, city_pair)
-    blogger.debug(IsegSql)
+    blogger().debug(IsegSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(IsegSql)
     n = 0
@@ -433,7 +433,7 @@ def get_inventry_segment_class(conn, flight_number, flight_date, class_code):
         " FROM inventry_segment" \
         " WHERE flight_number='%s' AND flight_date='%s' AND selling_class='%s'" \
         % (flight_number, flight_date, class_code)
-    blogger.debug(IsegSql)
+    blogger().debug(IsegSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(IsegSql)
     n = 0
@@ -458,7 +458,7 @@ def get_inventry_segment(conn, flight_number, flight_date, reconcile_window):
         " WHERE flight_number = '%s' AND flight_date = '%s'" \
         " ORDER BY selling_class, leg_number" \
         % (flight_number, flight_date)
-    blogger.debug(IsegSql)
+    blogger().debug(IsegSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(IsegSql)
     n = 0
@@ -482,18 +482,18 @@ def ReadFlights(conn, flight_number, dt1, dt2, departure_airport, arrival_airpor
         "city_pair,departure_time,arrival_time,aircraft_code,schedule_period_no" \
         " FROM flight_segment_dates WHERE 1=1"
     if flight_number is not None:
-        blogger.info("Flight number %s" % flight_number)
+        blogger().info("Flight number %s" % flight_number)
         FsegSql += \
             " AND flight_number='%s'" \
                 % (flight_number)
     if dt1 is not None and dt2 is not None:
-        blogger.info("Read flights from date %s to %s [flight_segment_dates]" % \
+        blogger().info("Read flights from date %s to %s [flight_segment_dates]" % \
             (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d")))
         FsegSql += \
             " AND flight_date BETWEEN '%s' AND '%s'" \
                 % (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d"))
     elif dt1 is not None:
-        blogger.info("Read flights for date %s [flight_segment_dates]" % dt1.strftime("%Y-%m-%d"))
+        blogger().info("Read flights for date %s [flight_segment_dates]" % dt1.strftime("%Y-%m-%d"))
         FsegSql += \
             " AND flight_date = '%s'" % dt1.strftime("%Y-%m-%d")
     if departure_airport is not None and arrival_airport is not None:
@@ -504,14 +504,14 @@ def ReadFlights(conn, flight_number, dt1, dt2, departure_airport, arrival_airpor
         " ORDER BY flight_date"
 
     if code_share:
-        blogger.info("With codeshare")
+        blogger().info("With codeshare")
 
-    blogger.debug(FsegSql)
+    blogger().debug(FsegSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FsegSql)
     flights = []
     for row in cur:
-        blogger.info("Flight %-6s date %s depart %s arrive %s city pair %3d" \
+        blogger().info("Flight %-6s date %s depart %s arrive %s city pair %3d" \
             % (row['flight_number'], row['flight_date'], row['departure_airport'], row['arrival_airport'], int(row['city_pair'])))
         flight_number = row['flight_number']
         departure_date = row['flight_date']
@@ -525,13 +525,13 @@ def ReadFlights(conn, flight_number, dt1, dt2, departure_airport, arrival_airpor
                  row['departure_airport'], row['arrival_airport'], int(row['city_pair']), aircraft_code=row['aircraft_code'],
                  schedule_period_no=row['schedule_period_no'], codeshare=cs))
 
-    #blogger.info("Found %d flights for date %s" % (len(flights), dt1.strftime("%Y-%m-%d")))
+    #blogger().info("Found %d flights for date %s" % (len(flights), dt1.strftime("%Y-%m-%d")))
     return flights
 
 
 def ReadFlight(conn, flight_number, dts, class_code='Y'):
     """Read flight."""
-    blogger.info("Read flight %s for date %s [flight_segment_dates]" % (flight_number, dts.strftime("%Y-%m-%d")))
+    blogger().info("Read flight %s for date %s [flight_segment_dates]" % (flight_number, dts.strftime("%Y-%m-%d")))
     fdate=dts.strftime("%Y-%m-%d")
     FsegSql=\
         "SELECT flight_number,flight_date,departure_airport,arrival_airport," \
@@ -543,7 +543,7 @@ def ReadFlight(conn, flight_number, dts, class_code='Y'):
         % (flight_number, fdate)
     FsegSql += \
         " ORDER BY flight_date, departure_time"
-    blogger.debug(FsegSql)
+    blogger().debug(FsegSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FsegSql)
     flights = []
@@ -553,7 +553,7 @@ def ReadFlight(conn, flight_number, dts, class_code='Y'):
         departure_time = row['departure_time']
         arrival_time = row['arrival_time']
 
-        blogger.info("Flight %-6s date %s depart %s arrive %s city pair %3d" \
+        blogger().info("Flight %-6s date %s depart %s arrive %s city pair %3d" \
             % (flight_number, row['flight_date'], row['departure_airport'], row['arrival_airport'], int(row['city_pair'])))
         flights.append(FlightData(class_code, flight_number, departure_date,
                                   departure_time, arrival_time,
@@ -562,7 +562,7 @@ def ReadFlight(conn, flight_number, dts, class_code='Y'):
                                   aircraft_code=row['aircraft_code'],
                                   schedule_period_no=row['schedule_period_no']))
 
-    blogger.info("Found %d flights for date %s" % (len(flights), dts.strftime("%Y-%m-%d")), 1)
+    blogger().info("Found %d flights for date %s" % (len(flights), dts.strftime("%Y-%m-%d")), 1)
     if len(flights):
         return flights[0]
     else:
@@ -583,7 +583,7 @@ def CheckFlight(conn, flight_number, dts, class_code='Y'):
         % (flight_number, fdate)
     FsegSql += \
         " ORDER BY flight_date, departure_time"
-    blogger.debug(FsegSql)
+    blogger().debug(FsegSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FsegSql)
     n = 0
@@ -595,15 +595,15 @@ def CheckFlight(conn, flight_number, dts, class_code='Y'):
                row['aircraft_code'], str(row['flgt_sched_status'] or '?')))
         n += 1
 
-    blogger.info("Found %d flights for date %s" % (n, dts.strftime("%Y-%m-%d")))
+    blogger().info("Found %d flights for date %s" % (n, dts.strftime("%Y-%m-%d")))
     return n
 
 
 def ReadFlightsDate(conn, dts, ndays, departure_airport, arrival_airport, code_share=False, class_code='Y', company_code='ZZ'):
     """Flights for date."""
-    blogger.info("Flights for date %s [flight_segment_dates]" % dts.strftime("%Y-%m-%d"))
+    blogger().info("Flights for date %s [flight_segment_dates]" % dts.strftime("%Y-%m-%d"))
     if code_share:
-        blogger.info("With codeshare")
+        blogger().info("With codeshare")
     fdate=dts.strftime("%Y-%m-%d")
     FsegSql=\
         "SELECT DISTINCT flight_number, flight_date, departure_airport, arrival_airport, city_pair, departure_time, arrival_time, " \
@@ -617,12 +617,12 @@ def ReadFlightsDate(conn, dts, ndays, departure_airport, arrival_airport, code_s
             " AND departure_airport='%s' AND arrival_airport='%s'" % (departure_airport, arrival_airport)
     FsegSql += \
         " ORDER BY flight_date, departure_time"
-    blogger.debug(FsegSql)
+    blogger().debug(FsegSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FsegSql)
     flights = []
     for row in cur:
-        blogger.info("Flight %-6s date %s depart %s arrive %s city pair %3d" \
+        blogger().info("Flight %-6s date %s depart %s arrive %s city pair %3d" \
                  % (row['flight_number'], row['flight_date'],
                     row['departure_airport'], row['arrival_airport'],
                     int(row['city_pair'])))
@@ -640,13 +640,13 @@ def ReadFlightsDate(conn, dts, ndays, departure_airport, arrival_airport, code_s
                        int(row['city_pair']), aircraft_code=row['aircraft_code'],
                        schedule_period_no=row['schedule_period_no'], codeshare=cs))
 
-    blogger.info("Found %d flights for date %s" % (len(flights), dts.strftime("%Y-%m-%d")))
+    blogger().info("Found %d flights for date %s" % (len(flights), dts.strftime("%Y-%m-%d")))
     return flights
 
 
 def ReadFlightsDateLeg(conn, dts, ndays, departure_airport, arrival_airport, class_code='Y', company_code='ZZ'):
     """Flights for date."""
-    blogger.info("Flights for date %s [flight_segment_dates]" % dts.strftime("%Y-%m-%d"), 1)
+    blogger().info("Flights for date %s [flight_segment_dates]" % dts.strftime("%Y-%m-%d"), 1)
     fdate=dts.strftime("%Y-%m-%d")
     FsegSql = \
         "SELECT trim(flight_number) fn, flight_date, board_date, departure_time, departure_airport, arrival_airport, leg_number, schedule_period_no" \
@@ -659,7 +659,7 @@ def ReadFlightsDateLeg(conn, dts, ndays, departure_airport, arrival_airport, cla
             " AND departure_airport='%s' AND arrival_airport='%s'" % (departure_airport, arrival_airport)
     FsegSql += \
         " ORDER BY fn, flight_date"
-    blogger.debug(FsegSql)
+    blogger().debug(FsegSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FsegSql)
     flights = []
@@ -671,13 +671,13 @@ def ReadFlightsDateLeg(conn, dts, ndays, departure_airport, arrival_airport, cla
         flight_number = row['fn']
         departure_date = row['flight_date']
         departure_time = row['departure_time']
-        blogger.info("Flight %-6s date %s depart %s arrive %s" \
+        blogger().info("Flight %-6s date %s depart %s arrive %s" \
             % (flight_number, departure_date, row['departure_airport'], row['arrival_airport']))
         flights.append(FlightData(class_code, flight_number, departure_date, departure_time, arrival_time, \
                        row['departure_airport'], row['arrival_airport'], city_pair, aircraft_code,
                        schedule_period_no=row['schedule_period_no']))
 
-    blogger.info("Found %d flights for date %s" % (len(flights), dts.strftime("%Y-%m-%d")))
+    blogger().info("Found %d flights for date %s" % (len(flights), dts.strftime("%Y-%m-%d")))
     return flights
 
 
@@ -692,7 +692,7 @@ def ReadFlightSegmDates(conn, dts, ndays, reconcile_window, company_code='ZZ'):
         " AND ( (flight_date = '%s' AND %d = 0) OR (flight_date >= DATE('%s') AND flight_date < (DATE('%s') + %d) AND %d > 0 ))" \
         " ORDER BY 1, 2" \
         % (company_code, company_code, fdate, ndays, fdate, fdate, ndays, ndays)
-    blogger.debug(FsegSql)
+    blogger().debug(FsegSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FsegSql)
     n = 0
@@ -719,7 +719,7 @@ def ReadFlightSegmDate(conn, flight_number, dts, ndays, reconcile_window):
         " AND ( (flight_date = '%s' AND %d = 0) OR (flight_date >= DATE('%s') AND flight_date < (DATE('%s') + %d) AND %d > 0 ))" \
         " ORDER BY 1, 2" \
         % (flight_number, fdate, ndays, fdate, fdate, ndays, ndays)
-    blogger.debug(FsegSql)
+    blogger().debug(FsegSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FsegSql)
     n = 0
@@ -743,7 +743,7 @@ def ReadFLightSeatMap(conn, flight):
     print("Aircraft for seat map ID %d [seat_map]" % seat_map_id)
     FdSql = "select aircraft_code from seat_map where seat_map_id='%d'" \
         % (seat_map_id)
-    blogger.debug(FdSql)
+    blogger().debug(FdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FdSql)
     n = 0

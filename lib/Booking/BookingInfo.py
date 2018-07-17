@@ -50,6 +50,7 @@ def int2base20(x):
 
 def AddBookCrossIndex(conn, aBookCategory, aOriginAddress, aUser, aGroup):
     """Add booking cross reference."""
+    blogger().info("Add booking %s cross reference" % aBookCategory)
     abSql = """
         INSERT INTO book_cross_index (
             locator, origin_address, book_category,
@@ -58,10 +59,10 @@ def AddBookCrossIndex(conn, aBookCategory, aOriginAddress, aUser, aGroup):
             '------', '%s', '%s', 'A', '%s', '%s', NOW() )
         RETURNING book_no""" \
         % (aOriginAddress, aBookCategory, aUser, aGroup)
-    blogger.debug("%s" % abSql)
+    blogger().debug("%s" % abSql)
     cur = conn.cursor()
     cur.execute(abSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
 
     vBookNo = 0
     for row in cur:
@@ -71,11 +72,11 @@ def AddBookCrossIndex(conn, aBookCategory, aOriginAddress, aUser, aGroup):
     abSql = \
         "UPDATE book_cross_index SET locator='%s' WHERE book_no=%d" \
         % (vPnr, vBookNo)
-    blogger.debug("%s" % abSql)
+    blogger().debug("%s" % abSql)
     cur.execute(abSql)
-    blogger.debug("Updated %d row(s)" % cur.rowcount)
+    blogger().debug("Updated %d row(s)" % cur.rowcount)
     cur.close()
-    blogger.info("New booking number %d (%s)" % (vBookNo, vPnr))
+    blogger().info("New booking number %d (%s)" % (vBookNo, vPnr))
     return vBookNo, vPnr
 
 
@@ -89,7 +90,7 @@ def AddBook(conn, aBookNo, aPnr, aSeatQuantity, aOriginAddress,
 
     Return booking number.
     """
-    blogger.info("Add booking %d (%s) origin %s seats %d date %s group '%s'"
+    blogger().info("Add booking %d (%s) origin %s seats %d date %s group '%s'"
              % (aBookNo, aPnr, aOriginAddress, aSeatQuantity, aFlightDate,
                 aGroupName))
     abSql = """
@@ -124,10 +125,10 @@ def AddBook(conn, aBookNo, aPnr, aSeatQuantity, aOriginAddress,
            aFlightDate, aFlightDate,
            aUser, aGroup,
            aUser, aGroup)
-    blogger.debug("%s" % abSql)
+    blogger().debug("%s" % abSql)
     cur = conn.cursor()
     cur.execute(abSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
 
 
 def AddItinerary(conn, aBookNo,
@@ -137,7 +138,7 @@ def AddItinerary(conn, aBookNo,
                aDepartTerm, aArriveTerm,
                aCityPair, aSellClass, aUser, aGroup):
     """Add entry for itinerary."""
-    blogger.debug("Itinerary for booking %d: flight %s date %s depart %s %s (%s) arrive %s %s (%s)"
+    blogger().info("Itinerary for booking %d: flight %s date %s depart %s %s (%s) arrive %s %s (%s)"
              % (aBookNo, aFlightNumber, aFlightDate,
                 aDepart, aDepartTime, aDepartTerm,
                 aArrive, aArriveTime, aArriveTerm))
@@ -176,15 +177,16 @@ def AddItinerary(conn, aBookNo,
            aDepartTerm, aArriveTerm, aCityPair,
            physicalClass, aSellClass,
            actionToCompany, aUser, aGroup)
-    blogger.debug("%s" % aiSql)
+    blogger().debug("%s" % aiSql)
     cur = conn.cursor()
     cur.execute(aiSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
 def AddBookTimeLimit(conn, aBookNo, aDestBranch, aUser, aGroup):
     """Add entry for booking time limit."""
+    blogger().info("Add booking %d time limit" % aBookNo)
     btlSql = """
         INSERT INTO book_time_limits(
             book_no, timelmt_sequence_no, timelmt_type,
@@ -197,20 +199,20 @@ def AddBookTimeLimit(conn, aBookNo, aDestBranch, aUser, aGroup):
         % (aBookNo,
            aDestBranch,
            aUser, aGroup)
-    blogger.debug("%s" % btlSql)
+    blogger().debug("%s" % btlSql)
     cur = conn.cursor()
     cur.execute(btlSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
 def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
                  aCurrency, aAmount, aUser, aGroup):
     """Add entry for booking fare."""
-    cur = conn.cursor()
-    blogger.info("Add booking %d fare %d code %s depart %s arrive %s amount %s%d"
+    blogger().info("Add booking %d fare %d code %s depart %s arrive %s amount %s%d"
              % (aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
                 aCurrency, aAmount))
+    cur = conn.cursor()
     abfSql = """UPDATE book_fares SET (
             departure_airport, arrival_airport, total_amount_curr, total_amount,
             fare_construction, endrsmnt_rstrctns, status_flag,
@@ -226,7 +228,7 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
            aUser, aGroup, aBookNo, aFareNo, aPaxCode)
     cur.execute(abfSql)
     if cur.rowcount > 0:
-        blogger.warn("Payment for booking %d fare %d code %s has been processed"
+        _levelwarn("Payment for booking %d fare %d code %s has been processed"
                      % (aBookNo, aFareNo, aPaxCode))
         cur.close()
         return
@@ -245,12 +247,12 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
          % (aBookNo, aFareNo, aPaxCode,
             aDepart, aArrive, aCurrency, aAmount,
             aUser, aGroup)
-    blogger.debug("%s" % abfSql)
+    blogger().debug("%s" % abfSql)
     try:
         cur.execute(abfSql)
-        blogger.debug("Inserted %d row(s)" % cur.rowcount)
+        blogger().debug("Inserted %d row(s)" % cur.rowcount)
     except psycopg2.IntegrityError:
-        blogger.error("Payment for booking %d fare %d code %s has been processed before"
+        _levelerror("Payment for booking %d fare %d code %s has been processed before"
                       % (aBookNo, aFareNo, aPaxCode))
     cur.close()
 
@@ -310,6 +312,8 @@ def AddBookingFareSegments(conn, aBookNo, aFareNo, aPaxCode,
     IN              Last two characters
         Infant fare (typically up to 2 years old, but 3 years in some cases)
     """
+    blogger().info("Add %s booking %d fare %d segment"
+                  % (aPaxCode, aBookNo, aFareNo))
     abfSql = """
         UPDATE booking_fare_segments
         SET ( flight_number, board_date,
@@ -333,14 +337,14 @@ def AddBookingFareSegments(conn, aBookNo, aFareNo, aPaxCode,
            aStartDate, aEndDate,
            aUser, aGroup,
            aBookNo, aFareNo, aPaxCode)
-    blogger.debug("%s" % abfSql)
+    blogger().debug("%s" % abfSql)
     cur = conn.cursor()
-    blogger.debug("Updated %d row(s)" % cur.rowcount)
+    blogger().debug("Updated %d row(s)" % cur.rowcount)
     if cur.rowcount > 0:
         cur.close()
         return
 
-    blogger.info("Add booking fare segment for booking %d:"
+    blogger().info("Add booking fare segment for booking %d:"
              " code %s flight %s date %s amount %s%d"
              % (aBookNo, aPaxCode, aFlight, aFlightDate, aCurrency, aAmount))
     abfSql = """
@@ -366,16 +370,16 @@ def AddBookingFareSegments(conn, aBookNo, aFareNo, aPaxCode,
            aSellClass, aFareBasis,
            aStartDate, aEndDate,
            aUser, aGroup)
-    blogger.debug("%s" % abfSql)
+    blogger().debug("%s" % abfSql)
     cur.execute(abfSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
 def AddBookFarePassengers(conn, aBookNo, aPaxCode, aCurrency, aAmount,
                           aUser, aGroup):
     """Add entry for booking fare passenger."""
-    blogger.info("Add booking %d fare passenger:"
+    blogger().info("Add booking %d fare passenger:"
              " passenger code %s amount %s%d"
              % (aBookNo, aPaxCode, aCurrency, aAmount))
     vFare = ' '
@@ -396,9 +400,9 @@ def AddBookFarePassengers(conn, aBookNo, aPaxCode, aCurrency, aAmount,
         AND pax_code = '%s'""" \
         % (aCurrency, aAmount, vFare, vRestrict,
            aUser, aGroup, aBookNo, aPaxCode)
-    blogger.debug("%s" % abfSql)
+    blogger().debug("%s" % abfSql)
     cur.execute(abfSql)
-    blogger.debug("Updated %d row(s)" % cur.rowcount)
+    blogger().debug("Updated %d row(s)" % cur.rowcount)
     if cur.rowcount > 0:
         cur.close()
         return
@@ -417,17 +421,17 @@ def AddBookFarePassengers(conn, aBookNo, aPaxCode, aCurrency, aAmount,
                  NOW() ) """ \
         % (aBookNo, aPaxCode, aCurrency, aAmount, vFare, vRestrict,
            aUser, aGroup)
-    blogger.debug("%s" % abfSql)
+    blogger().debug("%s" % abfSql)
     cur = conn.cursor()
     cur.execute(abfSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
 def AddBookFaresPayments(conn, aBookNo, aFareNo, aPaxCode, aFareBasisCode,
                          aCurrency, aAmount, aUser, aGroup, aSource=None):
     """Add entry for booking fare payment."""
-    blogger.info("Add booking %d fare %d"
+    blogger().info("Add booking %d fare %d"
              " passenger code %s payment %s%d"
              % (aBookNo, aFareNo, aPaxCode, aCurrency, aAmount))
     abfSql = """
@@ -453,21 +457,23 @@ def AddBookFaresPayments(conn, aBookNo, aFareNo, aPaxCode, aFareBasisCode,
            aFareBasisCode,
            aCurrency, aAmount,
            aUser, aGroup, int(aSource or 0))
-    blogger.debug("%s" % abfSql)
+    blogger().debug("%s" % abfSql)
     cur = conn.cursor()
     cur.execute(abfSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
 def AddBookRequests(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup):
     """Add booking request."""
+    blogger().info("Add booking %d requests %s %s"
+                 % (aBookNo, aReqCode, aReqTexts))
     # Value for request sequence number
     cur = conn.cursor()
     cur2 = conn.cursor()
     abrSql = """SELECT MAX(rqst_sequence_no)
         FROM book_requests WHERE book_no = %d""" % aBookNo
-    blogger.debug("%s" % abrSql)
+    blogger().debug("%s" % abrSql)
     cur.execute(abrSql)
     vRequestSeq = 0
     for row in cur:
@@ -496,15 +502,15 @@ def AddBookRequests(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup)
                      '%s', '%s', NOW() )""" \
             % (aBookNo, vRequestSeq, aReqCode, aCompany, aReqText,
                aUser, aGroup)
-        blogger.debug("%s" % abrSql)
+        blogger().debug("%s" % abrSql)
         cur.execute(abrSql)
-        blogger.debug("Inserted %d row(s)" % cur.rowcount)
+        blogger().debug("Inserted %d row(s)" % cur.rowcount)
         abrSql2 = """UPDATE passengers SET request_nos = request_nos || '%d#'
                      WHERE book_no = %d AND pax_no = '%d'""" \
                   % (vRequestSeq, aBookNo, vRequestSeq)
-        blogger.debug("%s" % abrSql2)
+        blogger().debug("%s" % abrSql2)
         cur2.execute(abrSql2)
-        blogger.debug("Updated %d row(s)" % cur2.rowcount)
+        blogger().debug("Updated %d row(s)" % cur2.rowcount)
 
     cur.close()
     cur2.close()
@@ -513,11 +519,13 @@ def AddBookRequests(conn, aBookNo, aCompany, aReqCode, aReqTexts, aUser, aGroup)
 def AddBookRequest(conn, aBookNo, aPaxNo, aCompany, aReqCode, aReqText,
                    aUser, aGroup):
     """Add booking request."""
+    blogger().info("Add booking %d request %s %s"
+                 % (aBookNo, aReqCode, aReqText))
     # Value for request sequence number
     cur = conn.cursor()
     abrSql = """SELECT MAX(rqst_sequence_no)
         FROM book_requests WHERE book_no = %d""" % aBookNo
-    blogger.debug("%s" % abrSql)
+    blogger().debug("%s" % abrSql)
     cur.execute(abrSql)
     vRequestSeq = 0
     for row in cur:
@@ -544,15 +552,15 @@ def AddBookRequest(conn, aBookNo, aPaxNo, aCompany, aReqCode, aReqText,
                     '%s', '%s', NOW() )""" \
         % (aBookNo, vRequestSeq, aReqCode, aCompany, aReqText,
             aUser, aGroup)
-    blogger.debug("%s" % abrSql)
+    blogger().debug("%s" % abrSql)
     cur.execute(abrSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     abrSql = """UPDATE passengers SET request_nos = request_nos || '%d#'
                     WHERE book_no = %d AND pax_no = '%d'""" \
                 % (vRequestSeq, aBookNo, aPaxNo)
-    blogger.debug("%s" % abrSql)
+    blogger().debug("%s" % abrSql)
     cur.execute(abrSql)
-    blogger.debug("Updated %d row(s)" % cur.rowcount)
+    blogger().debug("Updated %d row(s)" % cur.rowcount)
 
     cur.close()
 
@@ -560,7 +568,7 @@ def AddBookRequest(conn, aBookNo, aPaxNo, aCompany, aReqCode, aReqText,
 def AddPassenger(conn, aBookNo, aPaxRecs,
                  aUser, aGroup):
     """Add passenger record."""
-    blogger.info("Add passengers for booking %d: %s (%s)"
+    blogger().info("Add passengers for booking %d: %s (%s)"
                  % (aBookNo, aPaxRecs[0].passenger_name,
                     aPaxRecs[0].passenger_code))
     vClientProfileNo = ' '
@@ -594,9 +602,9 @@ def AddPassenger(conn, aBookNo, aPaxRecs,
                paxRec.passenger_code, paxRec.processing_flg,
                aUser, aGroup,
                vTtyLineNo, vTtyGrpNo, vTtyGrpSeq)
-        blogger.debug("%s" % apSql)
+        blogger().debug("%s" % apSql)
         cur.execute(apSql)
-        blogger.debug("Inserted %d row(s)" % cur.rowcount)
+        blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
@@ -604,7 +612,7 @@ def AddContact(conn, aBookNo, aPaxRecs, aUser, aGroup):
     """Add entry for contact info."""
     cur = conn.cursor()
     for paxRec in aPaxRecs:
-        blogger.info("Add contact for booking %d: phone %s email %s"
+        blogger().info("Add contact for booking %d: phone %s email %s"
                  % (aBookNo, paxRec.contact_phone, paxRec.contact_email))
         abfSql = """
             INSERT INTO pax_contact(
@@ -615,9 +623,9 @@ def AddContact(conn, aBookNo, aPaxRecs, aUser, aGroup):
                 '%s', '%s', '%s', NOW() )""" \
             % (aBookNo, paxRec.passenger_no, paxRec.contact_phone,
                paxRec.contact_email, aUser, aGroup)
-        blogger.debug("%s" % abfSql)
+        blogger().debug("%s" % abfSql)
         cur.execute(abfSql)
-        blogger.debug("Inserted %d row(s)" % cur.rowcount)
+        blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
@@ -627,7 +635,7 @@ def AddPayment(conn, aPaymentForm, aPaymentType, aCurrency, aAmount,
                aBranchCode, aRemark,
                aUser, aGroup):
     """Add payment entry."""
-    blogger.info("Add booking %d payment: %s%d type %s doc %s"
+    blogger().info("Add booking %d payment: %s%d type %s doc %s"
                  % (aBookNo, aCurrency, aAmount, aPaymentType, aDocNum))
     apSql = """
         INSERT INTO payments(
@@ -657,16 +665,16 @@ def AddPayment(conn, aPaymentForm, aPaymentType, aCurrency, aAmount,
            aBranchCode, aRemark,
            aUser, aGroup,
            aUser, aGroup)
-    blogger.debug("%s" % apSql)
+    blogger().debug("%s" % apSql)
     cur = conn.cursor()
     cur.execute(apSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
 def GetPreBookingInfo(conn, book_no):
     """Query to run sometimes."""
-    blogger.debug("Pre booking %d info" % book_no)
+    blogger().debug("Pre booking %d info" % book_no)
     preBookingInfoSql = """
         SELECT bo.book_no,
             bo.locator,
@@ -698,14 +706,14 @@ def GetPreBookingInfo(conn, book_no):
         LEFT JOIN book_cross_index AS bci ON bci.book_no = bo.book_no
         WHERE bo.book_no = %d """ \
         % (book_no)
-    blogger.debug("%s" % preBookingInfoSql)
+    blogger().debug("%s" % preBookingInfoSql)
     cur = conn.cursor()
     cur.execute(preBookingInfoSql)
 
-    blogger.debug("Selected %d row(s)" % cur.rowcount)
+    blogger().debug("Selected %d row(s)" % cur.rowcount)
     for row in cur:
         # for val in row:
-            # print("%s" % str(val), end=' ')
+            # print("%s" % str(val)),
         book_no = row[0]
         locator = row[1]
         group_name = row[2]
@@ -720,14 +728,14 @@ def GetPreBookingInfo(conn, book_no):
 
 def UpdateBookPayment(conn, aBookNo, aCurrency, aPayment, aStatus='A'):
     """Update payment amount in bookings table."""
-    blogger.info("Update booking %d payment %s%f" % (aBookNo, aCurrency, aPayment))
+    blogger().info("Update booking %d payment %s%f" % (aBookNo, aCurrency, aPayment))
     UbpSql = """UPDATE bookings
                 SET (payment_amount, status_flag)
                   = (payment_amount+%f, '%s')
                 WHERE book_no=%d""" \
              % (aPayment, aStatus, aBookNo)
-    blogger.debug("%s" % UbpSql)
+    blogger().debug("%s" % UbpSql)
     cur = conn.cursor()
     cur.execute(UbpSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()

@@ -53,7 +53,7 @@ def ReadRequestsPnl(conn, book_no, Company, DeprAirport, FlightDate,
         " AND f.allow_segment_association = 1" \
         " AND trim(coalesce(f.pnl_adl_identifier,'')) <> ''" \
         " AND p.create_time BETWEEN f.valid_from_date_time AND coalesce(f.valid_until_date_time, current_date + interval '1' year)"
-    blogger.debug(ssrSql)
+    blogger().debug(ssrSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -63,7 +63,7 @@ def ReadRequestsPnl(conn, book_no, Company, DeprAirport, FlightDate,
     serviceReqs = []
     for row in cur:
         n += 1
-        blogger.debug("%s %s %s %s %s %s %s %s"
+        blogger().debug("%s %s %s %s %s %s %s %s"
               % (row['seq'], row['ind'], row['rq'], row['acc'], row['acn'],
                  row['req'], row['alli'], row['allp']))
         serviceReq = SsrData(row['seq'], row['ind'], row['rq'], row['acc'],
@@ -82,7 +82,7 @@ def ReadRequests(conn, book_no, rqst_code, delim=" ", status_flag='A'):
     elif book_no == 0:
         d_reqs.append(str("%3s%s%24s" % ("", delim, "")))
         return 0, d_reqs
-    blogger.info("Read booking requests for booking %d" % (book_no))
+    blogger().info("Read booking requests for booking %d" % (book_no))
     ssrSql = \
         "SELECT rqst_sequence_no,rqst_code,carrier_code,action_code,actn_number,request_text," \
         " processing_flag,all_passenger_flag,all_itinerary_flag " \
@@ -97,7 +97,7 @@ def ReadRequests(conn, book_no, rqst_code, delim=" ", status_flag='A'):
         pass
     ssrSql += \
         " and rqst_code='%s'" % rqst_code
-    blogger.debug(ssrSql)
+    blogger().debug(ssrSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -149,7 +149,7 @@ def ReadRequestsDaily(conn, recCount=0, start_date=None, end_date=None, dest_id=
             % (start_date.strftime("%Y/%m/%d/00/00/00"),
                end_date.strftime("%Y/%m/%d/23/59/59"))
 
-    blogger.debug(FiSql)
+    blogger().debug(FiSql)
     sys.stdout.flush()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -175,7 +175,7 @@ def ListRequestCodes(conn, book_no, includes='', delim=" "):
             " AND rqst_code IN (%s)" % includes
     ssrSql += \
         " AND action_code NOT LIKE 'X%'"
-    blogger.debug(ssrSql)
+    blogger().debug(ssrSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -188,7 +188,7 @@ def ListRequestCodes(conn, book_no, includes='', delim=" "):
         rval += str("%4s" % (row['rqst_code']))
         n += 1
 
-    blogger.info("%d request codes" % n)
+    blogger().info("%d request codes" % n)
     return rval
 
 
@@ -200,14 +200,14 @@ def ReadRequestCodes(conn, book_no, delim=" "):
     elif book_no == 0:
         d_reqs.append(str("%4s%s%2s%s%24s" % ("", delim, "", delim, "")))
         return 0, d_reqs
-    blogger.info("Read request codes for booking %d" % (bookno), 2)
+    blogger().info("Read request codes for booking %d" % (bookno), 2)
     ssrSql = \
         "SELECT rqst_sequence_no,rqst_code,carrier_code,action_code,actn_number,request_text," \
         " processing_flag,all_passenger_flag,all_itinerary_flag" \
         " FROM book_requests WHERE book_no=%d" % book_no
     ssrSql += \
         " AND action_code NOT LIKE 'X%'"
-    blogger.debug(ssrSql)
+    blogger().debug(ssrSql)
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
@@ -220,5 +220,5 @@ def ReadRequestCodes(conn, book_no, delim=" "):
                          int(row['actn_number']), delim, row['request_text'])))
         n += 1
 
-    blogger.info("%d requests" % n)
+    blogger().info("%d requests" % n)
     return n, d_reqs

@@ -162,7 +162,7 @@ if configuration.get('scheduler.enabled'):
 
 init_blogger("bars")
 
-#blogger.info("Start")
+#blogger().info("Start")
 
 db = DAL('postgres://postgres@localhost/barsdb')
 

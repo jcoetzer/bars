@@ -19,7 +19,7 @@ def ReadPnl(conn, aFlightNumber, aBoardDate):
     iNoOfRecords = 0
     szPnlAdlMesg = ''
 
-    blogger.info("Get PNL data for flight '%s' board '%s'"
+    blogger().info("Get PNL data for flight '%s' board '%s'"
              % (aFlightNumber, aBoardDate))
     inBuf = ''
     sqlStr = "SELECT message FROM pnl_adl_store" \
@@ -27,16 +27,16 @@ def ReadPnl(conn, aFlightNumber, aBoardDate):
              " AND board_date='%s'" \
              " AND pnl_adl_type = 'P'" \
              % (aFlightNumber, aBoardDate)
-    blogger.debug("%s", sqlStr)
+    blogger().debug("%s", sqlStr)
     cur = conn.cursor()
     # Fetch the input data
     cur.execute(cur)
     # TODO only the last record will be stored but there should only be one
     for row in cur:
         inBuf = str(row[0])
-        blogger.info("Read %d byte" % len(inBuf))
+        blogger().info("Read %d byte" % len(inBuf))
         iNoOfRecords += 1
-    blogger.info("Read %d byte" % len(inBuf))
+    blogger().info("Read %d byte" % len(inBuf))
     cur.close()
     return inBuf
 

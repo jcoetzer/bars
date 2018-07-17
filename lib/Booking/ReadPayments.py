@@ -13,7 +13,7 @@ from Booking.PaymentData import PaymentData
 
 def ReadPayments(conn, book_no):
     """Read payments for booking."""
-    blogger.info("Read payments for booking %d" % book_no)
+    blogger().info("Read payments for booking %d" % book_no)
     RpSql = """
         SELECT payment_form, payment_type, currency_code, payment_amount,
         payment_date,
@@ -23,7 +23,7 @@ def ReadPayments(conn, book_no):
         update_time
         FROM payments
         WHERE book_no = %d""" % book_no
-    blogger.debug(RpSql)
+    blogger().debug(RpSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RpSql)
     for row in cur:
@@ -44,18 +44,18 @@ def GetPriceSsr(conn, ssr_code):
              payment_type, payment_form
              FROM fees
              WHERE ssr_code = '%s'""" % ssr_code
-    blogger.debug(gpsSql)
+    blogger().debug(gpsSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(gpsSql)
     famount = 0.0
     fcurr = ''
     fcode = ''
     for row in cur:
-        blogger.info("SSR %s : fee %s %s%f : %s"
+        blogger().info("SSR %s : fee %s %s%f : %s"
                  % (ssr_code, row['fee_code'], row['fee_currency'],
                     row['fee_amount'], row['description']))
         famount = float(row['fee_amount'])
         fcurr = str(row['fee_currency'])
         fcode = str(row['fee_code'])
-    blogger.info("Price for SSR %s : %s%.2f" % (ssr_code, fcurr, famount))
+    blogger().info("Price for SSR %s : %s%.2f" % (ssr_code, fcurr, famount))
     return fcode, fcurr, famount

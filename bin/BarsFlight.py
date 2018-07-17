@@ -182,10 +182,10 @@ def main(argv):
             usage()
         elif opt == '-v':
             # Debug output
-            blogger.setLevel(logging.INFO)
+            _levelsetLevel(logging.INFO)
         elif opt == '-V':
             # Debug output
-            blogger.setLevel(logging.DEBUG)
+            _levelsetLevel(logging.DEBUG)
         elif opt == "--city":
             docity = True
         elif opt == "--fare":
@@ -206,48 +206,48 @@ def main(argv):
             docontact = True
         elif opt == "-A" or opt == "--aircraft":
             aircraftCode = str(arg).upper()
-            blogger.debug("aircraft code %s" % aircraftCode)
+            blogger().debug("aircraft code %s" % aircraftCode)
         elif opt in ("-D", "--date"):
             departDate = ReadDate(arg)
-            blogger.debug("start date %s" % departDate.strftime("%Y-%m-%d"))
+            blogger().debug("start date %s" % departDate.strftime("%Y-%m-%d"))
         elif opt in ("-E", "--edate"):
             arriveDate = ReadDate(arg)
-            blogger.debug("end date %s" % departDate.strftime("%Y-%m-%d"))
+            blogger().debug("end date %s" % departDate.strftime("%Y-%m-%d"))
         elif opt in ("-F", "--flight"):
             flightNumber = arg
         elif opt in ("-G", "--share"):
             codeShare = arg
         elif opt in ("-I", "--cabin"):
             cabinClasses = str(arg).split(',')
-            blogger.debug("classes %s" % cabinClasses)
+            blogger().debug("classes %s" % cabinClasses)
         elif opt in ("-J", "--seat"):
             seatCapacities = str(arg).split(',')
-            blogger.debug("seats %s" % seatCapacities)
+            blogger().debug("seats %s" % seatCapacities)
         elif opt in ("-K", "--freq"):
             frequencyCode = str(arg)
         elif opt in ("-N", "--name"):
             aircraftName = str(arg)
         elif opt in ("-P", "--depart"):
             departAirport = str(arg).upper()
-            blogger.debug("depart %s" % departAirport)
+            blogger().debug("depart %s" % departAirport)
         elif opt in ("-Q", "--arrive"):
             arriveAirport = str(arg).upper()
-            blogger.debug("arrive %s" % arriveAirport)
+            blogger().debug("arrive %s" % arriveAirport)
         elif opt in ("-R", "--amount"):
             payAmount = int(arg)
-            blogger.debug("payment %d" % payAmount)
+            blogger().debug("payment %d" % payAmount)
         elif opt in ("-T", "--tail"):
             tailNumber = str(arg)
-            blogger.debug("tail number %s" % tailNumber)
+            blogger().debug("tail number %s" % tailNumber)
         elif opt in ("-U", "--cfg"):
             configTable = str(arg)
-            blogger.debug("configuration %s" % configTable)
+            blogger().debug("configuration %s" % configTable)
         elif opt == "-X":
             departTime = ReadTime(arg)
-            blogger.debug("depart time %s" % departTime)
+            blogger().debug("depart time %s" % departTime)
         elif opt == "-Y":
             arriveTime = ReadTime(arg)
-            blogger.debug("arrive time %s" % arriveTime)
+            blogger().debug("arrive time %s" % arriveTime)
         else:
             print("Unknown option '%s'" % opt)
             return 1

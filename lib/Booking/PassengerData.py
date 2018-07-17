@@ -109,16 +109,24 @@ class PassengerData(object):
                                  + fake.domain_name()).lower()
 
     def display(self, prefix='\t'):
+        #print("%sPassenger %d (paid %s %s) %s"
+                #% (prefix, self.passenger_no, self.processing_flg,
+                    #self.passenger_code,
+                    #self.passenger_name)),
         print("%sPassenger %d (paid %s %s) %s"
                 % (prefix, self.passenger_no, self.processing_flg,
                     self.passenger_code,
-                    self.passenger_name), end=' ')
+                    self.passenger_name)),
         if self.date_of_birth is not None:
             dob = self.date_of_birth.strftime("%d%b%Y").upper()
+            #print(": born %s" \
+                   #% (dob)),
             print(": born %s" \
-                   % (dob), end=' ')
+                   % (dob)),
         if self.contact_phone is not None \
         and self.contact_email is not None:
+            #print("phone %s email %s"
+                  #% (self.contact_phone, self.contact_email)),
             print("phone %s email %s"
-                  % (self.contact_phone, self.contact_email), end=' ')
+                  % (self.contact_phone, self.contact_email)),
         print('')

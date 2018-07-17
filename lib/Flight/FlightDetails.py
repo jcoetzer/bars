@@ -12,7 +12,7 @@ from datetime import datetime, date
 def GetFlightDetails(conn, aflight_number, aboard_date,
                      adeparture_airport, aarrival_airport):
     """Get flight details."""
-    blogger.info("Get flight %s board %s depart %s arrive %s"
+    blogger().info("Get flight %s board %s depart %s arrive %s"
              % (aflight_number, aboard_date,
                 str(adeparture_airport or 'not specified'),
                 str(aarrival_airport or 'not specified')))
@@ -54,11 +54,11 @@ def GetFlightDetails(conn, aflight_number, aboard_date,
             % (adeparture_airport, aarrival_airport)
     fdSql += \
         " ORDER BY fsd.board_date, departure_time, fsd.flight_number"
-    blogger.debug("%s" % fdSql)
+    blogger().debug("%s" % fdSql)
     cur = conn.cursor()
     cur.execute(fdSql)
 
-    blogger.debug("Selected %d row(s)" % cur.rowcount)
+    blogger().debug("Selected %d row(s)" % cur.rowcount)
     for row in cur:
         flight_number = row[0]
         board_date = row[1]

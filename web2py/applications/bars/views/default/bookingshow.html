@@ -6,6 +6,7 @@
 <p/>Date : {{=request.vars.fdate}}
 <p/>Seats : {{=request.vars.fseats}}
 <p/>Locator: {{=locator}}
+<p/>Number: {{=bookno}}
 <form action="bookingpayshow">
 <p>Amount<input name="amount" type="text" size="12" value="{{=request.vars.fprice}}"/></p>
 <p>Passenger 1 : {{=request.vars.paxtitle1}} {{=request.vars.paxfname1.upper()}} {{=request.vars.paxlname1.upper()}}</p>
@@ -15,6 +16,7 @@
 <input name="paxtitle1" type="hidden" value="{{=request.vars.paxtitle1}}" />
 <input name="paxfname1" type="hidden" value="{{=request.vars.paxfname1.upper()}}" />
 <input name="paxlname1" type="hidden" value="{{=request.vars.paxlname1.upper()}}" />
+<input name="paxdob1" type="hidden" value="{{=request.vars.paxdob1}}" />
 <input name="fnumber" type="hidden" value="{{=request.vars.fnumber}}" />
 <input name="fdate" type="hidden" value="{{=request.vars.fdate}}" />
 <input name="depart" type="hidden" value="{{=request.vars.depart}}" />

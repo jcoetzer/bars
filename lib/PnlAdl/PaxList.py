@@ -99,7 +99,7 @@ class PaxList(object):
                 self.booking_classes[booking_class] = 1
             else:
                 self.booking_classes[booking_class] += 1
-            blogger.debug("Booking class %c : %d"
+            blogger().debug("Booking class %c : %d"
                      % (booking_class, self.booking_classes[booking_class]))
 
         if get_verbose():
@@ -128,11 +128,11 @@ class PaxList(object):
             if it.book_no == previt.book_no:
                 if len(previt.group_name) == 0:
                     previt.group_name = str(nextGroup())
-                blogger.debug("Set group name for %s to %s"
+                blogger().debug("Set group name for %s to %s"
                          % (previt.pax_name, previt.group_name))
                 # it.locator = str("")
                 it.group_name = previt.group_name
-                blogger.debug("Set group name for %s to %s and locator to '%s'"
+                blogger().debug("Set group name for %s to %s and locator to '%s'"
                          % (it.pax_name, it.group_name, it.locator))
             previt.SetEntry(self.AltFlightNumber, self.BoardDate)
             previt = it
@@ -218,7 +218,7 @@ class PaxList(object):
         self.AltFlightNumber = ReadAltFlightNumber(self.conn,
                                                    self.FlightNumber,
                                                    self.BoardDate)
-        blogger.info("Get pax data for flight '%s' date '%s'"
+        blogger().info("Get pax data for flight '%s' date '%s'"
                  % (self.FlightNumber, self.BoardDate))
         sqlStr1 = """SELECT it.book_no, it.departure_airport, it.arrival_airport,
                 it.departure_time depart,
@@ -259,7 +259,7 @@ class PaxList(object):
                 AND bo.status_flag <> 'X'
                 ORDER BY it.book_no, pa.pax_name
         """
-        blogger.debug("\t%s" % sqlStr1)
+        blogger().debug("\t%s" % sqlStr1)
 
         ssrs = {}
         iNoOfRecords = 0
@@ -283,7 +283,7 @@ class PaxList(object):
                     pa.pax_no
                 FROM passengers AS pa
                 WHERE pa.book_no = %d""" % book_no
-            blogger.debug("\t%s" % sqlStr2)
+            blogger().debug("\t%s" % sqlStr2)
             cur2.execute(sqlStr2)
             for row2 in cur2:
                 pax_name = row2[0]
@@ -317,7 +317,7 @@ class PaxList(object):
                                                    aBoardDate)
         # Read existing PNL from database
         pnlBuf = self.ReadPnl(self.FlightNumber, self.BoardDate)
-        blogger.info("%s" % pnlBuf)
+        blogger().info("%s" % pnlBuf)
         return self.ReadBuf(pnlBuf, True)
 
     def ReadBuf(self, inBuf, doPnl):
@@ -339,22 +339,22 @@ class PaxList(object):
         segments = inBuf.split('\n')
         for it in segments:
             n += 1
-            blogger.debug("\t\t%d: %s" % n, it.c_str())
+            blogger().debug("\t\t%d: %s" % n, it.c_str())
 
         n = len(segments)
         if n < 13:
             print("Too few lines in file (%d)" % n)
             return 1
-        blogger.debug("\tread %d lines [%s]" % n, segments[n-2])
+        blogger().debug("\tread %d lines [%s]" % n, segments[n-2])
 
         if self.CheckHeader(segments, doPnl):
             return 1
 
         if segments[n-2][0:4] == "NNNN":
             n -= 1
-            blogger.debug("\tRead %d lines : %s" % n, segments[n-1])
+            blogger().debug("\tRead %d lines : %s" % n, segments[n-1])
         else:
-            blogger.info("Read %d lines [%s]" % n, segments[n-2])
+            blogger().info("Read %d lines [%s]" % n, segments[n-2])
 
         if doPnl and segments[n-5][0:6] != "ENDPNL":
             print("No ENDPNL (%s)" % segments[n-5])
@@ -402,7 +402,7 @@ class PaxList(object):
                 classtot, = fdata[4:7]
                 classtot[4] = 0
                 nclass = int(classtot)
-                blogger.info("Class %c %d [%s]" % classnam, nclass, fdata)
+                blogger().info("Class %c %d [%s]" % classnam, nclass, fdata)
             elif (not doPnl) and (fdata[0:3] == "ADD"):
                 print("Added pax [%s]" % fdata)
             elif (not doPnl) and (fdata == "DEL"):
@@ -463,25 +463,25 @@ class PaxList(object):
     def AddGroup(self, pd):
         """Add pax group."""
         if len(pd.group_name) == 0:
-            blogger.info("\tno group")
+            blogger().info("\tno group")
             return
 
         if len(pd.locator) == 0:
             it = self.pg.find(pd.group_name)
             if it is None:
-                blogger.info("\tno locator for group '%s'" % pd.group_name)
+                blogger().info("\tno locator for group '%s'" % pd.group_name)
                 return
             else:
                 pd.locator = it.second
-                blogger.info("\tlocator for group '%s' specified above as '%s'"
+                blogger().info("\tlocator for group '%s' specified above as '%s'"
                          % (pd.group_name, it.second))
                 return
 
         it = self.pg.find(pd.group_name)
         if it is not None:
             self.pg[pd.group_name] = pd.locator
-            blogger.info("\tlocator for group '%s' set to '%s'"
+            blogger().info("\tlocator for group '%s' set to '%s'"
                      % (pd.group_name, pd.locator))
             return
-        blogger.info("\tlocator for group '%s' specified above as '%s'"
+        blogger().info("\tlocator for group '%s' specified above as '%s'"
                  % (pd.group_name, it.second))

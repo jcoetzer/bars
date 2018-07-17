@@ -79,19 +79,19 @@ def ReadTaxes(conn, aCompanyCode, aFlightDate, aReturnDate, aAirport,
        flightDate, returnDate, aReturnInd,
        flightDate, returnDate, aReturnInd,
        flightDate, returnDate, returnDate, returnDate)
-    blogger.debug("%s" % RtSql)
+    blogger().debug("%s" % RtSql)
     cur = conn.cursor()
     cur.execute(RtSql)
 
     taxes = []
-    blogger.debug("Selected %d row(s)" % cur.rowcount)
+    blogger().debug("Selected %d row(s)" % cur.rowcount)
     for row in cur:
         tax = TaxData(row[0], row[1], row[2], row[3], row[4], row[5], row[6],
                       row[7], row[8], row[9])
         #tax.display()
         taxes.append(tax)
         #for item in row:
-            #print("%s" % item, end=' ')
+            #print("%s" % item),
         #print('')
 
     cur.close()

@@ -20,7 +20,7 @@ from BarsLog import blogger
 
 def index():
     """ Index page."""
-    blogger.debug("Start")
+    blogger().debug("Start")
     response.flash = T("BARS Airline Reservation Simulator")
     #form = FORM(INPUT(_name='depart', requires=IS_NOT_EMPTY()),
                 #INPUT(_name='arrive', requires=IS_NOT_EMPTY()),
@@ -42,7 +42,7 @@ def index():
 
 def availability():
     """Flight availability query."""
-    blogger.debug("Availability")
+    blogger().debug("Availability")
     return dict()
 
 
@@ -52,11 +52,12 @@ def availshow():
     departAirport = str(request.vars.depart)
     arriveAirport = str(request.vars.arrive)
     flightDate = ReadDate(request.vars.fdate)
-    blogger.debug("Get availability for date %s depart %s arrive %s"
+    blogger().debug("Get availability for date %s depart %s arrive %s"
                   % (flightDate, departAirport, arriveAirport))
     msg = GetAvailHtml(conn, flightDate, flightDate,
                        departAirport, arriveAirport,
                        vCompany, '/bars/default/priceshow')
+    conn.commit()
     return dict(message=XML(msg))
 
 
@@ -67,7 +68,7 @@ def priceshow():
     departAirport = str(request.vars.depart)
     arriveAirport = str(request.vars.arrive)
     sellClass = 'Y'
-    blogger.debug("Get price for date %s depart %s arrive %s"
+    blogger().debug("Get price for date %s depart %s arrive %s"
                   % (flightDate, departAirport, arriveAirport))
     msg, amt = GetPriceHtml(conn,
                             cfg.CompanyCode,
@@ -77,6 +78,7 @@ def priceshow():
                             cfg.OnwReturnIndicator,
                             cfg.FareCategory,
                             cfg.AuthorityLevel)
+    conn.commit()
     return dict(message=XML(msg), amount=amt)
 
 
@@ -95,7 +97,7 @@ def bookingnames():
     seatCount = int(request.vars.fseats[0])
     sellClass = request.vars.fclass
     groupName = ''
-    blogger.debug("Get %s names for flight %s date %s depart %s arrive %s"
+    blogger().debug("Get %s names for flight %s date %s depart %s arrive %s"
                  % (seatCount, flightNumber, flightDate, departAirport, arriveAirport))
     msg = "<p/>Book flight"
     return dict(message=XML(msg))
@@ -103,7 +105,7 @@ def bookingnames():
 
 def bookingshow():
     """Process booking."""
-    blogger.debug("New booking")
+    blogger().debug("New booking")
     flightNumber = str(request.vars.fnumber)
     flightDate = ReadDate(request.vars.fdate)
     departAirport = str(request.vars.depart)
@@ -111,7 +113,7 @@ def bookingshow():
     seatCount = int(request.vars.fseats or 1)
     payAmount = float(request.vars.fprice)
     sellClass = request.vars.fclass
-    blogger.debug("Book %s seats for flight %s date %s depart %s arrive %s"
+    blogger().debug("Book %s seats for flight %s date %s depart %s arrive %s"
                   % (seatCount, flightNumber, flightDate,
                      departAirport, arriveAirport))
     groupName = ''
@@ -127,9 +129,9 @@ def bookingshow():
     contact_email = request.vars.bkemail
     pax = PassengerData(passenger_code, passenger_no, paxname,
                         date_of_birth, contact_phone, contact_email)
-    blogger.debug("Pax %s (born %s)" % (paxname, date_of_birth))
+    blogger().debug("Pax %s (born %s)" % (paxname, date_of_birth))
     paxRecs.append(pax)
-    blogger.debug("Process booking flight %s date %s"
+    blogger().debug("Process booking flight %s date %s"
                   % (flightNumber, flightDate))
     bn, pnr, msg = PutBookHtml(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
                                cfg.OriginBranchCode, cfg.AgencyCode,
@@ -166,7 +168,7 @@ def bookingpayshow():
     docNum = request.vars.cardnum
     paymentType = 'CC'
     paymentForm = 'VI'
-    blogger.debug("Payment for booking %d class %s %s%.2f %s card %s"
+    blogger().debug("Payment for booking %d class %s %s%.2f %s card %s"
                   % (bookNo, sellClass, cfg.Currency, payAmount, paymentForm,
                      docNum))
     rv, msg = PutPayHtml(conn, bookNo, sellClass,
@@ -176,6 +178,7 @@ def bookingpayshow():
                          cfg.User, cfg.Group)
     if rv == 0:
         msg = "<p/>Payment approved."
+    conn.commit()
     return dict(message=XML(msg))
 
 

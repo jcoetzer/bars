@@ -22,9 +22,9 @@ def AddAircraft(conn, companyCode, acft_code, acft_desc,
     aaSql = """INSERT INTO master_files
         VALUES ('ACFT', '%s', '%s', '%s', '%s', NOW())""" \
         % (acft_code, acft_desc)
-    blogger.debug("%s" % aaSql)
+    blogger().debug("%s" % aaSql)
     cur.execute(aaSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
@@ -44,13 +44,13 @@ def CheckAircraftConfig(conn, companyCode, acft_code,
         n += 1
     caSql += ")"
     cur = conn.cursor()
-    blogger.debug("%s" % caSql)
+    blogger().debug("%s" % caSql)
     cur.execute(caSql)
     spn = 0
     for row in cur:
         ConfigTableNo = row[0]
     cur.close()
-    blogger.info("Aircraft code %s classes %s seats %s: config %s"
+    blogger().info("Aircraft code %s classes %s seats %s: config %s"
              % (acft_code, class_codes, class_seats, ConfigTableNo))
     return ConfigTableNo
 
@@ -63,7 +63,7 @@ def AddAircraftConfig(conn, companyCode, acft_code, configTableNo,
     n = 0
     cur = conn.cursor()
     while n < len(class_codes):
-        blogger.info("New aircraft code %s config %s class %s seats %d"
+        blogger().info("New aircraft code %s config %s class %s seats %d"
                  % (acft_code, configTableNo,
                     class_codes[n], int(class_seats[n])))
         caSql = """
@@ -72,9 +72,9 @@ def AddAircraftConfig(conn, companyCode, acft_code, configTableNo,
                    '%s','%s',NOW())""" \
             % (configTableNo, companyCode, class_codes[n], acft_code,
                int(class_seats[n]), userName, groupName)
-        blogger.debug("%s" % caSql)
+        blogger().debug("%s" % caSql)
         cur.execute(caSql)
-        blogger.debug("Inserted %d row(s)" % cur.rowcount)
+        blogger().debug("Inserted %d row(s)" % cur.rowcount)
         n += 1
 
     cur.close()
@@ -85,14 +85,14 @@ def FpFromSsm(conn, flightNumber, startDate, endDate, frequencyCode,
     """Process flight from SSM."""
     spnSql = "SELECT COALESCE(MAX(schedule_period_no),0) FROM flight_periods"
     cur = conn.cursor()
-    blogger.debug("%s" % spnSql)
+    blogger().debug("%s" % spnSql)
     cur.execute(spnSql)
     spn = 0
     for row in cur:
         spn = int(row[0])
 
     spn += 1
-    blogger.info("New schedule period %d" % spn)
+    blogger().info("New schedule period %d" % spn)
 
     cur.close()
     return spn
@@ -114,7 +114,7 @@ def FpLegsFromSsm(conn, flightNumber, schedPerdNo,
              "AND a2.city_code = c2.city_code " \
              "AND c2.state_code = s2.state_code" \
              % (depAirport, arrAirport)
-    blogger.debug("%s" % fplSql)
+    blogger().debug("%s" % fplSql)
     cur.execute(fplSql)
     spn = 0
     depAirport = ''
@@ -122,7 +122,7 @@ def FpLegsFromSsm(conn, flightNumber, schedPerdNo,
     for row in cur:
         depNation = row[0]
         arrNation = row[1]
-        blogger.info("From %s [%s] to %s [%s]" % (depAirport, row[0], arrAirport))
+        blogger().info("From %s [%s] to %s [%s]" % (depAirport, row[0], arrAirport))
 
     fplSql = "INSERT INTO flight_perd_legs ( " \
         "flight_number, schedule_period_no, " \
@@ -140,9 +140,9 @@ def FpLegsFromSsm(conn, flightNumber, schedPerdNo,
            0, configNo, flightPath,
            depTerminal, arrTerminal, legNo,
            'SSM', 'SSM')
-    blogger.debug("%s" % fplSql)
+    blogger().debug("%s" % fplSql)
     cur.execute(fplSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
@@ -168,7 +168,7 @@ def AddFlightSegmDate(conn,
                       asegment_number,
                       aschedule_period_no):
     """Add flight segment dates."""
-    blogger.info("New flight %s segment %d date %s: depart %s %s arrive %s %s"
+    blogger().info("New flight %s segment %d date %s: depart %s %s arrive %s %s"
              % (aflight_number, asegment_number, assm_tmp_date,
                 adeparture_airport, adeparture_time.strftime("H:%M"),
                 aarrival_airport, aarrival_time.strftime("H:%M")))
@@ -205,9 +205,9 @@ def AddFlightSegmDate(conn,
            aflight_closed_flag, aflight_brdng_flag,
            ano_of_stops, aleg_number,
            asegment_number, aschedule_period_no)
-    blogger.debug("%s" % fsdSql)
+    blogger().debug("%s" % fsdSql)
     cur.execute(fsdSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
@@ -225,7 +225,7 @@ def AddFlightPeriodLegs(conn,
                         aarrival_terminal,
                         aleg_number):
     """Add flight period legs."""
-    blogger.info("Add flight %s period %s leg %d: depart %s %s arrive %s %s"
+    blogger().info("Add flight %s period %s leg %d: depart %s %s arrive %s %s"
              % (aflight_number, aschedule_period_no, aleg_number,
                 adeparture_airport, adeparture_time,
                 aarrival_airport, aarrival_time))
@@ -245,9 +245,9 @@ def AddFlightPeriodLegs(conn,
        adate_change_ind, aconfig_table_no,
        aflight_path_code, adeparture_terminal,
        aarrival_terminal, aleg_number)
-    blogger.debug("%s" % fplSql)
+    blogger().debug("%s" % fplSql)
     cur.execute(fplSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
@@ -259,7 +259,7 @@ def AddFlightPeriodSegment(conn,
                            apost_control_flag,
                            asegment_number):
     """Add flight period segments."""
-    blogger.info("Add flight %s period %s segment %d: city pair %d aircraft %s"
+    blogger().info("Add flight %s period %s segment %d: city pair %d aircraft %s"
              % (aflight_number, aschedule_period_no, asegment_number,
                 acity_pair, aaircraft_code))
     cur = conn.cursor()
@@ -275,9 +275,9 @@ def AddFlightPeriodSegment(conn,
            apost_control_flag,
            aaircraft_code,
            asegment_number)
-    blogger.debug("%s" % fplSql)
+    blogger().debug("%s" % fplSql)
     cur.execute(fplSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
@@ -327,7 +327,7 @@ def IsPeriodToBeExtended(conn, startDate, endDate, startDateMinusOne,
            flightNumber, aircraftConfig)
 
     cur = conn.cursor()
-    blogger.debug("%s" % spnSql)
+    blogger().debug("%s" % spnSql)
     cur.execute(spnSql)
 
     spn = 0
@@ -354,7 +354,7 @@ def WriteFlightInfo(conn,
                     userName,
                     groupName):
     """Write flight information."""
-    blogger.info("Write flight %s date %s depart %s arrive %s tail %s"
+    blogger().info("Write flight %s date %s depart %s arrive %s tail %s"
              % (flight, boardDate,
                 adeparture_airport, aarrival_airport, aTailNumber))
     cur = conn.cursor()
@@ -377,9 +377,9 @@ def WriteFlightInfo(conn,
              adeparture_time, aarrival_time,
              aTailNumber, aRemarks,
              userName, groupName)
-    blogger.debug("%s" % fiSql)
+    blogger().debug("%s" % fiSql)
     cur.execute(fiSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
@@ -395,7 +395,7 @@ def AddFlightPeriod(conn,
                     puser_name,
                     puser_group):
     """Add flight period."""
-    blogger.info("Add flight %s period %d: depart %s arrive %s start %d end %s"
+    blogger().info("Add flight %s period %d: depart %s arrive %s start %d end %s"
              % (pflight_number, vschedule_period_no,
                 departure_airport, arrival_airport,
                 start_date, end_date))
@@ -416,9 +416,9 @@ def AddFlightPeriod(conn,
            vschedule_period_no, end_date,
            departure_airport, arrival_airport,
            puser_name, puser_group)
-    blogger.debug("%s" % fpSql)
+    blogger().debug("%s" % fpSql)
     cur.execute(fpSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
@@ -458,7 +458,7 @@ def AddInventorySegment(conn, pflight_number, vflight_date,
                         vdisplay_priority, pschedule_period_no,
                         pupdt_user_code, pupdt_dest_id):
     """Add inventory segment."""
-    blogger.info("Add inventory segment for flight %s date %s:"
+    blogger().info("Add inventory segment for flight %s date %s:"
              "class %s seats %d depart %s arrive %s"
              % (pflight_number, vflight_date,
                 vselling_class, vseat_capacity,
@@ -510,10 +510,10 @@ def AddInventorySegment(conn, pflight_number, vflight_date,
         vwl_rel_prty_flag,
         vdisplay_priority, pschedule_period_no,
         pupdt_user_code, pupdt_dest_id)
-    blogger.debug("%s" % isSql)
+    blogger().debug("%s" % isSql)
     cur = conn.cursor()
     cur.execute(isSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
@@ -527,7 +527,7 @@ def AddFlightDateLeg(conn,
                      userName,
                      groupName):
     """Add flight date leg."""
-    blogger.info("Add flight %s date %s leg %d:"
+    blogger().info("Add flight %s date %s leg %d:"
              " depart %s %s arrive %s"
              % (flight, boardDate, legNo, adeparture_airport, adeparture_time,
                 aarrival_airport))
@@ -543,10 +543,10 @@ def AddFlightDateLeg(conn,
         % (flight, boardDate, boardDate, adeparture_time,
            adeparture_airport, aarrival_airport, legNo,
            userName, groupName)
-    blogger.debug("%s" % fdlSql)
+    blogger().debug("%s" % fdlSql)
     cur = conn.cursor()
     cur.execute(fdlSql)
-    blogger.debug("Inserted %d row(s)" % cur.rowcount)
+    blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
@@ -560,7 +560,7 @@ def AddFlightPeriodClasses(conn, flightNumber, spn, class_codes):
         i = lc - 1
         while i > 0:
             dp += 1
-            blogger.info("Add flight %s period %d class %s:"
+            blogger().info("Add flight %s period %d class %s:"
                      " parent %s display %d"
                      % (flightNumber, spn, class_code[i], class_code[i-1], dp))
             fpcSql = """
@@ -572,12 +572,12 @@ def AddFlightPeriodClasses(conn, flightNumber, spn, class_codes):
                 '%s', %d, NOW() )""" \
             % (flightNumber, spn, class_code[i], class_code[i-1],  # class_code[0:i],
                dp)
-            blogger.debug("%s" % fpcSql)
+            blogger().debug("%s" % fpcSql)
             cur.execute(fpcSql)
-            blogger.debug("Inserted %d row(s)" % cur.rowcount)
+            blogger().debug("Inserted %d row(s)" % cur.rowcount)
             i -= 1
         dp += 1
-        blogger.info("Add flight %s period %d class %s:"
+        blogger().info("Add flight %s period %d class %s:"
                  " parent %s display %d"
                  % (flightNumber, spn, class_code[0], class_code[0], dp))
         fpcSql = """
@@ -589,9 +589,9 @@ def AddFlightPeriodClasses(conn, flightNumber, spn, class_codes):
             %d, NOW() )""" \
         % (flightNumber, spn, class_code[0], class_code[0],
            dp)
-        blogger.debug("%s" % fpcSql)
+        blogger().debug("%s" % fpcSql)
         cur.execute(fpcSql)
-        blogger.debug("Inserted %d row(s)" % cur.rowcount)
+        blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
@@ -600,7 +600,7 @@ def AddFlightPeriodSegmentClasses(conn, flight_number, spn, city_pair,
     """Add flight period segment classes."""
     cur = conn.cursor()
     i = 0
-    blogger.info("Add flight period segment classes %s" % configs)
+    blogger().info("Add flight period segment classes %s" % configs)
     for class_code in class_codes:
         lc = len(class_code)
         j = 0
@@ -624,9 +624,9 @@ def AddFlightPeriodSegmentClasses(conn, flight_number, spn, city_pair,
                     1, NOW() )""" \
             % (flight_number, spn, city_pair, class_code[j],
                int(configs[i]))
-            blogger.debug("%s" % fpscSql)
+            blogger().debug("%s" % fpscSql)
             cur.execute(fpscSql)
-            blogger.debug("Inserted %d row(s)" % cur.rowcount)
+            blogger().debug("Inserted %d row(s)" % cur.rowcount)
             j += 1
         i += 1
     cur.close()
@@ -634,13 +634,13 @@ def AddFlightPeriodSegmentClasses(conn, flight_number, spn, city_pair,
 
 def AddFlightPeriodParents(conn, flight_number, spn, class_codes):
     """Add flight period class parents."""
-    blogger.debug("Add parents for flight %s classes %s (%d)"
+    blogger().debug("Add parents for flight %s classes %s (%d)"
              % (flight_number, class_codes, spn))
     cur = conn.cursor()
     for class_code in class_codes:
         lc = len(class_code)
         i = lc - 1
-        blogger.debug("Add parents for classes %s (%d)" % (class_code, lc))
+        blogger().debug("Add parents for classes %s (%d)" % (class_code, lc))
         while i > 0:
             fppSql = """
             INSERT INTO flight_perd_prnt(
@@ -649,9 +649,9 @@ def AddFlightPeriodParents(conn, flight_number, spn, class_codes):
             VALUES(
                 '%s', %d, '%s', '%s', NOW() )""" \
             % (flight_number, spn, class_code[i], class_code[i-1])
-            blogger.debug("%s" % fppSql)
+            blogger().debug("%s" % fppSql)
             cur.execute(fppSql)
-            blogger.debug("Inserted %d row(s)" % cur.rowcount)
+            blogger().debug("Inserted %d row(s)" % cur.rowcount)
             i -= 1
         fppSql = """
         INSERT INTO flight_perd_prnt(
@@ -660,16 +660,16 @@ def AddFlightPeriodParents(conn, flight_number, spn, class_codes):
         VALUES(
             '%s', %d, '%s', '%s', NOW() )""" \
         % (flight_number, spn, class_code[0], class_code[0])
-        blogger.debug("%s" % fppSql)
+        blogger().debug("%s" % fppSql)
         cur.execute(fppSql)
-        blogger.debug("Inserted %d row(s)" % cur.rowcount)
+        blogger().debug("Inserted %d row(s)" % cur.rowcount)
     cur.close()
 
 
 def AddScheduleChangeAction(conn, flight_number, spn, city_pair,
                             departure_airport, arrival_airport, class_codes):
     """Add schedule change action."""
-    blogger.debug("Add parents for flight %s classes %s (%d)"
+    blogger().debug("Add parents for flight %s classes %s (%d)"
              % (flight_number, class_codes, spn))
     cur = conn.cursor()
     for class_code in class_codes:
@@ -689,9 +689,9 @@ def AddScheduleChangeAction(conn, flight_number, spn, city_pair,
                 CURRENT_DATE, 'A', 'Y', CURRENT_TIMESTAMP )""" \
             % (flight_number, spn, city_pair, class_code[i],
                departure_airport, arrival_airport)
-            blogger.debug("%s" % scaSql)
+            blogger().debug("%s" % scaSql)
             cur.execute(scaSql)
-            blogger.debug("Inserted %d row(s)" % cur.rowcount)
+            blogger().debug("Inserted %d row(s)" % cur.rowcount)
             i -= 1
     cur.close()
 
@@ -708,7 +708,7 @@ def ProcNew(conn, ssm, userName, groupName):
         print("City pair not OK")
         return -1
 
-    blogger.info("New flights from %s to %s"
+    blogger().info("New flights from %s to %s"
              % (ssm.start_date.strftime("%Y-%m-%d"),
                 ssm.end_date.strftime("%Y-%m-%d")))
 
@@ -724,13 +724,13 @@ def ProcNew(conn, ssm, userName, groupName):
     cdate = ssm.start_date
     while cdate <= ssm.end_date:
         wday = cdate.weekday()+1
-        blogger.info("Date %s (day %d)" % (cdate.strftime("%Y-%m-%d"), wday))
+        blogger().info("Date %s (day %d)" % (cdate.strftime("%Y-%m-%d"), wday))
         if wday in ssm.frequency_codes:
             ssmdates.append(cdate)
         cdate += datetime.timedelta(days=1)
 
     for cdate in ssmdates:
-        blogger.info("Process date %s" % cdate.strftime("%Y-%m-%d"))
+        blogger().info("Process date %s" % cdate.strftime("%Y-%m-%d"))
 
     config_no = GetConfigTableNo(conn, ssm.aircraft_code)
 

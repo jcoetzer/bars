@@ -52,14 +52,14 @@ def main(argv):
         if opt == '-h' or opt == '--help':
             usage()
         elif opt == '-v':
-            blogger.setLevel(logging.INFO)
+            _levelsetLevel(logging.INFO)
         elif opt == '-V':
-            blogger.setLevel(logging.DEBUG)
+            _levelsetLevel(logging.DEBUG)
         # elif opt in ("-C", "--class"):
             # selling_cls = str(arg).upper()
         elif opt in ("-D", "--date"):
             dt1 = ReadDate(arg)
-            blogger.info("\t flight date %s" % dt1.strftime("%Y-%m-%d"))
+            blogger().info("\t flight date %s" % dt1.strftime("%Y-%m-%d"))
         # elif opt in ("-E", "--edate"):
             # dt2 = ReadDate(arg)
         elif opt in ("-F", "--flight"):
@@ -69,13 +69,13 @@ def main(argv):
                 dt1 = ReadDate(fndata[1])
             else:
                 flight_number = arg
-            blogger.debug("Flight number set to %s" % flight_number)
+            blogger().debug("Flight number set to %s" % flight_number)
         # elif opt in ("-P", "--depart"):
             # depart_airport = str(arg).upper()
-            # blogger.info("\t depart %s" % depart_airport)
+            # blogger().info("\t depart %s" % depart_airport)
         # elif opt in ("-Q", "--arrive"):
             # arrive_airport = str(arg).upper()
-            # blogger.info("\t arrive %s" % arrive_airport)
+            # blogger().info("\t arrive %s" % arrive_airport)
         else:
             pass
 
@@ -95,7 +95,7 @@ def main(argv):
 
     conn.commit()
     conn.close()
-    blogger.info("Disconnected")
+    blogger().info("Disconnected")
 
     return 0
 

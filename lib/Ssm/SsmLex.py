@@ -53,7 +53,7 @@ def t_SPACE(t):
 
 def t_EOL(t):
     r'[\n|\003]'
-    blogger.debug(">>>EOL ")
+    blogger().debug(">>>EOL ")
     return t
 
 t_DOT = r'[\.]'
@@ -69,7 +69,7 @@ def t_SSMQK(t):
 # ADRES
 def t_ADRES(t):
     r'[A-Z][A-Z0-9]{5,6}'
-    blogger.debug(">>>ADRES %s" % t.value)
+    blogger().debug(">>>ADRES %s" % t.value)
     return t
 
 
@@ -84,9 +84,9 @@ def t_ACTION(t):
     r'(NEW|TIM|RPL|CNL|EQT|CON)'
     global mtype
     mtype = str(t.value)
-    blogger.debug(">>>ACTION %s" % mtype)
+    blogger().debug(">>>ACTION %s" % mtype)
     tok = t.lexer.token()             # Get the next token
-    blogger.debug(">>> State flight")
+    blogger().debug(">>> State flight")
     t.lexer.begin('flight')
     return t
 
@@ -99,7 +99,7 @@ def t_flight_error(t):
 
 def t_flight_FLTNUM(t):
     r'([A-Z]{2})([0-9]{3,4})'
-    blogger.debug(">>>FLTNUM %s" % t.value)
+    blogger().debug(">>>FLTNUM %s" % t.value)
     return t
 
 def t_flight_SPACE(t):
@@ -108,18 +108,18 @@ def t_flight_SPACE(t):
 
 def t_flight_ADRES(t):
     r'([A-Z]{2})([0-9]{3,4})'
-    blogger.debug(">>>ADRES %s" % t.value)
+    blogger().debug(">>>ADRES %s" % t.value)
     return t
 
 def t_flight_ITEMDATA(t):
     r'[1-9]\/[A-Z1-9]*'
-    blogger.debug(">>>ITEMDATA %s" % t.value)
+    blogger().debug(">>>ITEMDATA %s" % t.value)
     return t
 
 def t_flight_EOL(t):
     r'[\n|\003]'
-    blogger.debug(">>>EOL")
-    blogger.debug(">>> State periods")
+    blogger().debug(">>>EOL")
+    blogger().debug(">>> State periods")
     t.lexer.begin('periods')
     return t
 
@@ -130,7 +130,7 @@ def t_periods_error(t):
 
 def t_periods_DATE(t):
     r'[0123][0-9](JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[0-9]{2}'
-    blogger.debug(">>>DATE %s" % t.value)
+    blogger().debug(">>>DATE %s" % t.value)
     return t
 
 def t_periods_SPACE(t):
@@ -139,14 +139,14 @@ def t_periods_SPACE(t):
 
 def t_periods_FREQ(t):
     r'[1-7]{1,7}'
-    blogger.debug(">>>FREQ %s" % t.value)
+    blogger().debug(">>>FREQ %s" % t.value)
     return t
 
 def t_periods_EOL(t):
     r'[\n|\003]'
-    blogger.debug(">>>EOL")
+    blogger().debug(">>>EOL")
     #tok = t.lexer.token()             # Get the next token
-    blogger.debug(">>> State equip")
+    blogger().debug(">>> State equip")
     t.lexer.begin('equip')
     return t
 
@@ -158,7 +158,7 @@ def t_equip_error(t):
 # STYPE
 def t_equip_STYPE(t):
     r'[A-Z][ ]'
-    blogger.debug(">>>STYPE %s" % t.value)
+    blogger().debug(">>>STYPE %s" % t.value)
     return t
 
 def t_equip_SPACE(t):
@@ -167,32 +167,32 @@ def t_equip_SPACE(t):
 
 def t_equip_PAXBOOK(t):
     r'[X]{2}'
-    blogger.debug(">>>PAXBOOK %s" % t.value)
+    blogger().debug(">>>PAXBOOK %s" % t.value)
     return t
 
 
 # AIRCRFT
 def t_equip_AIRCRFT(t):
     r'[0-9][A-Z0-9]{2}'
-    blogger.debug(">>>AIRCRFT %s" % t.value)
+    blogger().debug(">>>AIRCRFT %s" % t.value)
     return t
 
 def t_equip_TAIL(t):
     r'ZS[A-Z]{3}'
-    blogger.debug(">>>TAIL %s" % t.value)
+    blogger().debug(">>>TAIL %s" % t.value)
     return t
 
 def t_equip_DOT(t):
     r'[\.]'
-    blogger.debug(">>>DOT")
+    blogger().debug(">>>DOT")
     t.lexer.begin('classes')
-    blogger.debug(">>> State classes")
+    blogger().debug(">>> State classes")
     return t
 
 def t_equip_EOL(t):
     r'[\n|\003]'
-    blogger.debug(">>>EOL")
-    blogger.debug(">>> State legs")
+    blogger().debug(">>>EOL")
+    blogger().debug(">>> State legs")
     t.lexer.begin('legs')
     return t
 
@@ -203,18 +203,18 @@ def t_classes_error(t):
 
 def t_classes_CLASS(t):
     r'[A-Z][0-9]{1,3}'
-    blogger.debug(">>>CLASS %s" % t.value)
+    blogger().debug(">>>CLASS %s" % t.value)
     return t
 
 def t_classes_SPACE(t):
     r'\ '
-    blogger.debug(">>> State equip")
+    blogger().debug(">>> State equip")
     t.lexer.begin('equip')
     pass
 
 def t_classes_end(t):
     r'VVM|\n'
-    blogger.debug(">>> State equip")
+    blogger().debug(">>> State equip")
     t.lexer.begin('equip')
 
 # --- legs ---
@@ -224,7 +224,7 @@ def t_legs_error(t):
 
 def t_legs_ITEM(t):
     r'[A-Z]{6}'
-    blogger.debug(">>>ITEM %s" % t.value)
+    blogger().debug(">>>ITEM %s" % t.value)
     return t
 
 def t_legs_SPACE(t):
@@ -233,26 +233,26 @@ def t_legs_SPACE(t):
 
 def t_legs_LEGSTN(t):
     r'[A-Z]{3}[0-9]{4}'
-    blogger.debug(">>>LEGSTN %s" % t.value)
+    blogger().debug(">>>LEGSTN %s" % t.value)
     return t
 
 def t_legs_ITEMDATA(t):
     r'[1-9][0-9]{2,3}\/[A-Z1-9]*'
-    blogger.debug(">>>ITEMDATA %s" % t.value)
+    blogger().debug(">>>ITEMDATA %s" % t.value)
     return t
 
 def t_legs_FREQ(t):
     r'[1-7]{1,7}'
-    blogger.debug(">>>FREQ %s" % t.value)
+    blogger().debug(">>>FREQ %s" % t.value)
     #tok = t.lexer.token()             # Get the next token
-    blogger.debug(">>> State segments")
+    blogger().debug(">>> State segments")
     t.lexer.begin('segments')
     return t
 
 def t_legs_EOL(t):
     r'[\n|\003]'
-    blogger.debug(">>>EOL")
-    blogger.debug(">>> State segments")
+    blogger().debug(">>>EOL")
+    blogger().debug(">>> State segments")
     t.lexer.begin('segments')
     return t
 
@@ -261,19 +261,19 @@ def t_legs_EOL(t):
 def t_segments_error(t):
     edata = str(t.value,)
     if len(edata) == 1:
-        blogger.debug("Weird character %d" % ord(edata[0]))
+        blogger().debug("Weird character %d" % ord(edata[0]))
     else:
-        blogger.debug("Unknown segments text %d bytes" % (len(edata)))
+        blogger().debug("Unknown segments text %d bytes" % (len(edata)))
         raise TypeError("Unknown segments text '%s'" % edata)
 
 def t_segments_SEGMENT(t):
     '[A-Z]{6}'
-    blogger.debug(">>>SEGMENT %s" % t.value)
+    blogger().debug(">>>SEGMENT %s" % t.value)
     return t
 
 def t_segments_ITEMDATA(t):
     r'[1-9][0-9]{0,2}\/[A-Z0-9]*'
-    blogger.debug(">>>ITEMDATA %s" % t.value)
+    blogger().debug(">>>ITEMDATA %s" % t.value)
     return t
 
 def t_segments_SPACE(t):
@@ -282,7 +282,7 @@ def t_segments_SPACE(t):
 
 def t_segments_EOL(t):
     r'[\n|\003]'
-    blogger.debug(">>>EOL")
+    blogger().debug(">>>EOL")
     return t
 
 #t_FLIGHTINFO = r'(([A-Z]([A-Z]{1,2})([0-9]{1,4}))|([A-Z]([A-Z]{1,2})([0-9]{1,4})(\ [1-9]\/[A-Z]{2,3})*)|([1-9]\/[A-Z]{2,3}(\ [1-9]\/[A-Z]{2,3})*))'

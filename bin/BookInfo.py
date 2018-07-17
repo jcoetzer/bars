@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -B
+#!/usr/bin/python2 -B
 #
 # Python won't try to write .pyc or .pyo files on the import of source modules
 #
@@ -13,7 +13,6 @@ import sys
 import getopt
 from datetime import datetime, timedelta, date
 
-from BarsLog import blogger, init_blogger
 from ReadDateTime import ReadDate
 from BarsBanner import print_banner
 from Booking.ReadBookingRef import ReadLocator, ReadBookNo
@@ -31,7 +30,10 @@ from Booking.ReadCrossRef import check_bci, check_bci_trl, check_bci_new
 from Booking.ReadItinerary import ReadItinerary
 from DbConnect import OpenDb, CloseDb
 from BarsConfig import BarsConfig
+from BarsLog import init_blogger, blogger
 
+# blogger =
+# init_blogger("BookInfo", 2)
 
 # Help message
 def usage(pname="BookInfo.py"):
@@ -81,7 +83,7 @@ def usage(pname="BookInfo.py"):
 
 def main(argv):
     """Pythonic entry point."""
-
+    verbose = 0
     status_flag = None
     bookno = None
     dt1 = None
@@ -113,7 +115,6 @@ def main(argv):
     doFaresPayment = False
     payment_form = None
 
-    init_blogger("bars")
     if len(argv) < 1:
         usage()
 
@@ -165,7 +166,7 @@ def main(argv):
             doSeat = True
         elif opt == "--ssr":
             doSsr = True
-            blogger.debug("Check SSR")
+            # blogger().debug("Check SSR")
         elif opt == '-t':
             bci_trl = True
         elif opt == '-1':
@@ -178,48 +179,50 @@ def main(argv):
             bci_msk += 8
         elif opt == '-v':
             # Debug output
-            blogger.setLevel(logging.INFO)
+            verbose = 1
+            # # blogger().setLevel(logging.INFO)
         elif opt == '-V':
             # Debug output
-            blogger.setLevel(logging.DEBUG)
+            verbose = 2
+            # # blogger().setLevel(logging.DEBUG)
         elif opt in ("-A", "--origin"):
             origin_address = arg
-            blogger.debug("origin %s" % origin_address)
+            # blogger().debug("origin %s" % origin_address)
         elif opt in ("-B", "--bookno"):
             bookno = int(arg)
-            blogger.debug("\t bookno %d" % bookno)
+            # blogger().debug("\t bookno %d" % bookno)
         elif opt in ("-C", "--create"):
             # Create date
             dt1 = ReadDate(arg)
-            blogger.debug("\t start %s" % dt1.strftime("%Y-%m-%d"))
+            # blogger().debug("\t start %s" % dt1.strftime("%Y-%m-%d"))
         elif opt in ("-D", "--start", "--depart"):
             # Depart date
             dt1 = ReadDate(arg)
-            blogger.debug("\t start %s" % dt1.strftime("%Y-%m-%d"))
+            # blogger().debug("\t start %s" % dt1.strftime("%Y-%m-%d"))
         elif opt in ("-E", "--end"):
             dt2 = ReadDate(arg)
-            blogger.debug("end %s" % dt2.strftime("%Y-%m-%d"))
+            # blogger().debug("end %s" % dt2.strftime("%Y-%m-%d"))
         elif opt in ("-F", "--flight"):
             if '%' in arg or '_' in arg or len(arg) == 0:
                 flight_pattrn = arg
-                blogger.debug("\t flight wildcard %s" % flight_number)
+                # blogger().debug("\t flight wildcard %s" % flight_number)
             else:
                 flight_number = arg
-                blogger.debug("flight number %s" % flight_number)
+                # blogger().debug("flight number %s" % flight_number)
         elif opt in ("-G", "--agency"):
             agency_code = arg
-            blogger.debug("agency %s" % agency_code)
+            # blogger().debug("agency %s" % agency_code)
         elif opt in ("-I", "--dest"):
             dest_id = str(arg)
-            blogger.debug("dest id %s" % dest_id)
+            # blogger().debug("dest id %s" % dest_id)
         elif opt in ("-K", "--pay"):
             payment_form = arg
         elif opt in ("-L", "--locator"):
             locator = arg
-            blogger.debug("locator %s" % locator)
+            ## blogger().debug("locator %s" % locator)
         elif opt in ("-N", "--count"):
             recCount = int(arg)
-            blogger.debug("count %d" % recCount)
+            # blogger().debug("count %d" % recCount)
         elif opt in ("-P", "--pax"):
             PassengerName = arg
         elif opt in ("-X", "--ext"):
@@ -229,16 +232,18 @@ def main(argv):
         else:
             print("Unknown option %s" % opt)
 
+    init_blogger('BookInfo', verbose)
+
     cfg = BarsConfig('%s/bars.cfg' % etcdir)
 
     # Open connection to database
     conn = OpenDb(cfg.dbname, cfg.dbuser, cfg.dbhost)
 
     if locator is not None:
-        blogger.debug("Read locator %s" % locator)
+        # blogger().debug("Read locator %s" % locator)
         bookno = ReadLocator(conn, locator)
     elif bookno is not None:
-        blogger.debug("Read booking number %d" % bookno)
+        # blogger().debug("Read booking number %d" % bookno)
         locator = ReadBookNo(conn, bookno)
 
     if bci_msk == 0:

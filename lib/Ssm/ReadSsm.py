@@ -167,9 +167,9 @@ def main(argv):
         if opt == '-h' or opt == '--help':
             usage()
         elif opt == '-v':
-            blogger.setLevel(logging.INFO)
+            _levelsetLevel(logging.INFO)
         elif opt == '-V':
-            blogger.setLevel(logging.DEBUG)
+            _levelsetLevel(logging.DEBUG)
         #elif opt == '-I' or opt == '--input':
             #fname = str(arg)
         else:
@@ -195,7 +195,7 @@ def main(argv):
     lex.input(message)
 
     for tok in iter(lex.token, None):
-        print(repr(tok.type), end=' ')
+        print(repr(tok.type)),
         print(repr(tok.value))
 
     #for tok in iter(m.token, None):

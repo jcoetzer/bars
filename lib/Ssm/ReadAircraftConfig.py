@@ -11,36 +11,36 @@ from Ssm.AircraftData import AircraftData
 def ReadAircraftConfig(conn, aircraft_code, config_table,
                        selling_class, seat_capacity=0):
     """Read table aircraft_config."""
-    print("Aircraft configuration for", end=' ')
+    print("Aircraft configuration for"),
     AcSql = \
         "SELECT gen_flag_invt,aircraft_code,limit_sale_level,scrutiny_flag," \
         "update_time,config_table,company_code,selling_class," \
         "seat_capacity,update_user" \
         " FROM aircraft_config"
     if aircraft_code is not None and config_table is not None:
-        print("aircraft code %s" % aircraft_code, end=' ')
-        print("config table %s" % config_table, end=' ')
+        print("aircraft code %s" % aircraft_code),
+        print("config table %s" % config_table),
         AcSql += \
             " WHERE aircraft_code='%s' AND config_table='%s'" \
             % (aircraft_code, config_table)
     elif aircraft_code is not None:
-        print("aircraft code %s" % aircraft_code, end=' ')
+        print("aircraft code %s" % aircraft_code),
         AcSql += \
             " WHERE aircraft_code='%s'" % aircraft_code
     elif config_table is not None:
-        print("config table %s" % config_table, end=' ')
+        print("config table %s" % config_table),
         AcSql += \
             " WHERE config_table='%s'" % config_table
     if selling_class is not None:
-        print("class %s" % selling_class, end=' ')
+        print("class %s" % selling_class),
         AcSql += \
             " AND selling_class='%s'" % selling_class
     if seat_capacity > 0:
-        print("seat capacity %d" % seat_capacity, end=' ')
+        print("seat capacity %d" % seat_capacity),
         AcSql += \
             " AND seat_capacity=%d" % seat_capacity
     print("[aircraft_config]")
-    blogger.debug(AcSql)
+    blogger().debug(AcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(AcSql)
     n = 0
@@ -77,7 +77,7 @@ def WriteEquipmentConfig(conn, companyCode, aircraftCode, configTable,
                 '%s', '%s', NOW() )""" \
             % (companyCode, aircraftCode, configTable, tailNumber, cabinClass,
                seatCapacities[n],  updateUser, updateGroup)
-        blogger.debug(WecSql)
+        blogger().debug(WecSql)
         cur.execute(WecSql)
         n += 1
     cur.close()
@@ -90,7 +90,7 @@ def ReadEquipmentConfig(conn, tailNumber):
             cabin_code, seat_capacity
         FROM equipment_config
         WHERE tail_number = '%s'""" % tailNumber
-    blogger.debug(RecSql)
+    blogger().debug(RecSql)
     cur = conn.cursor()
     cur.execute(RecSql)
 
@@ -108,7 +108,7 @@ def ReadEquipmentConfig(conn, tailNumber):
         seatCapacities.append(row[5])
 
     if len(cabinClasses) == 0:
-        blogger.debug("Equipment %s not found" % tailNumber)
+        blogger().debug("Equipment %s not found" % tailNumber)
         return None
 
     eqt = AircraftData(companyCode, aircraftCode, configTable,

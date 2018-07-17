@@ -21,7 +21,7 @@ def ReadFlightDateLegs(conn, flight_number, flight_date):
         " departure_airport,arrival_airport,leg_number,update_user,update_time" \
         " FROM flight_date_leg WHERE flight_number = '%s' AND board_date = '%s'"  \
         % (flight_number, flight_date.strftime("%Y-%m-%d"))
-    blogger.debug(RcSql)
+    blogger().debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
@@ -52,7 +52,7 @@ def ReadFlightSharedLeg(conn, flight_number, dts):
         " FROM flight_shared_leg" \
         " WHERE flight_number='%s' AND board_date='%s'" \
         % (flight_number, dts.strftime("%Y-%m-%d"))
-    blogger.debug(FslSql)
+    blogger().debug(FslSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(FslSql)
@@ -61,21 +61,20 @@ def ReadFlightSharedLeg(conn, flight_number, dts):
     config_table_nos = []
     n = 0
     for row in cur:
-        print("\tdup %6s" % row['dup_flight_number'], end=' ')
-        print("board %s" % row['dup_board_date'], end=' ')
-        print("change %s" % row['date_change_ind'], end=' ')
-        print("path code %s" % row['flight_path_code'], end=' ')
+        print("\tdup %6s" % row['dup_flight_number']),
+        print("board %s" % row['dup_board_date']),
+        print("change %s" % row['date_change_ind']),
+        print("path code %s" % row['flight_path_code']),
         #print("term %s" % row['departure_terminal'],
         #print("term %s" % row['arrival_terminal'],
         config_table = row['config_table']
         config_table_nos.append(config_table)
-        print("config %s" % config_table, end=' ')
+        print("config %s" % config_table),
         aircraft_code = str(row['aircraft_code'])
-        print("aircraft %s" % aircraft_code, end=' ')
+        print("aircraft %s" % aircraft_code),
         aircraft_codes.append(aircraft_code)
-        print("leg %s" % row['leg_number'], end=' ')
-        print("user %s update %s" % (row['update_user'], row['update_time']),
-              end=' ')
+        print("leg %s" % row['leg_number']),
+        print("user %s update %s" % (row['update_user'], row['update_time'])),
         print
         n += 1
 
@@ -94,7 +93,7 @@ def ReadtestPeriodLegs(conn, flight_number, schedule_period_no):
         " FROM test_perd_legs" \
         " WHERE flight_number='%s' AND schedule_period_no=%d" \
         % (flight_number, schedule_period_no)
-    blogger.debug(RcSql)
+    blogger().debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(RcSql)
@@ -122,7 +121,7 @@ def ReadAsrReconcileHistory(conn, flight_date_leg_id):
         "SELECT action_id,action_detail,update_user,update_time" \
         " FROM asr_reconcile_history" \
         " WHERE flight_date_leg_id=%d" % flight_date_leg_id
-    blogger.debug(RcSql)
+    blogger().debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(RcSql)

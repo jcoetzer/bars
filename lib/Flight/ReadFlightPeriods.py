@@ -27,7 +27,7 @@ def ReadFlightPeriodsGui(conn, flight_number, schedule_period_no):
         "  WHERE flight_number = '%s' AND schedule_period_no = %d GROUP BY 3 ORDER BY 1" \
             % (flight_number, schedule_period_no, flight_number, schedule_period_no,
                flight_number, schedule_period_no, flight_number, schedule_period_no)
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -45,19 +45,19 @@ def ReadFlightPeriodsGui(conn, flight_number, schedule_period_no):
 def ReadFlightPeriods(conn, flight_number, schedule_period_no=None):
 
     print("Flight periods for flight %s [flight_periods]"
-          % flight_number, end=' ')
+          % flight_number),
     AdSql= \
         "SELECT flight_number,start_date,end_date,frequency_code,schedule_period_no,invt_end_date,control_branch,invt_control_flag," \
         " wait_lst_ctrl_flag,via_cities,flgt_sched_status,open_end_flag,scrutiny_flag,gen_flag_invt,update_user,update_group," \
         " update_time" \
         " FROM flight_periods WHERE flight_number = '%s'" % flight_number
     if schedule_period_no is not None:
-        print(", schedule period %d" % schedule_period_no, end=' ')
+        print(", schedule period %d" % schedule_period_no),
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print
 
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -96,7 +96,7 @@ def ReadFlightPeriodsDate(conn, flight_number, dts):
         " WHERE flight_number = '%s' AND start_date<='%s' AND end_date>='%s'" \
         " AND frequency_code LIKE '%%%d%%'" \
         % (flight_number, flight_date, flight_date, flight_dow)
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -123,24 +123,24 @@ def ReadFlightPeriodsDate(conn, flight_number, dts):
 # Read table test_periods
 def ReadTestPeriods(conn, flight_number, schedule_period_no=None, dts=None):
 
-    print("<TEST> Periods for flight %s [test_periods]" % flight_number, end=' ')
+    print("<TEST> Periods for flight %s [test_periods]" % flight_number),
     AdSql = \
         "SELECT flgt_sched_status,chng_category,update_user," \
         "chng_category,schedule_period_no,update_user,update_time" \
         " FROM test_periods" \
         " WHERE flight_number = '%s'" % flight_number
     if dts is not None:
-        print("board %s" % dts.strftime("%Y-%m-%d"), end=' ')
+        print("board %s" % dts.strftime("%Y-%m-%d")),
         flight_date = dts.strftime("%Y-%m-%d")
         AdSql += \
             " and start_date<='%s' and end_date>='%s'" \
                 % (flight_date, flight_date)
     if schedule_period_no is not None:
-        print(", schedule period %d" % schedule_period_no, end=' ')
+        print(", schedule period %d" % schedule_period_no),
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -160,7 +160,7 @@ def ReadTestInventrySegm(conn, flight_number, schedule_period_no=None,
                          selling_class=None):
     """Read table test_inventry_segm."""
     print("<TEST> Inventory segment for flight %s [test_inventry_segm]"
-          % flight_number, end=' ')
+          % flight_number),
     AdSql = \
         "SELECT flight_date,city_pair,selling_class,departure_city," \
         "arrival_city,leg_number,segment_number,seat_capacity,update_user,update_time" \
@@ -168,15 +168,15 @@ def ReadTestInventrySegm(conn, flight_number, schedule_period_no=None,
         " WHERE flight_number = '%s'" \
         % flight_number
     if selling_class is not None:
-        print(", selling class %s" % selling_class, end=' ')
+        print(", selling class %s" % selling_class),
         AdSql += \
             " AND selling_class = '%s'" % selling_class
     if schedule_period_no is not None:
-        print(", schedule period %d" % schedule_period_no, end=' ')
+        print(", schedule period %d" % schedule_period_no),
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute("\n%s"% AdSql)
@@ -196,7 +196,7 @@ def ReadTestInventrySegm(conn, flight_number, schedule_period_no=None,
 def ReadFlightPerdLegs(conn, flight_number, schedule_period_no=None):
     """Read flight period legs."""
     print("Flight period legs for flight %s [flight_perd_legs]"
-          % flight_number, end=' ')
+          % flight_number),
     AdSql = \
         "SELECT departure_airport,arrival_airport," \
         "departure_time departure," \
@@ -207,11 +207,11 @@ def ReadFlightPerdLegs(conn, flight_number, schedule_period_no=None):
         " WHERE flight_number = '%s'" \
         % flight_number
     if schedule_period_no is not None:
-        print(", schedule period %d" % schedule_period_no, end=' ')
+        print(", schedule period %d" % schedule_period_no),
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute("\n%s"% AdSql)
@@ -230,7 +230,7 @@ def ReadFlightPerdLegs(conn, flight_number, schedule_period_no=None):
 def ReadFlightPerdSegm(conn, flight_number, schedule_period_no=None):
     """Read table flight_perd_segm."""
     print("Flight period segment for flight %s [flight_perd_segm]"
-          % flight_number, end=' ')
+          % flight_number),
     AdSql = \
         "SELECT city_pair,post_control_flag,aircraft_code," \
         "flight_closed_flag,flight_brdng_flag,segment_number,update_time" \
@@ -238,11 +238,11 @@ def ReadFlightPerdSegm(conn, flight_number, schedule_period_no=None):
         " WHERE flight_number = '%s'" \
         % flight_number
     if schedule_period_no is not None:
-        print(", schedule period %d" % schedule_period_no, end=' ')
+        print(", schedule period %d" % schedule_period_no),
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute("\n%s"% AdSql)
@@ -262,7 +262,7 @@ def ReadFlightPerdSegm(conn, flight_number, schedule_period_no=None):
 
 def ReadTestPerdSegm(conn, flight_number, schedule_period_no=None):
     """Read table test_perd_segm."""
-    print("<TEST> flight period segment for flight %s [test_perd_segm]" % flight_number, end=' ')
+    print("<TEST> flight period segment for flight %s [test_perd_segm]" % flight_number),
     AdSql = \
         "SELECT city_pair,post_control_flag,aircraft_code," \
         "flight_closed_flag,flight_brdng_flag,segment_number,update_time" \
@@ -270,11 +270,11 @@ def ReadTestPerdSegm(conn, flight_number, schedule_period_no=None):
         " WHERE flight_number = '%s'" \
         % flight_number
     if schedule_period_no is not None:
-        print(", schedule period %d" % schedule_period_no, end=' ')
+        print(", schedule period %d" % schedule_period_no),
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute("\n%s"% AdSql)
@@ -295,22 +295,22 @@ def ReadTestPerdSegm(conn, flight_number, schedule_period_no=None):
 def ReadFlightPerdCls(conn, flight_number, schedule_period_no=None,
                          selling_class=None):
     """Read table flight_perd_cls."""
-    print("Flight period class for flight %s [flight_perd_cls]" % flight_number, end=' ')
+    print("Flight period class for flight %s [flight_perd_cls]" % flight_number),
     AdSql = \
         "select flight_number,schedule_period_no,selling_class," \
         "TRIM(parent_sell_cls) parent,display_priority,update_time" \
         " FROM flight_perd_cls WHERE flight_number = '%s'" \
         % flight_number
     if selling_class is not None:
-        print(", selling class %s" % selling_class, end=' ')
+        print(", selling class %s" % selling_class),
         AdSql += \
             " AND selling_class = '%s'" % selling_class
     if schedule_period_no is not None:
-        print(", schedule period %d" % schedule_period_no, end=' ')
+        print(", schedule period %d" % schedule_period_no),
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -328,22 +328,22 @@ def ReadFlightPerdCls(conn, flight_number, schedule_period_no=None,
 def ReadTestPerdCls(conn, flight_number, schedule_period_no=None,
                     selling_class=None):
     """Read table test_perd_cls."""
-    print("<TEST> Flight period class for flight %s [test_perd_cls]" % flight_number, end=' ')
+    print("<TEST> Flight period class for flight %s [test_perd_cls]" % flight_number),
     AdSql = \
         "select flight_number,schedule_period_no,selling_class," \
         "TRIM(parent_sell_cls) parent,display_priority,update_time" \
         " FROM test_perd_cls WHERE flight_number = '%s'" \
         % flight_number
     if selling_class is not None:
-        print(", selling class %s" % selling_class, end=' ')
+        print(", selling class %s" % selling_class),
         AdSql += \
             " AND selling_class = '%s'" % selling_class
     if schedule_period_no is not None:
-        print(", schedule period %d" % schedule_period_no, end=' ')
+        print(", schedule period %d" % schedule_period_no),
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -361,21 +361,21 @@ def ReadTestPerdCls(conn, flight_number, schedule_period_no=None,
 def ReadFlightPerdSegCls(conn, flight_number, schedule_period_no=None,
                              selling_class=None):
     """Read table flt_perd_seg_cls."""
-    print("Flight period segment class for flight %s [flt_perd_seg_cls]" % flight_number, end=' ')
+    print("Flight period segment class for flight %s [flt_perd_seg_cls]" % flight_number),
     AdSql = \
         "SELECT city_pair,selling_class,segment_number,update_time " \
         "FROM flt_perd_seg_cls WHERE flight_number = '%s'" \
         % flight_number
     if selling_class is not None:
-        print(", selling class %s" % selling_class, end=' ')
+        print(", selling class %s" % selling_class),
         AdSql += \
             " AND selling_class = '%s'" % selling_class
     if schedule_period_no is not None:
-        print(", schedule period %d" % schedule_period_no, end=' ')
+        print(", schedule period %d" % schedule_period_no),
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -394,21 +394,21 @@ def ReadFlightPerdSegCls(conn, flight_number, schedule_period_no=None,
 def ReadFlightPerdPrnt(conn, flight_number, schedule_period_no=None,
                           selling_class=None):
     """Read table flight_perd_prnt."""
-    print("Flight period parent for flight %s [flight_perd_prnt]" % flight_number, end=' ')
+    print("Flight period parent for flight %s [flight_perd_prnt]" % flight_number),
     AdSql = \
         "select selling_class,parent_sell_cls,update_time " \
         " FROM flight_perd_prnt WHERE flight_number = '%s'" \
         % flight_number
     if selling_class is not None:
-        print(", selling class %s" % selling_class, end=' ')
+        print(", selling class %s" % selling_class),
         AdSql += \
             " AND selling_class = '%s'" % selling_class
     if schedule_period_no is not None:
-        print(", schedule period %d" % schedule_period_no, end=' ')
+        print(", schedule period %d" % schedule_period_no),
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -427,21 +427,21 @@ def ReadTestPerdPrnt(conn, flight_number, schedule_period_no=None,
                           selling_class=None):
     """Read table test_perd_prnt."""
     print("<TEST> Flight period parent for flight %s [test_perd_prnt]"
-          % flight_number, end=' ')
+          % flight_number),
     AdSql = \
         "select selling_class,parent_sell_cls,update_time " \
         " FROM test_perd_prnt WHERE flight_number = '%s'" \
         % flight_number
     if selling_class is not None:
-        print(", selling class %s" % selling_class, end=' ')
+        print(", selling class %s" % selling_class),
         AdSql += \
             " AND selling_class = '%s'" % selling_class
     if schedule_period_no is not None:
-        print(", schedule period %d" % schedule_period_no, end=' ')
+        print(", schedule period %d" % schedule_period_no),
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -460,22 +460,22 @@ def read_inventry_realloc(conn, flight_number, schedule_period_no=None,
                           selling_class=None):
     """Read table inventry_realloc."""
     print("Inventory reallocation for flight %s [inventry_realloc]"
-          % flight_number, end=' ')
+          % flight_number),
     AdSql = \
         "select flight_date,city_pair,selling_class,start_date," \
         "end_date,frequency_code,create_user,update_time " \
         " FROM inventry_realloc WHERE flight_number = '%s'" \
         % flight_number
     if selling_class is not None:
-        print(", selling class %s" % selling_class, end=' ')
+        print(", selling class %s" % selling_class),
         AdSql += \
             " AND selling_class = '%s'" % selling_class
     if schedule_period_no is not None:
-        print(", schedule period %d" % schedule_period_no, end=' ')
+        print(", schedule period %d" % schedule_period_no),
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)
@@ -495,7 +495,7 @@ def read_inventry_realloc(conn, flight_number, schedule_period_no=None,
 def ReadSchdChngAction(conn, flight_number, schedule_period_no=None,
                           selling_class=None):
     """Read table schd_chng_action."""
-    print("Schedule change action for flight %s [schd_chng_action]" % flight_number, end=' ')
+    print("Schedule change action for flight %s [schd_chng_action]" % flight_number),
     AdSql = \
         "select city_pair,selling_class,departure_airport,arrival_airport," \
         "segm_update_flag,seg_cls_update_flag,action_date,action_type," \
@@ -503,15 +503,15 @@ def ReadSchdChngAction(conn, flight_number, schedule_period_no=None,
         " FROM schd_chng_action WHERE flight_number = '%s'" \
         % flight_number
     if selling_class is not None:
-        print(", selling class %s" % selling_class, end=' ')
+        print(", selling class %s" % selling_class),
         AdSql += \
             " AND selling_class = '%s'" % selling_class
     if schedule_period_no is not None:
-        print(", schedule period %d" % schedule_period_no, end=' ')
+        print(", schedule period %d" % schedule_period_no),
         AdSql += \
             " AND schedule_period_no = %d" % schedule_period_no
     print(':')
-    blogger.debug(AdSql)
+    blogger().debug(AdSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(AdSql)

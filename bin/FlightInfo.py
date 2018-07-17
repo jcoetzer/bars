@@ -367,7 +367,7 @@ def main(argv):
             chkit = True
         elif opt == '-v':
             # Debug output
-            blogger.setLevel(logging.INFO)
+            _levelsetLevel(logging.INFO)
         elif opt == '--avail':
             chk_avail = True
         elif opt == '--cfg':
@@ -426,14 +426,14 @@ def main(argv):
             list_flights = True
         elif opt == "-A" or opt == "--aircraft":
             aircraft_code = str(arg).upper()
-            blogger.info("\t aircraft code %s" % aircraft_code)
+            blogger().info("\t aircraft code %s" % aircraft_code)
         elif opt in ("-B", "--bookno"):
             book_no = int(arg)
         elif opt in ("-C", "--class"):
             selling_cls = str(arg).upper()
         elif opt in ("-D", "--date"):
             dt1 = ReadDate(arg)
-            blogger.info("\t flight date %s" % dt1.strftime("%Y-%m-%d"))
+            blogger().info("\t flight date %s" % dt1.strftime("%Y-%m-%d"))
         elif opt in ("-E", "--edate"):
             dt2 = ReadDate(arg)
         elif opt in ("-F", "--flight"):
@@ -445,23 +445,23 @@ def main(argv):
                 flight_number = arg
         elif opt == "-I":
             flight_date_leg_id = int(arg)
-            blogger.debug("\t flight_date_leg_id %d" % flight_date_leg_id)
+            blogger().debug("\t flight_date_leg_id %d" % flight_date_leg_id)
         elif opt in ("-L", "--locator"):
             locator = str(arg).upper()
         elif opt in ("-K", "--freq"):
             frequency_code = arg
         elif opt == "-M":
             seat_map_id = int(arg)
-            blogger.debug("\t seat_map_id %d" % seat_map_id)
+            blogger().debug("\t seat_map_id %d" % seat_map_id)
         elif opt in ("-N", "--days"):
             recCount = int(arg)
-            blogger.info("\t count %d" % recCount)
+            blogger().info("\t count %d" % recCount)
         elif opt in ("-P", "--depart"):
             departure_airport = str(arg).upper()
-            blogger.info("\t depart %s" % departure_airport)
+            blogger().info("\t depart %s" % departure_airport)
         elif opt in ("-Q", "--arrive"):
             arrival_airport = str(arg).upper()
-            blogger.info("\t arrive %s" % arrival_airport)
+            blogger().info("\t arrive %s" % arrival_airport)
         elif opt in ("-R", "--period"):
             schedule_period_no = int(arg)
         elif opt in ("-S", "--seats"):
@@ -474,7 +474,7 @@ def main(argv):
             arrival_time = ReadTime(arg)
         elif opt == '-V':
             # Debug output
-            blogger.setLevel(logging.DEBUG)
+            _levelsetLevel(logging.DEBUG)
         else:
             print("Unknown option %s" % opt)
             return 1
@@ -514,7 +514,7 @@ def main(argv):
 
     # No flight number specified
     if cfg_table and aircraft_code is not None:
-        blogger.debug("Get config table for aircraft code %s" % aircraft_code)
+        blogger().debug("Get config table for aircraft code %s" % aircraft_code)
         GetConfigTableNo(conn, aircraft_code)
     elif config_table is not None:
         ReadAircraftConfig(conn, None, config_table, selling_cls, recCount)
@@ -529,7 +529,7 @@ def main(argv):
     elif flight_number is None:
         if list_flights and dt1 is not None:
             if dt2 is not None:
-                blogger.debug("List flights from %s to %s"
+                blogger().debug("List flights from %s to %s"
                          % (dt1.strftime("%Y-%m-%d"), dt2.strftime("%Y-%m-%d")))
                 for single_date in daterange(dt1, dt2):
                     flights = ReadFlightsDate(conn, single_date, recCount,
@@ -541,7 +541,7 @@ def main(argv):
                         flight.display()
                     #print
             else:
-                blogger.debug("List flights for %s" % dt1.strftime("%Y-%m-%d"))
+                blogger().debug("List flights for %s" % dt1.strftime("%Y-%m-%d"))
                 flights = ReadFlightsDate(conn, dt1, recCount,
                                           departure_airport, arrival_airport,
                                           code_share=csflag)
@@ -632,7 +632,7 @@ def main(argv):
             ReadFlightPax(conn, flight_number, dt1)
             return 0
         elif not fare_route and dt1 is not None and dt2 is not None:
-            blogger.debug("Read flight %s from %s to %s"
+            blogger().debug("Read flight %s from %s to %s"
                      % (flight_number, dt1.strftime("%Y-%m-%d"),
                         dt2.strftime("%Y-%m-%d")))
             n = 0
@@ -665,8 +665,8 @@ def main(argv):
             arrival_airport = flights[0].departure_airport
             city_pair = flights[0].city_pair
         if city_pair == 0:
-            blogger.info("City pair not found", 1)
-        blogger.info("Depart %s arrive %s city pair %d"
+            blogger().info("City pair not found", 1)
+        blogger().info("Depart %s arrive %s city pair %d"
                  % (departure_airport, arrival_airport, int(city_pair)))
 
         if chk_ftimes and dt1 is not None and dt2 is None:
@@ -694,7 +694,7 @@ def main(argv):
                         continue
                     toks = line[1:].split(' ')
                     pax_name = toks[0].rstrip()
-                    blogger.info("%s" % pax_name, 1)
+                    blogger().info("%s" % pax_name, 1)
                     pax_names.append(pax_name)
             n_pax_names = len(pax_names)
             print("Found %d passenger records in files" % n_pax_names)

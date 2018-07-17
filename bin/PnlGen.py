@@ -57,21 +57,21 @@ def main(argv):
             usage()
         elif opt == '-v':
             # Debug output
-            blogger.setLevel(logging.INFO)
+            _levelsetLevel(logging.INFO)
         elif opt == '-V':
             # Debug output
-            blogger.setLevel(logging.DEBUG)
+            _levelsetLevel(logging.DEBUG)
         elif opt == "-a":
             showPnl = False
         elif opt == "-D":
             boardDate = ReadDate(arg)
-            blogger.debug("Board date set to %s" % boardDate)
+            blogger().debug("Board date set to %s" % boardDate)
         elif opt == "-F":
             flightNumber = arg
-            blogger.debug("Flight number set to %s" % flightNumber)
+            blogger().debug("Flight number set to %s" % flightNumber)
         elif opt == "-P":
             departAirport = arg
-            blogger.debug("Departure airport set to %s" % departAirport)
+            blogger().debug("Departure airport set to %s" % departAirport)
         else:
             print("Unknown input '%s'" % arg)
             usage()

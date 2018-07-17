@@ -47,7 +47,7 @@ def ReadItinerary(conn, bookno, status_flag, action_codes,
             " AND flight_number like '%s'" % fnumber
     itenSql += \
         " ORDER BY flight_date,departure_time ASC"
-    blogger.debug(itenSql)
+    blogger().debug(itenSql)
     sys.stdout.flush()
     n_itens = 0
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -68,24 +68,24 @@ def ReadItinerary(conn, bookno, status_flag, action_codes,
 
 def UpdateItinerary(conn, aBookNo, aStatus='A'):
     """Activate itinerary."""
-    blogger.info("Set bookings %d itinerary status to %s" % (aBookNo, aStatus))
+    blogger().info("Set bookings %d itinerary status to %s" % (aBookNo, aStatus))
     UaSql = """UPDATE itineraries
                SET (status_flag, processing_flag)
                  = ('%s', 'Y')
                WHERE book_no = %d""" \
             % (aStatus, aBookNo)
     cur = conn.cursor()
-    blogger.debug(UaSql)
+    blogger().debug(UaSql)
     cur.execute(UaSql)
-    blogger.debug("Updated %d rows" % cur.rowcount)
+    blogger().debug("Updated %d rows" % cur.rowcount)
 
 
 def UpdateBook(conn, aBookNo, aStatus='A'):
     """Activate itinerary."""
-    blogger.info("Set bookings %d status to %s" % (aBookNo, aStatus))
+    blogger().info("Set bookings %d status to %s" % (aBookNo, aStatus))
     UaSql = """UPDATE bookings SET status_flag='%s'
             WHERE book_no = %d""" % (aStatus, aBookNo)
     cur = conn.cursor()
-    blogger.debug(UaSql)
+    blogger().debug(UaSql)
     cur.execute(UaSql)
-    blogger.debug("Updated %d rows" % cur.rowcount)
+    blogger().debug("Updated %d rows" % cur.rowcount)

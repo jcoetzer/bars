@@ -24,11 +24,11 @@ def DeleteSellingClasses(conn,
             " SELECT flight_date_id FROM flight_dates" \
                 " WHERE flight_number='%s' and depart_date='%s')" \
                     % (pflight_number, flight_date)
-    blogger.debug("%s" % ssmSql)
+    blogger().debug("%s" % ssmSql)
     cur = conn.cursor()
     cur.execute(ssmSql)
     rowcount = cur.rowcount
-    blogger.debug("Deleted %d row(s)" % rowcount)
+    blogger().debug("Deleted %d row(s)" % rowcount)
     cur.close()
     return rowcount
 
@@ -39,11 +39,11 @@ def DeleteFlightDate(conn,
     ssmSql = "DELETE FROM flight_dates" \
              " WHERE flight_number='%s' and depart_date='%s'" \
                  % (pflight_number, flight_date.strftime("%Y-%m-%d"))
-    blogger.debug("%s" % ssmSql)
+    blogger().debug("%s" % ssmSql)
     cur = conn.cursor()
     cur.execute(ssmSql)
     rowcount = cur.rowcount
-    blogger.debug("Deleted %d row(s)" % rowcount)
+    blogger().debug("Deleted %d row(s)" % rowcount)
     cur.close()
     return rowcount
 
@@ -54,11 +54,11 @@ def DeleteInventrySegment(conn,
     ssmSql = "DELETE FROM inventry_segment" \
              " WHERE flight_number='%s' and flight_date='%s'" \
                  % (pflight_number, flight_date.strftime("%Y-%m-%d"))
-    blogger.debug("%s" % ssmSql)
+    blogger().debug("%s" % ssmSql)
     cur = conn.cursor()
     cur.execute(ssmSql)
     rowcount = cur.rowcount
-    blogger.debug("Deleted %d row(s)" % rowcount)
+    blogger().debug("Deleted %d row(s)" % rowcount)
     cur.close()
     return rowcount
 
@@ -70,45 +70,45 @@ def DeleteFlightPeriod(conn,
 
     dfpSql = "DELETE FROM flt_perd_seg_cls " \
              "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
-    blogger.debug("%s" % dfpSql)
+    blogger().debug("%s" % dfpSql)
     cur.execute(dfpSql)
     rowcount = cur.rowcount
-    blogger.debug("Deleted %d row(s)" % rowcount)
+    blogger().debug("Deleted %d row(s)" % rowcount)
 
     dfpSql = "DELETE FROM flight_perd_cls " \
              "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
-    blogger.debug("%s" % dfpSql)
+    blogger().debug("%s" % dfpSql)
     cur.execute(dfpSql)
     rowcount = cur.rowcount
-    blogger.debug("Deleted %d row(s)" % rowcount)
+    blogger().debug("Deleted %d row(s)" % rowcount)
 
     dfpSql = "DELETE FROM flight_perd_prnt " \
              "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
-    blogger.debug("%s" % dfpSql)
+    blogger().debug("%s" % dfpSql)
     cur.execute(dfpSql)
     rowcount = cur.rowcount
-    blogger.debug("Deleted %d row(s)" % rowcount)
+    blogger().debug("Deleted %d row(s)" % rowcount)
 
     dfpSql = "DELETE FROM flight_perd_segm " \
              "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
-    blogger.debug("%s" % dfpSql)
+    blogger().debug("%s" % dfpSql)
     cur.execute(dfpSql)
     rowcount = cur.rowcount
-    blogger.debug("Deleted %d row(s)" % rowcount)
+    blogger().debug("Deleted %d row(s)" % rowcount)
 
     dfpSql = "DELETE FROM flight_perd_legs " \
              "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
-    blogger.debug("%s" % dfpSql)
+    blogger().debug("%s" % dfpSql)
     cur.execute(dfpSql)
     rowcount = cur.rowcount
-    blogger.debug("Deleted %d row(s)" % rowcount)
+    blogger().debug("Deleted %d row(s)" % rowcount)
 
     dfpSql = "DELETE FROM flight_periods " \
              "WHERE flight_number = '%s' AND schedule_period_no = %d" % (pflight_number, pschedule_period_no)
-    blogger.debug("%s" % dfpSql)
+    blogger().debug("%s" % dfpSql)
     cur.execute(dfpSql)
     rowcount = cur.rowcount
-    blogger.debug("Deleted %d row(s)" % rowcount)
+    blogger().debug("Deleted %d row(s)" % rowcount)
     cur.close()
     return rowcount
 
@@ -120,11 +120,11 @@ def DeleteFlightInfo(conn,
     fiSql = "DELETE FROM flight_information " \
             "WHERE flight_number='%s' AND board_date='%s'" \
             % (flight, boardDate.strftime("%Y-%m-%d"))
-    blogger.debug(fiSql)
+    blogger().debug(fiSql)
     cur.execute(fiSql)
 
     rowcount = cur.rowcount
-    blogger.debug("Deleted %d row(s)" % rowcount)
+    blogger().debug("Deleted %d row(s)" % rowcount)
     cur.close()
     return rowcount
 
@@ -141,10 +141,10 @@ def DeleteFlightSegmDate(conn,
     if acity_pair != 0:
         FsdSql += \
             " AND city_pair = %d" % acity_pair
-    blogger.debug(FsdSql)
+    blogger().debug(FsdSql)
     cur.execute(FsdSql)
     rowcount = cur.rowcount
-    blogger.debug("Deleted %d row(s)" % rowcount)
+    blogger().debug("Deleted %d row(s)" % rowcount)
     cur.close()
     return rowcount
 
@@ -152,7 +152,7 @@ def DeleteFlightSegmDate(conn,
 def ProcCnl(conn,
             ssm):
 
-    blogger.debug("Cancel flight %s" % ssm.flight_number)
+    blogger().debug("Cancel flight %s" % ssm.flight_number)
     #city_pair_id = GetCityPair(conn,
                                #ssm.departure_airport,
                                #ssm.arrival_airport)
@@ -163,14 +163,14 @@ def ProcCnl(conn,
 
     flight_period_id, sdate, edate = CheckFlightPeriod(conn, ssm)
     if flight_period_id == 0:
-        blogger.error("Flight period for %s does not exist" % ssm.flight_number)
+        _levelerror("Flight period for %s does not exist" % ssm.flight_number)
         #return -1
 
     if sdate != ssm.start_date:
-        blogger.error("Start date from input %s does not match stored value %s"
+        _levelerror("Start date from input %s does not match stored value %s"
             % (ssm.start_date, sdate))
     elif edate != ssm.end_date:
-        blogger.error("End date from input %s does not match stored value %s"
+        _levelerror("End date from input %s does not match stored value %s"
             % (ssm.end_date, edate))
     else:
         pass
@@ -183,7 +183,7 @@ def ProcCnl(conn,
         #if fday == '0':
             #fday = '7'
         #if fday in freq:
-            #blogger.debug("Delete flight date %s (day %s)" % (flight_date, fday))
+            #blogger().debug("Delete flight date %s (day %s)" % (flight_date, fday))
             ##DeleteSellingClasses(conn, ssm, flight_date)
             #DeleteFlightDate(conn, ssm.flight_number, flight_date)
 
@@ -191,13 +191,13 @@ def ProcCnl(conn,
     cdate = ssm.start_date
     while cdate <= ssm.end_date:
         wday = cdate.weekday()+1
-        blogger.debug("Date %s (day %d)" % (cdate.strftime("%Y-%m-%d"), wday))
+        blogger().debug("Date %s (day %d)" % (cdate.strftime("%Y-%m-%d"), wday))
         if wday in ssm.frequency_codes:
             ssmdates.append(cdate)
         cdate += datetime.timedelta(days=1)
 
     for flight_date in ssmdates:
-        blogger.debug("Delete flight date %s (day %s)" % (flight_date, flight_date))
+        blogger().debug("Delete flight date %s (day %s)" % (flight_date, flight_date))
         #DeleteSellingClasses(conn, ssm, flight_date)
         #DeleteFlightDate(conn, ssm.flight_number, flight_date)
         DeleteFlightInfo(conn, ssm.flight_number, flight_date)

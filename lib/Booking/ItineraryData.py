@@ -24,7 +24,7 @@ class ItineraryData(object):
                  departure_airport, arrival_airport, city_pair,
                  status_flag, reserve_status, itinerary_type=None):
         """New itinerary for flight."""
-        blogger.debug("New itinerary flight %s date %s class %s"
+        blogger().debug("New itinerary flight %s date %s class %s"
                       " from %s to %s status %s reserve %s"
                       % (flight_number, departure_date, class_code,
                          departure_airport, arrival_airport,
