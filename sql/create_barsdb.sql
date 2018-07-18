@@ -16,14 +16,14 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -593,6 +593,136 @@ CREATE TABLE public.service_requests (
 
 
 ALTER TABLE public.service_requests OWNER TO postgres;
+--
+-- Name: city_pairs; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+--
+
+CREATE TABLE city_pairs (
+    departure_airport character(5) NOT NULL,
+    arrival_airport character(5) NOT NULL,
+    city_pair integer NOT NULL,
+    pair_indicator character(1) NOT NULL,
+    distance integer,
+    distance_uom character(3),
+    points_value smallint,
+    avl_forw_scan_days smallint,
+    baggage_alownce character varying(35),
+    pair_rule_no character(8),
+    remarks character varying(80),
+    update_user character(16) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp WITH time zone
+);
+
+
+ALTER TABLE public.city_pairs OWNER TO postgres;
+
+--
+-- Name: city_pair_city_pair_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE city_pair_city_pair_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.city_pair_city_pair_seq OWNER TO postgres;
+
+--
+-- Name: city_pair_city_pair_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE city_pair_city_pair_seq OWNED BY city_pairs.city_pair;
+
+CREATE TABLE public.flight_segment_dates (
+    flight_number character(7) NOT NULL,
+    board_date date NOT NULL,
+    city_pair integer NOT NULL,
+    flight_date date NOT NULL,
+    departure_airport character(5) NOT NULL,
+    arrival_airport character(5) NOT NULL,
+    departure_time time with time zone,
+    arrival_time time with time zone,
+    date_change_ind smallint NOT NULL,
+    flight_path_code character(1) NOT NULL,
+    departure_terminal character(2) NOT NULL,
+    arrival_terminal character(2) NOT NULL,
+    flgt_sched_status character(1) NOT NULL,
+    no_of_stops smallint NOT NULL,
+    aircraft_code character(3) NOT NULL,
+    flight_closed_flag character(1) NOT NULL,
+    flight_brdng_flag character(1) NOT NULL,
+    leg_number smallint NOT NULL,
+    segment_number character(22) NOT NULL,
+    schedule_period_no smallint NOT NULL,
+    update_user character(16) NOT NULL,
+    update_group character(8) NOT NULL,
+    update_time timestamp with time zone
+);
+
+ALTER TABLE public.flight_segment_dates OWNER TO postgres;
+
+CREATE UNIQUE INDEX flight_segm_date_fndda ON public.flight_segment_dates
+USING btree (flight_number, flight_date, departure_airport, arrival_airport);
+
+
+--
+-- Name: inventry_segment; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.inventry_segment (
+    flight_number character(7) NOT NULL,
+    flight_date date NOT NULL,
+    city_pair integer NOT NULL,
+    selling_class character(2) NOT NULL,
+    departure_city character(5) NOT NULL,
+    arrival_city character(5) NOT NULL,
+    leg_number smallint NOT NULL,
+    segment_number character(22) NOT NULL,
+    ob_profile_no character(5) NOT NULL,
+    group_seat_level smallint NOT NULL,
+    seat_protect_level smallint NOT NULL,
+    limit_sale_level smallint NOT NULL,
+    overbooking_level smallint NOT NULL,
+    posting_level smallint NOT NULL,
+    sale_notify_level smallint NOT NULL,
+    cancel_notify_level smallint NOT NULL,
+    overbooking_percnt smallint NOT NULL,
+    seat_capacity smallint NOT NULL,
+    nett_sngl_sold smallint NOT NULL,
+    nett_sngl_wait smallint NOT NULL,
+    nett_group_sold smallint NOT NULL,
+    nett_group_wait smallint NOT NULL,
+    nett_nrev_sold smallint NOT NULL,
+    nett_nrev_wait smallint NOT NULL,
+    segm_sngl_sold smallint NOT NULL,
+    segm_sngl_wait smallint NOT NULL,
+    segm_group_sold smallint NOT NULL,
+    segm_group_wait smallint NOT NULL,
+    segm_nrev_sold smallint NOT NULL,
+    segm_nrev_wait smallint NOT NULL,
+    segm_group_nrealsd smallint NOT NULL,
+    segm_sngl_ticktd smallint NOT NULL,
+    segm_group_ticktd smallint NOT NULL,
+    segm_nrev_ticktd smallint NOT NULL,
+    segment_closed_flag character(1) NOT NULL,
+    wl_closed_flag character(1) NOT NULL,
+    wl_clear_inhibit_flag character(1) NOT NULL,
+    wl_release_party_flag character(1) NOT NULL,
+    scrutiny_flag character(1) NOT NULL,
+    display_priority smallint NOT NULL,
+    schedule_period_no smallint NOT NULL,
+    invt_update_flag character(1) NOT NULL,
+    update_user character(5) NOT NULL,
+    group_name character(8) NOT NULL,
+    update_time timestamp with time zone
+);
+
+
+ALTER TABLE public.inventry_segment OWNER TO postgres;
 
 
 --
