@@ -160,7 +160,7 @@ def PutPayHtml(conn, aBookNo, aSellClass,
                aUser, aGroup):
     """Process payment."""
     if aBookNo is None:
-        _levelerror("Book number not specified")
+        blogger().error("Book number not specified")
         msg = "<p/>Book number not specified"
         return 1, msg
     blogger().info("Process payment of %s%.2f for book %d"
@@ -188,7 +188,7 @@ def PutPayHtml(conn, aBookNo, aSellClass,
         n = 0
         totalPayment = 0
         for irec in irecs:
-            irec.display()
+            irec.blog()
             AddBookFares(conn, aBookNo, vFareNo, paxRecs[0].passenger_code,
                          irec.departure_airport, irec.arrival_airport,
                          aCurrency, payAmounts[n], aUser, aGroup)

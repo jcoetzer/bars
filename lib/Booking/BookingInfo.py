@@ -252,7 +252,7 @@ def AddBookFares(conn, aBookNo, aFareNo, aPaxCode, aDepart, aArrive,
         cur.execute(abfSql)
         blogger().debug("Inserted %d row(s)" % cur.rowcount)
     except psycopg2.IntegrityError:
-        _levelerror("Payment for booking %d fare %d code %s has been processed before"
+        blogger().error("Payment for booking %d fare %d code %s has been processed before"
                       % (aBookNo, aFareNo, aPaxCode))
     cur.close()
 

@@ -13,7 +13,7 @@ from Booking.ItineraryData import ItineraryData
 
 
 def ReadItinerary(conn, bookno, status_flag, action_codes,
-                fnumber=None, start_date=None, end_date=None):
+                  fnumber=None, start_date=None, end_date=None):
     """Read itinerary."""
     itineraryrecs = []
 
@@ -54,14 +54,14 @@ def ReadItinerary(conn, bookno, status_flag, action_codes,
     cur.execute(itenSql)
     for row in cur:
         itineraryrecs.append(ItineraryData(row['flight_number'],
-                                       row['flight_date'],
-                                       row['selling_class'],
-                                       row['departure_airport'],
-                                       row['arrival_airport'],
-                                       row['city_pair'],
-                                       row['status_flag'],
-                                       row['reserve_status'],
-                                       row['itinerary_type']))
+                                           row['flight_date'],
+                                           row['selling_class'],
+                                           row['departure_airport'],
+                                           row['arrival_airport'],
+                                           row['city_pair'],
+                                           row['status_flag'],
+                                           row['reserve_status'],
+                                           row['itinerary_type']))
     cur.close()
     return itineraryrecs
 

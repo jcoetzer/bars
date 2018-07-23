@@ -8,15 +8,24 @@
 <p/>Locator: {{=locator}}
 <p/>Number: {{=bookno}}
 <form action="bookingpayshow">
-<p>Amount<input name="amount" type="text" size="12" value="{{=request.vars.fprice}}"/></p>
+<p>Amount<input name="amount" type="text" size="12" value="{{=amt}}"/></p>
 <p>Passenger 1 : {{=request.vars.paxtitle1}} {{=request.vars.paxfname1.upper()}} {{=request.vars.paxlname1.upper()}}</p>
 <p>Card number<input name="cardnum" type="text" size="16" /></p>
 <p>Card CVV<input name="cardcvv" type="text" size="3" /></p>
 <p>Card expiry<input name="cardexp1" type="text" size="2" />&nbsp;<input name="cardexp2" type="text" size="2" /></p>
-<input name="paxtitle1" type="hidden" value="{{=request.vars.paxtitle1}}" />
-<input name="paxfname1" type="hidden" value="{{=request.vars.paxfname1.upper()}}" />
-<input name="paxlname1" type="hidden" value="{{=request.vars.paxlname1.upper()}}" />
-<input name="paxdob1" type="hidden" value="{{=request.vars.paxdob1}}" />
+{{
+i = 1
+n = request.vars.fseats
+while i <= n:
+{{
+<input name="paxtitle{{=i}}" type="hidden" value="{{=request.vars.paxtitle1}}" />
+<input name="paxfname{{=i}}" type="hidden" value="{{=request.vars.paxfname1.upper()}}" />
+<input name="paxlname{{=i}}" type="hidden" value="{{=request.vars.paxlname1.upper()}}" />
+<input name="paxdob{{=i}}" type="hidden" value="{{=request.vars.paxdob1}}" />
+{{
+i += 1
+pass
+}}
 <input name="fnumber" type="hidden" value="{{=request.vars.fnumber}}" />
 <input name="fdate" type="hidden" value="{{=request.vars.fdate}}" />
 <input name="depart" type="hidden" value="{{=request.vars.depart}}" />
@@ -24,6 +33,7 @@
 <input name="fclass" type="hidden" value="{{=request.vars.fclass}}" />
 <input name="fprice" type="hidden" value="{{=request.vars.fprice}}" />
 <input name="fseats" type="hidden" value="{{=request.vars.fseats}}" />
+<input name="famount" type="hidden" value="{{=amount}}" />
 <input name="locator" type="hidden" value="{{=locator}}"/>
 <input name="bookno" type="hidden" value="{{=bookno}}"/>
 <p/><input type="submit" value="Submit" />

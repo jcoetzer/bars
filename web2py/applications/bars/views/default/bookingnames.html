@@ -6,18 +6,28 @@
 <p/>Seats {{=request.vars.fseats[0]}}
 <p/>{{=message}}
 <form action="bookingshow">
-<p>Title <select name="paxtitle1">
+{{
+n = int(request.vars.fseats[0])
+i = 1
+while i <= n:
+}}
+<p>Title <select name="paxtitle{{=i}}">
+<option value="">--</option>
 <option value="MR">MR</option>
-<option value="MS">MS>/option>
+<option value="MS">MS</option>
 <option value="MRS">MRS</option>
 <option value="MISS">MISS</option>
 <option value="DR">DR</option>
 <option value="PROF">PROF</option>
 </select>
-First Names <input name="paxfname1" type="text" size="40" />
-Last Name <input name="paxlname1" type="text" size="20" />
-Date of Birth <input name="paxdob1" type="text" />
+First Names <input name="paxfname{{=i}}" type="text" size="40" value="{{=fnames[i-1]}}"/>
+Last Name <input name="paxlname{{=i}}" type="text" size="20" value="{{=lnames[i-1]}}" />
+Date of Birth <input name="paxdob{{=i}}" type="text" value="{{=dobs[i-1]}}" />
 </p>
+{{
+i+=1
+pass
+}}
 <p/>Cellphone Number <input name="bkcell" type="text" />
 <p/>Email Address <input name="bkemail" type="text" />
 <input name="fnumber" type="hidden" value="{{=request.vars.fnumber}}" />
@@ -27,5 +37,7 @@ Date of Birth <input name="paxdob1" type="text" />
 <input name="fseats" type="hidden" value="{{=request.vars.fseats[0]}}" />
 <input name="fclass" type="hidden" value="{{=request.vars.fclass}}" />
 <input name="fprice" type="hidden" value="{{=request.vars.fprice}}" />
+<input name="nfake" type="hidden" value="{{=request.vars.nfake}}" />
+<input name="famount" type="hidden" value="{{=request.vars.famount}}" />
 <input type="submit" value="Submit" />
 </form>

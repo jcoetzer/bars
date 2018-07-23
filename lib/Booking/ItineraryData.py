@@ -50,3 +50,11 @@ class ItineraryData(object):
               % (self.flight_number, self.board_date_iso,
                  self.departure_airport, self.arrival_airport,
                  self.status_flag, self.reserve_status, self.itinerary_type))
+
+    def blog(self):
+        """Log itinerary."""
+        blogger().info("Itinerary flight %6s date %s from %s to %s status %s"
+              " reserve %s type %s"
+              % (self.flight_number, self.board_date_iso,
+                 self.departure_airport, self.arrival_airport,
+                 self.status_flag, self.reserve_status, self.itinerary_type))

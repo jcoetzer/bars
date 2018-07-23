@@ -94,13 +94,43 @@ def bookingnames():
     flightDate = ReadDate(request.vars.fdate)
     departAirport = str(request.vars.depart)
     arriveAirport = str(request.vars.arrive)
+    seatPrice = float(request.vars.fprice)
     seatCount = int(request.vars.fseats[0])
     sellClass = request.vars.fclass
+    bookAmount = float(seatCount * seatPrice)
     groupName = ''
     blogger().debug("Get %s names for flight %s date %s depart %s arrive %s"
                  % (seatCount, flightNumber, flightDate, departAirport, arriveAirport))
     msg = "<p/>Book flight"
-    return dict(message=XML(msg))
+    paxtitles = []
+    paxfnames = []
+    paxlnames = []
+    paxdobs = []
+    paxRecs = []
+    if request.vars.nfake == 'on':
+        i = 1
+        while i <= seatCount:
+            paxRec = PassengerData('ADULT', i)
+            paxRec.fakeit(cfg.DialCode)
+            paxRecs.append(paxRec)
+            i += 1
+        for paxRec in paxRecs:
+            paxtitles.append(paxRec.passenger_title)
+            paxfnames.append(paxRec.first_name)
+            paxlnames.append(paxRec.last_name)
+            paxdobs.append(paxRec.date_of_birth)
+    else:
+        i = 1
+        while i <= seatCount:
+            paxtitles.append('')
+            paxfnames.append('')
+            paxlnames.append('')
+            paxdobs.append('')
+            i += 1
+
+    return dict(message=XML(msg), amount=bookAmount,
+                titles=paxtitles, fnames=paxfnames, lnames=paxlnames,
+                dobs=paxdobs)
 
 
 def bookingshow():
@@ -111,7 +141,8 @@ def bookingshow():
     departAirport = str(request.vars.depart)
     arriveAirport = str(request.vars.arrive)
     seatCount = int(request.vars.fseats or 1)
-    payAmount = float(request.vars.fprice)
+    seatPrice = float(request.vars.fprice)
+    payAmount = float(seatCount * seatPrice)
     sellClass = request.vars.fclass
     blogger().debug("Book %s seats for flight %s date %s depart %s arrive %s"
                   % (seatCount, flightNumber, flightDate,
@@ -143,7 +174,7 @@ def bookingshow():
                                timeLimit,
                                cfg.User, cfg.Group)
     #msg += "<p/>Booked flight"
-    return dict(message=XML(msg), bookno=bn, locator=pnr)
+    return dict(message=XML(msg), bookno=bn, locator=pnr, amount=payAmount)
 
 
 def bookingpay():

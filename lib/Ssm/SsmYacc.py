@@ -24,7 +24,7 @@ from BarsLog import blogger, init_blogger
 
 # Error rule for syntax errors
 def p_error(p):
-    _levelerror("Syntax error in input!")
+    blogger().error("Syntax error in input!")
 
 
 def p_alines(p):
@@ -126,7 +126,7 @@ def p_flight4(p):
 
 def p_flight_error(p):
     'flight : error'
-    _levelerror("Error in flight '%s'" % (p[1]))
+    blogger().error("Error in flight '%s'" % (p[1]))
 
 #def p_flight2(p):
     #'flight2 : FLTNUM fdatas EOL'
@@ -153,7 +153,7 @@ def p_equip2(p):
     add_equipment(p[2], p[3], p[7], p[5], p[6])
 
 def p_error_equip(p):
-    _levelerror("Syntax error in equip")
+    blogger().error("Syntax error in equip")
 
 # --- leg ---
 
@@ -233,7 +233,7 @@ def YaccFile(fname):
         #print(result)
 
     except TypeError as e:
-        _levelerror("Parser failed : %s" % str(e))
+        blogger().error("Parser failed : %s" % str(e))
 
     return 0
 
@@ -266,7 +266,7 @@ def main(argv):
             blogger().info("read '%s'" % fname)
 
     if fname is None or len(fname)==0:
-        _levelerror("No input file specified")
+        blogger().error("No input file specified")
         return 1
 
     rc = YaccFile(fname)
