@@ -7,7 +7,10 @@ from random import randint
 
 from faker import Faker
 
-from BarsLog import blogger
+
+import logging
+
+logger = logging.getLogger("web2py.app.bars")
 
 fake = Faker()
 

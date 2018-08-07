@@ -8,7 +8,7 @@ import os
 import sys
 from datetime import datetime, timedelta, date
 
-from BarsLog import blogger
+
 from ReadDateTime import ReadDate
 
 
@@ -65,10 +65,10 @@ class FarePricingData(object):
         self.total_amount = self.fare_amount
         for tax in aTaxes:
             if tax.tax_type == '=':
-                blogger().debug("Add %f to base fare" % tax.tax_amount)
+                logger.debug("Add %f to base fare" % tax.tax_amount)
                 self.total_amount += tax.tax_amount
             elif tax.tax_type == '%':
-                blogger().debug("Add %.0f%% to base fare" % tax.tax_amount)
+                logger.debug("Add %.0f%% to base fare" % tax.tax_amount)
                 self.total_amount *= 1 + (tax.tax_amount / 100)
             else:
                 pass
@@ -99,7 +99,7 @@ class PricingData(object):
         self.fare_total_amount = float(fare_total_amount)
         self.tax_total_amount = float(tax_total_amount)
         self.pax_codes = paxcodes
-        blogger().debug("New pricing amount %.2f" % (self.total_amount))
+        logger.debug("New pricing amount %.2f" % (self.total_amount))
 
     def display(self, prefix='\t'):
         print("Pricing data:")
@@ -133,7 +133,7 @@ class PassengerCode(object):
         self.fare_ladder = fare_ladder
         self.fare_basis_codes = farecodes
         self.tax_codes = taxcodes
-        blogger().debug("New passenger code %s count %d value %.2f"
+        logger.debug("New passenger code %s count %d value %.2f"
                  % (self.passenger_code, self.seat_count,
                     self.fare_amount_per_seat))
 
@@ -177,7 +177,7 @@ class FareCode(object):
         self.valid_from = ReadDate(valid_from)
         self.valid_to = ReadDate(valid_to)
         self.flight_codes = flightcodes
-        blogger().debug("New fare code %s class %s ID %s"
+        logger.debug("New fare code %s class %s ID %s"
                  % (self.fare_basis_code, self.class_code, self.fare_route_id))
 
     def display(self, prefix='\t'):
@@ -206,7 +206,7 @@ class FlightCode(object):
         self.flight_no = flight_no
         self.flight_date = flight_date
         self.airport_codes = airport_codes
-        blogger().debug("New flight code %s date %s "
+        logger.debug("New flight code %s date %s "
                       % (self.flight_no, self.flight_date))
 
     def display(self, prefix='\t'):
@@ -238,7 +238,7 @@ class TaxCode(object):
         self.departure_airport = departure_airport
         self.arrival_airport = arrival_airport
         self.segments = [1]
-        blogger().debug("New tax code %s (%s)"
+        logger.debug("New tax code %s (%s)"
                       % (self.tax_code, self.description))
 
     def display(self, prefix='\t'):

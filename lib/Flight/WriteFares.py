@@ -2,15 +2,18 @@
 """
 Add and delete fare related data.
 """
+import logging
 import psycopg2
 from psycopg2 import extras
 
-from BarsLog import blogger
+
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def AddCityPair(conn, depart_airport, arrive_airport, aUser, aGroup):
     """New city pair."""
-    blogger().info("Add city pair depart %s arrive %s"
+    logger.info("Add city pair depart %s arrive %s"
              % (depart_airport, arrive_airport))
     AcpSql = """
     INSERT INTO city_pair(
@@ -24,22 +27,22 @@ def AddCityPair(conn, depart_airport, arrive_airport, aUser, aGroup):
     RETURNING city_pair""" \
     % (depart_airport, arrive_airport, aUser, aGroup)
 
-    blogger().debug("%s" % AcpSql)
+    logger.debug("%s" % AcpSql)
     cur = conn.cursor()
     cur.execute(AcpSql)
 
-    blogger().debug("Inserted %d row(s)" % cur.rowcount)
+    logger.debug("Inserted %d row(s)" % cur.rowcount)
     city_pair = 0
     for row in cur:
         city_pair = int(row[0])
 
-    blogger().info("New city pair %d" % city_pair)
+    logger.info("New city pair %d" % city_pair)
     return city_pair
 
 
 def AddFare(conn, company_code, fare_basis_code, selling_class, aUser, aGroup):
     """New fare."""
-    blogger().info("Add fare %s class %s" % (fare_basis_code, selling_class))
+    logger.info("Add fare %s class %s" % (fare_basis_code, selling_class))
     AfSql = """
     INSERT INTO fare_basis_codes(
         company_code, fare_basis_code, short_description, description,
@@ -51,11 +54,11 @@ def AddFare(conn, company_code, fare_basis_code, selling_class, aUser, aGroup):
         '%s', 'ZZOW', 'R', 100, 200, '%s', '%s', NOW() )""" \
     % (company_code, fare_basis_code, selling_class, aUser, aGroup)
 
-    blogger().debug("%s" % AfSql)
+    logger.debug("%s" % AfSql)
     cur = conn.cursor()
     cur.execute(AfSql)
 
-    blogger().debug("Inserted %d row(s)" % cur.rowcount)
+    logger.debug("Inserted %d row(s)" % cur.rowcount)
 
 
 def AddFares(conn, company_code, depart_airport, arrive_airport,
@@ -77,11 +80,11 @@ def DelFares(conn, company_code, depart_airport, arrive_airport):
     WHERE company_code='%s' AND fare_basis_code='%s'""" \
     % (company_code, fare_basis_code)
 
-    blogger().debug("%s" % DfSql)
+    logger.debug("%s" % DfSql)
     cur = conn.cursor()
     cur.execute(DfSql)
 
-    blogger().debug("Deleted %d row(s)" % cur.rowcount)
+    logger.debug("Deleted %d row(s)" % cur.rowcount)
 
 
 def AddFareSegment(conn, company_code, fare_basis_code,
@@ -89,7 +92,7 @@ def AddFareSegment(conn, company_code, fare_basis_code,
                    fare_amount,
                    aUser, aGroup):
     """New fare segment."""
-    blogger().info("Add fare segment %s depart %s arrive %s value %d"
+    logger.info("Add fare segment %s depart %s arrive %s value %d"
              % (fare_basis_code, depart_airport, arrive_airport, fare_amount))
     AfsSql = """
     INSERT INTO fare_segments(
@@ -103,10 +106,10 @@ def AddFareSegment(conn, company_code, fare_basis_code,
     % (company_code, fare_basis_code, city_pair, dt1, dt2,
        fare_amount, aUser, aGroup)
 
-    blogger().debug("%s" % AfsSql)
+    logger.debug("%s" % AfsSql)
     cur = conn.cursor()
     cur.execute(AfsSql)
-    blogger().debug("Inserted %d row(s)" % cur.rowcount)
+    logger.debug("Inserted %d row(s)" % cur.rowcount)
 
 
 def AddFareSegments(conn, company_code, depart_airport, arrive_airport,
@@ -123,15 +126,15 @@ def DelFareSegments(conn, company_code, depart_airport, arrive_airport,
                     dt1, dt2):
     """New fares."""
     fare_basis_code = 'X' + company_code + depart_airport + arrive_airport
-    blogger().info("Delete fare segment %s depart %s arrive %s"
+    logger.info("Delete fare segment %s depart %s arrive %s"
              % (fare_basis_code, depart_airport, arrive_airport))
     DfSql = """DELETE FROM fare_segments
     WHERE company_code='%s' AND fare_basis_code='%s'
     AND valid_from_date='%s' AND valid_to_date='%s'""" \
     % (company_code, fare_basis_code, dt1, dt2)
 
-    blogger().debug("%s" % DfSql)
+    logger.debug("%s" % DfSql)
     cur = conn.cursor()
     cur.execute(DfSql)
 
-    blogger().debug("Deleted %d row(s)" % cur.rowcount)
+    logger.debug("Deleted %d row(s)" % cur.rowcount)

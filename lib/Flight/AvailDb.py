@@ -1,30 +1,33 @@
 """
 Availability queries.
 """
+import logging
 
 from Flight.FlightData import FlightData
 # import Flight.FlightData
-from BarsLog import blogger
+
 from Ssm.SsmDb import GetCityPair
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def get_selling_conf(conn, aCompanyCode):
     """Get selling configuration for company."""
-    blogger().info("Selling configuration for company %s" % aCompanyCode)
+    logger.info("Selling configuration for company %s" % aCompanyCode)
     AvlSql = \
     "SELECT selling_class, cabin_code " \
     "FROM selling_conf " \
     "WHERE company_code = '%s' " \
     "ORDER BY cabin_code " \
         % (aCompanyCode)
-    blogger().debug("%s" % AvlSql)
+    logger.debug("%s" % AvlSql)
     cur = conn.cursor()
     cur.execute(AvlSql)
-    blogger().debug("Selected %d row(s)" % cur.rowcount)
+    logger.debug("Selected %d row(s)" % cur.rowcount)
     selling_classs = []
     city_pair_id = 0
     for row in cur:
-        blogger().debug("Selling configuration class %s cabin %s" % (row[0], row[1]))
+        logger.debug("Selling configuration class %s cabin %s" % (row[0], row[1]))
         selling_classs.append(str(row[0]))
 
     cur.close()
@@ -34,7 +37,7 @@ def get_selling_conf(conn, aCompanyCode):
 def get_avail_flights(conn, fdate1, fdate2, city_pair,
                       departure_airport, arrival_airport,
                       selling_class, company_code):
-    blogger().info("Available flights depart %s arrive %s (%d) start %s end %s class %s company %s" %
+    logger.info("Available flights depart %s arrive %s (%d) start %s end %s class %s company %s" %
              (departure_airport, arrival_airport, city_pair,
               fdate1, fdate2,
               selling_class, company_code))
@@ -79,14 +82,14 @@ def get_avail_flights(conn, fdate1, fdate2, city_pair,
         AND fsd.flgt_sched_status IN ('A', 'D', 'M', 'U', 'R')
         AND fp.flgt_sched_status IN ('A', 'D', 'M', 'U', 'R')""" \
         % (fdate1, fdate2, city_pair, departure_airport, arrival_airport, selling_class, company_code)
-    blogger().debug("%s" % AvlSql)
+    logger.debug("%s" % AvlSql)
     cur = conn.cursor()
     cur.execute(AvlSql)
 
     aircraft_code = ''
     cs = []
     flights = []
-    blogger().debug("Selected %d row(s)" % cur.rowcount)
+    logger.debug("Selected %d row(s)" % cur.rowcount)
     for row in cur:
         class_code          = row[16]
         flight_number       = row[0]
@@ -116,7 +119,7 @@ def get_avail_flights(conn, fdate1, fdate2, city_pair,
 
 def ReadAvailDb(conn, company_code, lboard_date, city_pair_no,
                 depr_airport, arrv_airport):
-    blogger().info("Available flights depart %s arrive %s date %s"
+    logger.info("Available flights depart %s arrive %s date %s"
              % (depr_airport, arrv_airport, lboard_date))
     if city_pair_no is None:
         city_pair_no = GetCityPair(conn, departAirport, arriveAirport)
@@ -149,14 +152,14 @@ def ReadAvailDb(conn, company_code, lboard_date, city_pair_no,
         AND isg.selling_class = sc.selling_class
         AND sc.company_code = '%s'""" \
     % (lboard_date, city_pair_no, depr_airport, arrv_airport, company_code)
-    blogger().debug("%s" % AvlSql)
+    logger.debug("%s" % AvlSql)
     cur = conn.cursor()
     cur.execute(AvlSql)
 
-    blogger().debug("Selected %d row(s)" % cur.rowcount)
+    logger.debug("Selected %d row(s)" % cur.rowcount)
     flights = []
     for row in cur:
-        blogger().info("Flight %s date %s cabin %s depart %s arrive %s class %s schedule %d" \
+        logger.info("Flight %s date %s cabin %s depart %s arrive %s class %s schedule %d" \
                  % (row[1], row[0], row[3], str(row[12])[0:5], str(row[13])[0:5], row[19], row[33]))
         class_code          = row[19]
         flight_number       = row[1]

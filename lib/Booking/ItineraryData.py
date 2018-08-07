@@ -1,7 +1,9 @@
 """
 Itinerary data.
 """
-from BarsLog import blogger
+
+import logging
+
 
 class ItineraryData(object):
     """Itinerary data."""
@@ -24,7 +26,7 @@ class ItineraryData(object):
                  departure_airport, arrival_airport, city_pair,
                  status_flag, reserve_status, itinerary_type=None):
         """New itinerary for flight."""
-        blogger().debug("New itinerary flight %s date %s class %s"
+        logger.debug("New itinerary flight %s date %s class %s"
                       " from %s to %s status %s reserve %s"
                       % (flight_number, departure_date, class_code,
                          departure_airport, arrival_airport,
@@ -53,7 +55,7 @@ class ItineraryData(object):
 
     def blog(self):
         """Log itinerary."""
-        blogger().info("Itinerary flight %6s date %s from %s to %s status %s"
+        logger.info("Itinerary flight %6s date %s from %s to %s status %s"
               " reserve %s type %s"
               % (self.flight_number, self.board_date_iso,
                  self.departure_airport, self.arrival_airport,

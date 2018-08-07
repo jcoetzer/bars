@@ -2,12 +2,15 @@
 
 import os
 import sys
+import logging
 import psycopg2
 from psycopg2 import extras
 import time
 from datetime import datetime, timedelta, date
-from BarsLog import blogger, get_verbose
+, get_verbose
 from ReadDateTime import ReadDate
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def ReadSegmentStatus(conn, flight_number, flight_date):
@@ -20,7 +23,7 @@ def ReadSegmentStatus(conn, flight_number, flight_date):
         " WHERE flight_number='%s'" \
         " AND flight_date='%s'" \
         % (flight_number, flight_date.strftime("%Y-%m-%d"))
-    blogger().debug(RcSql)
+    logger.debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     for row in cur:
@@ -43,7 +46,7 @@ def ReadFlightPax(conn, aFlightNumber, aFlightDate):
         and it.itinerary_type <> 'I' AND pa.passenger_no > 0 AND pa.pax_code <> 'INF' AND it.status_flag <> 'X' AND
         bo.status_flag <> 'X' ORDER BY it.book_no, pa.pax_name""" \
         % (aFlightNumber, aFlightDate.strftime('%Y-%m-%d'))
-    blogger().debug(fpSql)
+    logger.debug(fpSql)
     cur = conn.cursor()
     cur.execute(fpSql)
     for row in cur:

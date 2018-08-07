@@ -3,12 +3,15 @@
 Calculate and display fares.
 """
 
+import logging
 import psycopg2
 from psycopg2 import extras
 
-from BarsLog import blogger
+
 from Booking.PricingData import SellingConfig, PricingData, FarePricingData
 from Booking.PaymentData import PaymentData
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def ReadSellingConfig(conn, acompany_code):
@@ -18,7 +21,7 @@ def ReadSellingConfig(conn, acompany_code):
                 FROM selling_conf
                 WHERE company_code = '%s'""" \
              % acompany_code
-    blogger().debug(rscSql)
+    logger.debug(rscSql)
     cur = conn.cursor()
     cur.execute(rscSql)
     sellconfigs = {}
@@ -49,7 +52,7 @@ def FareCalcDisplay(conn,
                     aTargetDate,
                     fare_factor=1.0):
     """Fare calculation."""
-    blogger().info("Calculate fare for city pair %d date %s"
+    logger.info("Calculate fare for city pair %d date %s"
              % (acity_pair, flightDate))
     fcdSql = """
     SELECT fs.fare_basis_code,
@@ -83,13 +86,13 @@ def FareCalcDisplay(conn,
            afare_category,
            aauthority_level, aauthority_level,
            aTargetDate.strftime('%Y-%m-%d'), aTargetDate.strftime('%Y-%m-%d'))
-    blogger().debug("%s" % fcdSql)
+    logger.debug("%s" % fcdSql)
     cur = conn.cursor()
     cur.execute(fcdSql)
 
     aircraft_code = ''
     pricings = []
-    blogger().debug("Selected %d row(s)" % cur.rowcount)
+    logger.debug("Selected %d row(s)" % cur.rowcount)
     for row in cur:
         fare_basis_code = row[0]
         city_pair = row[1]
@@ -102,7 +105,7 @@ def FareCalcDisplay(conn,
         byps_end_auth_level = row[8]
         selling_class = row[9]
         fare_amount *= fare_factor
-        blogger().debug("Fare %s from %s to %s class %s: %f"
+        logger.debug("Fare %s from %s to %s class %s: %f"
                  % (fare_basis_code, valid_from_date, valid_to_date,
                     selling_class, fare_amount))
         pricing = FarePricingData(fare_basis_code,

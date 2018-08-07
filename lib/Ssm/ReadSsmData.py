@@ -3,7 +3,7 @@
 import sys
 import psycopg2
 from psycopg2 import extras
-from BarsLog import blogger
+
 from Flight.ReadFlightPeriods import ReadFlightPeriods, ReadFlightPerdLegs
 from Flight.ReadFlights import CheckFlight
 from Ssm.ReadAircraftConfig import ReadAircraftConfig
@@ -54,7 +54,7 @@ def ReadSsmFlightData(conn, flight, end_date):
         ORDER BY fp.start_date, fpl.schedule_period_no, fpl.leg_number""" \
         % flight.board_weekday
 
-    blogger().debug(FbSql)
+    logger.debug(FbSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FbSql)
     n = 0
@@ -106,7 +106,7 @@ def ReadSsmFlightData2(conn, flight, end_date):
         % (flight.flight_number, flight.departure_airport,
            flight.arrival_airport, flight.board_date_mdy,
            flight.board_date_mdy, flight.board_weekday)
-    blogger().debug(FbSql)
+    logger.debug(FbSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(FbSql)
@@ -152,7 +152,7 @@ def ReadSsmBookData(conn, flight, schedPerdNo):
         " AND fp.flight_number = '%s'" \
         " AND fp.schedule_period_no = %d" \
         % (flight.flight_number, schedPerdNo)
-    blogger().debug(FbSql)
+    logger.debug(FbSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FbSql)
     n = 0
@@ -184,7 +184,7 @@ def ReadAbsoluteRange(conn, flight):
         " AND fpa.schedule_period_no = fpb.schedule_period_no" \
         " AND fpa.flight_number = fpb.flight_number" \
         % flight.flight_number
-    blogger().debug(FbSql)
+    logger.debug(FbSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FbSql)
     n = 0
@@ -236,7 +236,7 @@ def ReadSsmTim(conn, flight, sdate, edate, frequency_code):
             " AND fp.frequency_code LIKE '%s'" % frequency_code.replace("-", "_")
     FbSql += \
         " ORDER BY fp.start_date, fpl.schedule_period_no, fpl.leg_number"
-    blogger().debug(FbSql)
+    logger.debug(FbSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FbSql)
     n = 0
@@ -280,7 +280,7 @@ def GetFlightDataSsm(conn, flight, sdate, edate, frequency_code):
         ORDER BY fp.start_date, fpl.schedule_period_no, fpl.leg_number
         """ \
             % (flight.flight_number, sdate.strftime("%Y-%m-%d"), edate.strftime("%Y-%m-%d"))
-    blogger().debug(FbSql)
+    logger.debug(FbSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FbSql)
     n = 0

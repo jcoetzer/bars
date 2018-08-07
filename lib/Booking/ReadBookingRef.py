@@ -6,10 +6,13 @@ Read booking references.
 
 import sys
 import operator
+import logging
 import psycopg2
 from psycopg2 import extras
 
-from BarsLog import blogger
+
+logger = logging.getLogger("web2py.app.bars")
+
 
 def ReadBookNo(conn, bno):
     """Read booking number."""
@@ -58,7 +61,7 @@ def ReadBookSummaryHistory(conn, bno, bs_date=None):
     for row in cur:
         rcd = row['book_summary_history_rcd']
         sdt = row['sent_date_time']
-        blogger().info("Booking %d summary history received %s on %s"
+        logger.info("Booking %d summary history received %s on %s"
                      % (bno, rcd, sdt))
     cur.close()
     return rcd, sdt
@@ -75,7 +78,7 @@ def ReadBookSummary(conn, bno):
     rcd = ''
     for row in cur:
         rcd = row['booking_summary_type_rcd']
-        blogger().info("Booking %d summary received %s" % (bno, rcd), 1)
+        logger.info("Booking %d summary received %s" % (bno, rcd), 1)
     cur.close()
     return rcd
 

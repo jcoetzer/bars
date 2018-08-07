@@ -11,10 +11,11 @@ import getopt
 import logging
 from PnlAdl.PaxList import PaxList
 from ReadDateTime import ReadDate
-from BarsLog import blogger, init_blogger
 from BarsConfig import BarsConfig
 from DbConnect import OpenDb, CloseDb
 from PnlAdl.ReadPnl import PrintPnl
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def usage(pname='PnlGen.py'):
@@ -43,7 +44,6 @@ def main(argv):
     if len(argv) < 1:
         usage()
 
-    init_blogger("bars")
     try:
         opts, args = getopt.getopt(argv,
                                    "ahvVD:F:P:",
@@ -57,21 +57,21 @@ def main(argv):
             usage()
         elif opt == '-v':
             # Debug output
-            _levelsetLevel(logging.INFO)
+            logger.setLevel(logging.INFO)
         elif opt == '-V':
             # Debug output
-            _levelsetLevel(logging.DEBUG)
+            logger.setLevel(logging.DEBUG)
         elif opt == "-a":
             showPnl = False
         elif opt == "-D":
             boardDate = ReadDate(arg)
-            blogger().debug("Board date set to %s" % boardDate)
+            logger.debug("Board date set to %s" % boardDate)
         elif opt == "-F":
             flightNumber = arg
-            blogger().debug("Flight number set to %s" % flightNumber)
+            logger.debug("Flight number set to %s" % flightNumber)
         elif opt == "-P":
             departAirport = arg
-            blogger().debug("Departure airport set to %s" % departAirport)
+            logger.debug("Departure airport set to %s" % departAirport)
         else:
             print("Unknown input '%s'" % arg)
             usage()

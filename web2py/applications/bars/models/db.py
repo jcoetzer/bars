@@ -5,7 +5,6 @@ import logging
 
 from DbConnect import OpenDb, CloseDb
 from BarsConfig import BarsConfig
-from BarsLog import init_blogger
 
 # -------------------------------------------------------------------------
 # AppConfig configuration made easy. Look inside private/appconfig.ini
@@ -21,6 +20,8 @@ from gluon.tools import Auth
 
 if request.global_settings.web2py_version < "2.15.5":
     raise HTTP(500, "Requires web2py 2.15.5 or newer")
+
+logger = logging.getLogger("web2py.app.bars")
 
 # -------------------------------------------------------------------------
 # if SSL/HTTPS is properly configured and you want all HTTP requests to
@@ -160,9 +161,9 @@ if configuration.get('scheduler.enabled'):
 # -------------------------------------------------------------------------
 # auth.enable_record_versioning(db)
 
-init_blogger("bars")
+logger.setLevel(logging.DEBUG)
 
-#blogger().info("Start")
+logger.info("Start")
 
 db = DAL('postgres://postgres@localhost/barsdb')
 
@@ -170,8 +171,6 @@ db = DAL('postgres://postgres@localhost/barsdb')
     #Field('first_name', requires=IS_NOT_EMPTY()),
     #Field('last_name', requires=IS_NOT_EMPTY()),
     #Field('email', requires=IS_NOT_EMPTY()))g
-
-#blogger = logging.getLogger("bars")
 
 barsdir = os.environ['BARSDIR']
 etcdir = "%s/etc" % barsdir

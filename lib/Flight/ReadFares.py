@@ -2,10 +2,12 @@
 """
 Read fares and stuff.
 """
+import logging
 import psycopg2
 from psycopg2 import extras
 
-from BarsLog import blogger
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def ReadCityPairs(conn, departure_airport=None, arrival_airport=None):
@@ -20,11 +22,11 @@ def ReadCityPairs(conn, departure_airport=None, arrival_airport=None):
             AND arrival_airport = '%s'""" \
             % (departure_airport, arrival_airport)
 
-    blogger().debug("%s" % RcpSql)
+    logger.debug("%s" % RcpSql)
     cur = conn.cursor()
     cur.execute(RcpSql)
 
-    blogger().debug("Selected %d row(s)" % cur.rowcount)
+    logger.debug("Selected %d row(s)" % cur.rowcount)
     flights = []
     for row in cur:
         for item in row:
@@ -36,17 +38,17 @@ def ReadCityPairs(conn, departure_airport=None, arrival_airport=None):
 
 def ReadFareSegments(conn):
     """Read fare segments."""
-    blogger().info("Fare segments:")
+    logger.info("Fare segments:")
     RfSql = """
     SELECT company_code, fare_basis_code, city_pair, valid_from_date, valid_to_date,
         fare_amount, active_flag
     FROM fare_segments"""
 
-    blogger().debug("%s" % RfSql)
+    logger.debug("%s" % RfSql)
     cur = conn.cursor()
     cur.execute(RfSql)
 
-    blogger().debug("Selected %d row(s)" % cur.rowcount)
+    logger.debug("Selected %d row(s)" % cur.rowcount)
     flights = []
     for row in cur:
         for item in row:
@@ -59,18 +61,18 @@ def ReadFareSegments(conn):
 def ReadFareCodes(conn):
     """Read fare codes."""
     """Read fare segments."""
-    blogger().info("Fare codes:")
+    logger.info("Fare codes:")
     RfSql = """
         SELECT
         company_code, fare_basis_code, short_description, description,
         selling_class, fare_category, oneway_return_flag
     FROM fare_basis_codes"""
 
-    blogger().debug("%s" % RfSql)
+    logger.debug("%s" % RfSql)
     cur = conn.cursor()
     cur.execute(RfSql)
 
-    blogger().debug("Selected %d row(s)" % cur.rowcount)
+    logger.debug("Selected %d row(s)" % cur.rowcount)
     flights = []
     for row in cur:
         for item in row:

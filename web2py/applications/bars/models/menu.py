@@ -5,6 +5,10 @@
 # this is the main application menu add/remove items as required
 # ----------------------------------------------------------------------------------------------------------------------
 
+import logging
+
+logger = logging.getLogger("web2py.app.bars")
+
 response.menu = [
     (T('Home'), False, URL('default', 'index'), [])
 ]

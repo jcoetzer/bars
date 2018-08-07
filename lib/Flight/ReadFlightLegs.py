@@ -3,12 +3,14 @@
 Read Flight Legs.
 """
 
-
+import logging
 import sys
 import psycopg2
 from psycopg2 import extras
-from BarsLog import blogger
+
 from ReadDateTime import ReadDate
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def ReadFlightDateLegs(conn, flight_number, flight_date):
@@ -21,7 +23,7 @@ def ReadFlightDateLegs(conn, flight_number, flight_date):
         " departure_airport,arrival_airport,leg_number,update_user,update_time" \
         " FROM flight_date_leg WHERE flight_number = '%s' AND board_date = '%s'"  \
         % (flight_number, flight_date.strftime("%Y-%m-%d"))
-    blogger().debug(RcSql)
+    logger.debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RcSql)
     n = 0
@@ -52,7 +54,7 @@ def ReadFlightSharedLeg(conn, flight_number, dts):
         " FROM flight_shared_leg" \
         " WHERE flight_number='%s' AND board_date='%s'" \
         % (flight_number, dts.strftime("%Y-%m-%d"))
-    blogger().debug(FslSql)
+    logger.debug(FslSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(FslSql)
@@ -93,7 +95,7 @@ def ReadtestPeriodLegs(conn, flight_number, schedule_period_no):
         " FROM test_perd_legs" \
         " WHERE flight_number='%s' AND schedule_period_no=%d" \
         % (flight_number, schedule_period_no)
-    blogger().debug(RcSql)
+    logger.debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(RcSql)
@@ -121,7 +123,7 @@ def ReadAsrReconcileHistory(conn, flight_date_leg_id):
         "SELECT action_id,action_detail,update_user,update_time" \
         " FROM asr_reconcile_history" \
         " WHERE flight_date_leg_id=%d" % flight_date_leg_id
-    blogger().debug(RcSql)
+    logger.debug(RcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     #cur.execute("set isolation dirty read")
     cur.execute(RcSql)

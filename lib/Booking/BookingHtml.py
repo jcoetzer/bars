@@ -2,7 +2,9 @@
 Display booking in HTML format.
 """
 
-from BarsLog import blogger
+import logging
+
+
 from Booking.FareCalcDisplay import FareCalcDisplay, ReadSellingConfig
 from Flight.AvailDb import ReadAvailDb, get_avail_flights, get_selling_conf
 from Flight.ReadTaxes import ApplyTaxes, ReadTaxes
@@ -15,12 +17,14 @@ from Booking.BookingInfo import AddBook, AddBookCrossIndex, AddItinerary, \
 from Booking.ReadItinerary import ReadItinerary, UpdateBook, UpdateItinerary
 from Booking.ReadBooking import ReadPassengers
 
+logger = logging.getLogger("web2py.app.bars")
+
 
 def GetAvailHtml(conn, flightDate, flightDate2,
                  departAirport, arriveAirport,
                  vCompany, flightUrl=None):
     """Get availability information."""
-    blogger().debug("Get availability for depart %s arrive %s date %s"
+    logger.debug("Get availability for depart %s arrive %s date %s"
                   % (departAirport, arriveAirport, flightDate))
     cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
     flights = ReadAvailDb(conn, vCompany, flightDate, cityPairNo,
@@ -45,7 +49,7 @@ def GetPriceHtml(conn,
                  flightDate, flightDate2,
                  selling_class, onw_return_ind, fare_category, authority_level):
     """Read and display price information."""
-    blogger().debug("Get price for depart %s arrive %s class %s on %s"
+    logger.debug("Get price for depart %s arrive %s class %s on %s"
                   % (departAirport, arriveAirport, selling_class, flightDate))
     rbuf = "<table>\n"
     sellconfigs = ReadSellingConfig(conn, aCompanyCode)
@@ -53,7 +57,7 @@ def GetPriceHtml(conn,
     # for flightClass in sorted(sellconfigs, key=sellconfigs.get, reverse=False):
         # sellconfigs[flightClass].display()
     cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
-    blogger().debug("Get price for city pair %d class %s on %s"
+    logger.debug("Get price for city pair %d class %s on %s"
                   % (cityPairNo, selling_class, flightDate))
     taxes = ReadTaxes(conn, aCompanyCode, flightDate, flightDate2,
                       departAirport,
@@ -98,7 +102,7 @@ def PutBookHtml(conn, vCompany, vBookCategory, vOriginAddress,
     if paxRecs is None:
         msg = "<p/>No passenger names"
         return 0, '', msg
-    blogger().debug("Book fare basis %s payment %s%.2f flight %s date %s"
+    logger.debug("Book fare basis %s payment %s%.2f flight %s date %s"
                   % (aFareBasis, aCurrency, payAmount, flightNumber,
                      flightDate))
     vSeatQuantity = len(paxRecs)
@@ -107,9 +111,9 @@ def PutBookHtml(conn, vCompany, vBookCategory, vOriginAddress,
     if sellClass is None:
         sellClass = 'Y'
     #if departAirport is None or arriveAirport is None:
-        #blogger().info("Flight number and date must be specified")
+        #logger.info("Flight number and date must be specified")
         #return
-    blogger().debug("Book %d seats on flight %s date %s class %s"
+    logger.debug("Book %d seats on flight %s date %s class %s"
                   % (vSeatQuantity, flightNumber, flightDate, sellClass))
     n, fd = ReadFlightDeparture(conn, sellClass, flightNumber, flightDate)
     if n == 0:
@@ -148,7 +152,7 @@ def PutBookHtml(conn, vCompany, vBookCategory, vOriginAddress,
                            aCurrency, payAmount,
                            vUser, vGroup)
     conn.commit()
-    blogger().info("Booking reference %s" % pnr)
+    logger.info("Booking reference %s" % pnr)
     msg = "<p/>Booking reference %s" % pnr
     return bn, pnr, msg
 
@@ -160,13 +164,13 @@ def PutPayHtml(conn, aBookNo, aSellClass,
                aUser, aGroup):
     """Process payment."""
     if aBookNo is None:
-        blogger().error("Book number not specified")
+        logger.error("Book number not specified")
         msg = "<p/>Book number not specified"
         return 1, msg
-    blogger().info("Process payment of %s%.2f for book %d"
+    logger.info("Process payment of %s%.2f for book %d"
                  % (aCurrency, aPayAmount, aBookNo))
     paxRecs = ReadPassengers(conn, aBookNo)
-    blogger().info("Read %d passengers" % len(paxRecs))
+    logger.info("Read %d passengers" % len(paxRecs))
     # itenRecs = GetItinerary(conn, aBookNo)
     vPaymentMode = ' '
     vRemark = ' '
@@ -181,7 +185,7 @@ def PutPayHtml(conn, aBookNo, aSellClass,
     irecs = ReadItinerary(conn, aBookNo, None, None,
                           fnumber=None, start_date=None, end_date=None)
     if len(irecs) > 2:
-        blogger().info("Found %d itenaries" % len(irecs))
+        logger.info("Found %d itenaries" % len(irecs))
         msg = "<p/>Found %d itenaries" % len(irecs)
         return 1, msg
     else:
@@ -205,6 +209,6 @@ def PutPayHtml(conn, aBookNo, aSellClass,
     UpdateItinerary(conn, aBookNo, 'A')
     UpdateBook(conn, aBookNo, 'A')
     conn.commit()
-    blogger().info("Payment approved")
+    logger.info("Payment approved")
     msg = "<p/>Payment approved."
     return 0, msg

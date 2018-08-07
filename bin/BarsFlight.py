@@ -9,7 +9,6 @@ from xml.dom import minidom
 import psycopg2
 from psycopg2 import extras
 from datetime import datetime, timedelta, datetime
-from BarsLog import blogger
 from ReadDateTime import ReadDate, ReadTime
 from Ssm.SsmDb import CheckCityPair, GetCityPair
 from ScheduleData import SsmData
@@ -24,6 +23,8 @@ from Ssm.ReadAircraftConfig import ReadEquipmentConfig, WriteEquipmentConfig
 from Flight.ReadFlightBookings import ReadFlightBookings, ReadFlightContacts
 from Flight.ReadTaxes import ReadTaxes
 from BarsBanner import print_banner
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def NewCityPair(conn, departAirport, arriveAirport, userName, groupName):
@@ -161,7 +162,6 @@ def main(argv):
     if len(argv) < 1:
         usage()
 
-    init_blogger("bars")
     try:
         opts, args = getopt.getopt(argv,
                                    "cfhivxyVA:D:E:F:G:I:J:K:N:P:Q:R:T:U:X:Y:",
@@ -182,10 +182,10 @@ def main(argv):
             usage()
         elif opt == '-v':
             # Debug output
-            _levelsetLevel(logging.INFO)
+            logger.setLevel(logging.INFO)
         elif opt == '-V':
             # Debug output
-            _levelsetLevel(logging.DEBUG)
+            logger.setLevel(logging.DEBUG)
         elif opt == "--city":
             docity = True
         elif opt == "--fare":
@@ -206,48 +206,48 @@ def main(argv):
             docontact = True
         elif opt == "-A" or opt == "--aircraft":
             aircraftCode = str(arg).upper()
-            blogger().debug("aircraft code %s" % aircraftCode)
+            logger.debug("aircraft code %s" % aircraftCode)
         elif opt in ("-D", "--date"):
             departDate = ReadDate(arg)
-            blogger().debug("start date %s" % departDate.strftime("%Y-%m-%d"))
+            logger.debug("start date %s" % departDate.strftime("%Y-%m-%d"))
         elif opt in ("-E", "--edate"):
             arriveDate = ReadDate(arg)
-            blogger().debug("end date %s" % departDate.strftime("%Y-%m-%d"))
+            logger.debug("end date %s" % departDate.strftime("%Y-%m-%d"))
         elif opt in ("-F", "--flight"):
             flightNumber = arg
         elif opt in ("-G", "--share"):
             codeShare = arg
         elif opt in ("-I", "--cabin"):
             cabinClasses = str(arg).split(',')
-            blogger().debug("classes %s" % cabinClasses)
+            logger.debug("classes %s" % cabinClasses)
         elif opt in ("-J", "--seat"):
             seatCapacities = str(arg).split(',')
-            blogger().debug("seats %s" % seatCapacities)
+            logger.debug("seats %s" % seatCapacities)
         elif opt in ("-K", "--freq"):
             frequencyCode = str(arg)
         elif opt in ("-N", "--name"):
             aircraftName = str(arg)
         elif opt in ("-P", "--depart"):
             departAirport = str(arg).upper()
-            blogger().debug("depart %s" % departAirport)
+            logger.debug("depart %s" % departAirport)
         elif opt in ("-Q", "--arrive"):
             arriveAirport = str(arg).upper()
-            blogger().debug("arrive %s" % arriveAirport)
+            logger.debug("arrive %s" % arriveAirport)
         elif opt in ("-R", "--amount"):
             payAmount = int(arg)
-            blogger().debug("payment %d" % payAmount)
+            logger.debug("payment %d" % payAmount)
         elif opt in ("-T", "--tail"):
             tailNumber = str(arg)
-            blogger().debug("tail number %s" % tailNumber)
+            logger.debug("tail number %s" % tailNumber)
         elif opt in ("-U", "--cfg"):
             configTable = str(arg)
-            blogger().debug("configuration %s" % configTable)
+            logger.debug("configuration %s" % configTable)
         elif opt == "-X":
             departTime = ReadTime(arg)
-            blogger().debug("depart time %s" % departTime)
+            logger.debug("depart time %s" % departTime)
         elif opt == "-Y":
             arriveTime = ReadTime(arg)
-            blogger().debug("arrive time %s" % arriveTime)
+            logger.debug("arrive time %s" % arriveTime)
         else:
             print("Unknown option '%s'" % opt)
             return 1

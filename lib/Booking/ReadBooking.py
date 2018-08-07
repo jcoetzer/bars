@@ -6,14 +6,18 @@ Read data from booking tables.
 import os
 import sys
 import operator
+import logging
 import psycopg2
 from psycopg2 import extras
 
 from datetime import datetime, timedelta, date
 
-from BarsLog import blogger
+
 from Booking.PassengerData import PassengerData
 # from ReadBookings import GetBookColumns
+
+logger = logging.getLogger("web2py.app.bars")
+
 
 def ReadBooking(conn, book_no):
     """Read booking data and stuff."""
@@ -43,12 +47,12 @@ def ReadBooking(conn, book_no):
 
 def ReadBookingData(conn, bk_cfg_files, book_no, locator):
     """Read booking data and stuff."""
-    # global blogger
+    # global logger
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
     for bk_cfg_file in bk_cfg_files:
 
-        blogger().debug("Read config file %s" % bk_cfg_file)
+        logger.debug("Read config file %s" % bk_cfg_file)
         f = open(bk_cfg_file, "r")
 
         fnames = os.path.basename(bk_cfg_file).split('.')
@@ -81,7 +85,7 @@ def ReadBookingData(conn, bk_cfg_files, book_no, locator):
                 print("Unknown field [%s]" % fname)
                 return
             print("%s:" % tabname)
-            blogger().debug("%s" % bookSql)
+            logger.debug("%s" % bookSql)
 
             cur = conn.cursor()
             # Run query
@@ -126,7 +130,7 @@ def ReadPassengers(conn, book_no):
             FROM passengers pa
             WHERE pa.book_no = %d
             AND pa.pax_no > 0""" % book_no
-    blogger().debug(RpSql)
+    logger.debug(RpSql)
     cur.execute(RpSql)
     paxRecs = []
     for row in cur:

@@ -1,10 +1,13 @@
 # @file ReadFlightTimes.py
 
 import sys
+import logging
 import psycopg2
 from psycopg2 import extras
-from BarsLog import blogger
+
 from ReadDateTime import ReadDate
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def ReadFlightTimes(conn, flight):
@@ -19,7 +22,7 @@ def ReadFlightTimes(conn, flight):
         #" AND start_date = '%s'" \
         #" AND end_date = '%s'" \
         #" AND frequency_code = '%s'" \
-    blogger().info(FtSql)
+    logger.info(FtSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FtSql)
     schedule_period_no = 0
@@ -28,7 +31,7 @@ def ReadFlightTimes(conn, flight):
     for row in cur:
         start_date = row['start_date']
         end_date = row['end_date']
-        blogger().info("Start %s end %s schedule period %d"
+        logger.info("Start %s end %s schedule period %d"
                      % (start_date, end_date, row['schedule_period_no']))
         if flight.board_dts.date() >= start_date and flight.board_dts.date() <= end_date:
             schedule_period_no = row['schedule_period_no']
@@ -48,7 +51,7 @@ def ReadFlightPerdLegsTimes(conn, flight, SchdPerdNo):
         " WHERE flight_number = '%s'" \
         " AND schedule_period_no = %d" \
             % ( flight.flight_number, SchdPerdNo )
-    blogger().info(FtSql)
+    logger.info(FtSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(FtSql)
     for row in cur:

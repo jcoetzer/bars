@@ -7,9 +7,12 @@ Read references.
 import os
 import sys
 import getopt
+import logging
 import psycopg2
 from psycopg2 import extras
 from datetime import datetime, timedelta, date
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def check_bci_new(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb, msk):
@@ -50,7 +53,7 @@ def check_bci_new(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb, msk):
                 % (ExtBookNumb, ExtOriginAddress)
     ChkSql += \
         ") "
-    blogger().debug("%s" % ChkSql)
+    logger.debug("%s" % ChkSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
     cur.execute(ChkSql)
@@ -73,7 +76,7 @@ def check_bci_trl(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb):
         "          AND bci.locator = \"%s\" ) ) " \
         " AND bci.book_no = b.book_no" \
             % (ExtOriginAddress, ExtBookNumb, PnrBookNumb)
-    blogger().debug("%s" % ChkSql)
+    logger.debug("%s" % ChkSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
     cur.execute(ChkSql)
@@ -118,7 +121,7 @@ def check_bci(conn, ExtOriginAddress, ExtBookNumb, PnrBookNumb, msk):
                 % (ExtBookNumb, ExtOriginAddress)
     ChkSql += \
         ")"
-    blogger().debug("%s" % ChkSql)
+    logger.debug("%s" % ChkSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
     cur.execute(ChkSql)

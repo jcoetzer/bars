@@ -15,12 +15,12 @@ from Booking.BookingHtml import GetAvailHtml, GetPriceHtml, PutBookHtml, \
     PutPayHtml
 from ReadDateTime import ReadDate
 from Booking.PassengerData import PassengerData
-from BarsLog import blogger
 
+logger = logging.getLogger("web2py.app.bars")
 
 def index():
     """ Index page."""
-    blogger().debug("Start")
+    #logger.debug("Start")
     response.flash = T("BARS Airline Reservation Simulator")
     #form = FORM(INPUT(_name='depart', requires=IS_NOT_EMPTY()),
                 #INPUT(_name='arrive', requires=IS_NOT_EMPTY()),
@@ -42,17 +42,18 @@ def index():
 
 def availability():
     """Flight availability query."""
-    blogger().debug("Availability")
+    logger.debug("Availability")
     return dict()
 
 
 def availshow():
     """Get availability information."""
+    logger.debug("Show availability")
     vCompany = 'ZZ'
     departAirport = str(request.vars.depart)
     arriveAirport = str(request.vars.arrive)
     flightDate = ReadDate(request.vars.fdate)
-    blogger().debug("Get availability for date %s depart %s arrive %s"
+    logger.debug("Get availability for date %s depart %s arrive %s"
                   % (flightDate, departAirport, arriveAirport))
     msg = GetAvailHtml(conn, flightDate, flightDate,
                        departAirport, arriveAirport,
@@ -63,12 +64,13 @@ def availshow():
 
 def priceshow():
     """Display flight prices."""
+    logger.debug("Show prices")
     flightNumber = str(request.vars.fnumber)
     flightDate = ReadDate(request.vars.fdate)
     departAirport = str(request.vars.depart)
     arriveAirport = str(request.vars.arrive)
     sellClass = 'Y'
-    blogger().debug("Get price for date %s depart %s arrive %s"
+    logger.debug("Get price for date %s depart %s arrive %s"
                   % (flightDate, departAirport, arriveAirport))
     msg, amt = GetPriceHtml(conn,
                             cfg.CompanyCode,
@@ -84,12 +86,14 @@ def priceshow():
 
 def booking():
     """Input number of seats e.a. for booking."""
+    logger.debug("Book flight")
     msg = "<p/>Book flight"
     return dict(message=XML(msg))
 
 
 def bookingnames():
     """Input names e.a. for booking."""
+    logger.debug("Booking names")
     flightNumber = str(request.vars.fnumber)
     flightDate = ReadDate(request.vars.fdate)
     departAirport = str(request.vars.depart)
@@ -99,7 +103,7 @@ def bookingnames():
     sellClass = request.vars.fclass
     bookAmount = float(seatCount * seatPrice)
     groupName = ''
-    blogger().debug("Get %s names for flight %s date %s depart %s arrive %s"
+    logger.debug("Get %s names for flight %s date %s depart %s arrive %s"
                  % (seatCount, flightNumber, flightDate, departAirport, arriveAirport))
     msg = "<p/>Book flight"
     paxtitles = []
@@ -135,7 +139,7 @@ def bookingnames():
 
 def bookingshow():
     """Process booking."""
-    blogger().debug("New booking")
+    logger.debug("Show new booking")
     flightNumber = str(request.vars.fnumber)
     flightDate = ReadDate(request.vars.fdate)
     departAirport = str(request.vars.depart)
@@ -144,7 +148,7 @@ def bookingshow():
     seatPrice = float(request.vars.fprice)
     payAmount = float(seatCount * seatPrice)
     sellClass = request.vars.fclass
-    blogger().debug("Book %s seats for flight %s date %s depart %s arrive %s"
+    logger.debug("Book %s seats for flight %s date %s depart %s arrive %s"
                   % (seatCount, flightNumber, flightDate,
                      departAirport, arriveAirport))
     groupName = ''
@@ -160,9 +164,9 @@ def bookingshow():
     contact_email = request.vars.bkemail
     pax = PassengerData(passenger_code, passenger_no, paxname,
                         date_of_birth, contact_phone, contact_email)
-    blogger().debug("Pax %s (born %s)" % (paxname, date_of_birth))
+    logger.debug("Pax %s (born %s)" % (paxname, date_of_birth))
     paxRecs.append(pax)
-    blogger().debug("Process booking flight %s date %s"
+    logger.debug("Process booking flight %s date %s"
                   % (flightNumber, flightDate))
     bn, pnr, msg = PutBookHtml(conn, cfg.CompanyCode, cfg.BookCategory, cfg.OriginAddress,
                                cfg.OriginBranchCode, cfg.AgencyCode,
@@ -179,6 +183,7 @@ def bookingshow():
 
 def bookingpay():
     """Do payment for booking."""
+    logger.debug("Booking payment")
     n = random.randint(0,100)
     if n < 5:  # cfg.PaymentFail:
         redirect(URL('bookingpayfail'))
@@ -187,19 +192,21 @@ def bookingpay():
 
 def bookingpayfail():
     """Do payment for booking."""
+    logger.debug("Booking payment failed")
     msg = "Payment declined."
     return dict(message=XML(msg))
 
 
 def bookingpayshow():
     """Show payment for booking."""
+    logger.debug("Show payment")
     bookNo = int(request.vars.bookno)
     sellClass = request.vars.fclass
     payAmount = float(request.vars.fprice)
     docNum = request.vars.cardnum
     paymentType = 'CC'
     paymentForm = 'VI'
-    blogger().debug("Payment for booking %d class %s %s%.2f %s card %s"
+    logger.debug("Payment for booking %d class %s %s%.2f %s card %s"
                   % (bookNo, sellClass, cfg.Currency, payAmount, paymentForm,
                      docNum))
     rv, msg = PutPayHtml(conn, bookNo, sellClass,

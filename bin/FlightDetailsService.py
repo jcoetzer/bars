@@ -13,13 +13,14 @@ import logging
 import psycopg2
 from psycopg2 import extras
 
-from BarsLog import blogger, init_blogger
 from ReadDateTime import ReadDate, DateRange
 
 from Ssm.SsmDb import GetCityPair
 from Flight.FlightDetails import GetFlightDetails
 from DbConnect import OpenDb, CloseDb
 from BarsConfig import BarsConfig
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def usage():
@@ -38,7 +39,6 @@ def main(argv):
     if len(argv) < 1:
         usage()
 
-    init_blogger("bars")
     opts, args = getopt.getopt(argv,
                                "cfhivyVA:B:C:D:E:F:I:K:L:M:N:P:Q:R:S:T:X:Y:",
                                ["help", "date=", "edate=", "flight="])
@@ -52,14 +52,14 @@ def main(argv):
         if opt == '-h' or opt == '--help':
             usage()
         elif opt == '-v':
-            _levelsetLevel(logging.INFO)
+            logger.setLevel(logging.INFO)
         elif opt == '-V':
-            _levelsetLevel(logging.DEBUG)
+            logger.setLevel(logging.DEBUG)
         # elif opt in ("-C", "--class"):
             # selling_cls = str(arg).upper()
         elif opt in ("-D", "--date"):
             dt1 = ReadDate(arg)
-            blogger().info("\t flight date %s" % dt1.strftime("%Y-%m-%d"))
+            logger.info("\t flight date %s" % dt1.strftime("%Y-%m-%d"))
         # elif opt in ("-E", "--edate"):
             # dt2 = ReadDate(arg)
         elif opt in ("-F", "--flight"):
@@ -69,13 +69,13 @@ def main(argv):
                 dt1 = ReadDate(fndata[1])
             else:
                 flight_number = arg
-            blogger().debug("Flight number set to %s" % flight_number)
+            logger.debug("Flight number set to %s" % flight_number)
         # elif opt in ("-P", "--depart"):
             # depart_airport = str(arg).upper()
-            # blogger().info("\t depart %s" % depart_airport)
+            # logger.info("\t depart %s" % depart_airport)
         # elif opt in ("-Q", "--arrive"):
             # arrive_airport = str(arg).upper()
-            # blogger().info("\t arrive %s" % arrive_airport)
+            # logger.info("\t arrive %s" % arrive_airport)
         else:
             pass
 
@@ -95,7 +95,7 @@ def main(argv):
 
     conn.commit()
     conn.close()
-    blogger().info("Disconnected")
+    logger.info("Disconnected")
 
     return 0
 

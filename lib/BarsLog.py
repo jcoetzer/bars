@@ -31,7 +31,7 @@ def init_blogger(lname, verbose=0):
     # print("Start logging %s" % str(ilogger))
 
 
-def blogger():
+def logger():
     """Get logging thing."""
     global ilogger
     return ilogger

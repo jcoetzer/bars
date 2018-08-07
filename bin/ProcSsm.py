@@ -8,6 +8,7 @@ Process SSM input data.
 
 import os
 import sys
+import logging
 import ply.lex as lex
 import ply.yacc as yacc
 
@@ -18,7 +19,6 @@ from Ssm.SsmYacc import YaccFile
 
 import psycopg2
 from psycopg2 import extras
-from BarsLog import blogger, init_blogger
 from ReadDateTime import ReadDate, DateRange
 from Ssm.ProcNew import ProcNew
 from Ssm.ProcCnl import ProcCnl
@@ -27,6 +27,8 @@ from Ssm.SsmDb import CheckCityPair, CheckFlightPeriod
 from BarsConfig import BarsConfig
 from DbConnect import OpenDb, CloseDb
 from BarsBanner import print_banner
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def ProcData(conn, ssm, userName, groupName):
@@ -60,14 +62,13 @@ def main(argv):
     if len(argv) < 1:
         usage()
 
-    init_blogger("bars")
     for opt in argv:
         if opt == '-h' or opt == '--help':
             usage()
         elif opt == '-v':
-            _levelsetLevel(logging.INFO)
+            logger.setLevel(logging.INFO)
         elif opt == '-V':
-            _levelsetLevel(logging.DEBUG)
+            logger.setLevel(logging.DEBUG)
         else:
             fname = str(opt)
 
@@ -89,7 +90,7 @@ def main(argv):
 
     conn.commit()
     conn.close()
-    blogger().info("Disconnected")
+    logger.info("Disconnected")
 
     return rv
 

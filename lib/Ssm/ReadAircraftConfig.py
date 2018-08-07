@@ -3,7 +3,7 @@
 import sys
 import psycopg2
 from psycopg2 import extras
-from BarsLog import blogger
+
 from ReadDateTime import ReadDate
 from Ssm.AircraftData import AircraftData
 
@@ -40,7 +40,7 @@ def ReadAircraftConfig(conn, aircraft_code, config_table,
         AcSql += \
             " AND seat_capacity=%d" % seat_capacity
     print("[aircraft_config]")
-    blogger().debug(AcSql)
+    logger.debug(AcSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(AcSql)
     n = 0
@@ -77,7 +77,7 @@ def WriteEquipmentConfig(conn, companyCode, aircraftCode, configTable,
                 '%s', '%s', NOW() )""" \
             % (companyCode, aircraftCode, configTable, tailNumber, cabinClass,
                seatCapacities[n],  updateUser, updateGroup)
-        blogger().debug(WecSql)
+        logger.debug(WecSql)
         cur.execute(WecSql)
         n += 1
     cur.close()
@@ -90,7 +90,7 @@ def ReadEquipmentConfig(conn, tailNumber):
             cabin_code, seat_capacity
         FROM equipment_config
         WHERE tail_number = '%s'""" % tailNumber
-    blogger().debug(RecSql)
+    logger.debug(RecSql)
     cur = conn.cursor()
     cur.execute(RecSql)
 
@@ -108,7 +108,7 @@ def ReadEquipmentConfig(conn, tailNumber):
         seatCapacities.append(row[5])
 
     if len(cabinClasses) == 0:
-        blogger().debug("Equipment %s not found" % tailNumber)
+        logger.debug("Equipment %s not found" % tailNumber)
         return None
 
     eqt = AircraftData(companyCode, aircraftCode, configTable,

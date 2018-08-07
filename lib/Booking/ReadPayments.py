@@ -4,16 +4,19 @@ Read payments.
 @file ReadPayments.py
 """
 
+import logging
 import psycopg2
 from psycopg2 import extras
 
-from BarsLog import blogger
+
 from Booking.PaymentData import PaymentData
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def ReadPayments(conn, book_no):
     """Read payments for booking."""
-    blogger().info("Read payments for booking %d" % book_no)
+    logger.info("Read payments for booking %d" % book_no)
     RpSql = """
         SELECT payment_form, payment_type, currency_code, payment_amount,
         payment_date,
@@ -23,7 +26,7 @@ def ReadPayments(conn, book_no):
         update_time
         FROM payments
         WHERE book_no = %d""" % book_no
-    blogger().debug(RpSql)
+    logger.debug(RpSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(RpSql)
     for row in cur:
@@ -44,18 +47,18 @@ def GetPriceSsr(conn, ssr_code):
              payment_type, payment_form
              FROM fees
              WHERE ssr_code = '%s'""" % ssr_code
-    blogger().debug(gpsSql)
+    logger.debug(gpsSql)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(gpsSql)
     famount = 0.0
     fcurr = ''
     fcode = ''
     for row in cur:
-        blogger().info("SSR %s : fee %s %s%f : %s"
+        logger.info("SSR %s : fee %s %s%f : %s"
                  % (ssr_code, row['fee_code'], row['fee_currency'],
                     row['fee_amount'], row['description']))
         famount = float(row['fee_amount'])
         fcurr = str(row['fee_currency'])
         fcode = str(row['fee_code'])
-    blogger().info("Price for SSR %s : %s%.2f" % (ssr_code, fcurr, famount))
+    logger.info("Price for SSR %s : %s%.2f" % (ssr_code, fcurr, famount))
     return fcode, fcurr, famount

@@ -18,7 +18,6 @@ from faker import Faker
 
 from BarsBanner import print_banner
 from BarsConfig import BarsConfig
-from BarsLog import blogger, init_blogger
 from Booking.BookingHtml import GetAvailHtml, GetPriceHtml
 from Booking.BookingInfo import (AddBook, AddBookCrossIndex,
                                  AddBookFarePassengers, AddBookFares,
@@ -39,6 +38,8 @@ from Flight.ReadFlights import ReadDeparture, ReadFlightDeparture
 from Flight.ReadTaxes import ApplyTaxes, ReadTaxes
 from ReadDateTime import ReadDate
 from Ssm.SsmDb import GetCityPair
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def usage(pn):
@@ -112,7 +113,7 @@ def GetPrice(conn,
     # for cls in sorted(sellconfigs, key=sellconfigs.get, reverse=False):
         # sellconfigs[cls].display()
     cityPairNo = GetCityPair(conn, departAirport, arriveAirport)
-    blogger().info("Get price for city pair %d class %s on %s"
+    logger.info("Get price for city pair %d class %s on %s"
              % (cityPairNo, selling_class, dt1))
     taxes = ReadTaxes(conn, aCompanyCode, dt1, dt2, departAirport,
                       pass_code1='ADULT', pass_code2='CHILD',
@@ -170,7 +171,7 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
     if paxRecs is None:
         print("No passenger names")
         return 0, ''
-    blogger().info("Book fare basis %s payment %s%.2f flight %s date %s"
+    logger.info("Book fare basis %s payment %s%.2f flight %s date %s"
              % (aFareBasis, aCurrency, payAmount, flightNumber, dt1))
     vSeatQuantity = len(paxRecs)
     if payAmount is None:
@@ -180,7 +181,7 @@ def PutBook(conn, vCompany, vBookCategory, vOriginAddress,
     #if departAirport is None or arriveAirport is None:
         #print("Flight number and date must be specified")
         #return
-    blogger().info("Book %d seats on flight %s date %s class %s"
+    logger.info("Book %d seats on flight %s date %s class %s"
              % (vSeatQuantity, flightNumber, dt1, sellClass))
     n, fd = ReadFlightDeparture(conn, sellClass, flightNumber, dt1)
     if n == 0:
@@ -230,7 +231,7 @@ def PutPay(conn, aBookNo, aSellClass,
     if aBookNo is None:
         print("Book number not specified")
         return 1
-    blogger().info("Process payment of %s%.2f for book %d"
+    logger.info("Process payment of %s%.2f for book %d"
              % (aCurrency, aPayAmount, aBookNo))
     paxRecs = GetPassengers(conn, aBookNo)
     # itenRecs = GetItinerary(conn, aBookNo)
@@ -322,11 +323,11 @@ def DoPay(conn, cfg, bn, departAirport, arriveAirport, payAmount, payAmount2,
           vDocNum, sellClass):
     """Process payment for booking."""
     if payAmount is None:
-        blogger().info("Get itinerary for booking %d" % bn)
+        logger.info("Get itinerary for booking %d" % bn)
         itens = GetItinerary(conn, bn)
         payAmount = 0
         for iten in itens:
-            blogger().info("Get price for depart %s arrive %s class %s"
+            logger.info("Get price for depart %s arrive %s class %s"
                      % (departAirport, arriveAirport, sellClass))
             fares = GetPrice(conn,
                              cfg.CompanyCode,
@@ -340,7 +341,7 @@ def DoPay(conn, cfg, bn, departAirport, arriveAirport, payAmount, payAmount2,
                 payAmount += fare.total_amount
         paxRecs = GetPassengers(conn, bn)
         payAmount *= len(paxRecs)
-        blogger().info("Payment amount not specified: calculated as %.2f" % payAmount)
+        logger.info("Payment amount not specified: calculated as %.2f" % payAmount)
     vPaymentForm = 'VI'
     vPaymentType = 'CC'
     if vDocNum is None:
@@ -384,8 +385,6 @@ def main(argv):
 
     barsdir = os.environ['BARSDIR']
     etcdir = "%s/etc" % barsdir
-
-    init_blogger("bars")
 
     # Option values
     dt1 = None
@@ -436,9 +435,9 @@ def main(argv):
         if opt == '-h' or opt == '--help':
             usage(os.path.basename(sys.argv[0]))
         elif opt == '-v':
-            _levelsetLevel(logging.INFO)
+            logger.setLevel(logging.INFO)
         elif opt == '-V':
-            _levelsetLevel(logging.DEBUG)
+            logger.setLevel(logging.DEBUG)
         elif opt == '--html':
             dohtml = True
         elif opt == '--avail':
@@ -446,7 +445,7 @@ def main(argv):
         elif opt == '--book':
             dobook = True
         elif opt == '--chk':
-            blogger().debug("Check booking")
+            logger.debug("Check booking")
             dochk = True
         elif opt == '--detail':
             dodetail = True
@@ -458,14 +457,14 @@ def main(argv):
             dossr = True
         elif opt in ('-B', '--bn'):
             bn = int(arg)
-            blogger().debug("Booking number %d" % bn)
+            logger.debug("Booking number %d" % bn)
         elif opt in ("-C", "--class"):
             sellClass = str(arg).upper()
         elif opt in ("-D", "--date"):
             dt1 = ReadDate(arg)
-            blogger().info("\t flight date %s" % dt1.strftime("%Y-%m-%d"))
+            logger.info("\t flight date %s" % dt1.strftime("%Y-%m-%d"))
         elif opt in ("-E", "--edate"):
-            blogger().info("\t end date %s" % dt1.strftime("%Y-%m-%d"))
+            logger.info("\t end date %s" % dt1.strftime("%Y-%m-%d"))
             dt2 = ReadDate(arg)
         elif opt in ("-F", "--flight"):
             if ',' in arg:
@@ -474,7 +473,7 @@ def main(argv):
                 dt1 = ReadDate(fndata[1])
             else:
                 flightNumber = arg
-            blogger().debug("Flight number set to %s" % flightNumber)
+            logger.debug("Flight number set to %s" % flightNumber)
         elif opt in ("-G", "--rflight"):
             if ',' in arg:
                 fndata = arg.split('/')
@@ -482,7 +481,7 @@ def main(argv):
                 dt2 = ReadDate(fndata[1])
             else:
                 flightNumber2 = arg
-            blogger().debug("Flight number set to %s" % flightNumber)
+            logger.debug("Flight number set to %s" % flightNumber)
         elif opt == "-K":
             groupName = str(arg)
         elif opt == "-L":
@@ -493,10 +492,10 @@ def main(argv):
             paxNames = str(arg).upper().split(',')
         elif opt in ("-P", "--depart"):
             departAirport = str(arg).upper()
-            blogger().info("\t depart %s" % departAirport)
+            logger.info("\t depart %s" % departAirport)
         elif opt in ("-Q", "--arrive"):
             arriveAirport = str(arg).upper()
-            blogger().info("\t arrive %s" % arriveAirport)
+            logger.info("\t arrive %s" % arriveAirport)
         elif opt in ("-R", "--amount"):
             payAmount = float(arg)
         elif opt in ("-S", "--ramount"):
