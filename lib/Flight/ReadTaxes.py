@@ -2,12 +2,13 @@
 """
 Read taxes.
 """
-
+import logging
 import psycopg2
 from psycopg2 import extras
-
-
 from datetime import datetime, date
+
+logger = logging.getLogger("web2py.app.bars")
+
 
 class TaxData(object):
 

@@ -2,7 +2,10 @@
 """
 Lex and flex away.
 """
+import logging
 import ply.lex as lex
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 states = (

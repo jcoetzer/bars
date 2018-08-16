@@ -7,7 +7,6 @@ import logging
 import psycopg2
 from psycopg2 import extras
 
-, get_verbose
 from PnlAdl.PaxListEntry import PaxListEntry, ReadAltFlightNumber
 
 logger = logging.getLogger("web2py.app.bars")

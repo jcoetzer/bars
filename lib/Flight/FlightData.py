@@ -2,8 +2,12 @@
 """
 Flight data class.
 """
+import sys
+import logging
 
+from ReadDateTime import ReadTime
 
+logger = logging.getLogger("web2py.app.bars")
 
 
 class FlightData(object):
@@ -47,12 +51,12 @@ class FlightData(object):
                  codeshare=None):
         """New flight."""
         logger.debug("New flight %s date %s class %s depart %s arrive %s"
-                 " from %s to %s (pair %d) aircraft %s"
-                 % (flight_number, departure_date.strftime("%Y-%m-%d"),
-                    class_code,
-                    departure_time, arrival_time,
-                    departure_airport, arrival_airport, city_pair,
-                    aircraft_code))
+                     " from %s to %s (pair %d) aircraft %s"
+                     % (flight_number, departure_date.strftime("%Y-%m-%d"),
+                        class_code,
+                        departure_time, arrival_time,
+                        departure_airport, arrival_airport, city_pair,
+                        aircraft_code))
         self.class_code = class_code.strip()
         # self.company_code = company_code
         self.flight_number = str(flight_number).strip()
@@ -74,13 +78,13 @@ class FlightData(object):
             if self.board_weekday == 0:
                 self.board_weekday = 7
         if departure_time is not None:
-            self.departure_time = departure_time   #.strftime('%H:%M')
+            self.departure_time = departure_time   # .strftime('%H:%M')
             # self.departure_time = ReadTime(departure_time)
             # self.departure_ts = str("%02d:%02d"
             #                        % (self.departure_time.hour,
             #                           self.departure_time.minute))
         if arrival_time is not None:
-            self.arrival_time = arrival_time   #.strftime('%H:%M')
+            self.arrival_time = arrival_time   # .strftime('%H:%M')
             # self.arrival_time = ReadTime(arrival_time)
             # self.arrival_ts = str("%02s:%02d"
             #                       % (self.arrival_time.hour,
@@ -98,7 +102,7 @@ class FlightData(object):
     def update_times(self, departure_time, arrival_time, journey_time=0):
         """Update departure and arrival times."""
         logger.debug("Update flight depart %s arrive %s"
-                 % (departure_time, arrival_time))
+                     % (departure_time, arrival_time))
         self.departure_time = ReadTime(departure_time, self.board_date_iso)
         self.departure_ts = str("%02d:%02d"
                                 % (self.departure_time.thour,
@@ -157,7 +161,8 @@ class FlightData(object):
             print("")
 
     def html(self, form=None):
-        rbuf = "<tr><td>%6s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>" \
+        rbuf = "<tr><td>%6s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>" \
+               "<td>%s</td>" \
                % (self.flight_number, self.board_dow,
                   self.board_date_iso,
                   self.departure_airport, self.arrival_airport,
@@ -207,8 +212,10 @@ class FlightPeriod(object):
     arrival_time = None
     codeshares = []
 
-    def __init__(self, flight_number, start_date, end_date, frequency_code, schedule_period_no,
-                 departure_airport, departure_time, arrival_airport, arrival_time,
+    def __init__(self, flight_number, start_date, end_date, frequency_code,
+                 schedule_period_no,
+                 departure_airport, departure_time,
+                 arrival_airport, arrival_time,
                  aircraft_code, codeshares):
         """New flight period."""
         self.flight_number = flight_number
@@ -243,7 +250,8 @@ class FlightPeriod(object):
     def displaycsv(self):
         """Display flight period data in CSV format."""
         sys.stdout.write("%s,%s,%s,%s,%s,%02d%02d,%s,%02d%02d,%s,%d"
-                         % (self.flight_number, self.start_date.strftime("%d%b%Y").upper(),
+                         % (self.flight_number,
+                            self.start_date.strftime("%d%b%Y").upper(),
                             self.end_date.strftime("%d%b%Y").upper(),
                             self.frequency_code.replace('-', ''),
                             self.departure_airport,
@@ -256,7 +264,7 @@ class FlightPeriod(object):
             sys.stdout.write(",%s" % codeshare)
         sys.stdout.write("\n")
 
-    def display(csv=False):
+    def display(self, csv=False):
         if csv:
             self.displaycsv()
         else:

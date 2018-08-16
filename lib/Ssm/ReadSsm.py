@@ -6,7 +6,7 @@ import logging
 import getopt
 
 import ply.lex as lex
-from Ssm.SsmLex import *￼￼
+#from Ssm.SsmLex import *￼￼
 
 logger = logging.getLogger("web2py.app.bars")
 

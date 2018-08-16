@@ -6,10 +6,12 @@ Pricing Data stuff.
 
 import os
 import sys
+import logging
 from datetime import datetime, timedelta, date
 
-
 from ReadDateTime import ReadDate
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 class SellingConfig(object):

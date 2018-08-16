@@ -1,6 +1,8 @@
 """Flight schedule data."""
 
+import logging
 
+logger = logging.getLogger("web2py.app.bars")
 
 
 class SsmData(object):

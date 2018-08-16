@@ -20,18 +20,7 @@ from datetime import datetime, timedelta, datetime
 
 from BarsConfig import BarsConfig
 from ReadDateTime import ReadDate, ReadTime
-#from MangoBanner import print_banner
 from Booking.ReadSeatReservation import ReadSeatReservation
-#from ReadSeatReservation import ReadReserveSeats, ReadFlightDateLegInfo, \
-                                #ReadSeatReservation, \
-                                #CheckSeatReservation, ReadSeatDefinition, \
-                                #FlightSeatBookings
-#from ReadFlightSeats import ReadFlightSeats, ShowFlightSeats, \
-                            #ReadReleaseSeats, ReleaseSeat, CheckReleaseSeats, \
-                            #ReadBookSeatReservations, CheckReserveSeats, \
-                            #ReadFlightDateLegId, ReadFlightDateAllSeats, \
-                            #ReadFlightDateLeg
-# from ReadFlightDateLegs import ReadFlightDateLegId
 from Flight.ReadFlights import ReadFlightSegmDates, ReadFlightSegmDate, \
                         ReadDeparture, \
                         ReadFlights, ReadFlightsDate, \
@@ -40,10 +29,6 @@ from Flight.ReadFlights import ReadFlightSegmDates, ReadFlightSegmDate, \
                         CheckFlightDateClassSeatMaps, ReadFlight, \
                         ReadFlightInformation, GetFlightDataSsm, GetFlights, \
                         ReadFlightsDateLeg, CheckFlight
-#from FlightReconcile import FlightReconcile, AsrReconcile
-#from SystemInfo import ReadSystemSettingInfo
-#from ReadItenaries import ReadBookingItenary
-#from ReadBookingRef import ReadLocator
 from Flight.ReadFlightPeriods import ReadFlightPeriodsGui, ReadFlightPeriods, \
                               ReadFlightPeriodsDate, ReadTestPeriods, \
                               ReadFlightPerdLegs, ReadFlightPerdCls, \
@@ -52,16 +37,9 @@ from Flight.ReadFlightPeriods import ReadFlightPeriodsGui, ReadFlightPeriods, \
                               ReadTestInventrySegm, ReadTestPerdSegm, \
                               ReadTestPerdCls, ReadTestPerdPrnt
 from Flight.FlightData import FlightData
-#
-#from GetSeatMap import GetSeatMap, GetFlightDetail, GetFlightDetails
-#from GetSeatData import GetFlightDateClassSeatMaps
 from Flight.ReadSeatMap import ReadFlightSeatMap, \
                         GetConfigTableNo, ReadSeatMapConfiguration, \
                         ReadFLightSeatMapId, ReadSeatMapId
-#from ReadFareRoute import ReadFareRouteIds, ReadFareRoutes, \
-                          #ReadFareRoutesDate, ReadFareRouteBranches, \
-                          #ReadFareRouteCompanies, ReadFareRouteDesignators, \
-                          #ReadFareAgencies
 from Flight.ReadSchedPeriod import ReadSchedPeriod, ReadConfigNumberOfSeats, \
                             ReadFlightPeriods, ReadFlightPeriodsLatest
 from Flight.ReadFlightBookings import ReadFlightBookings, ReadFlightContacts
@@ -69,7 +47,6 @@ from Ssm.ReadSsmData import ReadSsmFlightData, ReadSsmBookData, ReadSsmTim
 from Flight.ReadFlightLegs import ReadFlightSharedLeg, ReadFlightDateLegs, \
                            ReadtestPeriodLegs, ReadAsrReconcileHistory
 from Ssm.ReadAircraftConfig import ReadAircraftConfig
-#from CheckAvailability import CheckAvailability
 from Flight.ReadFlightSegments import ReadSegmentStatus, ReadFlightPax
 from Flight.ReadFlightTimes import ReadFlightTimes, ReadFlightPerdLegsTimes, \
                             ReadFlightSegmDateTimes, ReadFlightSegmDates, \

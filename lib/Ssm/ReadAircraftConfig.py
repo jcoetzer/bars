@@ -1,11 +1,14 @@
 # @file ReadAircraftConfig.py
 
 import sys
+import logging
 import psycopg2
 from psycopg2 import extras
 
 from ReadDateTime import ReadDate
 from Ssm.AircraftData import AircraftData
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def ReadAircraftConfig(conn, aircraft_code, config_table,

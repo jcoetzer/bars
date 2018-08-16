@@ -7,7 +7,6 @@ import psycopg2
 from psycopg2 import extras
 import time
 from datetime import datetime, timedelta, date
-, get_verbose
 from ReadDateTime import ReadTime
 from Flight.FlightData import FlightPeriod
 

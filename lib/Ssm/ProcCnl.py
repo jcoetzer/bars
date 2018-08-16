@@ -5,6 +5,7 @@ Process cancellation of flights.
 """
 
 import sys
+import logging
 import ply.lex as lex
 import ply.yacc as yacc
 import datetime
@@ -13,6 +14,8 @@ from Ssm.SsmData import SsmData, read_ssm_data
 
 from ReadDateTime import ReadDate, DateRange
 from Ssm.SsmDb import CheckFlightPeriod, GetCityPair
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def DeleteSellingClasses(conn,

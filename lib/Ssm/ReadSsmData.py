@@ -1,12 +1,15 @@
 # @file ReadSsmData.py
 
 import sys
+import logging
 import psycopg2
 from psycopg2 import extras
 
 from Flight.ReadFlightPeriods import ReadFlightPeriods, ReadFlightPerdLegs
 from Flight.ReadFlights import CheckFlight
 from Ssm.ReadAircraftConfig import ReadAircraftConfig
+
+logger = logging.getLogger("web2py.app.bars")
 
 
 def ReadSsmFlightData(conn, flight, end_date):

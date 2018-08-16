@@ -4,6 +4,8 @@ Itinerary data.
 
 import logging
 
+logger = logging.getLogger("web2py.app.bars")
+
 
 class ItineraryData(object):
     """Itinerary data."""

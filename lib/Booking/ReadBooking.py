@@ -47,7 +47,6 @@ def ReadBooking(conn, book_no):
 
 def ReadBookingData(conn, bk_cfg_files, book_no, locator):
     """Read booking data and stuff."""
-    # global logger
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Run query
     for bk_cfg_file in bk_cfg_files:

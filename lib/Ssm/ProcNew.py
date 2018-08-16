@@ -5,6 +5,7 @@ Process new flights.
 """
 
 import sys
+import logging
 import ply.lex as lex
 import ply.yacc as yacc
 
@@ -15,9 +16,12 @@ from Ssm.SsmDb import GetConfigTableNo, CheckCityPair
 from ReadDateTime import ReadDate, DateRange
 import datetime
 
+logger = logging.getLogger("web2py.app.bars")
+
 
 def AddAircraft(conn, companyCode, acft_code, acft_desc,
                 userName, groupName):
+    """Add new aircraft code."""
     cur = conn.cursor()
     aaSql = """INSERT INTO master_files
         VALUES ('ACFT', '%s', '%s', '%s', '%s', NOW())""" \

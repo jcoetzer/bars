@@ -3,7 +3,9 @@
 SSM data as stored in database.
 """
 
+import logging
 
+logger = logging.getLogger("web2py.app.bars")
 
 
 def GetConfigTableNo(conn, aAircraftCode):

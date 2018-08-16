@@ -5,7 +5,6 @@ Passenger list entries.
 """
 import logging
 
-, get_verbose
 from PnlAdl.PaxData import PaxData
 
 etlp_ticket_number = 0

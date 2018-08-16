@@ -3,9 +3,12 @@
 SSM data stuff.
 """
 import re
+import logging
 
 from ReadDateTime import ReadDate, ReadTime
 from ScheduleData import SsmData
+
+logger = logging.getLogger("web2py.app.bars")
 
 action = None
 time_zone = None
