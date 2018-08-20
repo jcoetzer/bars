@@ -3,6 +3,7 @@ Write SSM message
 @file WriteSsmData.py
 """
 import os
+import sys
 import time
 import logging
 
@@ -46,10 +47,14 @@ def IntToRoman(ival):
     return rstr
 
 
-class WriteSsmDataError():
+class WriteSsmDataError(Exception):
 
-    def __init___(self):
-        pass
+    def __init___(self, msg, original_exception):
+        super(WriteSsmDataError, self).__init__(msg +
+                                                (": %s" % original_exception))
+        self.original_exception = original_exception
+        print("Goodbye cruel world.")
+        sys.exit(1)
 
 
 class WriteSsmData():
@@ -162,7 +167,7 @@ class WriteSsmData():
                              % (self.FlightDateEnd, edate, self.FrequencyCode))
                 raise WriteSsmDataError
 
-        except:
+        except Exception:
             logger.error("Some sort of date error")
             raise WriteSsmDataError
 
