@@ -18,13 +18,14 @@ def GetWeekDay(idate):
     @return day number
     """
     # e.g.   12/13/2014
-    if not(idate[2] == '/' and idate[5] == '/' and len(idate) == 10):
-        print("Invalid date %s\n" % idate)
-        return -1
+    #if not(idate[2] == '/' and idate[5] == '/' and len(idate) == 10):
+        #print("Invalid date %s\n" % idate)
+        #return -1
 
-    board_dts = time.strptime(idate, "%m/%d/%y")
+    #board_dts = time.strptime(idate, "%m/%d/%y")
 
-    board_weekday = int(board_dts.strftime("%w"))
+    #board_weekday = int(board_dts.strftime("%w"))
+    board_weekday = int(idate.strftime("%w"))
     return board_weekday
 
 

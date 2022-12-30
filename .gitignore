@@ -6,3 +6,4 @@ parser.out
 parsetab.py
 *.kate-swp
 bars.code-workspace
+bin/.vscode/
